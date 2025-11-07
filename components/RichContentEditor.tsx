@@ -1,0 +1,77 @@
+import React from 'react';
+
+interface RichContentEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+  label?: string;
+  rows?: number;
+  placeholder?: string;
+}
+
+const RichContentEditor: React.FC<RichContentEditorProps> = ({ value, onChange, textareaRef, label, rows = 8, placeholder = '' }) => {
+  
+  const insertText = (syntax: { start: string, end?: string, placeholder: string }) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd, value: textareaValue } = textarea;
+    const selectedText = textareaValue.substring(selectionStart, selectionEnd);
+    const textToInsert = selectedText || syntax.placeholder;
+    
+    const newText = 
+        textareaValue.substring(0, selectionStart) +
+        syntax.start +
+        textToInsert +
+        (syntax.end || '') +
+        textareaValue.substring(selectionEnd);
+    
+    onChange(newText);
+
+    // Focus and adjust cursor position after state updates
+    setTimeout(() => {
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+            const newCursorPos = selectionStart + syntax.start.length;
+            textareaRef.current.setSelectionRange(newCursorPos, newCursorPos + textToInsert.length);
+        }
+    }, 0);
+  };
+
+  const toolbarActions = [
+    { label: 'Bold', icon: 'B', action: () => insertText({ start: '**', end: '**', placeholder: 'texto' }) },
+    { label: 'Italic', icon: 'I', action: () => insertText({ start: '_', end: '_', placeholder: 'texto' }) },
+    { label: 'Link', icon: '🔗', action: () => insertText({ start: '[', end: '](url)', placeholder: 'texto do link' }) },
+    { label: 'Image', icon: '🖼️', action: () => insertText({ start: '![', end: '](url)', placeholder: 'alt text' }) },
+    { label: 'Code', icon: '`', action: () => insertText({ start: '`', end: '`', placeholder: 'código' }) },
+    { label: 'Code Block', icon: '{}', action: () => insertText({ start: '```\n', end: '\n```', placeholder: 'código' }) },
+    { label: 'Alert', icon: '⚠️', action: () => insertText({ start: '\n[ALERT type="info"]\n', end: '\n[/ALERT]', placeholder: 'Mensagem de alerta.' }) },
+    { label: 'Tip', icon: '💡', action: () => insertText({ start: '\n[TIP]\n', end: '\n[/TIP]', placeholder: 'Dica útil.' }) },
+  ];
+
+  return (
+    <div>
+        {label && <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>}
+        <div className="bg-white/5 border border-white/10 rounded-md">
+            <div className="flex flex-wrap items-center gap-1 p-2 border-b border-white/10">
+                {toolbarActions.map(action => (
+                    <button key={action.label} type="button" onClick={action.action} title={action.label} className="h-8 w-8 rounded text-gray-300 hover:bg-white/10 transition-colors flex items-center justify-center font-mono text-lg">
+                        {action.icon}
+                    </button>
+                ))}
+            </div>
+            <textarea
+                ref={textareaRef}
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                rows={rows}
+                placeholder={placeholder}
+                className="appearance-none block w-full p-3 bg-transparent text-white placeholder-gray-400 focus:outline-none sm:text-sm transition-all font-mono"
+                spellCheck="false"
+            />
+        </div>
+    </div>
+  );
+};
+
+export default RichContentEditor;
