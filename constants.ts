@@ -570,7 +570,7 @@ Serão 4 encontros presenciais, com duração de 1h30 cada, na sede do FuturoON 
 ⚠️ As vagas são LIMITADAS, então não deixa pra depois!
 
 🔗 Inscreva-se agora e invista no seu futuro!`,
-    imageUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/images/events/oficina_curriculo.png',
+    imageUrl: 'https://picsum.photos/seed/oficina-curriculo/1200/600',
     eventType: 'Workshop',
     registrationUrl: 'https://forms.gle/m9NwXQjeYZR8XDJ67',
     location: 'Presencial - R. Silva Jardim, 689, São Gonçalo - RJ',

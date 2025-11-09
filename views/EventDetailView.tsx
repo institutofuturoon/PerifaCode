@@ -43,7 +43,7 @@ const EventDetailView: React.FC = () => {
       {/* Header with Background Image */}
       <section className="relative py-20 md:py-32 bg-black/20">
         <div className="absolute inset-0">
-          <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover opacity-50" />
+          <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] to-transparent"></div>
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
