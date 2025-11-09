@@ -283,6 +283,18 @@ export const MOCK_USERS: User[] = [
     googleMeetUrl: 'https://meet.google.com/stu-vwx-yza',
     completedLessonIds: [], xp: 2200, achievements: [], streak: 65, lastCompletionDate: yesterday, notes: {},
   },
+   {
+    id: 'inst4',
+    name: 'Rafael Dantas',
+    email: 'rafael.dantas@email.com',
+    avatarUrl: 'https://picsum.photos/seed/rafaeldantas/200',
+    bio: 'Desenvolvedor Python apaixonado por resolver problemas e criar soluções eficientes. Sempre buscando aprender e compartilhar conhecimento.',
+    role: 'instructor',
+    title: 'Desenvolvedor de Python',
+    isMentor: true,
+    showOnTeamPage: true,
+    completedLessonIds: [], xp: 1200, achievements: [], streak: 30, lastCompletionDate: '', notes: {},
+  },
   {
     id: 'adm1',
     name: 'Admin FuturoOn',
@@ -302,7 +314,7 @@ export const MOCK_USERS: User[] = [
     email: 'luiza.carmelo@futuroon.org',
     role: 'student', // Mantido como student para não ter acesso admin, mas exibido na página de equipe
     avatarUrl: 'https://media.licdn.com/dms/image/v2/C4D03AQED7gUCwnsqZg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1660759911679?e=1764201600&v=beta&t=yzV8V8DNdxxxK0nSPEFAnFKZ4qn5gb-k2LsKceoxC2U',
-    title: 'Tradutora Literária e Empresária (Gaia Atlas Carnívoras)',
+    title: 'Coordenadora Pedagógica',
     bio: 'Tradutora Literária e Empresária (Gaia Atlas Carnívoras)',
     isMentor: false, showOnTeamPage: true,
     linkedinUrl: 'https://www.linkedin.com/in/luizacarmelo/',
@@ -509,6 +521,18 @@ export const MOCK_PARTNERS: Partner[] = [
 ];
 
 export const MOCK_EVENTS: Event[] = [
+   { 
+    id: 'ev4',
+    title: 'Roda de Conversa: O Mercado de Python',
+    date: 'SET 27', 
+    time: '10:00', 
+    hostId: 'inst4', 
+    description: 'Uma conversa aberta com Rafael Dantas, Desenvolvedor de Python, e mediação de Luiza Carmelo, nossa Coordenadora Pedagógica. Vamos explorar as oportunidades, desafios e o futuro do mercado de trabalho para quem programa em Python. Haverá brindes para os participantes presenciais!', 
+    imageUrl: 'https://picsum.photos/seed/python-talk/600/400', 
+    eventType: 'Palestra',
+    registrationUrl: 'https://forms.gle/exemploDeLinkParaInscricao',
+    location: 'Presencial',
+  },
   { 
     id: 'ev1', 
     title: 'Live Coding: Construindo um App de Finanças com React', 
@@ -529,6 +553,18 @@ export const MOCK_EVENTS: Event[] = [
     imageUrl: 'https://picsum.photos/seed/designworkshop/600/400', 
     eventType: 'Workshop' 
   },
+  { 
+    id: 'ev3',
+    title: 'Oficina de Currículo: Do Zero ao Destaque',
+    date: 'EM BREVE',
+    time: 'A definir',
+    hostId: 'inst3',
+    description: 'Aprenda a criar um currículo do zero e descubra como usar plataformas de emprego a seu favor. Serão 4 aulas presenciais de 1h30 cada. Vagas limitadas!',
+    imageUrl: 'https://picsum.photos/seed/curriculo-oficina/600/400',
+    eventType: 'Workshop',
+    registrationUrl: 'https://forms.gle/m9NwXQjeYZR8XDJ67',
+    location: 'Presencial - Sede FuturoOn',
+  }
 ];
 
 export const MOCK_MENTOR_SESSIONS: MentorSession[] = [

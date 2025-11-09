@@ -45,6 +45,7 @@ import CSharpCourseView from './views/CSharpCourseView';
 import GameDevCourseView from './views/GameDevCourseView';
 import EnglishCourseView from './views/EnglishCourseView';
 import EntrepreneurshipCourseView from './views/EntrepreneurshipCourseView';
+import EventDetailView from './views/EventDetailView';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -80,15 +81,18 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const [partners, setPartners] = useState<Partner[]>(MOCK_PARTNERS);
   const [events, setEvents] = useState<Event[]>(MOCK_EVENTS);
+  const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   
   const [mentorSessions, setMentorSessions] = useState<MentorSession[]>(MOCK_MENTOR_SESSIONS);
   
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
-
+  
   const [toast, setToast] = useState<string | null>(null);
   
+  const [initialEventChecked, setInitialEventChecked] = useState(false);
+
   const showToast = (message: string) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
@@ -149,6 +153,23 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return () => unsubscribe();
   }, []);
   
+    useEffect(() => {
+        if (!initialEventChecked && !loading && events.length > 0) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('event');
+
+            if (eventId) {
+                const eventToOpen = events.find(e => e.id === eventId);
+                if (eventToOpen) {
+                    navigateToEvent(eventToOpen);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+            setInitialEventChecked(true);
+        }
+    }, [events, loading, initialEventChecked]);
+
+
   const navigate = useCallback((newView: View) => {
     window.scrollTo(0, 0);
     setView(newView);
@@ -199,6 +220,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigateToArticle = (article: Article) => {
     setCurrentArticle(article);
     navigate('articleDetail');
+  };
+  
+  const navigateToEvent = (event: Event) => {
+    setCurrentEvent(event);
+    navigate('eventDetail');
   };
 
   const navigateToCertificate = (course: Course) => {
@@ -424,10 +450,10 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const value = {
     view, user, users, courses, articles, team, projects, partners, events, mentorSessions, toast,
-    currentCourse, currentLesson, currentArticle, currentProject, editingCourse, editingArticle, editingUser,
+    currentCourse, currentLesson, currentArticle, currentProject, currentEvent, editingCourse, editingArticle, editingUser,
     editingProject, editingEvent, courseProgress, monitoringCourse, isProfileModalOpen, selectedProfile,
     instructors, mentors, loading,
-    navigate, handleLogout, navigateToCourse, navigateToLesson, navigateToArticle, navigateToCertificate,
+    navigate, handleLogout, navigateToCourse, navigateToLesson, navigateToArticle, navigateToEvent, navigateToCertificate,
     navigateToInstructorDashboard, navigateToProject, navigateToProjectEditor, openProfileModal, closeProfileModal,
     completeLesson, handleSaveNote, handleSaveCourse, handleEditCourse, handleCreateCourse, handleSaveArticle, handleEditArticle,
     handleCreateArticle, handleDeleteArticle, handleSaveUser, handleEditUser, handleCreateUser, handleDeleteUser,
@@ -470,6 +496,7 @@ const App: React.FC = () => {
                 case 'projectEditor': return editingProject ? <ProjectEditor project={editingProject} /> : <CommunityView />;
                 case 'partnerships': return <PartnershipsView />;
                 case 'eventEditor': return editingEvent ? <EventEditor event={editingEvent} /> : <ConnectView />;
+                case 'eventDetail': return <EventDetailView />;
                 case 'privacy': return <PrivacyPolicyView />;
                 case 'terms': return <TermsOfUseView />;
                 case 'team': return <TeamView />;

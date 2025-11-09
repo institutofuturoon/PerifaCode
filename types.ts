@@ -95,6 +95,8 @@ export interface Event {
   description: string;
   imageUrl: string;
   eventType: 'Live' | 'Workshop' | 'Palestra';
+  registrationUrl?: string;
+  location?: string;
 }
 
 export interface MentorSession {
@@ -212,7 +214,7 @@ export interface Partner {
 }
 
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'perifacode' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'digitalLiteracy' | 'pythonCourse' | 'csharpCourse' | 'gameDevCourse' | 'englishCourse' | 'entrepreneurshipCourse';
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'perifacode' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'digitalLiteracy' | 'pythonCourse' | 'csharpCourse' | 'gameDevCourse' | 'englishCourse' | 'entrepreneurshipCourse' | 'eventDetail';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
@@ -236,6 +238,7 @@ export interface AppContextType {
   currentLesson: Lesson | null;
   currentArticle: Article | null;
   currentProject: Project | null;
+  currentEvent: Event | null;
   editingCourse: Course | null;
   editingArticle: Article | null;
   editingUser: User | null;
@@ -255,6 +258,7 @@ export interface AppContextType {
   navigateToCourse: (course: Course) => void;
   navigateToLesson: (course: Course, lesson: Lesson) => void;
   navigateToArticle: (article: Article) => void;
+  navigateToEvent: (event: Event) => void;
   navigateToCertificate: (course: Course) => void;
   navigateToInstructorDashboard: (course: Course) => void;
   navigateToProject: (project: Project) => void;
