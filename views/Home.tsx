@@ -93,7 +93,7 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
         <img 
             src={logoUrl} 
             alt={name} 
-            className="h-8 max-w-full object-contain filter grayscale brightness-150 group-hover:filter-none transition-all duration-300"
+            className="h-16 max-w-full object-contain transition-all duration-300"
         />
     </div>
 );

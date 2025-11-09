@@ -36,6 +36,7 @@ import TeamMemberEditor from './views/TeamMemberEditor';
 import ProfileModal from './components/ProfileModal';
 import PerifaCodeView from './views/PerifaCodeView';
 import DonateView from './views/DonateView';
+import AboutUsView from './views/AboutUsView';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -441,6 +442,7 @@ const App: React.FC = () => {
                 case 'terms': return <TermsOfUseView />;
                 case 'team': return <TeamView />;
                 case 'donate': return <DonateView />;
+                case 'about': return <AboutUsView />;
                 default: return <Home />;
             }
         };

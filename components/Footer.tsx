@@ -54,6 +54,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-sm font-semibold text-[#c4b5fd] tracking-wider uppercase">Instituto</h3>
             <ul className="mt-4 space-y-4">
+              <li><FooterLink onClick={() => navigate('about')}>Sobre Nós</FooterLink></li>
               <li><FooterLink onClick={() => navigate('team')}>Nossa Equipe</FooterLink></li>
               <li><FooterLink onClick={() => navigate('partnerships')}>Parcerias</FooterLink></li>
               <li><FooterLink onClick={() => navigate('donate')}>Faça uma Doação</FooterLink></li>
