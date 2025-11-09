@@ -153,7 +153,8 @@ const AboutUsView: React.FC = () => {
                 <section className="py-24 bg-black/20" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Nosso Impacto Social</h2>
-                        <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Não estamos apenas ensinando a programar. Estamos mudando vidas e reescrevendo o futuro.</p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4 mb-6"></div>
+                        <p className="max-w-3xl mx-auto text-lg text-gray-300">Não estamos apenas ensinando a programar. Estamos mudando vidas e reescrevendo o futuro.</p>
                         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {impactData.map((item, index) => (
                                 <ImpactCard 
@@ -203,7 +204,7 @@ const AboutUsView: React.FC = () => {
                                 </p>
                             </div>
                             <div className="space-y-4">
-                                <a href="#" className="group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                                <button onClick={() => navigate('annualReport')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
                                     <div className="flex items-center gap-4">
                                         <span className="text-[#8a4add]">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -215,8 +216,8 @@ const AboutUsView: React.FC = () => {
                                     <span className="text-gray-400 transform transition-transform group-hover:translate-x-1 group-hover:text-white">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                                     </span>
-                                </a>
-                                <a href="#" className="group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                                </button>
+                                <button onClick={() => navigate('financialStatement')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
                                     <div className="flex items-center gap-4">
                                         <span className="text-[#8a4add]">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -228,7 +229,7 @@ const AboutUsView: React.FC = () => {
                                     <span className="text-gray-400 transform transition-transform group-hover:translate-x-1 group-hover:text-white">
                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                                     </span>
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>

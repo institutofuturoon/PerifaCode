@@ -37,6 +37,8 @@ import ProfileModal from './components/ProfileModal';
 import PerifaCodeView from './views/PerifaCodeView';
 import DonateView from './views/DonateView';
 import AboutUsView from './views/AboutUsView';
+import AnnualReportView from './views/AnnualReportView';
+import FinancialStatementView from './views/FinancialStatementView';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -443,6 +445,8 @@ const App: React.FC = () => {
                 case 'team': return <TeamView />;
                 case 'donate': return <DonateView />;
                 case 'about': return <AboutUsView />;
+                case 'annualReport': return <AnnualReportView />;
+                case 'financialStatement': return <FinancialStatementView />;
                 default: return <Home />;
             }
         };

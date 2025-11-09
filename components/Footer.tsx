@@ -32,7 +32,6 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
                 <Logo />
-                <span className="font-bold text-xl">FuturoOn</span>
             </div>
             <p className="text-gray-400 text-base">
               Feito na quebrada para o mundo. Capacitando a próxima geração de talentos em tecnologia.
