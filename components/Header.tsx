@@ -49,7 +49,7 @@ const Header: React.FC = () => {
   };
   
   return (
-    <header className="bg-[#1e1b2e]/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
+    <header className="bg-[#09090B]/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
@@ -74,7 +74,7 @@ const Header: React.FC = () => {
                 <div ref={notificationsRef} className="relative">
                   <button onClick={toggleNotifications} className="relative text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                    {hasUnread && <span className="absolute top-2 right-2 block h-2 w-2 rounded-full bg-[#8a4add] ring-2 ring-[#1e1b2e]"></span>}
+                    {hasUnread && <span className="absolute top-2 right-2 block h-2 w-2 rounded-full bg-[#8a4add] ring-2 ring-black"></span>}
                   </button>
                   {isNotificationsOpen && (
                     <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-[#1a202c] ring-1 ring-white/10">
@@ -93,7 +93,7 @@ const Header: React.FC = () => {
                 
                 {/* Profile Dropdown */}
                 <div ref={profileMenuRef} className="relative">
-                  <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#1e1b2e] focus:ring-[#8a4add]">
+                  <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-[#8a4add]">
                     <img className="h-8 w-8 rounded-full" src={user.avatarUrl} alt={user.name} />
                   </button>
                   {isProfileMenuOpen && (
@@ -123,7 +123,7 @@ const Header: React.FC = () => {
       
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-[#1e1b2e] border-t border-white/10">
+        <div className="md:hidden bg-black border-t border-white/10">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <button onClick={() => handleMobileNav('perifacode')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Plataforma</button>
             <button onClick={() => handleMobileNav('community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>

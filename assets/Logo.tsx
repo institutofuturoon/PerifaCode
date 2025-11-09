@@ -4,10 +4,16 @@ import React from 'react';
 interface LogoProps extends React.ImgHTMLAttributes<HTMLImageElement> {}
 
 export const Logo: React.FC<LogoProps> = (props) => {
-  // Updated logo URL as requested.
-  const logoSrc = "https://institutofuturoon.vercel.app/assets/futuroon.svg";
-
+  // Use the direct URL for the SVG logo
+  const logoSrc = "https://ui73bvafvl0llamc.public.blob.vercel-storage.com/images/varied/futuroon-logo.svg";
+  
   return (
-    <img src={logoSrc} alt="FuturoOn Logo" className="h-8 w-auto" {...props} />
+    <img 
+      src={logoSrc}
+      alt="FuturoOn Logo"
+      width={114}
+      height={31}
+      {...props} // Spread the rest of the props
+    />
   );
 };

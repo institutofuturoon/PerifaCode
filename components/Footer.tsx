@@ -4,33 +4,43 @@ import { Logo } from '../assets/Logo';
 import { useAppContext } from '../App';
 
 const FooterLink: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({ onClick, children }) => (
-  <button onClick={onClick} className="text-base text-gray-400 hover:text-white transition-colors">
+  <button onClick={onClick} className="text-gray-400 hover:text-white transition-colors duration-200">
     {children}
   </button>
 );
 
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#c4b5fd] transition-all duration-300 transform hover:scale-110">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-all duration-300 transform hover:scale-110">
         {children}
     </a>
 );
 
+const ContactInfo: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
+    <div className="flex items-start gap-3">
+        <span className="text-[#8a4add] mt-1">{icon}</span>
+        <p className="text-gray-400">{children}</p>
+    </div>
+)
+
 const Footer: React.FC = () => {
   const { navigate } = useAppContext();
   return (
-    <footer className="bg-[#151221] text-white border-t border-white/10 bg-grid-pattern">
+    <footer className="bg-[#09090B] text-white border-t border-white/10">
       <div className="container mx-auto py-16 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Coluna 1: Logo e Descrição */}
-          <div className="space-y-4 md:col-span-2 lg:col-span-1">
-            <Logo />
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+                <Logo />
+                <span className="font-bold text-xl">FuturoOn</span>
+            </div>
             <p className="text-gray-400 text-base">
-              PerifaCode é a plataforma de educação em tecnologia do Instituto FuturoOn. Feito na quebrada para o mundo.
+              Feito na quebrada para o mundo. Capacitando a próxima geração de talentos em tecnologia.
             </p>
             <div className="flex space-x-6 pt-2">
                 <SocialIcon href="https://www.instagram.com/institutofuturoon/">
                     <span className="sr-only">Instagram</span>
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2c2.4 0 2.7.01 3.8.06 1.1.05 1.8.22 2.4.47.6.25 1.1.58 1.8.98.6.4.9.88 1.3 1.48.4.6.7 1.2.9 1.8.2.7.4 1.3.4 2.4.0 1.1.0 1.4.0 3.8s-.01 2.7-.06 3.8c-.05 1.1-.22 1.8-.47 2.4-.25.6-.58 1.1-.98 1.8-.4.6-.88.9-1.48 1.3-.6.4-1.2.7-1.8.9-.7.2-1.3.4-2.4.4-1.1.0-1.4.0-3.8.0s-2.7-.01-3.8-.06c-1.1-.05-1.8-.22-2.4-.47-.6-.25-1.1-.58-1.8-.98-.6-.4-.9-.88-1.3-1.48-.4-.6-.7-1.2-.9-1.8-.2-.7-.4-1.3-.4-2.4-.0-1.1-.0-1.4-.0-3.8s.01-2.7.06-3.8c.05 1.1.22 1.8.47 2.4.25-.6.58 1.1.98 1.8.4-.6.88-.9 1.48-1.3.6-.4 1.2-.7 1.8-.9.7-.2 1.3-.4 2.4-.4 1.1-.0 1.4-.0 3.8-.0zM12 7a5 5 0 100 10 5 5 0 000-10zm0 8a3 3 0 110-6 3 3 0 010 6zm6.4-9.9a1.2 1.2 0 100-2.4 1.2 1.2 0 000 2.4z" clipRule="evenodd" /></svg>
+                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm.173 15.122a3.953 3.953 0 110-7.906 3.953 3.953 0 010 7.906zm4.18-8.89a1.096 1.096 0 11-2.191 0 1.096 1.096 0 012.19 0zm-8.832 1.393a5.553 5.553 0 1010.518-2.618 5.553 5.553 0 00-10.518 2.618z" clipRule="evenodd" /></svg>
                 </SocialIcon>
                  <SocialIcon href="https://www.linkedin.com/company/instituto-futuroon/">
                     <span className="sr-only">LinkedIn</span>
@@ -39,47 +49,44 @@ const Footer: React.FC = () => {
             </div>
           </div>
           
-          {/* Coluna 2: Plataforma */}
+          {/* Coluna 2: Navegação */}
           <div>
-            <h3 className="text-sm font-semibold text-[#c4b5fd] tracking-wider uppercase">Plataforma</h3>
-            <ul className="mt-4 space-y-4">
+            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Navegação</h3>
+            <ul className="mt-4 space-y-3">
               <li><FooterLink onClick={() => navigate('courses')}>Cursos</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('community')}>Comunidade</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('connect')}>Mentorias</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('connect')}>Mentorias & Eventos</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('team')}>Nossa Equipe</FooterLink></li>
               <li><FooterLink onClick={() => navigate('blog')}>Blog</FooterLink></li>
             </ul>
           </div>
 
-          {/* Coluna 3: Instituto & Legal */}
+          {/* Coluna 3: Comunidade */}
           <div>
-            <h3 className="text-sm font-semibold text-[#c4b5fd] tracking-wider uppercase">Instituto</h3>
-            <ul className="mt-4 space-y-4">
-              <li><FooterLink onClick={() => navigate('about')}>Sobre Nós</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('team')}>Nossa Equipe</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('partnerships')}>Parcerias</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('donate')}>Faça uma Doação</FooterLink></li>
-              <li className="pt-2 border-t border-white/10 !mt-6"><FooterLink onClick={() => navigate('privacy')}>Privacidade</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('terms')}>Termos de Uso</FooterLink></li>
+            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Comunidade</h3>
+            <ul className="mt-4 space-y-3">
+              <li><FooterLink onClick={() => navigate('community')}>Showcase de Projetos</FooterLink></li>
+              <li><FooterLink onClick={() => {}}>Discord</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('connect')}>Eventos</FooterLink></li>
             </ul>
           </div>
 
-          {/* Coluna 4: Newsletter */}
+          {/* Coluna 4: Contato */}
           <div>
-            <h3 className="text-sm font-semibold text-[#c4b5fd] tracking-wider uppercase">Fique por Dentro</h3>
-            <p className="mt-4 text-base text-gray-400">Receba as últimas novidades, dicas de carreira e eventos diretamente no seu email.</p>
-            <form className="mt-4">
-                <div className="flex gap-2">
-                    <input type="email" placeholder="Seu melhor email" className="w-full px-4 py-2 text-base text-white bg-black/30 border border-white/20 rounded-md focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-all" />
-                    <button type="submit" className="flex-shrink-0 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white p-2.5 rounded-md hover:opacity-90 transition-opacity">
-                        <span className="sr-only">Inscrever</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
-                    </button>
-                </div>
-            </form>
+            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Contato</h3>
+            <ul className="mt-4 space-y-3">
+                <li><ContactInfo icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>}>Rua Silva Jardim, 689<br />Neves - São Gonçalo - RJ</ContactInfo></li>
+                <li><ContactInfo icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>}>futurooon@gmail.com</ContactInfo></li>
+                <li><ContactInfo icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.518.758a10.024 10.024 0 004.486 4.486l.758-1.518a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>}> (21) 97067-2194</ContactInfo></li>
+            </ul>
           </div>
         </div>
-        <div className="mt-16 border-t border-white/10 pt-8">
-          <p className="text-base text-gray-500 text-center">&copy; {new Date().getFullYear()} Instituto FuturoOn. Todos os direitos reservados.</p>
+
+        <div className="mt-16 border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
+          <p>&copy; {new Date().getFullYear()} Instituto FuturoOn. Todos os direitos reservados.</p>
+          <div className="flex space-x-6 mt-4 sm:mt-0">
+            <button onClick={() => navigate('privacy')} className="hover:text-gray-300 transition-colors">Política de Privacidade</button>
+            <button onClick={() => navigate('terms')} className="hover:text-gray-300 transition-colors">Termos de Uso</button>
+          </div>
         </div>
       </div>
     </footer>
