@@ -1,30 +1,27 @@
 import React from 'react';
 import CourseCard from '../components/CourseCard';
 import ProgressBar from '../components/ProgressBar';
-import ProjectCard from '../components/ProjectCard';
 import { useAppContext } from '../App';
 
-const StepCard: React.FC<{ icon: string; title: string; description: string; number: string }> = ({ icon, title, description, number }) => (
-    <div className="relative p-8 bg-white/5 border border-white/10 rounded-lg overflow-hidden transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10">
-        <div className="absolute -top-2 -left-2 text-7xl font-black text-white/5 select-none">{number}</div>
-        <div className="relative">
-            <div className="text-4xl mb-4">{icon}</div>
-            <h3 className="text-xl font-bold text-white">{title}</h3>
-            <p className="mt-2 text-gray-400">{description}</p>
+// -- Novos Componentes de Layout --
+
+// FIX: The `Section` component's props were updated to accept standard HTML attributes like `id`.
+const Section: React.FC<React.ComponentProps<'section'>> = ({ children, className = '', ...rest }) => (
+    <section {...rest} className={`py-16 md:py-20 ${className}`}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            {children}
         </div>
+    </section>
+);
+
+const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> = ({ children, subtitle }) => (
+    <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">{children}</h2>
+        {subtitle && <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">{subtitle}</p>}
+        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
     </div>
 );
 
-const TrackCard: React.FC<{ icon: React.ReactNode; title: string; description: string; colorClasses: string; onClick: () => void }> = ({ icon, title, description, colorClasses, onClick }) => (
-    <button onClick={onClick} className={`p-8 rounded-lg text-left border transition-all duration-300 group hover:-translate-y-1 ${colorClasses}`}>
-        <div className="text-4xl mb-4">{icon}</div>
-        <h3 className="text-2xl font-bold text-white">{title}</h3>
-        <p className="mt-2 text-gray-300">{description}</p>
-        <div className="mt-6 font-semibold text-white opacity-80 group-hover:opacity-100 group-hover:underline">
-            Explorar trilha <span className="inline-block transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-        </div>
-    </button>
-);
 
 const FormatCard: React.FC<{ icon: string; title: string; description: string; benefits: string[]; ctaText: string; ctaAction: () => void; ctaClassName: string; }> = ({ icon, title, description, benefits, ctaText, ctaAction, ctaClassName }) => (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col h-full transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10">
@@ -45,9 +42,29 @@ const FormatCard: React.FC<{ icon: string; title: string; description: string; b
     </div>
 );
 
+const PresentialCourseInfoCard: React.FC<{ title: string; description: string; topics: string[]; status: string }> = ({ title, description, topics, status }) => (
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col h-full transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10 transform hover:-translate-y-2">
+        <h3 className="text-2xl font-bold text-white">{title}</h3>
+        <p className="mt-2 text-gray-400 flex-grow">{description}</p>
+        <div className="mt-6 border-t border-white/10 pt-6">
+            <p className="text-sm font-semibold text-gray-300 mb-3">Principais tópicos:</p>
+            <ul className="space-y-2">
+                {topics.map((topic, index) => (
+                    <li key={index} className="flex items-start gap-3 text-gray-400 text-sm">
+                        <svg className="h-5 w-5 text-[#8a4add] flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
+                        <span>{topic}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+        <div className="mt-8 text-center">
+            <span className="inline-block px-4 py-2 font-semibold rounded-full bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20">{status}</span>
+        </div>
+    </div>
+);
 
 const PerifaCodeView: React.FC = () => {
-  const { user, courses, projects, navigate, navigateToCourse, navigateToProject, navigateToLesson, courseProgress } = useAppContext();
+  const { user, courses, navigate, navigateToCourse, navigateToLesson, courseProgress } = useAppContext();
   
   const inProgressData = courseProgress.inProgressCourses[0] || null;
 
@@ -62,10 +79,37 @@ const PerifaCodeView: React.FC = () => {
         }
     }
   }
+
+  const presencialCourses = [
+    {
+        title: "Auxiliar Administrativo",
+        description: "Desenvolva habilidades essenciais para atuar na área administrativa, com foco em rotinas de escritório, atendimento e organização.",
+        topics: ["Comunicação Empresarial", "Rotinas de Escritório", "Pacote Office Básico", "Atendimento ao Cliente"],
+        status: "Turmas em Breve"
+    },
+    {
+        title: "Hardware de Computadores",
+        description: "Aprenda a montar, desmontar e fazer a manutenção de computadores. Entenda cada componente e resolva problemas comuns de hardware.",
+        topics: ["Componentes do PC", "Montagem e Desmontagem", "Diagnóstico de Defeitos", "Instalação de Sistemas"],
+        status: "Inscrições Abertas"
+    },
+    {
+        title: "Informática Básica",
+        description: "Domine o uso do computador do zero. Ideal para quem busca inclusão digital e quer aprender a usar a internet e programas essenciais.",
+        topics: ["Sistema Operacional Windows", "Navegação na Internet", "Criação de E-mail", "Editor de Textos e Planilhas"],
+        status: "Turmas em Breve"
+    },
+    {
+        title: "Reforço Escolar",
+        description: "Apoio pedagógico para crianças e adolescentes, com foco nas principais matérias e desenvolvimento do raciocínio lógico.",
+        topics: ["Matemática", "Português", "Técnicas de Estudo", "Raciocínio Lógico"],
+        status: "Inscrições Abertas"
+    }
+  ];
   
   const LoggedInHome = () => (
-    <section className="pt-20 pb-10 md:pt-32 md:pb-20 aurora-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <header className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white leading-tight">
           Bem-vindo de volta, <br className="hidden md:block" />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">{user?.name.split(' ')[0]}!</span>
@@ -88,12 +132,12 @@ const PerifaCodeView: React.FC = () => {
           </p>
         )}
       </div>
-    </section>
+    </header>
   );
 
   const LoggedOutHome = () => (
-     <section className="pt-20 pb-10 md:pt-32 md:pb-20 aurora-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+     <header className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white leading-tight">
             Cursos Online e Presenciais <br className="hidden md:block" />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">de Tecnologia.</span>
@@ -103,135 +147,86 @@ const PerifaCodeView: React.FC = () => {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={() => navigate('courses')}
+              onClick={() => navigate('login')}
               className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 hover:shadow-[#8a4add]/50"
             >
-              Ver Cursos Disponíveis
-            </button>
-            <button
-              onClick={() => navigate('login')}
-              className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300"
-            >
-              Criar conta gratuita
+              Comece a aprender
             </button>
           </div>
         </div>
-      </section>
+      </header>
   );
-  
-  const tracks = [
-    { title: 'Frontend', icon: '🎨', description: 'Crie interfaces incríveis e interativas para a web.', colorClasses: 'border-blue-500/20 bg-blue-500/10 hover:border-blue-500/50' },
-    { title: 'Backend', icon: '⚙️', description: 'Construa a lógica e os sistemas que dão vida às aplicações.', colorClasses: 'border-yellow-500/20 bg-yellow-500/10 hover:border-yellow-500/50' },
-    { title: 'IA', icon: '🧠', description: 'Explore o futuro da tecnologia com inteligência artificial.', colorClasses: 'border-pink-500/20 bg-pink-500/10 hover:border-pink-500/50' },
-    { title: 'UX/UI', icon: '✨', description: 'Desenhe produtos que os usuários amam e acham fáceis de usar.', colorClasses: 'border-purple-500/20 bg-purple-500/10 hover:border-purple-500/50' },
-  ];
 
   return (
-    <div className="space-y-24 md:space-y-32 pb-20">
+    <div className="aurora-background">
       {user ? <LoggedInHome /> : <LoggedOutHome />}
       
-       {/* Dois Formatos Section */}
-       <section className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Dois Formatos, Um Objetivo</h2>
-              <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Sua jornada na tecnologia, do jeito que funciona pra você. Escolha entre a flexibilidade do online e a força da vivência presencial.</p>
-          </div>
-          <div className="mt-12 grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              <FormatCard 
-                  icon="🌐"
-                  title="Cursos Online"
-                  description="Aprenda no seu tempo, de qualquer lugar, com acesso a uma comunidade vibrante e mentores dedicados."
-                  benefits={[
-                      'Flexibilidade total de horários',
-                      'Acesso ao conteúdo de onde estiver',
-                      'Comunidade e suporte online 24/7'
-                  ]}
-                  ctaText="Explorar Cursos Online"
-                  ctaAction={() => navigate('courses')}
-                  ctaClassName="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white hover:opacity-90 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
-              />
-              <FormatCard 
-                  icon="🤝"
-                  title="Cursos Presenciais"
-                  description="Vivencie o aprendizado em um ambiente colaborativo, com networking direto e projetos em equipe."
-                  benefits={[
-                      'Aulas práticas em nosso espaço',
-                      'Networking direto com colegas e instrutores',
-                      'Experiência de trabalho em equipe'
-                  ]}
-                  ctaText="Ver Turmas Presenciais"
-                  ctaAction={() => alert('As inscrições para turmas presenciais serão anunciadas em breve!')}
-                  ctaClassName="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20"
-              />
-          </div>
-      </section>
+       <main>
+            {/* Dois Formatos Section */}
+            <Section className="bg-black/20">
+                <SectionTitle 
+                    subtitle="Sua jornada na tecnologia, do jeito que funciona pra você. Escolha entre a flexibilidade do online e a força da vivência presencial.">
+                    Dois Formatos, Um Objetivo
+                </SectionTitle>
+                <div className="mt-12 grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <FormatCard 
+                        icon="🌐"
+                        title="Cursos Online"
+                        description="Aprenda no seu tempo, de qualquer lugar, com acesso a uma comunidade vibrante e mentores dedicados."
+                        benefits={[
+                            'Flexibilidade total de horários',
+                            'Acesso ao conteúdo de onde estiver',
+                            'Comunidade e suporte online 24/7'
+                        ]}
+                        ctaText="Explorar Cursos Online"
+                        ctaAction={() => navigate('courses')}
+                        ctaClassName="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20"
+                    />
+                    <FormatCard 
+                        icon="🤝"
+                        title="Cursos Presenciais"
+                        description="Vivencie o aprendizado em um ambiente colaborativo, com networking direto e projetos em equipe."
+                        benefits={[
+                            'Aulas práticas em nosso espaço',
+                            'Networking direto com colegas e instrutores',
+                            'Experiência de trabalho em equipe'
+                        ]}
+                        ctaText="Ver Turmas Presenciais"
+                        ctaAction={() => document.getElementById('presencial')?.scrollIntoView({ behavior: 'smooth' })}
+                        ctaClassName="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white hover:opacity-90 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
+                    />
+                </div>
+            </Section>
 
-      {/* Como Funciona */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Nossa Metodologia</h2>
-            <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Um caminho claro para você sair do zero e chegar preparado(a) para o mercado.</p>
-        </div>
-        <div className="mt-12 grid md:grid-cols-3 gap-8">
-            <StepCard number="01" icon="🎓" title="Aulas e Desafios" description="Aprenda com conteúdo prático e direto ao ponto, aplicando seus conhecimentos em desafios de código."/>
-            <StepCard number="02" icon="🚀" title="Projetos Reais" description="Construa projetos para seu portfólio, simulando o dia a dia de um(a) desenvolvedor(a) profissional."/>
-            <StepCard number="03" icon="🤝" title="Mentorias e Comunidade" description="Conecte-se com profissionais experientes e outros alunos para acelerar seu desenvolvimento."/>
-        </div>
-      </section>
-
-      {/* Trilhas de Aprendizado */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Explore Nossas Trilhas</h2>
-              <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Foque em uma área e desenvolva as habilidades que o mercado procura.</p>
-          </div>
-          <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {tracks.map(track => (
-                  <TrackCard 
-                      key={track.title}
-                      title={track.title}
-                      icon={track.icon}
-                      description={track.description}
-                      colorClasses={track.colorClasses}
-                      onClick={() => navigate('courses')} // Simplified for now, could be navigate('courses', { filter: track.title })
-                  />
-              ))}
-          </div>
-      </section>
-
-      {/* Cursos em Destaque */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Cursos em Destaque</h2>
-        <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Os cursos mais populares entre nossos alunos para você começar com tudo.</p>
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {courses.slice(0, 4).map(course => (
-            <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse} />
-          ))}
-        </div>
-        <div className="mt-12">
-            <button onClick={() => navigate('courses')} className="text-[#8a4add] font-semibold hover:text-purple-300 transition-colors group">
-                Ver todos os cursos <span className="inline-block transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-            </button>
-        </div>
-      </section>
-
-      {/* Projetos da Comunidade */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">
-          Da <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">Comunidade</span>
-        </h2>
-        <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Veja o que nossos alunos estão construindo com o que aprenderam na plataforma.</p>
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {projects.slice(0, 4).map(project => (
-                <ProjectCard key={project.id} project={project} onProjectSelect={navigateToProject} />
-            ))}
-        </div>
-         <div className="mt-12">
-            <button onClick={() => navigate('community')} className="text-[#8a4add] font-semibold hover:text-purple-300 transition-colors group">
-                Ver todos os projetos <span className="inline-block transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-            </button>
-        </div>
-      </section>
+            {/* Cursos Presenciais Section */}
+            <Section id="presencial">
+                <SectionTitle subtitle="Aulas práticas em nosso espaço no Complexo da Coruja, em São Gonçalo. Uma experiência de aprendizado colaborativa e com networking direto.">
+                Cursos Presenciais em Destaque
+                </SectionTitle>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {presencialCourses.map(course => (
+                        <PresentialCourseInfoCard key={course.title} {...course} />
+                    ))}
+                </div>
+            </Section>
+            
+            {/* Cursos Online em Destaque Section */}
+            <Section className="bg-black/20">
+                <SectionTitle subtitle="Aprenda no seu tempo, de qualquer lugar, com acesso a uma comunidade vibrante e mentores dedicados.">
+                Cursos Online em Destaque
+                </SectionTitle>
+                <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {courses.slice(0, 4).map(course => (
+                    <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse} />
+                ))}
+                </div>
+                <div className="mt-12 text-center">
+                    <button onClick={() => navigate('courses')} className="text-[#c4b5fd] font-semibold hover:underline group">
+                        Ver todos os cursos online <span className="inline-block transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </button>
+                </div>
+            </Section>
+       </main>
 
     </div>
   );

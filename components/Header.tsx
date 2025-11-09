@@ -57,7 +57,7 @@ const Header: React.FC = () => {
               <Logo />
             </button>
             <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
-              <NavLink onClick={() => navigate('perifacode')}>Plataforma</NavLink>
+              <NavLink onClick={() => navigate('perifacode')}>Nossos Cursos</NavLink>
               <button onClick={() => navigate('community')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
                 Comunidade
               </button>
@@ -125,7 +125,7 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-black border-t border-white/10">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <button onClick={() => handleMobileNav('perifacode')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Plataforma</button>
+            <button onClick={() => handleMobileNav('perifacode')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossos Cursos</button>
             <button onClick={() => handleMobileNav('community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
             <button onClick={() => handleMobileNav('connect')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Mentorias & Eventos</button>
             <button onClick={() => handleMobileNav('blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
