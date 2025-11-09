@@ -559,11 +559,21 @@ export const MOCK_EVENTS: Event[] = [
     date: 'EM BREVE',
     time: 'A definir',
     hostId: 'inst3',
-    description: 'Aprenda a criar um currículo do zero e descubra como usar plataformas de emprego a seu favor. Serão 4 aulas presenciais de 1h30 cada. Vagas limitadas!',
-    imageUrl: 'https://picsum.photos/seed/curriculo-oficina/600/400',
+    description: `💼 Quer aprender a montar um currículo do zero e ainda descobrir como usar plataformas de emprego e cursos pra aumentar suas chances no mercado? 🚀
+
+Vem aí a Oficina de Currículo do FuturoON!
+
+Serão 4 encontros presenciais, com duração de 1h30 cada, na sede do FuturoON — com conteúdo prático e direto ao ponto pra te ajudar a se destacar.
+
+🗓️ Os dias e horários ainda vão ser definidos, mas você já pode garantir sua vaga!
+
+⚠️ As vagas são LIMITADAS, então não deixa pra depois!
+
+🔗 Inscreva-se agora e invista no seu futuro!`,
+    imageUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/images/events/oficina_curriculo.png',
     eventType: 'Workshop',
     registrationUrl: 'https://forms.gle/m9NwXQjeYZR8XDJ67',
-    location: 'Presencial - Sede FuturoOn',
+    location: 'Presencial - R. Silva Jardim, 689, São Gonçalo - RJ',
   }
 ];
 

@@ -1,38 +1,30 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../App';
-import { User } from '../types';
 
 const EventDetailView: React.FC = () => {
-  const { currentEvent, navigate, users } = useAppContext();
+  const { currentEvent, navigate } = useAppContext();
   const [copyButtonText, setCopyButtonText] = useState('Compartilhar');
 
   if (!currentEvent) {
-    return <div className="text-center py-20">Evento não encontrado.</div>;
+    // Navigate back or show an error. Let's redirect to the connect page.
+    navigate('connect');
+    return <div className="text-center py-20">Evento não encontrado. Redirecionando...</div>;
   }
+
   const event = currentEvent;
-  const host = users.find(u => u.id === event.hostId);
-  const mediator = users.find(u => u.id === 'vol1'); // Luiza Carmelo
-
+  
   const handleShare = async () => {
-    if (!currentEvent) return;
-
-    const shareUrl = `${window.location.origin}${window.location.pathname}?event=${currentEvent.id}`;
-    const shareText = `🚀 Participe do evento "${currentEvent.title}" da FuturoOn! Saiba mais e inscreva-se.`;
-    const shareTitle = `Evento FuturoOn: ${currentEvent.title}`;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?event=${event.id}`;
+    const shareText = `🚀 Participe do evento "${event.title}" da FuturoOn! Saiba mais e inscreva-se.`;
+    const shareTitle = `Evento FuturoOn: ${event.title}`;
     
-    // Web Share API (for mobile/supported browsers)
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: shareTitle,
-          text: shareText,
-          url: shareUrl,
-        });
+        await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
       } catch (error) {
         console.error('Erro ao compartilhar:', error);
       }
     } else {
-      // Fallback for desktop: copy to clipboard
       try {
         await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
         setCopyButtonText('Copiado!');
@@ -43,77 +35,86 @@ const EventDetailView: React.FC = () => {
       }
     }
   };
+  
+  const formattedLocation = event.location?.replace('Presencial - ', '').toUpperCase() || 'LOCAL A DEFINIR';
 
   return (
-    <div>
-      <section className="relative py-12 md:py-20 bg-black/20">
+    <div className="bg-[#09090B]">
+      {/* Header with Background Image */}
+      <section className="relative py-20 md:py-32 bg-black/20">
         <div className="absolute inset-0">
-          <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover opacity-30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent"></div>
+          <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] to-transparent"></div>
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <span className="font-semibold text-[#c4b5fd] uppercase tracking-wider">{event.eventType} {event.location && `• ${event.location}`}</span>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mt-2">{event.title}</h1>
-            <div className="flex items-center justify-center gap-3 mt-6">
-              {host && (
-                <>
-                    <img src={host.avatarUrl} alt={host.name} className="h-12 w-12 rounded-full border-2 border-[#8a4add]/50" />
-                    <div>
-                        <p className="font-semibold text-white">{host.name}</p>
-                        <p className="text-sm text-gray-400">{host.title}</p>
-                    </div>
-                </>
-              )}
-            </div>
+            <p className="font-semibold text-purple-400 uppercase tracking-widest">
+              {event.eventType} &bull; {formattedLocation}
+            </p>
+            <h1 className="mt-4 text-4xl md:text-5xl font-black text-white">{event.title}</h1>
           </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20 pb-20">
+      {/* Main Content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 pb-20">
         <div className="max-w-3xl mx-auto bg-[#121212] p-8 sm:p-12 rounded-lg border border-white/10 shadow-2xl">
-          <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed space-y-4">
-            <p className="text-lg">{event.description}</p>
-            
-            {event.id === 'ev4' && mediator && ( // Custom content for the Python event
-              <div className="mt-8 space-y-6">
-                <div className="p-4 bg-white/5 rounded-lg">
-                    <h3 className="font-bold text-white">Palestrante</h3>
-                    <p>{host?.name} <span className="text-gray-400 text-sm">({host?.title})</span></p>
-                </div>
-                <div className="p-4 bg-white/5 rounded-lg">
-                    <h3 className="font-bold text-white">Mediadora</h3>
-                    <p>{mediator.name} <span className="text-gray-400 text-sm">({mediator.title})</span></p>
-                </div>
-                <div className="p-4 bg-yellow-500/10 rounded-lg text-yellow-300">
-                    <p><span className="font-bold">🎁 Daremos brindes!</span> (*Apenas para participantes presenciais)</p>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
-            <a 
-                href={event.registrationUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto flex-grow text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 transform hover:scale-105"
-            >
-                Inscrever-se
-            </a>
-             <button
-                onClick={handleShare}
-                className="w-full sm:w-auto text-center bg-white/10 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg hover:bg-white/20 transition-all duration-300"
-                >
-                {copyButtonText}
-            </button>
-          </div>
+            <div className="max-w-none text-gray-300 leading-relaxed space-y-6 text-lg">
+              {event.description.split('\n\n').map((paragraph, index) => {
+                // Final CTA with link
+                if (paragraph.startsWith('🔗') && event.registrationUrl) {
+                  return (
+                    <p key={index}>
+                      <a
+                        href={event.registrationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-purple-400 hover:text-purple-300 transition-colors hover:underline"
+                      >
+                        {paragraph}
+                      </a>
+                    </p>
+                  );
+                }
 
-          <div className="mt-12 border-t border-white/10 pt-8">
-            <button onClick={() => navigate('connect')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
-              <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para Eventos
-            </button>
-          </div>
+                // Introductory hook
+                if (index === 0) {
+                  return <p key={index} className="text-xl font-medium text-gray-200">{paragraph}</p>;
+                }
+                
+                // Key info lines with emojis
+                if (['🗓️', '⚠️'].some(emoji => paragraph.startsWith(emoji))) {
+                     return <p key={index} className="font-semibold text-white">{paragraph}</p>;
+                }
+
+                // Default paragraph
+                return <p key={index}>{paragraph}</p>;
+              })}
+            </div>
+            
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-8 mt-8 border-t border-zinc-700/50">
+               {event.registrationUrl && (
+                  <a 
+                      href={event.registrationUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="w-full sm:w-auto flex-grow text-center bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                      Inscrever-se
+                  </a>
+               )}
+              <button 
+                  onClick={handleShare} 
+                  className="w-full sm:w-auto text-center bg-zinc-700 text-white font-semibold py-3 px-6 rounded-lg hover:bg-zinc-600 transition-colors"
+              >
+                  {copyButtonText}
+              </button>
+            </div>
+            <div className="mt-8 border-t border-white/10 pt-8">
+              <button onClick={() => navigate('connect')} className="text-purple-400 font-semibold hover:text-purple-300 transition-colors group">
+                <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para Eventos
+              </button>
+            </div>
         </div>
       </div>
     </div>
