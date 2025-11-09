@@ -33,7 +33,7 @@ const Courses: React.FC = () => {
                 onClick={() => setActiveTrack(track)}
                 className={`px-5 py-2 text-sm sm:text-base font-semibold rounded-full transition-all duration-300 transform hover:scale-105 ${
                 activeTrack === track
-                    ? 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-lg shadow-[#8a4add]/30'
+                    ? 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-lg shadow-[#8a4add]/30'
                     : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-transparent'
                 }`}
             >

@@ -47,9 +47,9 @@ const QuizExercise: React.FC<QuizExerciseProps> = ({ exercise, onComplete, isCom
     } else {
       // Before submission
       if(selectedOptionId === optionId) {
-        return classes + 'bg-blue-500/30 border-blue-400';
+        return classes + 'bg-[#8a4add]/30 border-[#8a4add]';
       }
-      return classes + 'border-white/20 hover:bg-white/10 hover:border-blue-400';
+      return classes + 'border-white/20 hover:bg-white/10 hover:border-[#8a4add]';
     }
   };
 
@@ -74,7 +74,7 @@ const QuizExercise: React.FC<QuizExerciseProps> = ({ exercise, onComplete, isCom
         <button
           onClick={handleSubmit}
           disabled={!selectedOptionId}
-          className="mt-6 font-semibold py-2 px-6 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20"
+          className="mt-6 font-semibold py-2 px-6 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed bg-[#8a4add] text-white hover:bg-[#6d28d9] shadow-lg shadow-[#8a4add]/20"
         >
           Verificar Resposta
         </button>

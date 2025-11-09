@@ -107,7 +107,7 @@ const Header: React.FC = () => {
                 </div>
               </>
             ) : (
-              <button onClick={() => navigate('login')} className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300">
+              <button onClick={() => navigate('login')} className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300">
                 Entrar
               </button>
             )}
@@ -151,7 +151,7 @@ const Header: React.FC = () => {
               </>
             ) : (
               <div className="px-5">
-                <button onClick={() => handleMobileNav('login')} className="w-full text-center bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Entrar</button>
+                <button onClick={() => handleMobileNav('login')} className="w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Entrar</button>
               </div>
             )}
           </div>

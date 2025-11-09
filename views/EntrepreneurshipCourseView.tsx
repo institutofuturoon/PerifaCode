@@ -174,7 +174,7 @@ const EntrepreneurshipCourseView: React.FC = () => {
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
                             Transforme seu Código<br />
-                            <span className="text-[#c4b5fd]">em Negócio.</span>
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">em Negócio.</span>
                         </h1>
                         <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
                             Aprenda a criar, validar e lançar seu próprio produto digital. Do MVP à primeira venda, vamos te guiar na jornada de transformar sua paixão por tecnologia em uma startup de sucesso.

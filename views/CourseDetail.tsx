@@ -5,7 +5,7 @@ import { useAppContext } from '../App';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
     <div className="bg-white/5 backdrop-blur-sm p-4 rounded-lg border border-white/10 flex items-center gap-4">
-        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-sky-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex items-center justify-center shadow-lg shadow-[#8a4add]/20">
             {icon}
         </div>
         <div>
@@ -28,7 +28,7 @@ const LessonItem: React.FC<{ lesson: Lesson, index: number, onLessonClick: () =>
         return icons[lesson.type];
     }
     
-    const iconColor = isLocked ? 'text-gray-500' : isCompleted ? 'text-green-500' : 'text-blue-400';
+    const iconColor = isLocked ? 'text-gray-500' : isCompleted ? 'text-green-500' : 'text-[#c4b5fd]';
 
     return (
         <button 
@@ -127,13 +127,13 @@ const CourseDetail: React.FC = () => {
                 </div>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="max-w-3xl">
-                        <span className="font-semibold text-blue-400">{course.track}</span>
+                        <span className="font-semibold text-[#c4b5fd]">{course.track}</span>
                         <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white mt-2">{course.title}</h1>
                         <p className="mt-4 text-lg text-gray-300">{course.longDescription}</p>
                         
                         {instructor && (
                             <div className="flex items-center gap-3 mt-6">
-                                <img src={instructor.avatarUrl} alt={instructor.name} className="h-12 w-12 rounded-full border-2 border-blue-500/50" />
+                                <img src={instructor.avatarUrl} alt={instructor.name} className="h-12 w-12 rounded-full border-2 border-[#8a4add]/50" />
                                 <div>
                                     <p className="font-semibold text-white">{instructor.name}</p>
                                     <p className="text-sm text-gray-400">{instructor.title || 'Instrutor'}</p>
@@ -155,7 +155,7 @@ const CourseDetail: React.FC = () => {
                         {course.projectTitle && (
                             <div className="mt-12 bg-black/20 p-8 rounded-lg border border-white/10">
                                 <h2 className="text-2xl font-bold text-white">Projeto Final</h2>
-                                <h3 className="text-xl font-semibold text-blue-300 mt-2">{course.projectTitle}</h3>
+                                <h3 className="text-xl font-semibold text-[#c4b5fd] mt-2">{course.projectTitle}</h3>
                                 <p className="mt-4 text-gray-300">{course.projectDescription}</p>
                                 <h4 className="font-bold text-white mt-4 mb-2">Critérios de Avaliação:</h4>
                                 <ul className="list-disc list-inside text-gray-300 space-y-1">
@@ -174,7 +174,7 @@ const CourseDetail: React.FC = () => {
                                     <ProgressBar progress={100} />
                                     <button
                                         onClick={() => navigateToCertificate(course)}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20"
+                                        className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
                                     >
                                         Ver Certificado
                                     </button>
@@ -184,7 +184,7 @@ const CourseDetail: React.FC = () => {
                                     {user && progress > 0 && <ProgressBar progress={progress} />}
                                     <button 
                                         onClick={handleStartOrContinue}
-                                        className="w-full bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20"
+                                        className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
                                     >
                                         {progress > 0 ? 'Continuar Curso' : 'Iniciar Curso'}
                                     </button>

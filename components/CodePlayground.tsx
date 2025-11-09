@@ -48,7 +48,7 @@ const CodePlayground: React.FC<CodePlaygroundProps> = ({ exercise, onComplete, i
   }
 
   const renderPrompt = (text: string) => {
-    text = text.replace(/`([^`].*?)`/g, '<code class="bg-blue-500/10 text-blue-300 px-1 py-0.5 rounded text-sm">$1</code>');
+    text = text.replace(/`([^`].*?)`/g, '<code class="bg-[#8a4add]/10 text-[#c4b5fd] px-1 py-0.5 rounded text-sm">$1</code>');
     return { __html: text.replace(/\n/g, '<br />') };
   };
 
@@ -58,7 +58,7 @@ const CodePlayground: React.FC<CodePlaygroundProps> = ({ exercise, onComplete, i
         <button
             onClick={() => setActiveTab(type)}
             className={`px-4 py-2 text-sm font-semibold rounded-t-md transition-colors ${
-                isActive ? 'bg-[#0f0f0f] text-white border-b-2 border-blue-400' : 'bg-transparent text-gray-400 hover:bg-white/10'
+                isActive ? 'bg-[#0f0f0f] text-white border-b-2 border-[#8a4add]' : 'bg-transparent text-gray-400 hover:bg-white/10'
             }`}
         >
             {type.toUpperCase()}
@@ -72,12 +72,12 @@ const CodePlayground: React.FC<CodePlaygroundProps> = ({ exercise, onComplete, i
         <div className="grid lg:grid-cols-2 gap-8">
             {/* Instructions and Editor */}
             <div className="flex flex-col">
-                <h3 className="text-lg font-semibold text-blue-300 mb-2">Sua Missão:</h3>
+                <h3 className="text-lg font-semibold text-[#c4b5fd] mb-2">Sua Missão:</h3>
                 <div
                     className="prose prose-invert prose-sm text-gray-300 mb-6"
                     dangerouslySetInnerHTML={renderPrompt(exercise.prompt)}
                 />
-                <h3 className="text-lg font-semibold text-blue-300 mb-2">Editor de Código:</h3>
+                <h3 className="text-lg font-semibold text-[#c4b5fd] mb-2">Editor de Código:</h3>
                 <div className="flex-grow flex flex-col bg-[#0f0f0f] border border-white/20 rounded-md overflow-hidden">
                     <div className="bg-black/30 px-2 pt-2 flex items-end gap-1">
                         <TabButton type="html" />
@@ -95,7 +95,7 @@ const CodePlayground: React.FC<CodePlaygroundProps> = ({ exercise, onComplete, i
 
             {/* Preview */}
             <div className="flex flex-col">
-                <h3 className="text-lg font-semibold text-blue-300 mb-2">Preview Ao Vivo:</h3>
+                <h3 className="text-lg font-semibold text-[#c4b5fd] mb-2">Preview Ao Vivo:</h3>
                 <iframe
                     srcDoc={iframeSrc}
                     title="Live Preview"
@@ -114,7 +114,7 @@ const CodePlayground: React.FC<CodePlaygroundProps> = ({ exercise, onComplete, i
             ) : (
                 <button
                 onClick={onComplete}
-                className="font-semibold py-2 px-6 rounded-lg transition-all duration-300 bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/20"
+                className="font-semibold py-2 px-6 rounded-lg transition-all duration-300 bg-[#8a4add] text-white hover:bg-[#6d28d9] shadow-lg shadow-[#8a4add]/20"
                 >
                 Marcar como Concluída
                 </button>

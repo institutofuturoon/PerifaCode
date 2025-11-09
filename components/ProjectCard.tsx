@@ -14,17 +14,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) =
   return (
     <button
       onClick={() => onProjectSelect(project)}
-      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/20"
+      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8a4add]/20"
     >
       <div className="overflow-hidden aspect-video">
         <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={project.imageUrl} alt={project.title} />
       </div>
       <div className="p-5 flex flex-col flex-grow">
-        <h3 className="text-md font-bold text-white group-hover:text-blue-300 transition-colors line-clamp-1">{project.title}</h3>
+        <h3 className="text-md font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-1">{project.title}</h3>
         
         <div className="mt-3 flex flex-wrap gap-2">
           {project.technologies.slice(0, 3).map(tech => (
-            <span key={tech} className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20">
+            <span key={tech} className="px-2 py-1 text-xs font-semibold rounded-full bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20">
               {tech}
             </span>
           ))}

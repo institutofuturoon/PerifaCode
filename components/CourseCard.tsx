@@ -29,7 +29,7 @@ const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
             return null;
     }
     return (
-      <span className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-full bg-[#034c8c] text-white flex items-center gap-2 shadow-lg">
+      <span className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-full bg-[#4c1d95] text-white flex items-center gap-2 shadow-lg">
         {icon}
         {category}
       </span>

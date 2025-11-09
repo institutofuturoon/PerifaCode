@@ -3,7 +3,7 @@ import { useAppContext } from '../App';
 
 // Reusable component for Mission/Vision/Values cards
 const InfoCard: React.FC<{ icon: React.ReactNode; title: string; description: string }> = ({ icon, title, description }) => (
-    <div className="group relative rounded-2xl bg-white/10 p-px transition-all duration-300 hover:-translate-y-2 hover:bg-gradient-to-br from-[#8a4add] to-[#f27983] shadow-lg hover:shadow-[#8a4add]/20">
+    <div className="group relative rounded-2xl bg-white/10 p-px transition-all duration-300 hover:-translate-y-2 hover:bg-gradient-to-br from-[#6d28d9] to-[#8a4add] shadow-lg hover:shadow-[#8a4add]/20">
         <div className="relative flex h-full flex-col items-center text-center rounded-[15px] bg-[#09090B]/90 p-8 backdrop-blur-sm">
             <div className="mb-6 flex-shrink-0">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#8a4add] text-white shadow-lg shadow-[#8a4add]/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[#8a4add]/40">
@@ -67,7 +67,7 @@ const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ fi
 const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string; text: string; }> = ({ icon, stat, title, text }) => {
     return (
         <div className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 text-center transform transition-transform duration-300 hover:-translate-y-2 h-full flex flex-col items-center">
-            <div className="flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-[#05aff2] to-[#8a4add] text-white mb-6 shadow-lg shadow-[#8a4add]/20">
+            <div className="flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] text-white mb-6 shadow-lg shadow-[#8a4add]/20">
                 {icon}
             </div>
             <p className="text-5xl font-black text-white">
@@ -116,7 +116,7 @@ const Home: React.FC = () => {
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => navigate('perifacode')}
-                className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
+                className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
               >
                 Comece a estudar agora
               </button>
@@ -135,10 +135,10 @@ const Home: React.FC = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto text-center mb-20">
                     <h2 className="text-4xl font-black tracking-tight text-white mb-2">Quem Somos</h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mb-6"></div>
+                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mb-6"></div>
                     <div className="space-y-4 text-gray-300 leading-relaxed text-lg">
                         <p>
-                            O Instituto FuturoON é um projeto social, no Complexo da Coruja, em São Gonçalo, que leva <span className="text-[#f27983] font-semibold">educação e tecnologia</span> para jovens e adultos da periferia.
+                            O Instituto FuturoON é um projeto social, no Complexo da Coruja, em São Gonçalo, que leva <span className="text-[#c4b5fd] font-semibold">educação e tecnologia</span> para jovens e adultos da periferia.
                         </p>
                     </div>
                 </div>
@@ -180,7 +180,7 @@ const Home: React.FC = () => {
         <section className="py-24 bg-black/20" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Nosso Impacto Social</h2>
-                <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4 mb-6"></div>
+                <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
                 <p className="max-w-3xl mx-auto text-lg text-gray-300">Não estamos apenas ensinando a programar. Estamos mudando vidas e reescrevendo o futuro.</p>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {impactData.map((item, index) => (
@@ -201,7 +201,7 @@ const Home: React.FC = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Nossos Parceiros</h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4 mb-6"></div>
+                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
                     <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
                         Empresas e organizações que acreditam na nossa missão e apoiam o desenvolvimento dos nossos talentos.
                     </p>
@@ -237,7 +237,7 @@ const Home: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="text-center md:text-left">
                         <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Transparência Total</h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mt-4 mb-6 mx-auto md:mx-0"></div>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mt-4 mb-6 mx-auto md:mx-0"></div>
                         <p className="text-lg text-gray-300 leading-relaxed">
                             Acreditamos que a confiança é construída com clareza. Por isso, disponibilizamos publicamente nossos relatórios para que você possa acompanhar de perto como cada contribuição se transforma em oportunidade e impacto social.
                         </p>

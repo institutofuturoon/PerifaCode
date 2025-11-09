@@ -75,7 +75,7 @@ Aluno: "${userMessage.text}"`;
   const renderMessageContent = (text: string) => {
     // Basic markdown renderer for tutor response
     let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/`([^`].*?)`/g, '<code class="bg-blue-500/10 text-blue-300 px-1 py-0.5 rounded text-sm">$1</code>');
+    html = html.replace(/`([^`].*?)`/g, '<code class="bg-[#8a4add]/10 text-[#c4b5fd] px-1 py-0.5 rounded text-sm">$1</code>');
     html = html.replace(/\n/g, '<br />');
     return { __html: html };
   }
@@ -85,7 +85,7 @@ Aluno: "${userMessage.text}"`;
       <div className="fixed bottom-6 right-6 z-50">
         <button 
           onClick={toggleChat} 
-          className="bg-gradient-to-br from-blue-600 to-sky-500 rounded-full h-16 w-16 flex items-center justify-center text-white shadow-2xl shadow-blue-500/40 transform hover:scale-110 transition-transform duration-300"
+          className="bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-full h-16 w-16 flex items-center justify-center text-white shadow-2xl shadow-[#8a4add]/40 transform hover:scale-110 transition-transform duration-300"
           aria-label="Abrir Tutor IA"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
@@ -94,10 +94,10 @@ Aluno: "${userMessage.text}"`;
 
       {isOpen && (
         <div className="fixed bottom-24 right-6 z-50 w-[90vw] max-w-sm h-[60vh] max-h-[500px] flex flex-col">
-           <div className="bg-black/50 backdrop-blur-xl border border-blue-500/30 rounded-lg shadow-2xl shadow-blue-500/20 flex flex-col h-full">
+           <div className="bg-black/50 backdrop-blur-xl border border-[#8a4add]/30 rounded-lg shadow-2xl shadow-[#8a4add]/20 flex flex-col h-full">
                 <header className="p-4 border-b border-white/10 flex justify-between items-center">
                     <h3 className="font-bold text-white flex items-center gap-2">
-                        <span className="text-blue-400">✨</span> Tutor IA
+                        <span className="text-[#c4b5fd]">✨</span> Tutor IA
                     </h3>
                     <button onClick={toggleChat} className="text-gray-400 hover:text-white">&times;</button>
                 </header>
@@ -105,7 +105,7 @@ Aluno: "${userMessage.text}"`;
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {msg.role === 'model' && <img src="https://picsum.photos/seed/aitutor/100" className="h-6 w-6 rounded-full" />}
-                            <div className={`max-w-[80%] p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-600 text-white font-semibold rounded-br-none' : 'bg-gray-800 text-gray-200 rounded-bl-none'}`}>
+                            <div className={`max-w-[80%] p-3 rounded-lg ${msg.role === 'user' ? 'bg-[#8a4add] text-white font-semibold rounded-br-none' : 'bg-gray-800 text-gray-200 rounded-bl-none'}`}>
                                 <p className="text-sm" dangerouslySetInnerHTML={renderMessageContent(msg.text)}></p>
                             </div>
                         </div>
@@ -115,9 +115,9 @@ Aluno: "${userMessage.text}"`;
                              <img src="https://picsum.photos/seed/aitutor/100" className="h-6 w-6 rounded-full" />
                              <div className="max-w-[80%] p-3 rounded-lg bg-gray-800 rounded-bl-none">
                                 <div className="flex items-center gap-1.5">
-                                    <span className="h-2 w-2 bg-blue-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>
-                                    <span className="h-2 w-2 bg-blue-400 rounded-full animate-pulse [animation-delay:-0.15s]"></span>
-                                    <span className="h-2 w-2 bg-blue-400 rounded-full animate-pulse"></span>
+                                    <span className="h-2 w-2 bg-[#8a4add] rounded-full animate-pulse [animation-delay:-0.3s]"></span>
+                                    <span className="h-2 w-2 bg-[#8a4add] rounded-full animate-pulse [animation-delay:-0.15s]"></span>
+                                    <span className="h-2 w-2 bg-[#8a4add] rounded-full animate-pulse"></span>
                                 </div>
                              </div>
                          </div>
@@ -131,10 +131,10 @@ Aluno: "${userMessage.text}"`;
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Tire sua dúvida..."
-                            className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                            className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-2 focus:ring-[#8a4add] focus:outline-none text-sm"
                             disabled={isLoading}
                         />
-                        <button type="submit" disabled={isLoading || !input.trim()} className="bg-blue-600 text-white px-4 rounded-md font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors">Enviar</button>
+                        <button type="submit" disabled={isLoading || !input.trim()} className="bg-[#8a4add] text-white px-4 rounded-md font-semibold hover:bg-[#6d28d9] disabled:opacity-50 transition-colors">Enviar</button>
                     </form>
                 </footer>
            </div>
@@ -153,7 +153,7 @@ const LessonTabs: React.FC<{
   const tabClasses = (tabName: 'content' | 'notes' | 'forum' | 'exercise') =>
     `px-4 py-2 font-semibold text-sm rounded-t-lg border-b-2 transition-colors ${
       activeTab === tabName
-        ? 'border-blue-400 text-white'
+        ? 'border-[#8a4add] text-white'
         : 'border-transparent text-gray-400 hover:text-white'
     }`;
   return (
@@ -201,9 +201,9 @@ const Forum: React.FC<{
                         onChange={(e) => setPostText(e.target.value)}
                         rows={3}
                         placeholder="Qual sua dúvida sobre esta aula?"
-                        className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+                        className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors"
                     />
-                    <button type="submit" className="mt-2 font-semibold py-2 px-5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20">
+                    <button type="submit" className="mt-2 font-semibold py-2 px-5 rounded-lg bg-[#8a4add] text-white hover:bg-[#6d28d9] transition-colors shadow-lg shadow-[#8a4add]/20">
                         Publicar Dúvida
                     </button>
                 </div>
@@ -246,9 +246,9 @@ const Forum: React.FC<{
                                     value={replyText[post.id] || ''}
                                     onChange={(e) => setReplyText(prev => ({...prev, [post.id]: e.target.value}))}
                                     placeholder="Responder..."
-                                    className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
+                                    className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm"
                                 />
-                                <button type="submit" className="text-xs font-semibold bg-blue-600/50 text-white px-3 py-2 rounded-md hover:bg-blue-600/80">
+                                <button type="submit" className="text-xs font-semibold bg-[#8a4add]/50 text-white px-3 py-2 rounded-md hover:bg-[#8a4add]/80">
                                     Enviar
                                 </button>
                             </form>
@@ -318,7 +318,7 @@ const LessonView: React.FC = () => {
   const renderContent = (markdown: string = '') => {
     // A simplified markdown renderer.
     let html = markdown;
-     html = html.replace(/`([^`].*?)`/g, '<code class="bg-blue-500/10 text-blue-300 px-1 py-0.5 rounded text-sm">$1</code>');
+     html = html.replace(/`([^`].*?)`/g, '<code class="bg-[#8a4add]/10 text-[#c4b5fd] px-1 py-0.5 rounded text-sm">$1</code>');
     return { __html: html.replace(/\n/g, '<br />') };
   };
 
@@ -330,7 +330,7 @@ const LessonView: React.FC = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-8">
-            <button onClick={() => navigate('courseDetail')} className="text-blue-400 font-semibold hover:text-blue-300 transition-colors group">
+            <button onClick={() => navigate('courseDetail')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
                 <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o curso
             </button>
         </div>
@@ -338,7 +338,7 @@ const LessonView: React.FC = () => {
         <main className="lg:col-span-2">
             <div className="bg-black/20 backdrop-blur-xl p-8 rounded-lg border border-white/10">
                 <header>
-                    <span className="font-semibold text-blue-400">{currentCourse.title}</span>
+                    <span className="font-semibold text-[#c4b5fd]">{currentCourse.title}</span>
                     <h1 className="text-3xl font-bold text-white mt-1">{currentLesson.title}</h1>
                 </header>
                 <div className="mt-6">
@@ -362,7 +362,7 @@ const LessonView: React.FC = () => {
                                 onBlur={() => handleSaveNote(currentLesson.id, note)}
                                 rows={10}
                                 placeholder="Faça suas anotações aqui... Elas são salvas automaticamente."
-                                className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+                                className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors"
                             />
                         </div>
                     )}

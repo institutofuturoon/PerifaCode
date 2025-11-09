@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
     <div className="bg-transparent">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-12">
-          <h1 className="text-4xl font-black text-white">Bem-vindo de volta, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">{user.name.split(' ')[0]}</span>!</h1>
+          <h1 className="text-4xl font-black text-white">Bem-vindo de volta, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">{user.name.split(' ')[0]}</span>!</h1>
           <p className="mt-2 text-lg text-gray-400 italic min-h-[28px]">
             {quote ? `"${quote}"` : "Continue sua jornada de onde parou. O futuro te espera!"}
           </p>
@@ -83,7 +83,7 @@ const Dashboard: React.FC = () => {
                   if(!course) return null;
                   return (
                       <div key={course.id} className="bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10 flex items-center gap-4 hover:border-[#8a4add]/50 hover:shadow-lg transition-all duration-300">
-                          <div className="flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center shadow-lg shadow-purple-500/20">
+                          <div className="flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex items-center justify-center shadow-lg shadow-purple-500/20">
                               <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
                           </div>
                           <div>
@@ -144,7 +144,7 @@ const Dashboard: React.FC = () => {
               <div className="bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10">
                   <h3 className="text-xl font-bold text-white">Comunidade</h3>
                   <p className="text-gray-300 mt-2 text-sm">Conecte-se com outros alunos e mentores. Tire dúvidas, compartilhe projetos e cresça em conjunto.</p>
-                  <a href="#" className="mt-4 block w-full text-center bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors duration-300 shadow-lg shadow-purple-500/20">
+                  <a href="#" className="mt-4 block w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors duration-300 shadow-lg shadow-purple-500/20">
                       Acessar Discord
                   </a>
               </div>

@@ -8,14 +8,14 @@ const Profile: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div className="max-w-3xl mx-auto bg-black/20 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl shadow-blue-500/10">
+      <div className="max-w-3xl mx-auto bg-black/20 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl shadow-[#8a4add]/10">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
           <div className="flex-shrink-0">
-            <img className="h-32 w-32 rounded-full border-4 border-blue-500" src={user.avatarUrl} alt={user.name} />
+            <img className="h-32 w-32 rounded-full border-4 border-[#8a4add]" src={user.avatarUrl} alt={user.name} />
           </div>
           <div className="text-center sm:text-left flex-1">
             <h1 className="text-3xl font-bold text-white">{user.name}</h1>
-            <p className="text-md text-blue-400">{user.email}</p>
+            <p className="text-md text-[#c4b5fd]">{user.email}</p>
             <p className="mt-4 text-gray-300">{user.bio}</p>
              <div className="mt-4 flex items-center justify-center sm:justify-start gap-4">
                 {user.githubUrl && (
@@ -41,18 +41,18 @@ const Profile: React.FC = () => {
             <form className="space-y-6">
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Nome Completo</label>
-                    <input type="text" name="name" id="name" defaultValue={user.name} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all" />
+                    <input type="text" name="name" id="name" defaultValue={user.name} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
                 </div>
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <input type="email" name="email" id="email" defaultValue={user.email} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all" />
+                    <input type="email" name="email" id="email" defaultValue={user.email} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
                 </div>
                  <div>
                     <label htmlFor="bio" className="block text-sm font-medium text-gray-300 mb-1">Sua Bio</label>
-                    <textarea rows={3} name="bio" id="bio" defaultValue={user.bio} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-all" />
+                    <textarea rows={3} name="bio" id="bio" defaultValue={user.bio} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
                 </div>
                 <div className="flex justify-end">
-                     <button type="submit" className="bg-gradient-to-r from-blue-600 to-sky-600 text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40">
+                     <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
                         Salvar Alterações
                     </button>
                 </div>

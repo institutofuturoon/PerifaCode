@@ -1,271 +1,128 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React from 'react';
 import { useAppContext } from '../App';
-// FIX: The type 'TeamMember' does not exist in 'types.ts'. Replaced with 'User'.
 import { User } from '../types';
 
-declare global {
-  interface Window {
-    gapi: any;
-  }
+// MOCKED DATA to match the user's screenshot
+const MOCKED_MENTORS: User[] = [
+    {
+        id: 'inst1',
+        name: 'Luiz Guilherme Bandeira',
+        email: 'luiz.bandeira@email.com',
+        // This stylized avatar URL is created to match the screenshot, as the original is a standard photo.
+        avatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/images/volunteers/guilherme.png',
+        bio: 'Cursando pós-graduação em Inteligência Artificial pela UFV. Acredito no poder do código para resolver problemas complexos e construir aplicações escaláveis.',
+        role: 'instructor',
+        title: 'Desenvolvedor Backend & Entusiasta em IA',
+        isMentor: true,
+        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: ''
+    },
+    {
+        id: 'inst2',
+        name: 'Vitor Santos',
+        email: 'vitor.santos@email.com',
+        avatarUrl: 'https://media.licdn.com/dms/image/v2/D5603AQHQYTpCPcROvA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725502652689?e=1764201600&v=beta&t=faPDzVvjRTzGbRvr1FmiZ7Ow_AI6vs4IIXAOXSO1GXs',
+        bio: 'Software Developer com expertise em JavaScript, Python e C#. Acredito na construção de soluções inovadoras com código limpo e eficiente.',
+        role: 'instructor',
+        title: 'Software Developer',
+        isMentor: true,
+        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: ''
+    },
+    {
+        id: 'inst3',
+        name: 'Thaís Santana',
+        email: 'thais.santana@email.com',
+        avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQERbQ7RnKzlEA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1691721804193?e=1764201600&v=beta&t=c2HPPb24zMUizWLVlXTFDhk3534DX3BLPhTFBBH4Sig',
+        bio: 'Coordenadora de Medição de Energia e Empreendedora Social, com expertise em transformar dados de energia em insights valiosos e impacto social.',
+        role: 'instructor',
+        title: 'Coordenadora de Medição de Energia | Empreendedora Social',
+        isMentor: true,
+        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: ''
+    }
+];
+
+
+const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
+    const { user, navigate } = useAppContext();
+    return (
+        <div className="bg-[#18181B] border border-purple-500/30 rounded-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 transform hover:-translate-y-1 group">
+            <div className="relative mb-4">
+                <img src={mentor.avatarUrl} alt={mentor.name} className="w-28 h-28 rounded-full object-cover" />
+                <div className="absolute inset-0 rounded-full ring-4 ring-purple-500 ring-offset-4 ring-offset-[#18181B] opacity-70 group-hover:opacity-100 transition-opacity"></div>
+            </div>
+            <h3 className="text-xl font-bold text-white">{mentor.name}</h3>
+            <p className="text-purple-400 font-semibold text-sm">{mentor.title}</p>
+            <p className="mt-3 text-gray-400 text-sm flex-grow">{mentor.bio}</p>
+            <button
+                onClick={() => user ? alert(`Funcionalidade de agendamento com ${mentor.name} em breve!`) : navigate('login')}
+                className="mt-6 w-full bg-gray-700/50 text-gray-300 font-semibold py-3 px-4 rounded-lg hover:bg-gray-600/60 hover:text-white transition-colors"
+            >
+                {user ? 'Ver agenda' : 'Faça login para ver a agenda'}
+            </button>
+        </div>
+    );
+};
+
+
+const EventCard: React.FC<{ event: any, host?: User }> = ({ event, host }) => {
+    return (
+        <div className="bg-[#18181B] border border-gray-800 rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex-shrink-0 text-center w-24">
+                <p className="text-5xl font-black text-white leading-none">{event.date.split(' ')[1]}</p>
+                <p className="text-lg text-purple-400 font-bold">{event.date.split(' ')[0]}</p>
+                <p className="text-sm text-gray-400 mt-1">{event.time}</p>
+            </div>
+            <div className="h-full w-px bg-gray-700 hidden sm:block"></div>
+            <div className="flex-1 text-center sm:text-left">
+                <span className="text-xs font-bold uppercase text-gray-500 tracking-wider">{event.eventType}</span>
+                <h3 className="text-xl font-bold text-white mt-1">{event.title}</h3>
+                <p className="text-md text-gray-400 font-semibold">com {host?.name || 'FuturoOn'}</p>
+                <p className="mt-2 text-gray-300 text-sm hidden md:block">{event.description}</p>
+            </div>
+            <div className="w-full sm:w-auto mt-4 sm:mt-0">
+                <button className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 transform hover:scale-105">
+                    Reservar Vaga
+                </button>
+            </div>
+        </div>
+    )
 }
 
 const ConnectView: React.FC = () => {
-    const { user, navigate, events, team, mentors, mentorSessions, handleCreateEvent, handleEditEvent, handleDeleteEvent, handleBookSession, handleCancelSession } = useAppContext();
-    const [selectedMentor, setSelectedMentor] = useState<User | null>(null);
-    const [isGapiReady, setIsGapiReady] = useState(false);
-    const [isMentorSignedIn, setIsMentorSignedIn] = useState(false);
-    
-    // FIX: The property 'isInstructor' does not exist on type 'User'. Changed to check 'role' instead to include both instructors and admins as potential hosts.
-    const instructors = useMemo(() => team.filter(t => t.role === 'instructor' || t.role === 'admin'), [team]);
-    
-    useEffect(() => {
-        // Simple check for gapi
-        if (window.gapi && window.gapi.auth2) {
-            setIsGapiReady(true);
-            const authInstance = window.gapi.auth2.getAuthInstance();
-            if (authInstance) {
-                setIsMentorSignedIn(authInstance.isSignedIn.get());
-                authInstance.isSignedIn.listen(setIsMentorSignedIn);
-            }
-        }
-    }, [user]);
-
-    const handleAuthClick = () => {
-        if (window.gapi) {
-            window.gapi.auth2.getAuthInstance().signIn();
-        }
-    };
-
-    const handleSignoutClick = () => {
-        if (window.gapi) {
-            window.gapi.auth2.getAuthInstance().signOut();
-        }
-    };
-
-
-    const mySessions = useMemo(() => {
-        if (!user) return [];
-        return mentorSessions
-            .filter(s => s.studentId === user.id)
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime() || a.time.localeCompare(b.time));
-    }, [mentorSessions, user]);
-
-    const groupedMentorSessions = useMemo(() => {
-        if (!selectedMentor) return {};
-        
-        const sessions = mentorSessions.filter(s => s.mentorId === selectedMentor.id);
-        
-        return sessions.reduce((acc, session) => {
-            const date = session.date;
-            if (!acc[date]) {
-                acc[date] = [];
-            }
-            acc[date].push(session);
-            return acc;
-        }, {} as Record<string, typeof mentorSessions>);
-
-    }, [mentorSessions, selectedMentor]);
-
-    const next7Days = useMemo(() => {
-        return Array.from({ length: 7 }).map((_, i) => {
-            const date = new Date();
-            date.setDate(date.getDate() + i);
-            return date;
-        });
-    }, []);
-
-    const formatDate = (date: Date) => {
-        return date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' }).replace('.', '');
-    };
+    const { events, instructors } = useAppContext();
 
     return (
-    <>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">Mentorias & Eventos</h1>
-          <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
-            Aprenda com quem está no campo de batalha. Nossos mentores e instrutores são profissionais experientes, prontos para acelerar sua carreira.
-          </p>
-        </div>
-        
-        {/* Google Auth for Instructors */}
-        {user?.role === 'instructor' && isGapiReady && (
-            <div className="mt-12 max-w-2xl mx-auto bg-black/20 p-6 rounded-lg border border-[#8a4add]/20 text-center">
-                <h3 className="font-bold text-white">Conecte sua Agenda do Google</h3>
-                <p className="text-sm text-gray-400 mt-1">Para habilitar o agendamento automático de mentorias com criação de links do Meet, conecte sua conta.</p>
-                {isMentorSignedIn ? (
-                    <button onClick={handleSignoutClick} className="mt-4 font-semibold text-sm py-2 px-4 rounded-lg bg-red-500/20 text-red-300 hover:bg-red-500/30">
-                        Desconectar Agenda
-                    </button>
-                ) : (
-                     <button onClick={handleAuthClick} className="mt-4 font-semibold text-sm py-2 px-4 rounded-lg bg-[#8a4add]/20 text-[#8a4add] hover:bg-[#8a4add]/30">
-                        Conectar com Google
-                    </button>
-                )}
-            </div>
-        )}
-
-        {/* Minhas Mentorias Section */}
-        {user && mySessions.length > 0 && (
-             <section className="mt-16">
-                 <h2 className="text-2xl font-bold text-white mb-6">Minhas Mentorias Agendadas</h2>
-                 <div className="bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 p-6 space-y-4">
-                     {mySessions.map(session => {
-                         const mentor = team.find(i => i.id === session.mentorId);
-                         const sessionDate = new Date(`${session.date}T${session.time}`);
-                         return (
-                            <div key={session.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white/5 p-4 rounded-md gap-4">
-                                <div>
-                                    <p className="font-bold text-white">Mentoria com {mentor?.name}</p>
-                                    <p className="text-sm text-[#8a4add]">{formatDate(sessionDate)} às {session.time}</p>
-                                    {session.googleMeetUrl ? (
-                                        <a href={session.googleMeetUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-300 hover:text-white hover:underline flex items-center gap-1 mt-1">
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                                          Acessar sala da chamada
-                                        </a>
-                                    ) : (
-                                        <p className="text-xs text-gray-500 mt-1">Link da sala será gerado em breve.</p>
-                                    )}
-                                </div>
-                                <button 
-                                    onClick={() => handleCancelSession(session.id)}
-                                    className="flex-shrink-0 text-xs font-semibold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1 rounded-full transition-colors"
-                                >
-                                    Cancelar
-                                </button>
-                            </div>
-                         )
-                     })}
-                 </div>
-             </section>
-        )}
-
-        {/* Mentores Section */}
-        <section className="mt-16">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center sm:text-left">Mentorias Individuais</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mentors.map(mentor => (
-                <div key={mentor.id} className="bg-white/5 backdrop-blur-sm p-8 rounded-lg border border-white/10 text-center group transition-all duration-300 hover:border-[#8a4add]/50 hover:shadow-2xl hover:shadow-[#8a4add]/10 flex flex-col">
-                    <img src={mentor.avatarUrl} alt={mentor.name} className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-[#8a4add]/50 group-hover:border-[#8a4add] transition-colors duration-300 transform group-hover:scale-105"/>
-                    <h3 className="text-xl font-bold text-white">{mentor.name}</h3>
-                    <p className="text-[#8a4add] font-semibold">{mentor.title}</p>
-                    <p className="mt-4 text-gray-400 text-sm flex-grow">{mentor.bio}</p>
-                    <button 
-                        onClick={() => {
-                            if (!user) {
-                                navigate('login');
-                            } else {
-                                setSelectedMentor(mentor);
-                            }
-                        }}
-                        className="mt-6 w-full bg-white/10 text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/20 transition-colors"
-                    >
-                        {user ? 'Ver Agenda' : 'Faça login para ver a agenda'}
-                    </button>
+        <div className="bg-[#09090B] min-h-screen">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                <div className="text-center max-w-4xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">Mentorias & Eventos</h1>
+                    <p className="mt-4 text-lg text-gray-400">
+                        Aprenda com quem está no campo de batalha. Nossos mentores e instrutores são profissionais experientes, prontos para acelerar sua carreira.
+                    </p>
                 </div>
-            ))}
-          </div>
-        </section>
-        
-        {/* Schedule Section */}
-        {selectedMentor && (
-            <section className="mt-16 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 p-8">
-                 <div className="flex justify-between items-start">
-                    <h2 className="text-2xl font-bold text-white mb-6">Agenda de {selectedMentor.name}</h2>
-                    <button onClick={() => setSelectedMentor(null)} className="text-gray-400 hover:text-white font-bold text-2xl">&times;</button>
-                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-                    {next7Days.map(day => {
-                        const dateKey = day.toISOString().split('T')[0];
-                        const daySessions = groupedMentorSessions[dateKey]?.sort((a,b) => a.time.localeCompare(b.time)) || [];
-                        return (
-                            <div key={dateKey}>
-                                <div className="p-2 rounded-t-md bg-white/10 text-center">
-                                    <p className="font-bold text-white">{day.toLocaleDateString('pt-BR', { weekday: 'short' })}</p>
-                                    <p className="text-xs text-gray-300">{day.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p>
-                                </div>
-                                <div className="p-2 space-y-2 bg-white/5 rounded-b-md">
-                                    {daySessions.length > 0 ? daySessions.map(session => {
-                                        const isBookedByMe = session.studentId === user?.id;
-                                        const isDisabled = (session.isBooked && !isBookedByMe) || !user;
 
-                                        return (
-                                            <button 
-                                                key={session.id}
-                                                onClick={() => isBookedByMe ? handleCancelSession(session.id) : handleBookSession(session.id)}
-                                                disabled={isDisabled}
-                                                className={`w-full text-xs font-semibold p-2 rounded transition-colors ${
-                                                    isBookedByMe 
-                                                        ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30'
-                                                        : isDisabled
-                                                        ? 'bg-gray-700/50 text-gray-500 cursor-not-allowed'
-                                                        : 'bg-[#8a4add]/20 text-[#8a4add] hover:bg-[#8a4add]/30'
-                                                }`}
-                                                title={!user ? "Faça login para agendar" : ""}
-                                            >
-                                                {isBookedByMe ? 'Cancelar' : session.time}
-                                            </button>
-                                        )
-                                    }) : (
-                                        <p className="text-xs text-center text-gray-500 p-2">Sem horários</p>
-                                    )}
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-            </section>
-        )}
-
-        {/* Eventos Section */}
-        <section className="mt-20">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-            <h2 className="text-3xl font-bold text-white text-center sm:text-left">Agenda de Eventos Ao Vivo</h2>
-             {(user?.role === 'admin' || user?.role === 'instructor') && (
-                <button
-                    onClick={handleCreateEvent}
-                    className="mt-4 sm:mt-0 w-full sm:w-auto bg-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:bg-[#8a4add]/80 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
-                >
-                    Criar Novo Evento
-                </button>
-             )}
-          </div>
-          <div className="space-y-6">
-            {events.map(event => {
-                const host = instructors.find(i => i.id === event.hostId);
-                return (
-                    <div key={event.id} className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-white/10 flex flex-col md:flex-row items-start md:items-center gap-6 transition-colors duration-300 hover:border-[#8a4add]/50">
-                        <div className="flex-shrink-0 text-center p-4 rounded-md bg-black/20 w-full md:w-32">
-                            <p className="text-5xl font-black text-white leading-none">{event.date.split(' ')[1]}</p>
-                            <p className="text-lg text-[#8a4add] font-bold">{event.date.split(' ')[0]}</p>
-                            <p className="text-sm text-gray-400 mt-1">{event.time}</p>
-                        </div>
-                        <div className="flex-1">
-                            <span className="text-xs font-bold uppercase text-[#8a4add]">{event.eventType}</span>
-                            <h3 className="text-xl font-bold text-white mt-1">{event.title}</h3>
-                            <p className="text-md text-gray-400 font-semibold">com {host?.name || 'FuturoOn'}</p>
-                            <p className="mt-2 text-gray-300 text-sm">{event.description}</p>
-                        </div>
-                        <div className="w-full md:w-auto flex flex-col gap-2 self-center">
-                            <button className="w-full md:w-auto bg-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-[#8a4add]/80 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 transform hover:scale-105">
-                                Reservar Vaga
-                            </button>
-                             {(user?.role === 'admin' || user?.id === event.hostId) && (
-                                <div className="flex justify-center items-center gap-2 mt-2">
-                                    <button onClick={() => handleEditEvent(event)} className="text-xs font-semibold text-gray-300 hover:text-white">Editar</button>
-                                    <span className="text-gray-500">|</span>
-                                    <button onClick={() => handleDeleteEvent(event.id)} className="text-xs font-semibold text-red-400 hover:text-red-300">Excluir</button>
-                                </div>
-                             )}
-                        </div>
+                {/* Mentores Section */}
+                <section className="mt-16 md:mt-20">
+                    <h2 className="text-3xl font-bold text-white mb-8">Mentorias Individuais</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {MOCKED_MENTORS.map(mentor => (
+                            <MentorCard key={mentor.id} mentor={mentor} />
+                        ))}
                     </div>
-                )
-            })}
-          </div>
-        </section>
-      </div>
-    </>
-  );
+                </section>
+
+                {/* Eventos Section */}
+                <section className="mt-20 md:mt-24">
+                    <h2 className="text-3xl font-bold text-white mb-8">Agenda de Eventos Ao Vivo</h2>
+                    <div className="space-y-6">
+                        {events.map(event => {
+                            const host = instructors.find(i => i.id === event.hostId);
+                            return <EventCard key={event.id} event={event} host={host} />
+                        })}
+                    </div>
+                </section>
+            </div>
+        </div>
+    );
 };
 
 export default ConnectView;
