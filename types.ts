@@ -214,7 +214,7 @@ export interface Partner {
 }
 
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail';
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'uploadTest';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
@@ -267,6 +267,7 @@ export interface AppContextType {
   closeProfileModal: () => void;
   completeLesson: (lessonId: string) => void;
   handleSaveNote: (lessonId: string, note: string) => void;
+  showToast: (message: string) => void;
   
   // Data Management
   handleSaveCourse: (courseToSave: Course) => void;
@@ -277,6 +278,7 @@ export interface AppContextType {
   handleCreateArticle: () => void;
   handleDeleteArticle: (articleId: string) => void;
   handleSaveUser: (userToSave: User) => void;
+  handleUpdateUserProfile: (userToUpdate: User) => Promise<void>;
   handleEditUser: (user: User) => void;
   handleCreateUser: (role: 'student' | 'instructor') => void;
   handleDeleteUser: (userId: string) => void;

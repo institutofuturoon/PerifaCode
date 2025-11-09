@@ -67,6 +67,7 @@ const Footer: React.FC = () => {
               <li><FooterLink onClick={() => navigate('team')}>Nossa Equipe</FooterLink></li>
               <li><FooterLink onClick={() => navigate('annualReport')}>Transparência</FooterLink></li>
               <li><FooterLink onClick={() => navigate('donate')}>Faça uma Doação</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('uploadTest')}>Teste de Upload</FooterLink></li>
             </ul>
           </div>
 

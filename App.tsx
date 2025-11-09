@@ -39,6 +39,7 @@ import AboutUsView from './views/AboutUsView';
 import AnnualReportView from './views/AnnualReportView';
 import FinancialStatementView from './views/FinancialStatementView';
 import EventDetailView from './views/EventDetailView';
+import UploadTest from './views/UploadTest';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -328,6 +329,26 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
   };
 
+    const handleUpdateUserProfile = async (userToUpdate: User) => {
+        const originalUser = user;
+        // Optimistically update the main user state for immediate feedback
+        setUser(userToUpdate);
+        // Update the user in the general users list
+        setUsers(prev => prev.map(u => u.id === userToUpdate.id ? userToUpdate : u));
+        try {
+            const userRef = doc(db, "users", userToUpdate.id);
+            await setDoc(userRef, userToUpdate, { merge: true });
+        } catch(error) {
+            console.error("Error updating user profile:", error);
+            showToast("Erro ao salvar perfil.");
+            // Revert on error
+            if (originalUser) {
+              setUser(originalUser);
+              setUsers(prev => prev.map(u => u.id === originalUser.id ? originalUser : u));
+            }
+        }
+    };
+
   const navigateToProjectEditor = (project?: Project) => {
     if (project) {
         setEditingProject(project);
@@ -427,7 +448,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     completeLesson, handleSaveNote, handleSaveCourse, handleEditCourse, handleCreateCourse, handleSaveArticle, handleEditArticle,
     handleCreateArticle, handleDeleteArticle, handleSaveUser, handleEditUser, handleCreateUser, handleDeleteUser,
     handleSaveProject, handleAddClap, handleAddComment, handleSaveEvent, handleCreateEvent, handleEditEvent,
-    handleDeleteEvent, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession
+    handleDeleteEvent, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession,
+    showToast, handleUpdateUserProfile
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -472,6 +494,7 @@ const App: React.FC = () => {
                 case 'about': return <AboutUsView />;
                 case 'annualReport': return <AnnualReportView />;
                 case 'financialStatement': return <FinancialStatementView />;
+                case 'uploadTest': return <UploadTest />;
                 default: return <Home />;
             }
         };

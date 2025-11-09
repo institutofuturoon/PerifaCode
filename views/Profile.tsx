@@ -1,17 +1,113 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../App';
+import { put } from '@vercel/blob';
 
 const Profile: React.FC = () => {
-  const { user, handleLogout } = useAppContext();
+  const { user, handleLogout, handleUpdateUserProfile, showToast } = useAppContext();
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [formData, setFormData] = useState({
+      name: user?.name || '',
+      email: user?.email || '',
+      bio: user?.bio || ''
+  });
+
+  useEffect(() => {
+    if (user) {
+        setFormData({
+            name: user.name,
+            email: user.email,
+            bio: user.bio,
+        });
+    }
+  }, [user]);
+  
   if (!user) return null;
+
+  const handleAvatarClick = () => {
+    if (isUploading) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        showToast('❌ Por favor, selecione um arquivo de imagem válido.');
+        return;
+    }
+    if (file.size > 4 * 1024 * 1024) { // 4MB limit
+        showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
+        return;
+    }
+
+    setIsUploading(true);
+    try {
+        const blob = await put(`images/volunteers/${user.id}-${Date.now()}-${file.name}`, file, {
+            access: 'public',
+            token: process.env.API_KEY,
+        });
+
+        await handleUpdateUserProfile({ ...user, avatarUrl: blob.url });
+        showToast('✅ Foto de perfil atualizada!');
+
+    } catch (err) {
+        console.error('Erro ao fazer upload da imagem:', err);
+        showToast('❌ Erro ao atualizar a foto. Tente novamente.');
+    } finally {
+        setIsUploading(false);
+        if(fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    }
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      await handleUpdateUserProfile({ ...user, ...formData });
+      showToast('✅ Perfil salvo com sucesso!');
+  };
+
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div className="max-w-3xl mx-auto bg-black/20 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl shadow-[#8a4add]/10">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 relative group">
             <img className="h-32 w-32 rounded-full border-4 border-[#8a4add]" src={user.avatarUrl} alt={user.name} />
+            {isUploading ? (
+                <div className="absolute inset-0 rounded-full bg-black/70 flex items-center justify-center">
+                    <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            ) : (
+                <button
+                    onClick={handleAvatarClick}
+                    className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    aria-label="Alterar foto de perfil"
+                >
+                    <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+            )}
+             <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                className="hidden"
+                accept="image/png, image/jpeg, image/gif, image/webp"
+            />
           </div>
           <div className="text-center sm:text-left flex-1">
             <h1 className="text-3xl font-bold text-white">{user.name}</h1>
@@ -38,18 +134,18 @@ const Profile: React.FC = () => {
         
         <div className="mt-10 border-t border-white/10 pt-8">
             <h2 className="text-xl font-bold text-white mb-4">Configurações da Conta</h2>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleFormSubmit}>
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Nome Completo</label>
-                    <input type="text" name="name" id="name" defaultValue={user.name} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
+                    <input type="text" name="name" id="name" value={formData.name} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
                 </div>
                 <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <input type="email" name="email" id="email" defaultValue={user.email} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
+                    <input type="email" name="email" id="email" value={formData.email} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
                 </div>
                  <div>
                     <label htmlFor="bio" className="block text-sm font-medium text-gray-300 mb-1">Sua Bio</label>
-                    <textarea rows={3} name="bio" id="bio" defaultValue={user.bio} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
+                    <textarea rows={3} name="bio" id="bio" value={formData.bio} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
                 </div>
                 <div className="flex justify-end">
                      <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
