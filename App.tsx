@@ -40,6 +40,11 @@ import AboutUsView from './views/AboutUsView';
 import AnnualReportView from './views/AnnualReportView';
 import FinancialStatementView from './views/FinancialStatementView';
 import DigitalLiteracyView from './views/DigitalLiteracyView';
+import PythonCourseView from './views/PythonCourseView';
+import CSharpCourseView from './views/CSharpCourseView';
+import GameDevCourseView from './views/GameDevCourseView';
+import EnglishCourseView from './views/EnglishCourseView';
+import EntrepreneurshipCourseView from './views/EntrepreneurshipCourseView';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -159,6 +164,26 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigateToCourse = (course: Course) => {
     if (course.id === 'ld1' || course.id === 'ld2') {
         navigate('digitalLiteracy');
+        return;
+    }
+    if (course.id === 'py1') {
+        navigate('pythonCourse');
+        return;
+    }
+    if (course.id === 'cs1') {
+        navigate('csharpCourse');
+        return;
+    }
+    if (course.id === 'gm1') {
+        navigate('gameDevCourse');
+        return;
+    }
+    if (course.id === 'en1') {
+        navigate('englishCourse');
+        return;
+    }
+    if (course.id === 'ed1') {
+        navigate('entrepreneurshipCourse');
         return;
     }
     setCurrentCourse(course);
@@ -453,6 +478,11 @@ const App: React.FC = () => {
                 case 'annualReport': return <AnnualReportView />;
                 case 'financialStatement': return <FinancialStatementView />;
                 case 'digitalLiteracy': return <DigitalLiteracyView />;
+                case 'pythonCourse': return <PythonCourseView />;
+                case 'csharpCourse': return <CSharpCourseView />;
+                case 'gameDevCourse': return <GameDevCourseView />;
+                case 'englishCourse': return <EnglishCourseView />;
+                case 'entrepreneurshipCourse': return <EntrepreneurshipCourseView />;
                 default: return <Home />;
             }
         };
