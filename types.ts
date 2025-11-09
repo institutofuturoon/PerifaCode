@@ -50,12 +50,15 @@ export interface Course {
   title: string;
   description: string;
   longDescription: string;
-  track: 'Frontend' | 'Backend' | 'IA' | 'UX/UI';
-  imageUrl: string;
+  track: 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Games' | 'Idiomas' | 'Negócios' | 'Digital';
+  imageUrl?: string;
   duration: string;
   skillLevel: 'Iniciante' | 'Intermediário' | 'Avançado';
   instructorId: string;
   modules: Module[];
+  tags?: string[];
+  lessonsCount?: number;
+  category?: string;
   projectTitle?: string;
   projectDescription?: string;
   projectCriteria?: string;
@@ -209,7 +212,7 @@ export interface Partner {
 }
 
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'perifacode' | 'donate' | 'about' | 'annualReport' | 'financialStatement';
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'perifacode' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'digitalLiteracy';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];

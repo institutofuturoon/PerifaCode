@@ -39,6 +39,7 @@ import DonateView from './views/DonateView';
 import AboutUsView from './views/AboutUsView';
 import AnnualReportView from './views/AnnualReportView';
 import FinancialStatementView from './views/FinancialStatementView';
+import DigitalLiteracyView from './views/DigitalLiteracyView';
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -156,6 +157,10 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const navigateToCourse = (course: Course) => {
+    if (course.id === 'ld1' || course.id === 'ld2') {
+        navigate('digitalLiteracy');
+        return;
+    }
     setCurrentCourse(course);
     navigate('courseDetail');
   };
@@ -447,6 +452,7 @@ const App: React.FC = () => {
                 case 'about': return <AboutUsView />;
                 case 'annualReport': return <AnnualReportView />;
                 case 'financialStatement': return <FinancialStatementView />;
+                case 'digitalLiteracy': return <DigitalLiteracyView />;
                 default: return <Home />;
             }
         };

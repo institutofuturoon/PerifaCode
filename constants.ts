@@ -100,84 +100,111 @@ O backend pode parecer complexo, mas com o Node.js, você tem uma porta de entra
   },
 ];
 
-// FIX: Added mock data for MOCK_COURSES as it was missing.
 export const MOCK_COURSES: Course[] = [
   {
-    id: 'fe1',
-    title: 'HTML & CSS Essencial',
-    description: 'Aprenda a base do desenvolvimento web construindo páginas e layouts do zero.',
-    longDescription: 'Neste curso, você vai dominar o HTML5 e o CSS3, as duas linguagens fundamentais para qualquer desenvolvedor web. Aprenda sobre tags semânticas, seletores CSS, Flexbox, Grid e como criar layouts responsivos que funcionam em qualquer dispositivo. Ao final, você construirá seu próprio portfólio online.',
-    track: 'Frontend',
-    imageUrl: 'https://picsum.photos/seed/htmlcss/600/400',
-    duration: '25 horas',
+    id: 'ld1',
+    title: 'Letramento Digital',
+    description: 'Aprenda os fundamentos da informática e navegação na internet. Ideal para quem está começando no mundo digital.',
+    track: 'Digital',
+    imageUrl: 'https://picsum.photos/seed/digital-literacy/600/400',
+    category: 'INCLUSÃO',
+    tags: ['INICIANTE', 'DIGITAL'],
+    lessonsCount: 8,
+    duration: '4h',
     skillLevel: 'Iniciante',
-    instructorId: 'inst2',
-    modules: [
-      {
-        id: 'fe1-m1',
-        title: 'Módulo 1: Fundamentos do HTML',
-        lessons: [
-          { id: 'fe1-m1-l1', title: 'Introdução à Web', duration: '15 min', type: 'text', xp: 5 },
-          { id: 'fe1-m1-l2', title: 'Estrutura de uma Página HTML', duration: '20 min', type: 'text', xp: 10, exerciseId: 'ex1' },
-          { id: 'fe1-m1-l3', title: 'Tags de Texto e Listas', duration: '25 min', type: 'text', xp: 10 },
-        ]
-      },
-      {
-        id: 'fe1-m2',
-        title: 'Módulo 2: Estilizando com CSS',
-        lessons: [
-          { id: 'fe1-m2-l1', title: 'Introdução ao CSS', duration: '20 min', type: 'text', xp: 10 },
-          { id: 'fe1-m2-l2', title: 'Seletores e Propriedades', duration: '30 min', type: 'text', xp: 15 },
-        ]
-      }
-    ],
-    projectTitle: 'Portfólio Pessoal',
-    projectDescription: 'Crie seu próprio site de portfólio do zero para mostrar suas habilidades e projetos.',
-    projectCriteria: '- Uso de HTML semântico.\n- Layout responsivo com Flexbox ou Grid.\n- Estilização criativa e consistente.'
+    instructorId: 'inst1',
+    longDescription: 'Este curso aborda os conceitos básicos de informática, desde ligar o computador e usar o mouse, até navegar na internet com segurança, usar e-mails e redes sociais.',
+    modules: []
   },
   {
-    id: 'fe2',
-    title: 'JavaScript Moderno (ES6+)',
-    description: 'Domine a linguagem que move a web, de variáveis a funções assíncronas.',
-    longDescription: 'O JavaScript é essencial para criar páginas interativas. Neste curso, você aprenderá desde a sintaxe básica até recursos avançados do ES6+, como arrow functions, promises e async/await. Vamos construir projetos práticos para solidificar o conhecimento e te preparar para frameworks como React.',
-    track: 'Frontend',
-    imageUrl: 'https://picsum.photos/seed/javascript/600/400',
-    duration: '40 horas',
-    skillLevel: 'Iniciante',
-    instructorId: 'inst2',
-    modules: [
-      {
-        id: 'fe2-m1',
-        title: 'Módulo 1: Lógica e Sintaxe',
-        lessons: [
-          { id: 'fe2-m1-l1', title: 'Variáveis, Tipos e Operadores', duration: '30 min', type: 'text', xp: 15 },
-          { id: 'fe2-m1-l2', title: 'Funções e Escopo', duration: '35 min', type: 'text', xp: 20 },
-        ]
-      }
-    ],
-  },
-   {
-    id: 'be1',
-    title: 'Introdução ao Backend com Node.js',
-    description: 'Leve seu JavaScript para o servidor e aprenda a construir APIs poderosas.',
-    longDescription: 'Descubra o poder do JavaScript no backend com Node.js. Neste curso, você aprenderá os fundamentos, como criar um servidor, gerenciar pacotes com NPM e construir sua primeira API REST para se comunicar com o frontend. É o primeiro passo para se tornar um desenvolvedor Full Stack.',
+    id: 'py1',
+    title: 'Programação Python',
+    description: 'Aprenda a programar com Python, uma das linguagens mais populares do mercado, e desenvolva sua lógica de programação.',
     track: 'Backend',
-    imageUrl: 'https://picsum.photos/seed/nodejs/600/400',
-    duration: '30 horas',
-    skillLevel: 'Intermediário',
+    imageUrl: 'https://picsum.photos/seed/python-code/600/400',
+    category: 'BACKEND',
+    tags: ['PYTHON', 'LÓGICA'],
+    lessonsCount: 12,
+    duration: '6h',
+    skillLevel: 'Iniciante',
     instructorId: 'inst1',
-    modules: [
-       {
-        id: 'be1-m1',
-        title: 'Módulo 1: Fundamentos do Node.js',
-        lessons: [
-          { id: 'be1-m1-l1', title: 'O que é Node.js?', duration: '20 min', type: 'text', xp: 10 },
-          { id: 'be1-m1-l2', title: 'Criando seu primeiro servidor', duration: '25 min', type: 'text', xp: 15 },
-        ]
-      }
-    ],
+    longDescription: 'Um curso completo para iniciantes em Python. Você aprenderá sobre variáveis, tipos de dados, estruturas de controle, funções e muito mais, tudo com projetos práticos.',
+    modules: []
+  },
+  {
+    id: 'cs1',
+    title: 'Programação C#',
+    description: 'Desenvolva aplicações completas e escaláveis com C# e .NET Core. Aprenda desde os fundamentos até APIs profissionais.',
+    track: 'Backend',
+    imageUrl: 'https://picsum.photos/seed/csharp-dotnet/600/400',
+    category: 'BACKEND',
+    tags: ['AVANÇADO', 'C#', '.NET'],
+    lessonsCount: 15,
+    duration: '9h',
+    skillLevel: 'Avançado',
+    instructorId: 'inst2',
+    longDescription: 'Para quem já tem base em programação, este curso aprofunda em C# e no ecossistema .NET, ensinando a construir APIs RESTful robustas e prontas para o mercado.',
+    modules: []
+  },
+  {
+    id: 'gm1',
+    title: 'Desenvolvimento de Games',
+    description: 'Aprenda a programar criando jogos com Unity. Domine a engine mais usada no mundo dos games.',
+    track: 'Games',
+    imageUrl: 'https://picsum.photos/seed/game-dev/600/400',
+    category: 'GAMES',
+    tags: ['GAMES', 'UNITY'],
+    lessonsCount: 10,
+    duration: '5h',
+    skillLevel: 'Intermediário',
+    instructorId: 'inst2',
+    longDescription: 'Transforme sua paixão por jogos em uma carreira. Este curso ensina os fundamentos da Unity e da linguagem C# para criar seus próprios jogos 2D e 3D.',
+    modules: []
+  },
+  {
+    id: 'en1',
+    imageUrl: 'https://picsum.photos/seed/english-tech/600/400',
+    category: 'IDIOMA',
+    title: 'Inglês (online)',
+    description: 'Aprenda inglês focado em tecnologia e programação. Aulas online ao vivo com foco no vocabulário técnico.',
+    track: 'Idiomas',
+    tags: ['ONLINE', 'TECH', 'INGLÊS'],
+    duration: 'N/A',
+    skillLevel: 'Iniciante',
+    instructorId: 'inst3',
+    longDescription: 'O inglês é a língua da tecnologia. Este curso é focado em preparar você para ler documentações, participar de comunidades e se destacar em entrevistas, com vocabulário técnico e conversação.',
+    modules: []
+  },
+  {
+    id: 'ed1',
+    imageUrl: 'https://picsum.photos/seed/digital-business/600/400',
+    category: 'NEGÓCIOS',
+    title: 'Empreendedorismo Digital',
+    description: 'Transforme suas ideias em negócios de sucesso no mundo digital. Aprenda desde validação de ideias até marketing digital.',
+    track: 'Negócios',
+    tags: ['NEGÓCIOS', 'STARTUP', 'DIGITAL'],
+    duration: 'N/A',
+    skillLevel: 'Iniciante',
+    instructorId: 'inst3',
+    longDescription: 'Tem uma ideia de app ou site? Este curso te ensina o caminho das pedras para criar um negócio digital, desde a validação da sua ideia, criação de um MVP, até as primeiras estratégias de marketing.',
+    modules: []
+  },
+  {
+    id: 'ld2',
+    imageUrl: 'https://picsum.photos/seed/seniors-tech/600/400',
+    category: 'MELHOR IDADE',
+    title: 'Letramento Digital - Melhor Idade',
+    description: 'Curso especialmente desenvolvido para pessoas da melhor idade. Aprenda tecnologia no seu ritmo, com paciência.',
+    track: 'Digital',
+    tags: ['INICIANTE', '60+', 'DIGITAL'],
+    duration: 'N/A',
+    skillLevel: 'Iniciante',
+    instructorId: 'inst1',
+    longDescription: 'Nunca é tarde para aprender! Com uma metodologia pensada para o público 60+, este curso ensina a usar smartphones, redes sociais e a internet com segurança e confiança.',
+    modules: []
   }
 ];
+
 
 export const MOCK_USERS: User[] = [
   // Alunos
