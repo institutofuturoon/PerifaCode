@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '../App';
 // FIX: The type 'TeamMember' does not exist in 'types.ts'. Replaced with 'User'.
@@ -19,7 +15,8 @@ const ConnectView: React.FC = () => {
     const [isGapiReady, setIsGapiReady] = useState(false);
     const [isMentorSignedIn, setIsMentorSignedIn] = useState(false);
     
-    const instructors = useMemo(() => team.filter(t => t.isInstructor), [team]);
+    // FIX: The property 'isInstructor' does not exist on type 'User'. Changed to check 'role' instead to include both instructors and admins as potential hosts.
+    const instructors = useMemo(() => team.filter(t => t.role === 'instructor' || t.role === 'admin'), [team]);
     
     useEffect(() => {
         // Simple check for gapi
@@ -93,7 +90,7 @@ const ConnectView: React.FC = () => {
         
         {/* Google Auth for Instructors */}
         {user?.role === 'instructor' && isGapiReady && (
-            <div className="mt-12 max-w-2xl mx-auto bg-black/20 p-6 rounded-lg border border-purple-500/20 text-center">
+            <div className="mt-12 max-w-2xl mx-auto bg-black/20 p-6 rounded-lg border border-[#8a4add]/20 text-center">
                 <h3 className="font-bold text-white">Conecte sua Agenda do Google</h3>
                 <p className="text-sm text-gray-400 mt-1">Para habilitar o agendamento automático de mentorias com criação de links do Meet, conecte sua conta.</p>
                 {isMentorSignedIn ? (
@@ -101,7 +98,7 @@ const ConnectView: React.FC = () => {
                         Desconectar Agenda
                     </button>
                 ) : (
-                     <button onClick={handleAuthClick} className="mt-4 font-semibold text-sm py-2 px-4 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30">
+                     <button onClick={handleAuthClick} className="mt-4 font-semibold text-sm py-2 px-4 rounded-lg bg-[#8a4add]/20 text-[#8a4add] hover:bg-[#8a4add]/30">
                         Conectar com Google
                     </button>
                 )}
@@ -120,7 +117,7 @@ const ConnectView: React.FC = () => {
                             <div key={session.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white/5 p-4 rounded-md gap-4">
                                 <div>
                                     <p className="font-bold text-white">Mentoria com {mentor?.name}</p>
-                                    <p className="text-sm text-purple-300">{formatDate(sessionDate)} às {session.time}</p>
+                                    <p className="text-sm text-[#8a4add]">{formatDate(sessionDate)} às {session.time}</p>
                                     {session.googleMeetUrl ? (
                                         <a href={session.googleMeetUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-300 hover:text-white hover:underline flex items-center gap-1 mt-1">
                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
@@ -148,10 +145,10 @@ const ConnectView: React.FC = () => {
           <h2 className="text-3xl font-bold text-white mb-8 text-center sm:text-left">Mentorias Individuais</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {mentors.map(mentor => (
-                <div key={mentor.id} className="bg-white/5 backdrop-blur-sm p-8 rounded-lg border border-white/10 text-center group transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 flex flex-col">
-                    <img src={mentor.avatarUrl} alt={mentor.name} className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-purple-500/50 group-hover:border-purple-500 transition-colors duration-300 transform group-hover:scale-105"/>
+                <div key={mentor.id} className="bg-white/5 backdrop-blur-sm p-8 rounded-lg border border-white/10 text-center group transition-all duration-300 hover:border-[#8a4add]/50 hover:shadow-2xl hover:shadow-[#8a4add]/10 flex flex-col">
+                    <img src={mentor.avatarUrl} alt={mentor.name} className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-[#8a4add]/50 group-hover:border-[#8a4add] transition-colors duration-300 transform group-hover:scale-105"/>
                     <h3 className="text-xl font-bold text-white">{mentor.name}</h3>
-                    <p className="text-purple-400 font-semibold">{mentor.title}</p>
+                    <p className="text-[#8a4add] font-semibold">{mentor.title}</p>
                     <p className="mt-4 text-gray-400 text-sm flex-grow">{mentor.bio}</p>
                     <button 
                         onClick={() => {
@@ -202,7 +199,7 @@ const ConnectView: React.FC = () => {
                                                         ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30'
                                                         : isDisabled
                                                         ? 'bg-gray-700/50 text-gray-500 cursor-not-allowed'
-                                                        : 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
+                                                        : 'bg-[#8a4add]/20 text-[#8a4add] hover:bg-[#8a4add]/30'
                                                 }`}
                                                 title={!user ? "Faça login para agendar" : ""}
                                             >
@@ -227,7 +224,7 @@ const ConnectView: React.FC = () => {
              {(user?.role === 'admin' || user?.role === 'instructor') && (
                 <button
                     onClick={handleCreateEvent}
-                    className="mt-4 sm:mt-0 w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 px-5 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20"
+                    className="mt-4 sm:mt-0 w-full sm:w-auto bg-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:bg-[#8a4add]/80 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
                 >
                     Criar Novo Evento
                 </button>
@@ -237,20 +234,20 @@ const ConnectView: React.FC = () => {
             {events.map(event => {
                 const host = instructors.find(i => i.id === event.hostId);
                 return (
-                    <div key={event.id} className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-white/10 flex flex-col md:flex-row items-start md:items-center gap-6 transition-colors duration-300 hover:border-purple-500/50">
+                    <div key={event.id} className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-white/10 flex flex-col md:flex-row items-start md:items-center gap-6 transition-colors duration-300 hover:border-[#8a4add]/50">
                         <div className="flex-shrink-0 text-center p-4 rounded-md bg-black/20 w-full md:w-32">
                             <p className="text-5xl font-black text-white leading-none">{event.date.split(' ')[1]}</p>
-                            <p className="text-lg text-purple-400 font-bold">{event.date.split(' ')[0]}</p>
+                            <p className="text-lg text-[#8a4add] font-bold">{event.date.split(' ')[0]}</p>
                             <p className="text-sm text-gray-400 mt-1">{event.time}</p>
                         </div>
                         <div className="flex-1">
-                            <span className="text-xs font-bold uppercase text-purple-300">{event.eventType}</span>
+                            <span className="text-xs font-bold uppercase text-[#8a4add]">{event.eventType}</span>
                             <h3 className="text-xl font-bold text-white mt-1">{event.title}</h3>
                             <p className="text-md text-gray-400 font-semibold">com {host?.name || 'FuturoOn'}</p>
                             <p className="mt-2 text-gray-300 text-sm">{event.description}</p>
                         </div>
                         <div className="w-full md:w-auto flex flex-col gap-2 self-center">
-                            <button className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transform hover:scale-105">
+                            <button className="w-full md:w-auto bg-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-[#8a4add]/80 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 transform hover:scale-105">
                                 Reservar Vaga
                             </button>
                              {(user?.role === 'admin' || user?.id === event.hostId) && (

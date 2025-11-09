@@ -88,7 +88,7 @@ const InstructorCourseDashboard: React.FC = () => {
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-8">
-                <button onClick={() => navigate('admin')} className="text-purple-400 font-semibold hover:text-purple-300 transition-colors group">
+                <button onClick={() => navigate('admin')} className="text-blue-400 font-semibold hover:text-blue-300 transition-colors group">
                     <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o painel
                 </button>
             </div>

@@ -209,7 +209,7 @@ export interface Partner {
 }
 
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor';
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'perifacode' | 'donate';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
@@ -258,37 +258,30 @@ export interface AppContextType {
   navigateToProjectEditor: (project?: Project) => void;
   openProfileModal: (member: User) => void;
   closeProfileModal: () => void;
+  completeLesson: (lessonId: string) => void;
+  handleSaveNote: (lessonId: string, note: string) => void;
   
   // Data Management
   handleSaveCourse: (courseToSave: Course) => void;
   handleEditCourse: (course: Course) => void;
   handleCreateCourse: () => void;
-  
   handleSaveArticle: (articleToSave: Article) => void;
   handleEditArticle: (article: Article) => void;
   handleCreateArticle: () => void;
   handleDeleteArticle: (articleId: string) => void;
-
   handleSaveUser: (userToSave: User) => void;
   handleEditUser: (user: User) => void;
-  handleCreateUser: (role: User['role']) => void;
+  handleCreateUser: (role: 'student' | 'instructor') => void;
   handleDeleteUser: (userId: string) => void;
-  
   handleSaveProject: (projectToSave: Project) => void;
   handleAddClap: (projectId: string) => void;
-  handleAddComment: (projectId: string, commentText: string) => void;
-
+  handleAddComment: (projectId: string, text: string) => void;
   handleSaveEvent: (eventToSave: Event) => void;
-  handleEditEvent: (event: Event) => void;
   handleCreateEvent: () => void;
+  handleEditEvent: (event: Event) => void;
   handleDeleteEvent: (eventId: string) => void;
-  
-  handleBookSession: (sessionId: string) => void;
-  handleCancelSession: (sessionId: string) => void;
   handleAddSessionSlot: (mentorId: string, date: string, time: string) => void;
   handleRemoveSessionSlot: (mentorId: string, date: string, time: string) => void;
-
-  completeLesson: (lessonId: string) => void;
-  setToast: (message: string | null) => void;
-  handleSaveNote: (lessonId: string, note: string) => void;
+  handleBookSession: (sessionId: string) => void;
+  handleCancelSession: (sessionId: string) => void;
 }

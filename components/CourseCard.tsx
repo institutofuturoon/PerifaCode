@@ -8,16 +8,16 @@ interface CourseCardProps {
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
   const trackColors = {
-    'Frontend': 'bg-blue-500/10 text-blue-300 border border-blue-500/20',
-    'Backend': 'bg-green-500/10 text-green-300 border border-green-500/20',
-    'IA': 'bg-pink-500/10 text-pink-300 border border-pink-500/20',
-    'UX/UI': 'bg-yellow-500/10 text-yellow-300 border border-yellow-500/20',
+    'Frontend': 'bg-blue-500/10 text-[#05aff2] border border-blue-500/20',
+    'Backend': 'bg-yellow-500/10 text-[#f2d194] border border-yellow-500/20',
+    'IA': 'bg-purple-500/10 text-[#8a4add] border border-purple-500/20',
+    'UX/UI': 'bg-pink-500/10 text-[#f27983] border border-pink-500/20',
   };
 
   return (
     <button 
       onClick={() => onCourseSelect(course)}
-      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/20"
+      className="bg-white/5 rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-[#8a4add]/10"
     >
       <div className="overflow-hidden">
         <img className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl} alt={course.title} />
@@ -32,9 +32,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
               {course.duration}
             </span>
         </div>
-        <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">{course.title}</h3>
+        <h3 className="text-lg font-bold text-white group-hover:text-[#c4b5fd] transition-colors">{course.title}</h3>
         <p className="mt-2 text-sm text-gray-400 flex-grow">{course.description}</p>
-        <div className="mt-6 text-purple-400 font-semibold group-hover:text-purple-300 transition-colors duration-300">
+        <div className="mt-6 text-[#c4b5fd] font-semibold group-hover:text-white transition-colors duration-300">
           Ver detalhes <span className="inline-block transform group-hover:translate-x-1 transition-transform">&rarr;</span>
         </div>
       </div>

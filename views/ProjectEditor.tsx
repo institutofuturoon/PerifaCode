@@ -26,7 +26,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project: initialProject }
         handleSaveProject(project);
     };
 
-    const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors sm:text-sm text-white";
+    const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors sm:text-sm text-white";
     const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
 
     return (
@@ -41,7 +41,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project: initialProject }
                         <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
                             Cancelar
                         </button>
-                        <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+                        <button type="submit" className="bg-gradient-to-r from-blue-600 to-sky-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40">
                             Salvar Projeto
                         </button>
                     </div>

@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../App';
 // FIX: The 'MentorSession' type was missing from the import, causing a compilation error.
@@ -74,7 +70,7 @@ const Admin: React.FC = () => {
                     <button onClick={() => navigateToInstructorDashboard(course)} className="text-green-400 hover:text-green-300">
                       Ver Progresso
                     </button>
-                    <button onClick={() => handleEditCourse(course)} className="text-purple-400 hover:text-purple-300">
+                    <button onClick={() => handleEditCourse(course)} className="text-blue-400 hover:text-blue-300">
                       Editar
                     </button>
                   </td>
@@ -124,13 +120,13 @@ const Admin: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{article.author}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-pink-500/20 text-pink-300">
+                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-sky-500/20 text-sky-300">
                       {article.category}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{article.date}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                    <button onClick={() => handleEditArticle(article)} className="text-purple-400 hover:text-purple-300">
+                    <button onClick={() => handleEditArticle(article)} className="text-blue-400 hover:text-blue-300">
                       Editar
                     </button>
                     <button onClick={() => handleDeleteArticle(article.id)} className="text-red-400 hover:text-red-300">
@@ -177,7 +173,7 @@ const Admin: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 capitalize">{member.role}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">{member.isMentor ? '✅' : '❌'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                      <button onClick={() => handleEditUser(member)} className="text-purple-400 hover:text-purple-300">Editar</button>
+                      <button onClick={() => handleEditUser(member)} className="text-blue-400 hover:text-blue-300">Editar</button>
                       {user?.id !== member.id && (
                         <button onClick={() => handleDeleteUser(member.id)} className="text-red-400 hover:text-red-300">Excluir</button>
                       )}
@@ -234,7 +230,7 @@ const Admin: React.FC = () => {
                     </td>
                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.xp}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                      <button onClick={() => handleEditUser(student)} className="text-purple-400 hover:text-purple-300">
+                      <button onClick={() => handleEditUser(student)} className="text-blue-400 hover:text-blue-300">
                           Editar
                       </button>
                       {user?.id !== student.id && (
@@ -290,7 +286,7 @@ const Admin: React.FC = () => {
                                                 <p className="font-bold">Agendado</p>
                                                 <p>{student.name.split(' ')[0]}</p>
                                                 {session.googleMeetUrl && 
-                                                    <a href={session.googleMeetUrl} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline text-[10px]">Link da Sala</a>
+                                                    <a href={session.googleMeetUrl} target="_blank" rel="noopener noreferrer" className="text-blue-300 hover:underline text-[10px]">Link da Sala</a>
                                                 }
                                             </div>
                                         );
@@ -355,7 +351,7 @@ const Admin: React.FC = () => {
         {showCreateButton && createButton && (
             <button
             onClick={createButton.action}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40"
+            className="bg-gradient-to-r from-blue-600 to-sky-500 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
             >
             {createButton.text}
             </button>
@@ -370,7 +366,7 @@ const Admin: React.FC = () => {
                   onClick={() => setActiveTab('myAgenda')}
                   className={`${
                     activeTab === 'myAgenda'
-                      ? 'border-purple-400 text-purple-400'
+                      ? 'border-blue-400 text-blue-400'
                       : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
                   } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
                 >
@@ -381,7 +377,7 @@ const Admin: React.FC = () => {
               onClick={() => setActiveTab('courses')}
               className={`${
                 activeTab === 'courses'
-                  ? 'border-purple-400 text-purple-400'
+                  ? 'border-blue-400 text-blue-400'
                   : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
               } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
             >
@@ -391,7 +387,7 @@ const Admin: React.FC = () => {
               onClick={() => setActiveTab('blog')}
               className={`${
                 activeTab === 'blog'
-                  ? 'border-purple-400 text-purple-400'
+                  ? 'border-blue-400 text-blue-400'
                   : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
               } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
             >
@@ -403,7 +399,7 @@ const Admin: React.FC = () => {
                   onClick={() => setActiveTab('teamMembers')}
                   className={`${
                     activeTab === 'teamMembers'
-                      ? 'border-purple-400 text-purple-400'
+                      ? 'border-blue-400 text-blue-400'
                       : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
                   } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
                 >
@@ -413,7 +409,7 @@ const Admin: React.FC = () => {
                   onClick={() => setActiveTab('students')}
                   className={`${
                     activeTab === 'students'
-                      ? 'border-purple-400 text-purple-400'
+                      ? 'border-blue-400 text-blue-400'
                       : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
                   } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
                 >

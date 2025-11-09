@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
@@ -9,7 +8,9 @@ const Blog: React.FC = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div className="text-center">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">Nosso Blog</h1>
+        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">
+          Nosso <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-sky-500">Blog</span>
+        </h1>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
           Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia.
         </p>

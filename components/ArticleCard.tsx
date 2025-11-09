@@ -10,13 +10,13 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleSelect }) =
   return (
     <button 
       onClick={() => onArticleSelect(article)}
-      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-purple-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/20"
+      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/20"
     >
       <div className="overflow-hidden">
         <img className="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-500" src={article.imageUrl} alt={article.title} />
       </div>
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-white group-hover:text-purple-300 transition-colors">{article.title}</h3>
+        <h3 className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">{article.title}</h3>
         <p className="mt-3 text-sm text-gray-400 flex-grow">{article.summary}</p>
         <div className="mt-6 flex items-center">
           <div className="flex-shrink-0">

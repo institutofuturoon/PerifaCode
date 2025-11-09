@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Course } from '../types';
 import { MOCK_ANALYTICS_DATA_V2 as MOCK_ANALYTICS_DATA } from '../constants';
@@ -7,7 +6,7 @@ import { useAppContext } from '../App';
 const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode }> = ({ title, value, icon }) => (
   <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-white/10">
     <div className="flex items-center gap-4">
-      <div className="flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
+      <div className="flex-shrink-0 h-12 w-12 rounded-full bg-gradient-to-br from-blue-600 to-sky-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
         {icon}
       </div>
       <div>
@@ -45,7 +44,7 @@ const LessonFunnelChart: React.FC<{ course: Course }> = ({ course }) => {
                             </div>
                             <div className="w-full bg-black/30 rounded-full h-5 border border-white/10 relative">
                                 <div
-                                className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-500 ease-out"
+                                className="bg-gradient-to-r from-blue-600 to-sky-500 h-full rounded-full transition-all duration-500 ease-out"
                                 style={{ width: `${retentionPercentage}%` }}
                                 ></div>
                             </div>
@@ -98,12 +97,12 @@ const StudentRetentionChart: React.FC<{data: typeof MOCK_ANALYTICS_DATA.studentR
                 <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
                     <defs>
                         <linearGradient id="retentionGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#A855F7" stopOpacity="0.4"/>
-                            <stop offset="100%" stopColor="#A855F7" stopOpacity="0"/>
+                            <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4"/>
+                            <stop offset="100%" stopColor="#60a5fa" stopOpacity="0"/>
                         </linearGradient>
                     </defs>
                     <path d={areaPath} fill="url(#retentionGradient)" />
-                    <polyline fill="none" stroke="#A855F7" strokeWidth="2" points={points} />
+                    <polyline fill="none" stroke="#60a5fa" strokeWidth="2" points={points} />
                 </svg>
             </div>
         </div>
@@ -202,7 +201,7 @@ const Analytics: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-white/10">
                     {sortedCourses.map((course) => (
-                    <tr key={course.id} onClick={() => setSelectedCourseForFunnel(course)} className="hover:bg-purple-500/10 transition-colors cursor-pointer">
+                    <tr key={course.id} onClick={() => setSelectedCourseForFunnel(course)} className="hover:bg-blue-500/10 transition-colors cursor-pointer">
                         <td className="px-6 py-4 whitespace-nowrap">
                             <span className="text-sm font-medium text-white">{course.title}</span>
                         </td>
@@ -241,7 +240,7 @@ const Analytics: React.FC = () => {
                                     <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full" />
                                     <span className="text-sm font-medium text-white">{student.name}</span>
                                 </div>
-                                <span className="text-sm font-bold text-purple-300">{student.xp.toLocaleString('pt-BR')} XP</span>
+                                <span className="text-sm font-bold text-blue-300">{student.xp.toLocaleString('pt-BR')} XP</span>
                             </li>
                         ))}
                     </ul>

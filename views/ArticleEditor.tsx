@@ -105,7 +105,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article: initialArticle }
       }
   };
 
-  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors sm:text-sm text-white";
+  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors sm:text-sm text-white";
   const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
 
   const AiButton: React.FC<{ onClick: () => void; isLoading: boolean; children: React.ReactNode, className?: string }> = ({ onClick, isLoading, children, className }) => (
@@ -113,7 +113,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article: initialArticle }
       type="button"
       onClick={onClick}
       disabled={isLoading}
-      className={`flex items-center justify-center gap-2 font-semibold text-purple-300 hover:text-purple-200 text-xs py-1 px-3 rounded-full bg-purple-500/10 hover:bg-purple-500/20 transition-colors disabled:opacity-50 disabled:cursor-wait ${className}`}
+      className={`flex items-center justify-center gap-2 font-semibold text-blue-300 hover:text-blue-200 text-xs py-1 px-3 rounded-full bg-blue-500/10 hover:bg-blue-500/20 transition-colors disabled:opacity-50 disabled:cursor-wait ${className}`}
     >
       {isLoading ? (
         <>
@@ -140,7 +140,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article: initialArticle }
             <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
               Cancelar
             </button>
-            <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+            <button type="submit" className="bg-gradient-to-r from-blue-600 to-sky-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40">
               Salvar Artigo
             </button>
           </div>

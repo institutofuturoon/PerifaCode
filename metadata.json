@@ -1,5 +1,5 @@
 {
-  "name": "PerifaCode - Aulas Online",
-  "description": "PerifaCode é uma plataforma de cursos online da FuturoOn, com foco em tecnologia e desenvolvimento pessoal para jovens da periferia. Agora com sistema de autenticação real e seguro via Firebase.",
+  "name": "FuturoOn",
+  "description": "PerifaCode é a plataforma de cursos online do Instituto FuturoOn, com foco em tecnologia e desenvolvimento pessoal para jovens da periferia, agora com sistema de autenticação real e seguro via Firebase.",
   "requestFramePermissions": []
 }

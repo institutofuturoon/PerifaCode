@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PerifaCode - Transforme seu futuro</title>
+    <title>FuturoOn - Transforme seu futuro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,59 +11,20 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #0A0A0A;
-      }
-      .bg-grid-pattern {
-        background-image: radial-gradient(circle at 1px 1px, rgba(168, 85, 247, 0.2) 1px, transparent 0);
-        background-size: 2rem 2rem;
-      }
-      .aurora-background {
-        position: relative;
-        overflow: hidden;
-      }
-      .aurora-background::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 150%;
-        padding-bottom: 150%;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        background: radial-gradient(circle at center, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0) 60%);
-        animation: aurora-pulse 15s infinite ease-in-out;
-        z-index: 0;
-      }
-      @keyframes aurora-pulse {
-        0%, 100% { transform: translate(-50%, -50%) scale(1); }
-        50% { transform: translate(-50%, -50%) scale(1.2); }
-      }
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #111827;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #7c3aed;
-        border-radius: 10px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #a855f7;
       }
       /* Estilos para blocos de código */
       .prose pre {
-        background-color: #0f0f0f;
+        background-color: #111827; /* Fundo escuro para o bloco de código */
         padding: 1rem;
         border-radius: 0.5rem;
         overflow-x: auto;
-        border: 1px solid rgba(168, 85, 247, 0.2);
-        color: #e5e7eb;
+        border: 1px solid #374151; /* Borda sutil */
+        color: #d1d5db; /* Texto claro */
       }
       .prose code {
         font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-        background-color: rgba(168, 85, 247, 0.1);
-        color: #d8b4fe;
+        background-color: rgba(3, 76, 140, 0.2); /* Fundo azulado mais sutil */
+        color: #93c5fd; /* Texto azul claro */
         padding: 0.2em 0.4em;
         border-radius: 3px;
         font-size: 85%;
@@ -77,8 +38,8 @@
       }
       /* Custom styles for select dropdown options */
       select option {
-        background: #111827; /* Dark background for options */
-        color: #e5e7eb; /* Light text for options */
+        background: #1e1b2e;
+        color: #e5e7eb;
       }
       .marquee {
         display: flex;
@@ -107,6 +68,37 @@
       .marquee:hover .marquee-content {
         animation-play-state: paused;
       }
+      
+      .aurora-background {
+        background-color: #1e1b2e;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .aurora-background::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 150%;
+        padding-bottom: 150%;
+        border-radius: 50%;
+        background-image: radial-gradient(circle at center, #8a4add20 0%, #4c1d9530 30%, #1e1b2e 70%);
+        transform: translate(-50%, -50%);
+        animation: aurora-spin 20s linear infinite;
+        z-index: 0;
+      }
+
+      @keyframes aurora-spin {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+
+      .bg-grid-pattern {
+        background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 2rem 2rem;
+      }
+
     </style>
   <script type="importmap">
 {
@@ -124,7 +116,7 @@
 }
 </script>
 </head>
-  <body class="bg-[#0A0A0A] text-gray-100">
+  <body class="bg-[#1e1b2e] text-gray-300">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

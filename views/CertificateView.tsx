@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { Logo } from '../assets/Logo';
@@ -46,7 +45,7 @@ const CertificateView: React.FC = () => {
     <div className="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center p-4 aurora-background">
       <div 
         ref={certificateRef}
-        className="w-full max-w-4xl bg-gray-900/50 backdrop-blur-xl rounded-lg border border-purple-500/30 shadow-2xl shadow-purple-500/20 p-8 relative overflow-hidden"
+        className="w-full max-w-4xl bg-gray-900/50 backdrop-blur-xl rounded-lg border border-blue-500/30 shadow-2xl shadow-blue-500/20 p-8 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-grid-pattern opacity-50"></div>
         <div className="relative z-10 text-center">
@@ -57,7 +56,7 @@ const CertificateView: React.FC = () => {
           <h1 className="text-4xl font-black text-white">Certificado de Conclusão</h1>
           <p className="mt-4 text-lg text-gray-300">Este certificado é concedido a</p>
 
-          <p className="my-8 text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+          <p className="my-8 text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-sky-500">
             {user.name}
           </p>
 
@@ -91,7 +90,7 @@ const CertificateView: React.FC = () => {
          <button
             onClick={handleDownload}
             disabled={isDownloading}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-blue-600 to-sky-600 text-white font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed"
         >
             {isDownloading ? 'Baixando...' : 'Baixar Certificado'}
         </button>

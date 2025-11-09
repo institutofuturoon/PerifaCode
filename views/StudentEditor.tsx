@@ -28,7 +28,7 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
     handleSaveUser(user);
   };
 
-  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors sm:text-sm text-white";
+  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors sm:text-sm text-white";
   const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
   const checkboxLabelClasses = "font-medium text-white";
   const checkboxDescriptionClasses = "text-gray-400 text-sm";
@@ -46,7 +46,7 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
             <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
               Cancelar
             </button>
-            <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+            <button type="submit" className="bg-gradient-to-r from-blue-600 to-sky-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40">
               Salvar Usuário
             </button>
           </div>
@@ -99,7 +99,7 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
               </div>
               <div className="relative flex items-start">
                 <div className="flex h-5 items-center">
-                  <input id="isMentor" name="isMentor" type="checkbox" checked={user.isMentor || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
+                  <input id="isMentor" name="isMentor" type="checkbox" checked={user.isMentor || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-blue-600 focus:ring-blue-500" />
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="isMentor" className={checkboxLabelClasses}>É Mentor?</label>
@@ -108,7 +108,7 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
               </div>
               <div className="relative flex items-start">
                 <div className="flex h-5 items-center">
-                  <input id="showOnTeamPage" name="showOnTeamPage" type="checkbox" checked={user.showOnTeamPage || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
+                  <input id="showOnTeamPage" name="showOnTeamPage" type="checkbox" checked={user.showOnTeamPage || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-blue-600 focus:ring-blue-500" />
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="showOnTeamPage" className={checkboxLabelClasses}>Mostrar na página 'Nossa Equipe'?</label>

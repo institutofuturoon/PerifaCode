@@ -1,5 +1,3 @@
-
-
 import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession } from './types';
 
 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
@@ -98,7 +96,7 @@ export const MOCK_USERS: User[] = [
     id: 'vol1', 
     name: 'Luiza Carmelo',
     email: 'luiza.carmelo@futuroon.org',
-    role: 'student',
+    role: 'student', // Mantido como student para não ter acesso admin, mas exibido na página de equipe
     avatarUrl: 'https://media.licdn.com/dms/image/v2/C4D03AQED7gUCwnsqZg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1660759911679?e=1764201600&v=beta&t=yzV8V8DNdxxxK0nSPEFAnFKZ4qn5gb-k2LsKceoxC2U',
     title: 'Tradutora Literária e Empresária (Gaia Atlas Carnívoras)',
     bio: 'Tradutora Literária e Empresária (Gaia Atlas Carnívoras)',
@@ -159,11 +157,11 @@ export const MOCK_USERS: User[] = [
     name: 'Marlon Souza',
     email: 'marlon.souza@futuroon.org',
     role: 'admin',
-    avatarUrl: 'https://instagram.fsdu12-2.fna.fbcdn.net/v/t51.2885-19/385648921_717224250314567_2789136741925779476_n.jpg?stp=dst-jpg_s150x150_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby45MjQuYzIifQ&_nc_ht=instagram.fsdu12-2.fna.fbcdn.net&_nc_cat=111&_nc_oc=Q6cZ2QG8MwVS5hpujO3l6I1rZ2mjDI2AlDm0eFLT2yCGuC5Xt0Tr9FWB6mj3uJiB_T_oN25hA2DAXUqD7Igq84mg6vJA&_nc_ohc=6PA7N8yzLqUQ7kNvwGvoyou&_nc_gid=HzF7o4uA3lzv0qwafV3rzg&edm=ALGbJPMBAAAA&ccb=7-5&oh=00_AfjIl9ju2Unu29WvmhdDYpnht0iK5xp_DWbEEWAKKAoSyA&oe=6913FE87&_nc_sid=7d3ac5',
+    avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQE6gV_60L_8yw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1687550882103?e=1764201600&v=beta&t=Ue89n6p4Q7b8QZz4Y9eX_W2wF_vC_jYc_Z_qX_y_3s',
     title: 'Coordenador Institucional',
-    bio: 'Apaixonado por tecnologia e Impacto social',
+    bio: 'Apaixonado por tecnologia e Impacto social. Acredito que a educação é a principal ferramenta para a transformação social. Minha missão é criar oportunidades para que jovens de periferia possam ser protagonistas de suas próprias histórias.',
     isMentor: false, showOnTeamPage: true,
-    linkedinUrl: '#',
+    linkedinUrl: 'https://www.linkedin.com/in/marlon-souza-a1b2b345/',
     completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {}
    },
 ];
@@ -297,10 +295,13 @@ export const MOCK_PROJECTS: Project[] = [
 ];
 
 export const MOCK_PARTNERS: Partner[] = [
-  { id: 'p1', name: 'iFood', logoUrl: 'https://logodownload.org/wp-content/uploads/2017/05/ifood-logo-0.png' },
-  { id: 'p2', name: 'Nubank', logoUrl: 'https://logodownload.org/wp-content/uploads/2019/08/nubank-logo-3.png' },
-  { id: 'p3', name: 'Google', logoUrl: 'https://logodownload.org/wp-content/uploads/2014/09/google-logo-1.png' },
-  { id: 'p4', name: 'Vercel', logoUrl: 'https://assets.vercel.com/image/upload/front/logotype/dark/vercel-logotype.svg' },
+  { id: 'p1', name: 'SENAC', logoUrl: 'https://seeklogo.com/images/S/Senac-logo-C1324B679A-seeklogo.com.png' },
+  { id: 'p2', name: 'Seven Boys', logoUrl: 'https://seeklogo.com/images/S/seven-boys-logo-955225E039-seeklogo.com.png' },
+  { id: 'p3', name: 'Hostinger', logoUrl: 'https://institutofuturoon.vercel.app/assets/imagens/parceiros/OIP.webp' },
+  { id: 'p4', name: 'SENAI', logoUrl: 'https://seeklogo.com/images/S/SENAI-logo-1A3742296E-seeklogo.com.png' },
+  { id: 'p5', name: 'FIRJAN', logoUrl: 'https://seeklogo.com/images/F/Firjan-logo-AEFF3521D7-seeklogo.com.png' },
+  { id: 'p6', name: 'Alura', logoUrl: 'https://cdn.worldvectorlogo.com/logos/alura-1.svg' },
+  { id: 'p7', name: 'Cornerstone', logoUrl: 'https://seeklogo.com/images/C/cornerstone-ondemand-logo-16629683A3-seeklogo.com.png' },
 ];
 
 export const MOCK_EVENTS: Event[] = [

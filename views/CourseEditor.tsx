@@ -242,7 +242,7 @@ Retorne APENAS no formato JSON especificado.`;
   };
   
   const renderEditPanel = () => {
-    const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors sm:text-sm";
+    const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors sm:text-sm";
     const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
 
     if (!user) return null;
@@ -354,7 +354,7 @@ Retorne APENAS no formato JSON especificado.`;
                             type="button" 
                             onClick={() => handleGenerateContent(moduleIndex, lessonIndex)} 
                             disabled={isGeneratingContent} 
-                            className="flex items-center gap-2 font-semibold text-purple-300 hover:text-purple-200 text-sm py-2 px-4 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 font-semibold text-blue-300 hover:text-blue-200 text-sm py-2 px-4 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 transition-colors disabled:opacity-50"
                         >
                             {isGeneratingContent ? 'Gerando...' : '✨ Gerar com IA'}
                         </button>
@@ -369,7 +369,7 @@ Retorne APENAS no formato JSON especificado.`;
                 <div>
                   <RichContentEditor label="Material Complementar" value={lesson.complementaryMaterial || ''} onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'complementaryMaterial', v)} textareaRef={complementaryRef} />
                   <div className="flex justify-end mt-2">
-                    <button type="button" onClick={() => handleSuggestMaterials(moduleIndex, lessonIndex)} disabled={isSuggestingMaterials} className="flex items-center gap-2 font-semibold text-purple-300 hover:text-purple-200 text-sm py-2 px-4 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 transition-colors disabled:opacity-50">
+                    <button type="button" onClick={() => handleSuggestMaterials(moduleIndex, lessonIndex)} disabled={isSuggestingMaterials} className="flex items-center gap-2 font-semibold text-blue-300 hover:text-blue-200 text-sm py-2 px-4 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 transition-colors disabled:opacity-50">
                        {isSuggestingMaterials ? 'Sugerindo...' : '✨ Sugerir com IA'}
                     </button>
                   </div>
@@ -393,7 +393,7 @@ Retorne APENAS no formato JSON especificado.`;
                 <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
                     Cancelar
                 </button>
-                <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+                <button type="submit" className="bg-gradient-to-r from-blue-600 to-sky-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40">
                     Salvar Curso
                 </button>
             </div>
@@ -403,8 +403,8 @@ Retorne APENAS no formato JSON especificado.`;
           {/* Left Panel: Structure */}
           <div className="lg:col-span-1 p-6 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 space-y-4 sticky top-24">
               <h2 className="text-lg font-bold text-white">Estrutura do Curso</h2>
-              <div className="p-4 bg-black/30 rounded-lg border border-purple-500/20 space-y-2">
-                  <label htmlFor="ai-topic" className="block text-sm font-bold text-purple-300">
+              <div className="p-4 bg-black/30 rounded-lg border border-blue-500/20 space-y-2">
+                  <label htmlFor="ai-topic" className="block text-sm font-bold text-blue-300">
                       ✨ Acelere com IA
                   </label>
                   <input
@@ -412,32 +412,32 @@ Retorne APENAS no formato JSON especificado.`;
                       value={aiTopic}
                       onChange={(e) => setAiTopic(e.target.value)}
                       placeholder="Ex: Curso de CSS Grid"
-                      className="w-full p-2 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors sm:text-sm"
+                      className="w-full p-2 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors sm:text-sm"
                   />
-                  <button type="button" onClick={handleGenerateStructure} disabled={!aiTopic || isGeneratingStructure} className="w-full flex items-center justify-center gap-2 font-semibold py-2 px-4 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50">
+                  <button type="button" onClick={handleGenerateStructure} disabled={!aiTopic || isGeneratingStructure} className="w-full flex items-center justify-center gap-2 font-semibold py-2 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50">
                       {isGeneratingStructure ? 'Gerando...' : 'Gerar Estrutura'}
                   </button>
               </div>
 
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
-                <button type="button" onClick={() => setSelectedItem({type: 'course'})} className={`w-full text-left p-2 rounded-md transition-colors text-sm font-semibold ${selectedItem.type === 'course' ? 'bg-purple-500/20 text-white' : 'text-gray-300 hover:bg-white/10'}`}>
+                <button type="button" onClick={() => setSelectedItem({type: 'course'})} className={`w-full text-left p-2 rounded-md transition-colors text-sm font-semibold ${selectedItem.type === 'course' ? 'bg-blue-500/20 text-white' : 'text-gray-300 hover:bg-white/10'}`}>
                     Informações Gerais
                 </button>
                 {course.modules.map((module, moduleIndex) => (
                     <div key={module.id} className="bg-white/5 p-2 rounded">
                         <div className="flex justify-between items-center">
-                            <button type="button" onClick={() => setSelectedItem({type: 'module', moduleIndex})} className={`flex-grow text-left p-2 rounded-md transition-colors text-sm font-semibold ${selectedItem.type === 'module' && selectedItem.moduleIndex === moduleIndex ? 'bg-purple-500/20 text-white' : 'text-gray-300 hover:bg-white/10'}`}>
+                            <button type="button" onClick={() => setSelectedItem({type: 'module', moduleIndex})} className={`flex-grow text-left p-2 rounded-md transition-colors text-sm font-semibold ${selectedItem.type === 'module' && selectedItem.moduleIndex === moduleIndex ? 'bg-blue-500/20 text-white' : 'text-gray-300 hover:bg-white/10'}`}>
                                 Módulo {moduleIndex + 1}: {module.title}
                             </button>
                             <button type="button" onClick={() => removeModule(moduleIndex)} className="text-red-400 hover:text-red-300 text-xs px-2">&times;</button>
                         </div>
                         <div className="pl-4 mt-1 space-y-1">
                             {module.lessons.map((lesson, lessonIndex) => (
-                               <button key={lesson.id} type="button" onClick={() => setSelectedItem({type: 'lesson', moduleIndex, lessonIndex})} className={`w-full text-left p-2 rounded-md transition-colors text-xs ${selectedItem.type === 'lesson' && selectedItem.moduleIndex === moduleIndex && selectedItem.lessonIndex === lessonIndex ? 'bg-purple-500/20 text-white' : 'text-gray-400 hover:bg-white/10'}`}>
+                               <button key={lesson.id} type="button" onClick={() => setSelectedItem({type: 'lesson', moduleIndex, lessonIndex})} className={`w-full text-left p-2 rounded-md transition-colors text-xs ${selectedItem.type === 'lesson' && selectedItem.moduleIndex === moduleIndex && selectedItem.lessonIndex === lessonIndex ? 'bg-blue-500/20 text-white' : 'text-gray-400 hover:bg-white/10'}`}>
                                    {lesson.title}
                                </button>
                             ))}
-                            <button type="button" onClick={() => addLesson(moduleIndex)} className="text-xs font-semibold text-purple-400 hover:text-purple-300 p-2">+ Adicionar Aula</button>
+                            <button type="button" onClick={() => addLesson(moduleIndex)} className="text-xs font-semibold text-blue-400 hover:text-blue-300 p-2">+ Adicionar Aula</button>
                         </div>
                     </div>
                 ))}

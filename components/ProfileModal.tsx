@@ -7,7 +7,7 @@ interface ProfileModalProps {
 }
 
 const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition-all duration-300 transform hover:scale-110">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8a4add] transition-all duration-300 transform hover:scale-110">
         {children}
     </a>
 );
@@ -33,18 +33,18 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ member, onClose }) => {
             onClick={onClose}
         >
             <div 
-                className="bg-[#121212] rounded-2xl border border-purple-500/30 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl shadow-purple-500/20 relative"
+                className="bg-[#121212] rounded-2xl border border-[#8a4add]/30 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl shadow-[#8a4add]/20 relative"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors text-2xl z-10">&times;</button>
                 
                 <div className="flex-shrink-0 h-48 bg-grid-pattern rounded-t-2xl flex items-end p-8 relative">
-                    <img src={member.avatarUrl} alt={member.name} className="h-32 w-32 rounded-full border-4 border-purple-500 absolute -bottom-16" />
+                    <img src={member.avatarUrl} alt={member.name} className="h-32 w-32 rounded-full border-4 border-[#8a4add] absolute -bottom-16" />
                 </div>
                 
                 <div className="p-8 pt-20 flex-grow overflow-y-auto">
                     <h2 className="text-3xl font-bold text-white">{member.name}</h2>
-                    <p className="text-md text-purple-400 font-semibold">{member.title}</p>
+                    <p className="text-md text-[#8a4add] font-semibold">{member.title}</p>
                     
                     <div className="mt-4 flex items-center gap-4">
                         {member.githubUrl && (

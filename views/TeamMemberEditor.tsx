@@ -14,7 +14,7 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
 
   const onCancel = () => navigate('admin');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
     if (type === 'checkbox') {
@@ -41,30 +41,41 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-4xl font-black text-white">{initialMember.name ? 'Editar Membro da Equipe' : 'Novo Membro da Equipe'}</h1>
-            <p className="text-gray-400 mt-1">Gerencie os perfis e permissões da equipe.</p>
+            <p className="text-gray-400 mt-1">Gerencie os perfis e permissões dos membros da equipe.</p>
           </div>
           <div className="flex gap-4">
             <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
               Cancelar
             </button>
-            <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
-              Salvar
+            <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+              Salvar Membro
             </button>
           </div>
         </div>
 
         <div className="p-8 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 space-y-6">
+            <h3 className="text-lg font-bold text-white border-b border-white/10 pb-2">Informações Principais</h3>
             <div>
                 <label htmlFor="name" className={labelClasses}>Nome Completo</label>
                 <input id="name" name="name" value={member.name} onChange={handleChange} required className={inputClasses} />
             </div>
-            <div>
-                <label htmlFor="title" className={labelClasses}>Título Profissional</label>
-                <input id="title" name="title" value={member.title || ''} onChange={handleChange} placeholder="Ex: Desenvolvedor Frontend" required className={inputClasses} />
+            <div className="grid md:grid-cols-2 gap-6">
+                 <div>
+                    <label htmlFor="email" className={labelClasses}>Email</label>
+                    <input id="email" name="email" type="email" value={member.email} onChange={handleChange} required className={inputClasses} />
+                </div>
+                 <div>
+                    <label htmlFor="title" className={labelClasses}>Título Profissional</label>
+                    <input id="title" name="title" value={member.title || ''} onChange={handleChange} placeholder="Ex: Desenvolvedor Frontend" className={inputClasses} />
+                </div>
             </div>
             <div>
                 <label htmlFor="avatarUrl" className={labelClasses}>URL do Avatar</label>
                 <input id="avatarUrl" name="avatarUrl" value={member.avatarUrl} onChange={handleChange} required className={inputClasses} />
+            </div>
+             <div>
+                <label htmlFor="bio" className={labelClasses}>Bio</label>
+                <textarea id="bio" name="bio" value={member.bio} onChange={handleChange} required className={inputClasses} rows={3} placeholder="Uma breve biografia sobre o(a) membro(a) da equipe."/>
             </div>
              <div className="grid md:grid-cols-2 gap-6">
                 <div>
@@ -76,25 +87,20 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
                     <input id="githubUrl" name="githubUrl" type="url" value={member.githubUrl || ''} onChange={handleChange} className={inputClasses} />
                 </div>
             </div>
-            <div>
-                <label htmlFor="bio" className={labelClasses}>Bio</label>
-                <textarea id="bio" name="bio" value={member.bio} onChange={handleChange} required className={inputClasses} rows={4} placeholder="Uma breve biografia sobre o membro da equipe."/>
-            </div>
 
             <fieldset className="space-y-5 border-t border-white/10 pt-6">
-              <legend className="text-base font-medium text-white mb-2">Permissões e Visibilidade</legend>
-              <div className="relative flex items-start">
-                <div className="flex h-5 items-center">
-                  <input id="isInstructor" name="isInstructor" type="checkbox" checked={member.role === 'instructor'} onChange={(e) => setMember(prev => ({...prev, role: e.target.checked ? 'instructor' : 'student'}))} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
-                </div>
-                <div className="ml-3 text-sm">
-                  <label htmlFor="isInstructor" className={checkboxLabelClasses}>É Instrutor?</label>
-                  <p className={checkboxDescriptionClasses}>Poderá criar e gerenciar cursos e responder dúvidas de alunos.</p>
-                </div>
+              <legend className="text-lg font-bold text-white mb-2">Permissões e Visibilidade</legend>
+              <div>
+                <label htmlFor="role" className={labelClasses}>Papel na Plataforma</label>
+                <select id="role" name="role" value={member.role} onChange={handleChange} className={inputClasses}>
+                    <option value="student">Aluno</option>
+                    <option value="instructor">Instrutor</option>
+                    <option value="admin">Admin</option>
+                </select>
               </div>
               <div className="relative flex items-start">
                 <div className="flex h-5 items-center">
-                  <input id="isMentor" name="isMentor" type="checkbox" checked={member.isMentor} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
+                  <input id="isMentor" name="isMentor" type="checkbox" checked={member.isMentor || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="isMentor" className={checkboxLabelClasses}>É Mentor?</label>
@@ -103,7 +109,7 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
               </div>
               <div className="relative flex items-start">
                 <div className="flex h-5 items-center">
-                  <input id="showOnTeamPage" name="showOnTeamPage" type="checkbox" checked={member.showOnTeamPage} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
+                  <input id="showOnTeamPage" name="showOnTeamPage" type="checkbox" checked={member.showOnTeamPage || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="showOnTeamPage" className={checkboxLabelClasses}>Mostrar na página 'Nossa Equipe'?</label>
@@ -111,11 +117,11 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
                 </div>
               </div>
             </fieldset>
-
         </div>
       </form>
     </div>
   );
 };
 
+// FIX: Add default export to resolve import error in App.tsx
 export default TeamMemberEditor;
