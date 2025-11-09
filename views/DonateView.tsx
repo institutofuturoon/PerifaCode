@@ -62,7 +62,7 @@ const DonateView: React.FC = () => {
                         </div>
                     </div>
                     <div className="flex justify-center items-center">
-                        <img src="https://institutofuturoon.vercel.app/assets/images/qrcode.png" alt="QR Code PIX para doação" className="rounded-lg border-4 border-white max-w-[250px] w-full" />
+                        <img src="assets/images/qrcode.png" alt="QR Code PIX para doação" className="rounded-lg border-4 border-white max-w-[250px] w-full" />
                     </div>
                 </div>
 
