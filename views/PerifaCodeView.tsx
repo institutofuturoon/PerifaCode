@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import CourseCard from '../components/CourseCard';
 import ProgressBar from '../components/ProgressBar';
 import { useAppContext } from '../App';
-import { MOCK_COURSES } from '../constants';
 
 // -- Novos Componentes de Layout --
 
@@ -43,8 +42,22 @@ const FormatCard: React.FC<{ icon: string; title: string; description: string; b
     </div>
 );
 
+type Track = 'Todos' | 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Games' | 'Idiomas' | 'Negócios' | 'Digital';
+
 const PerifaCodeView: React.FC = () => {
-  const { user, navigate, navigateToCourse, navigateToLesson, courseProgress } = useAppContext();
+  const { user, navigate, courses, navigateToCourse, navigateToLesson, courseProgress } = useAppContext();
+  const [activeTrack, setActiveTrack] = useState<Track>('Todos');
+
+  const tracks = useMemo(() => {
+    const allTracks = courses.map(c => c.track);
+    const uniqueTracks = ['Todos', ...Array.from(new Set(allTracks))];
+    const sortedTracks = uniqueTracks.slice(1).sort();
+    return ['Todos', ...sortedTracks] as Track[];
+  }, [courses]);
+  
+  const filteredCourses = useMemo(() => activeTrack === 'Todos'
+    ? courses
+    : courses.filter(course => course.track === activeTrack), [courses, activeTrack]);
   
   const inProgressData = courseProgress.inProgressCourses[0] || null;
 
@@ -156,15 +169,27 @@ const PerifaCodeView: React.FC = () => {
                 <SectionTitle subtitle="Do zero ao código, sua jornada para o mercado de tecnologia começa aqui. Escolha sua trilha e transforme seu futuro hoje.">
                     Cursos em Destaque
                 </SectionTitle>
-                <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {MOCK_COURSES.map(course => (
-                    <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse} />
-                ))}
-                </div>
-                <div className="mt-12 text-center">
-                    <button onClick={() => navigate('courses')} className="text-[#c4b5fd] font-semibold hover:underline group">
-                        Ver todos os cursos online <span className="inline-block transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+
+                <div className="mt-12 mb-12 flex justify-center flex-wrap gap-2 sm:gap-4">
+                    {tracks.map(track => (
+                    <button
+                        key={track}
+                        onClick={() => setActiveTrack(track)}
+                        className={`px-5 py-2 text-sm sm:text-base font-semibold rounded-full transition-all duration-300 transform hover:scale-105 ${
+                        activeTrack === track
+                            ? 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-lg shadow-[#8a4add]/30'
+                            : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-transparent'
+                        }`}
+                    >
+                        {track}
                     </button>
+                    ))}
+                </div>
+
+                <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {filteredCourses.map(course => (
+                        <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse} />
+                    ))}
                 </div>
             </Section>
        </main>

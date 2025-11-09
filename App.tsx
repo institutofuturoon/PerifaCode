@@ -8,7 +8,6 @@ import { MOCK_ACHIEVEMENTS, ARTICLES, MOCK_PROJECTS, MOCK_PARTNERS, MOCK_EVENTS,
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
-import Courses from './views/Courses';
 import Dashboard from './views/Dashboard';
 import ConnectView from './views/ConnectView';
 import Blog from './views/Blog';
@@ -39,12 +38,6 @@ import DonateView from './views/DonateView';
 import AboutUsView from './views/AboutUsView';
 import AnnualReportView from './views/AnnualReportView';
 import FinancialStatementView from './views/FinancialStatementView';
-import DigitalLiteracyView from './views/DigitalLiteracyView';
-import PythonCourseView from './views/PythonCourseView';
-import CSharpCourseView from './views/CSharpCourseView';
-import GameDevCourseView from './views/GameDevCourseView';
-import EnglishCourseView from './views/EnglishCourseView';
-import EntrepreneurshipCourseView from './views/EntrepreneurshipCourseView';
 import EventDetailView from './views/EventDetailView';
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -183,30 +176,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const navigateToCourse = (course: Course) => {
-    if (course.id === 'ld1' || course.id === 'ld2') {
-        navigate('digitalLiteracy');
-        return;
-    }
-    if (course.id === 'py1') {
-        navigate('pythonCourse');
-        return;
-    }
-    if (course.id === 'cs1') {
-        navigate('csharpCourse');
-        return;
-    }
-    if (course.id === 'gm1') {
-        navigate('gameDevCourse');
-        return;
-    }
-    if (course.id === 'en1') {
-        navigate('englishCourse');
-        return;
-    }
-    if (course.id === 'ed1') {
-        navigate('entrepreneurshipCourse');
-        return;
-    }
     setCurrentCourse(course);
     navigate('courseDetail');
   };
@@ -473,8 +442,7 @@ const App: React.FC = () => {
             
             switch (view) {
                 case 'home': return <Home />;
-                case 'perifacode': return <PerifaCodeView />;
-                case 'courses': return <Courses />;
+                case 'courses': return <PerifaCodeView />;
                 case 'dashboard': return <Dashboard />;
                 case 'connect': return <ConnectView />;
                 case 'blog': return <Blog />;
@@ -504,12 +472,6 @@ const App: React.FC = () => {
                 case 'about': return <AboutUsView />;
                 case 'annualReport': return <AnnualReportView />;
                 case 'financialStatement': return <FinancialStatementView />;
-                case 'digitalLiteracy': return <DigitalLiteracyView />;
-                case 'pythonCourse': return <PythonCourseView />;
-                case 'csharpCourse': return <CSharpCourseView />;
-                case 'gameDevCourse': return <GameDevCourseView />;
-                case 'englishCourse': return <EnglishCourseView />;
-                case 'entrepreneurshipCourse': return <EntrepreneurshipCourseView />;
                 default: return <Home />;
             }
         };

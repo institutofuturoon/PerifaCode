@@ -48,24 +48,25 @@ const Footer: React.FC = () => {
             </div>
           </div>
           
-          {/* Coluna 2: Navegação */}
+          {/* Coluna 2: Plataforma */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Navegação</h3>
+            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Plataforma</h3>
             <ul className="mt-4 space-y-3">
               <li><FooterLink onClick={() => navigate('courses')}>Cursos</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('community')}>Comunidade</FooterLink></li>
               <li><FooterLink onClick={() => navigate('connect')}>Mentorias & Eventos</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('team')}>Nossa Equipe</FooterLink></li>
               <li><FooterLink onClick={() => navigate('blog')}>Blog</FooterLink></li>
             </ul>
           </div>
 
-          {/* Coluna 3: Comunidade */}
+          {/* Coluna 3: Institucional */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Comunidade</h3>
+            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Institucional</h3>
             <ul className="mt-4 space-y-3">
-              <li><FooterLink onClick={() => navigate('community')}>Showcase de Projetos</FooterLink></li>
-              <li><FooterLink onClick={() => {}}>Discord</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('connect')}>Eventos</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('about')}>Sobre Nós</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('team')}>Nossa Equipe</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('annualReport')}>Transparência</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('donate')}>Faça uma Doação</FooterLink></li>
             </ul>
           </div>
 

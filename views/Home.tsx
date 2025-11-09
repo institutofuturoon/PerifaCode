@@ -115,7 +115,7 @@ const Home: React.FC = () => {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                onClick={() => navigate('perifacode')}
+                onClick={() => navigate('courses')}
                 className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
               >
                 Comece a estudar agora
@@ -130,48 +130,23 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        {/* Quem Somos & MVV Section */}
+        {/* Quem Somos Section */}
         <section className="py-24 bg-black/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="max-w-4xl mx-auto text-center mb-20">
+                <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-4xl font-black tracking-tight text-white mb-2">Quem Somos</h2>
                     <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mb-6"></div>
-                    <div className="space-y-4 text-gray-300 leading-relaxed text-lg">
-                        <p>
-                            O Instituto FuturoON é um projeto social, no Complexo da Coruja, em São Gonçalo, que leva <span className="text-[#c4b5fd] font-semibold">educação e tecnologia</span> para jovens e adultos da periferia.
-                        </p>
+                    <p className="text-gray-300 leading-relaxed text-lg">
+                        O Instituto FuturoON é um projeto social, no Complexo da Coruja, em São Gonçalo, que leva <span className="text-[#c4b5fd] font-semibold">educação e tecnologia</span> para jovens e adultos da periferia.
+                    </p>
+                     <div className="mt-10">
+                        <button
+                            onClick={() => navigate('about')}
+                            className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300"
+                        >
+                            Conheça nossa história
+                        </button>
                     </div>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8">
-                    <InfoCard
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                        }
-                        title="Nossa Missão"
-                        description="Democratizar o acesso à educação de qualidade em tecnologia, capacitando jovens da periferia para que se tornem protagonistas de suas próprias histórias."
-                    />
-                    <InfoCard
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        }
-                        title="Nossa Visão"
-                        description="Ser a maior ponte entre talentos da periferia e as melhores oportunidades do mercado tech, transformando a cara da tecnologia no Brasil."
-                    />
-                    <InfoCard
-                        icon={
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
-                            </svg>
-                        }
-                        title="Nossos Valores"
-                        description="Comunidade forte, aprendizado prático, inclusão radical e a coragem de sonhar grande. Juntos, somos mais fortes."
-                    />
                 </div>
             </div>
         </section>

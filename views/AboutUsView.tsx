@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '../App';
+import ActionCard from '../components/ActionCard';
 
 const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ finalStat, duration = 2000 }) => {
   const [currentValue, setCurrentValue] = useState(0);
@@ -173,20 +174,22 @@ const AboutUsView: React.FC = () => {
                 <section className="py-24">
                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                          <div className="grid md:grid-cols-2 gap-8">
-                             <div className="bg-white/5 p-10 rounded-lg border border-white/10 text-center flex flex-col items-center justify-center">
-                                <h3 className="text-3xl font-bold text-white">Conheça Nossa Tropa</h3>
-                                <p className="mt-2 text-gray-300">Veja quem são os rostos e corações por trás do nosso corre diário.</p>
-                                <button onClick={() => navigate('team')} className="mt-6 bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300">
-                                    Ver equipe
-                                </button>
-                             </div>
-                             <div className="bg-white/5 p-10 rounded-lg border border-white/10 text-center flex flex-col items-center justify-center">
-                                <h3 className="text-3xl font-bold text-white">Apoie a Causa</h3>
-                                <p className="mt-2 text-gray-300">Somos uma ONG e cada centavo é investido na nossa missão. Faça parte dessa transformação.</p>
-                                <button onClick={() => navigate('donate')} className="mt-6 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300">
-                                    Faça uma doação
-                                </button>
-                             </div>
+                            <ActionCard
+                                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
+                                title="Conheça Nossa Tropa"
+                                description="Veja quem são os rostos e corações por trás do nosso corre diário."
+                                buttonText="Ver equipe"
+                                buttonOnClick={() => navigate('team')}
+                                buttonVariant="secondary"
+                            />
+                            <ActionCard
+                                icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>}
+                                title="Apoie a Causa"
+                                description="Somos uma ONG e cada centavo é investido na nossa missão. Faça parte dessa transformação."
+                                buttonText="Faça uma doação"
+                                buttonOnClick={() => navigate('donate')}
+                                buttonVariant="primary"
+                            />
                          </div>
                     </div>
                 </section>

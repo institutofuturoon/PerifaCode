@@ -57,17 +57,17 @@ const Header: React.FC = () => {
               <Logo />
             </button>
             <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
-              <NavLink onClick={() => navigate('perifacode')}>Nossos Cursos</NavLink>
-              <button onClick={() => navigate('community')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
-                Comunidade
-              </button>
-              <NavLink onClick={() => navigate('connect')}>Mentorias & Eventos</NavLink>
+              <NavLink onClick={() => navigate('courses')}>Cursos</NavLink>
+              <NavLink onClick={() => navigate('community')}>Comunidade</NavLink>
+              <NavLink onClick={() => navigate('about')}>Sobre Nós</NavLink>
               <NavLink onClick={() => navigate('blog')}>Blog</NavLink>
-              <NavLink onClick={() => navigate('donate')}>Faça uma Doação</NavLink>
             </nav>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
+             <button onClick={() => navigate('donate')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
+                Faça uma Doação
+            </button>
             {user ? (
               <>
                 {/* Notifications */}
@@ -125,11 +125,10 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-black border-t border-white/10">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <button onClick={() => handleMobileNav('perifacode')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossos Cursos</button>
+            <button onClick={() => handleMobileNav('courses')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
             <button onClick={() => handleMobileNav('community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
-            <button onClick={() => handleMobileNav('connect')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Mentorias & Eventos</button>
+            <button onClick={() => handleMobileNav('about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
             <button onClick={() => handleMobileNav('blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
-            <button onClick={() => handleMobileNav('donate')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Faça uma Doação</button>
           </div>
           <div className="pt-4 pb-3 border-t border-white/10">
             {user ? (
@@ -150,7 +149,8 @@ const Header: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="px-5">
+              <div className="px-5 space-y-3">
+                <button onClick={() => handleMobileNav('donate')} className="w-full text-center border border-[#c4b5fd]/50 text-[#c4b5fd] font-bold py-2 rounded-lg hover:bg-[#8a4add]/20 transition-colors">Faça uma Doação</button>
                 <button onClick={() => handleMobileNav('login')} className="w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Entrar</button>
               </div>
             )}

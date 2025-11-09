@@ -214,7 +214,7 @@ export interface Partner {
 }
 
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'perifacode' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'digitalLiteracy' | 'pythonCourse' | 'csharpCourse' | 'gameDevCourse' | 'englishCourse' | 'entrepreneurshipCourse' | 'eventDetail';
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
