@@ -41,7 +41,6 @@ import AboutUsView from './views/AboutUsView';
 import AnnualReportView from './views/AnnualReportView';
 import FinancialStatementView from './views/FinancialStatementView';
 import EventDetailView from './views/EventDetailView';
-import UploadTest from './views/UploadTest';
 import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
@@ -684,7 +683,6 @@ const App: React.FC = () => {
                 case 'about': return <AboutUsView />;
                 case 'annualReport': return <AnnualReportView />;
                 case 'financialStatement': return <FinancialStatementView />;
-                case 'uploadTest': return <UploadTest />;
                 case 'changePassword': return <ChangePassword />;
                 case 'courseLanding': return <CourseLandingPage />;
                 default: return <Home />;

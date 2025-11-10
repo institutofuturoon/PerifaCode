@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../App';
-import { upload } from '@vercel/blob/client';
+import { put } from '@vercel/blob';
 
 const Profile: React.FC = () => {
   const { user, handleLogout, handleUpdateUserProfile, showToast } = useAppContext();
@@ -55,17 +55,23 @@ const Profile: React.FC = () => {
 
     setIsUploading(true);
     try {
-        const newBlob = await upload(file.name, file, {
+        // AVISO: Esta implementação expõe o token de acesso no cliente.
+        // É insegura e adequada apenas para desenvolvimento/teste.
+        // Em produção, use um endpoint de API para gerar um token seguro.
+        const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc';
+        
+        const newBlob = await put(`avatars/${user.id}-${file.name}`, file, {
           access: 'public',
-          handleUploadUrl: `${window.location.origin}/api/upload`,
+          token: BLOB_READ_WRITE_TOKEN,
         });
 
         await handleUpdateUserProfile({ ...user, avatarUrl: newBlob.url });
         showToast('✅ Foto de perfil atualizada!');
 
-    } catch (err) {
+    } catch (err: any) {
         console.error('Erro ao fazer upload da imagem:', err);
-        showToast('❌ Erro ao atualizar a foto. Tente novamente.');
+        const message = err.message || 'Ocorreu um erro desconhecido.';
+        showToast(`❌ Erro ao atualizar a foto: ${message}`);
     } finally {
         setIsUploading(false);
         if(fileInputRef.current) {

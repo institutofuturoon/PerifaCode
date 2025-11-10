@@ -70,12 +70,11 @@ const Header: React.FC = () => {
               <Logo />
             </button>
             <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
-              {user && <NavLink onClick={() => navigate('dashboard')}>Meu Painel</NavLink>}
               <NavLink onClick={() => navigate('courses')}>Cursos</NavLink>
               <NavLink onClick={() => navigate('community')}>Comunidade</NavLink>
               <NavLink onClick={() => navigate('about')}>Sobre Nós</NavLink>
               <NavLink onClick={() => navigate('blog')}>Blog</NavLink>
-              <NavLink onClick={() => navigate('uploadTest')}>Teste de Upload</NavLink>
+              {user && <NavLink onClick={() => navigate('dashboard')}>Meu Painel</NavLink>}
             </nav>
           </div>
 
@@ -166,7 +165,6 @@ const Header: React.FC = () => {
             <button onClick={() => handleMobileNav('community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
             <button onClick={() => handleMobileNav('about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
             <button onClick={() => handleMobileNav('blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
-            <button onClick={() => handleMobileNav('uploadTest')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Teste de Upload</button>
           </div>
           <div className="pt-4 pb-3 border-t border-white/10">
             {user ? (

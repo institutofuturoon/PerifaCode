@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { upload } from '@vercel/blob/client';
+import { put } from '@vercel/blob';
 
 const UploadTest: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,9 +28,14 @@ const UploadTest: React.FC = () => {
     setUploadedUrl(null);
 
     try {
-      const newBlob = await upload(file.name, file, {
+      // AVISO: Esta implementação expõe o token de acesso no cliente.
+      // É insegura e adequada apenas para desenvolvimento/teste.
+      // Em produção, use um endpoint de API para gerar um token seguro.
+      const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc';
+
+      const newBlob = await put(`test-uploads/${file.name}`, file, {
         access: 'public',
-        handleUploadUrl: `${window.location.origin}/api/upload`,
+        token: BLOB_READ_WRITE_TOKEN,
       });
       setUploadedUrl(newBlob.url);
     } catch (err: any) {
