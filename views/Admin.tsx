@@ -6,7 +6,7 @@ const Admin: React.FC = () => {
   const { 
     user, users, courses, articles, team, mentorSessions,
     handleEditCourse, handleCreateCourse,
-    handleEditArticle, handleCreateArticle, handleDeleteArticle,
+    handleEditArticle, handleCreateArticle, handleDeleteArticle, handleToggleArticleStatus,
     handleCreateUser, handleEditUser, handleDeleteUser,
     navigateToInstructorDashboard,
     handleAddSessionSlot, handleRemoveSessionSlot,
@@ -96,6 +96,9 @@ const Admin: React.FC = () => {
                 Categoria
               </th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                Status
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                 Data
               </th>
               <th scope="col" className="relative px-6 py-3">
@@ -106,7 +109,7 @@ const Admin: React.FC = () => {
           <tbody className="divide-y divide-white/10">
             {articlesForUser.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-10 text-gray-400">
+                  <td colSpan={6} className="text-center py-10 text-gray-400">
                     Nenhum artigo publicado.
                   </td>
                 </tr>
@@ -123,8 +126,16 @@ const Admin: React.FC = () => {
                       {article.category}
                     </span>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${article.status === 'published' ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'}`}>
+                      {article.status === 'published' ? 'Publicado' : 'Rascunho'}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{article.date}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                    <button onClick={() => handleToggleArticleStatus(article.id)} className={article.status === 'published' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'}>
+                        {article.status === 'published' ? 'Desativar' : 'Publicar'}
+                    </button>
                     <button onClick={() => handleEditArticle(article)} className="text-[#c4b5fd] hover:text-white">
                       Editar
                     </button>

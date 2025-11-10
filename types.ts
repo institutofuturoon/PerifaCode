@@ -97,6 +97,17 @@ export interface Module {
   lessons: Lesson[];
 }
 
+export interface CourseBenefit {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+export interface CurriculumItem {
+  title: string;
+  description: string;
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -114,6 +125,33 @@ export interface Course {
   projectTitle?: string;
   projectDescription?: string;
   projectCriteria?: string;
+
+  // Fields for dynamic landing pages
+  heroContent?: {
+    subtitle?: string;
+    titleLine1: string;
+    titleAccent: string;
+    description: string;
+  };
+  benefitsSection?: {
+    title: string;
+    subtitle: string;
+    benefits: CourseBenefit[];
+  };
+  curriculumSection?: {
+    title: string;
+    subtitle: string;
+    items: CurriculumItem[];
+  };
+  methodologySection?: {
+    title: string;
+    subtitle: string;
+    benefits: CourseBenefit[];
+  };
+  ctaSection?: {
+    title: string;
+    description: string;
+  };
 }
 
 export interface Article {
@@ -125,8 +163,11 @@ export interface Article {
   summary: string;
   imageUrl: string;
   authorAvatarUrl: string;
-  category: 'Tutoriais' | 'Histórias' | 'Dicas';
+  category: 'Tutoriais' | 'Histórias' | 'Dicas' | 'Carreira Tech';
   content: string;
+  status: 'published' | 'draft';
+  claps?: number;
+  readingTime?: number; // Em minutos
 }
 
 
@@ -265,8 +306,56 @@ export interface Partner {
   logoUrl: string;
 }
 
+// FIX: Added specific types for analytics data to avoid 'never' type issues.
+export interface CoursePerformanceData {
+  courseId: string;
+  enrolled: number;
+  completionRate: number;
+  avgTime: number; 
+  satisfaction: number;
+  dropOffRate: number;
+}
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'uploadTest' | 'changePassword' | 'digitalLiteracy' | 'pythonCourse' | 'csharpCourse' | 'gameDevCourse' | 'englishCourse' | 'entrepreneurshipCourse';
+export interface LessonPerformanceData {
+  lessonId: string;
+  title: string;
+  studentsCompleted: number;
+}
+
+export interface TopStudentData {
+  id: string;
+  name: string;
+  avatarUrl: string;
+  xp: number;
+}
+
+export interface AtRiskStudentData {
+    id: string;
+    name: string;
+    avatarUrl: string;
+    lastLoginDaysAgo: number;
+}
+
+export interface AnalyticsData {
+    totalStudents: number;
+    newStudentsLast30d: number;
+    avgCompletionRate: number;
+    weeklyEngagement: number;
+    coursePerformance: CoursePerformanceData[];
+    lessonPerformance: Record<string, LessonPerformanceData[]>;
+    studentRetention: {
+        average: number;
+        trend: number;
+        dailyData: number[];
+    };
+    studentEngagement: {
+        topStudents: TopStudentData[];
+        atRiskStudents: AtRiskStudentData[];
+    };
+}
+
+
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'uploadTest' | 'changePassword' | 'courseLanding';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
@@ -334,7 +423,9 @@ export interface AppContextType {
   handleSaveArticle: (articleToSave: Article) => void;
   handleEditArticle: (article: Article) => void;
   handleCreateArticle: () => void;
-  handleDeleteArticle: (articleId: string) => void;
+  handleDeleteArticle: (articleId: string) => Promise<boolean>;
+  handleToggleArticleStatus: (articleId: string) => Promise<void>;
+  handleAddArticleClap: (articleId: string) => Promise<void>;
   handleSaveUser: (userToSave: User) => void;
   handleUpdateUserProfile: (userToUpdate: User) => Promise<void>;
   handleEditUser: (user: User) => void;

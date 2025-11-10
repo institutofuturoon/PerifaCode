@@ -48,7 +48,7 @@ const StudentRow: React.FC<{ student: User; course: Course }> = ({ student, cour
 };
 
 const InstructorCourseDashboard: React.FC = () => {
-    const { monitoringCourse, users, navigate, openBottleneckModal } = useAppContext();
+    const { monitoringCourse, users, navigate, openBottleneckModal, showToast } = useAppContext();
     const [searchTerm, setSearchTerm] = useState('');
 
     const courseAnalytics = useMemo(() => MOCK_ANALYTICS_DATA_V2.coursePerformance.find(p => p.courseId === monitoringCourse?.id), [monitoringCourse]);
@@ -115,6 +115,60 @@ const InstructorCourseDashboard: React.FC = () => {
 
     const totalStudents = courseAnalytics?.enrolled || enrolledStudents.length;
 
+    const AnnouncementsPanel = () => {
+        const [message, setMessage] = useState('');
+        const [announcements, setAnnouncements] = useState([
+            { text: "Olá turma! As notas do primeiro desafio já estão disponíveis. Vejam o feedback e parabéns pelo esforço!", date: "2 dias atrás" },
+            { text: "Não se esqueçam da nossa live de tira-dúvidas amanhã às 19h. O link será enviado por email.", date: "5 dias atrás" },
+        ]);
+    
+        const handleSendAnnouncement = () => {
+            if (!message.trim()) return;
+            
+            const newAnnouncement = {
+                text: message,
+                date: "Agora mesmo"
+            };
+            
+            setAnnouncements([newAnnouncement, ...announcements]);
+            setMessage('');
+            showToast('📢 Anúncio enviado para todos os alunos do curso!');
+        };
+    
+        return (
+            <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+                <h2 className="text-xl font-bold text-white mb-4">📣 Canal de Anúncios da Turma</h2>
+                <div className="space-y-4">
+                    <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        rows={3}
+                        placeholder="Escreva seu anúncio aqui... Ex: Pessoal, adicionei um material extra sobre Flexbox na Aula 3!"
+                        className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors"
+                    />
+                    <button
+                        onClick={handleSendAnnouncement}
+                        disabled={!message.trim()}
+                        className="font-semibold py-2 px-5 rounded-lg bg-[#8a4add] text-white hover:bg-[#6d28d9] transition-colors shadow-lg shadow-[#8a4add]/20 disabled:opacity-50"
+                    >
+                        Enviar Anúncio
+                    </button>
+                </div>
+                <div className="mt-6 border-t border-white/10 pt-6">
+                    <h3 className="text-lg font-semibold text-white mb-4">Anúncios Anteriores</h3>
+                    <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
+                        {announcements.length > 0 ? announcements.map((ann, index) => (
+                            <div key={index} className="bg-white/5 p-4 rounded-lg">
+                                <p className="text-gray-300 text-sm">{ann.text}</p>
+                                <p className="text-right text-xs text-gray-500 mt-2">{ann.date}</p>
+                            </div>
+                        )) : <p className="text-sm text-gray-500">Nenhum anúncio enviado ainda.</p>}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-8">
@@ -155,6 +209,8 @@ const InstructorCourseDashboard: React.FC = () => {
                         </div>
                     </div>
                     
+                    <AnnouncementsPanel />
+
                      {/* Lista de Alunos */}
                     <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
                         <div className="p-6">

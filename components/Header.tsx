@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { View } from '../types';
+import { View, Notification } from '../types';
 import { Logo } from '../assets/Logo';
-import { MOCK_NOTIFICATIONS } from '../constants';
 import { useAppContext } from '../App';
 
 const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({ onClick, children }) => (
@@ -15,7 +14,7 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
 

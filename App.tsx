@@ -4,7 +4,6 @@ import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc, addDoc } from 'firebase/firestore';
 
 import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress } from './types';
-import { MOCK_ACHIEVEMENTS, ARTICLES, MOCK_PROJECTS, MOCK_PARTNERS, MOCK_EVENTS, MOCK_MENTOR_SESSIONS, MOCK_COURSES, MOCK_USERS } from './constants';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -45,12 +44,7 @@ import EventDetailView from './views/EventDetailView';
 import UploadTest from './views/UploadTest';
 import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
-import DigitalLiteracyView from './views/DigitalLiteracyView';
-import PythonCourseView from './views/PythonCourseView';
-import CSharpCourseView from './views/CSharpCourseView';
-import GameDevCourseView from './views/GameDevCourseView';
-import EnglishCourseView from './views/EnglishCourseView';
-import EntrepreneurshipCourseView from './views/EntrepreneurshipCourseView';
+import CourseLandingPage from './views/CourseLandingPage';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -62,6 +56,15 @@ export const useAppContext = () => {
   }
   return context;
 };
+
+// Helper function to calculate reading time
+const calculateReadingTime = (content: string): number => {
+    if (!content) return 0;
+    const wordsPerMinute = 200;
+    const words = content.trim().split(/\s+/).length;
+    return Math.ceil(words / wordsPerMinute);
+};
+
 
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [view, setView] = useState<View>('login');
@@ -107,30 +110,25 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const fetchAndPopulateCollection = async (collectionName: string, mockData: any[], setData: React.Dispatch<React.SetStateAction<any[]>>) => {
+  const fetchAndPopulateCollection = async (collectionName: string, setData: React.Dispatch<React.SetStateAction<any[]>>) => {
       try {
         const collRef = collection(db, collectionName);
         const snapshot = await getDocs(collRef);
+        let dataFromDb = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         
-        if (snapshot.empty) {
-          console.log(`Coleção '${collectionName}' vazia. Populando com dados de exemplo...`);
-          const batch = writeBatch(db);
-          mockData.forEach(item => {
-            const docRef = doc(db, collectionName, item.id);
-            batch.set(docRef, item);
-          });
-          await batch.commit();
-          setData(mockData);
-          console.log(`Coleção '${collectionName}' populada com sucesso.`);
-        } else {
-          const dataFromDb = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-          setData(dataFromDb);
+        // Calculate reading time for articles on fetch
+        if (collectionName === 'articles') {
+            dataFromDb = dataFromDb.map(article => ({
+                ...article,
+                readingTime: calculateReadingTime(article.content)
+            }));
         }
+
+        setData(dataFromDb);
       } catch (error) {
-        console.error(`Erro ao buscar ou popular a coleção '${collectionName}':`, error);
-        showToast(`❌ Erro ao carregar ${collectionName}. Verifique as permissões do Firebase.`);
-        // Fallback to mock data on error to keep the app functional
-        setData(mockData);
+        console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
+        showToast(`❌ Erro ao carregar ${collectionName}.`);
+        setData([]);
       }
     };
 
@@ -139,13 +137,13 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const fetchData = async () => {
       setLoading(true);
       await Promise.all([
-          fetchAndPopulateCollection('users', MOCK_USERS, setUsers),
-          fetchAndPopulateCollection('courses', MOCK_COURSES, setCourses),
-          fetchAndPopulateCollection('articles', ARTICLES, setArticles),
-          fetchAndPopulateCollection('projects', MOCK_PROJECTS, setProjects),
-          fetchAndPopulateCollection('partners', MOCK_PARTNERS, setPartners),
-          fetchAndPopulateCollection('events', MOCK_EVENTS, setEvents),
-          fetchAndPopulateCollection('mentorSessions', MOCK_MENTOR_SESSIONS, setMentorSessions)
+          fetchAndPopulateCollection('users', setUsers),
+          fetchAndPopulateCollection('courses', setCourses),
+          fetchAndPopulateCollection('articles', setArticles),
+          fetchAndPopulateCollection('projects', setProjects),
+          fetchAndPopulateCollection('partners', setPartners),
+          fetchAndPopulateCollection('events', setEvents),
+          fetchAndPopulateCollection('mentorSessions', setMentorSessions)
       ]);
       setLoading(false);
     };
@@ -235,34 +233,17 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const navigateToCourse = (course: Course) => {
-    // FIX: Navigate to specific course landing pages based on ID
-    switch (course.id) {
-        case 'ld1':
-        case 'ld2':
-            navigate('digitalLiteracy');
-            break;
-        case 'py1':
-            navigate('pythonCourse');
-            break;
-        case 'cs1':
-            navigate('csharpCourse');
-            break;
-        case 'gm1':
-            navigate('gameDevCourse');
-            break;
-        case 'en1':
-            navigate('englishCourse');
-            break;
-        case 'ed1':
-            navigate('entrepreneurshipCourse');
-            break;
-        default:
-            // Fallback to the generic course detail if no specific page exists
-            setCurrentCourse(course);
-            navigate('courseDetail');
-            break;
+    // Check if the course has specific landing page content.
+    // The presence of `heroContent` is a good indicator.
+    if (course.heroContent) {
+        setCurrentCourse(course);
+        navigate('courseLanding');
+    } else {
+        // Fallback to the generic course detail for courses without landing page data
+        setCurrentCourse(course);
+        navigate('courseDetail');
     }
-};
+  };
 
   const navigateToLesson = (course: Course, lesson: Lesson) => {
     setCurrentCourse(course);
@@ -352,32 +333,77 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const handleEditArticle = (article: Article) => { setEditingArticle(article); navigate('articleEditor'); };
   const handleCreateArticle = () => {
-    const newArticle: Article = { id: `article_${Date.now()}`, title: '', subtitle: '', author: user?.name || '', date: new Date().toLocaleDateString('pt-BR'), summary: '', imageUrl: 'https://picsum.photos/seed/newarticle/600/400', authorAvatarUrl: user?.avatarUrl || '', category: 'Dicas', content: '' };
+    const newArticle: Article = { id: `article_${Date.now()}`, title: '', subtitle: '', author: user?.name || '', date: new Date().toLocaleDateString('pt-BR'), summary: '', imageUrl: 'https://picsum.photos/seed/newarticle/600/400', authorAvatarUrl: user?.avatarUrl || '', category: 'Dicas', content: '', status: 'draft', claps: 0 };
     setEditingArticle(newArticle);
     navigate('articleEditor');
   };
     const handleSaveArticle = async (articleToSave: Article) => {
-        const isNew = !articles.some(a => a.id === articleToSave.id);
-        setArticles(prev => isNew ? [...prev, articleToSave] : prev.map(a => a.id === articleToSave.id ? articleToSave : a));
+        const articleWithReadingTime = {
+            ...articleToSave,
+            readingTime: calculateReadingTime(articleToSave.content)
+        };
+
+        const isNew = !articles.some(a => a.id === articleWithReadingTime.id);
+        setArticles(prev => isNew ? [...prev, articleWithReadingTime] : prev.map(a => a.id === articleWithReadingTime.id ? articleWithReadingTime : a));
         navigate('admin');
         showToast("✅ Artigo salvo com sucesso!");
 
         try {
-            await setDoc(doc(db, "articles", articleToSave.id), articleToSave);
+            await setDoc(doc(db, "articles", articleWithReadingTime.id), articleWithReadingTime);
         } catch (error) {
             console.error("Erro ao salvar artigo:", error);
         }
     };
 
-    const handleDeleteArticle = async (articleId: string) => {
+    const handleDeleteArticle = async (articleId: string): Promise<boolean> => {
         if(window.confirm("Tem certeza que deseja excluir este artigo?")) {
             setArticles(prev => prev.filter(a => a.id !== articleId));
             showToast("🗑️ Artigo excluído com sucesso.");
             try {
                 await deleteDoc(doc(db, "articles", articleId));
+                return true;
             } catch (error) {
                 console.error("Erro ao excluir artigo:", error);
+                return false;
             }
+        }
+        return false;
+    };
+
+    const handleToggleArticleStatus = async (articleId: string) => {
+        const article = articles.find(a => a.id === articleId);
+        if (!article) return;
+        
+        const newStatus: 'published' | 'draft' = article.status === 'published' ? 'draft' : 'published';
+        const updatedArticle = { ...article, status: newStatus };
+        
+        setArticles(prev => prev.map(a => a.id === articleId ? updatedArticle : a));
+        
+        showToast(`✅ Artigo ${newStatus === 'published' ? 'publicado' : 'movido para rascunho'}.`);
+
+        try {
+            await updateDoc(doc(db, "articles", articleId), { status: newStatus });
+        } catch (error) {
+            console.error("Erro ao atualizar status do artigo:", error);
+        }
+    };
+
+    const handleAddArticleClap = async (articleId: string) => {
+        const article = articles.find(p => p.id === articleId);
+        if (!article) return;
+        const newClaps = (article.claps || 0) + 1;
+        
+        const updateClaps = (prev: Article[]) => prev.map(a => a.id === articleId ? { ...a, claps: newClaps } : a);
+        setArticles(updateClaps);
+        if (currentArticle?.id === articleId) {
+            setCurrentArticle(prev => prev ? { ...prev, claps: newClaps } : null);
+        }
+        
+        try {
+            await updateDoc(doc(db, "articles", articleId), { claps: newClaps });
+        } catch (error) {
+            console.error("Erro ao adicionar clap ao artigo:", error);
+            // Optionally revert state here
         }
     };
 
@@ -589,7 +615,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     navigateToInstructorDashboard, navigateToProject, navigateToProjectEditor, openProfileModal, closeProfileModal,
     openBottleneckModal, closeBottleneckModal,
     completeLesson, handleSaveNote, handleSaveCourse, handleEditCourse, handleCreateCourse, handleSaveArticle, handleEditArticle,
-    handleCreateArticle, handleDeleteArticle, handleSaveUser, handleEditUser, handleCreateUser, handleDeleteUser,
+    handleCreateArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap, handleSaveUser, handleEditUser, handleCreateUser, handleDeleteUser,
     handleSaveProject, handleAddClap, handleAddComment, handleSaveEvent, handleCreateEvent, handleEditEvent,
     handleDeleteEvent, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession,
     showToast, handleUpdateUserProfile, handleCompleteOnboarding,
@@ -660,12 +686,7 @@ const App: React.FC = () => {
                 case 'financialStatement': return <FinancialStatementView />;
                 case 'uploadTest': return <UploadTest />;
                 case 'changePassword': return <ChangePassword />;
-                case 'digitalLiteracy': return <DigitalLiteracyView />;
-                case 'pythonCourse': return <PythonCourseView />;
-                case 'csharpCourse': return <CSharpCourseView />;
-                case 'gameDevCourse': return <GameDevCourseView />;
-                case 'englishCourse': return <EnglishCourseView />;
-                case 'entrepreneurshipCourse': return <EntrepreneurshipCourseView />;
+                case 'courseLanding': return <CourseLandingPage />;
                 default: return <Home />;
             }
         };

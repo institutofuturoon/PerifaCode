@@ -2,45 +2,6 @@ import React from 'react';
 import { useAppContext } from '../App';
 import { User, Event } from '../types';
 
-// MOCKED DATA to match the user's screenshot
-const MOCKED_MENTORS: User[] = [
-    {
-        id: 'inst1',
-        name: 'Luiz Guilherme Bandeira',
-        email: 'luiz.bandeira@email.com',
-        // This stylized avatar URL is created to match the screenshot, as the original is a standard photo.
-        avatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/images/volunteers/guilherme.png',
-        bio: 'Cursando pós-graduação em Inteligência Artificial pela UFV. Acredito no poder do código para resolver problemas complexos e construir aplicações escaláveis.',
-        role: 'instructor',
-        title: 'Desenvolvedor Backend & Entusiasta em IA',
-        isMentor: true,
-        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: ''
-    },
-    {
-        id: 'inst2',
-        name: 'Vitor Santos',
-        email: 'vitor.santos@email.com',
-        avatarUrl: 'https://media.licdn.com/dms/image/v2/D5603AQHQYTpCPcROvA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725502652689?e=1764201600&v=beta&t=faPDzVvjRTzGbRvr1FmiZ7Ow_AI6vs4IIXAOXSO1GXs',
-        bio: 'Software Developer com expertise em JavaScript, Python e C#. Acredito na construção de soluções inovadoras com código limpo e eficiente.',
-        role: 'instructor',
-        title: 'Software Developer',
-        isMentor: true,
-        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: ''
-    },
-    {
-        id: 'inst3',
-        name: 'Thaís Santana',
-        email: 'thais.santana@email.com',
-        avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQERbQ7RnKzlEA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1691721804193?e=1764201600&v=beta&t=c2HPPb24zMUizWLVlXTFDhk3534DX3BLPhTFBBH4Sig',
-        bio: 'Coordenadora de Medição de Energia e Empreendedora Social, com expertise em transformar dados de energia em insights valiosos e impacto social.',
-        role: 'instructor',
-        title: 'Coordenadora de Medição de Energia | Empreendedora Social',
-        isMentor: true,
-        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: ''
-    }
-];
-
-
 const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
     const { user, navigate } = useAppContext();
     return (
@@ -111,7 +72,7 @@ const EventCard: React.FC<{ event: Event, host?: User }> = ({ event, host }) => 
 }
 
 const ConnectView: React.FC = () => {
-    const { events, instructors } = useAppContext();
+    const { events, instructors, mentors } = useAppContext();
 
     return (
         <div className="bg-[#09090B] min-h-screen">
@@ -127,7 +88,7 @@ const ConnectView: React.FC = () => {
                 <section className="mt-16 md:mt-20">
                     <h2 className="text-3xl font-bold text-white mb-8">Mentorias Individuais</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {MOCKED_MENTORS.map(mentor => (
+                        {mentors.filter(mentor => mentor.isMentor).map(mentor => (
                             <MentorCard key={mentor.id} mentor={mentor} />
                         ))}
                     </div>

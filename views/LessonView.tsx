@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ForumPost, ChatMessage, Reply } from '../types';
-import { EXERCISES, MOCK_FORUM_POSTS } from '../constants';
+import { EXERCISES } from '../constants';
 import QuizExercise from '../components/QuizExercise';
 import CodePlayground from '../components/CodePlayground';
 import { GoogleGenAI } from "@google/genai";
@@ -266,7 +266,7 @@ const LessonView: React.FC = () => {
   const { user, currentCourse, currentLesson, completeLesson, navigate, navigateToLesson, handleSaveNote } = useAppContext();
   const [activeTab, setActiveTab] = useState<'content' | 'notes' | 'forum' | 'exercise'>('content');
   const [note, setNote] = useState('');
-  const [forumPosts, setForumPosts] = useState<ForumPost[]>(MOCK_FORUM_POSTS);
+  const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
 
   const exercise = EXERCISES.find(ex => ex.id === currentLesson?.exerciseId);
   const isCompleted = user?.completedLessonIds.includes(currentLesson?.id || '') || false;
