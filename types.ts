@@ -1,3 +1,6 @@
+// FIX: Add React import to resolve 'Cannot find namespace' error.
+import type * as React from 'react';
+
 export interface User {
   id: string;
   name: string;
@@ -6,23 +9,72 @@ export interface User {
   bio: string;
   role: 'student' | 'instructor' | 'admin';
   title?: string;
+  // FIX: Added isMentor to satisfy type checks in ConnectView.tsx and other components.
   isMentor?: boolean;
+  // FIX: Added showOnTeamPage to satisfy type checks in TeamView.tsx.
   showOnTeamPage?: boolean;
-  googleMeetUrl?: string; // For mentors
   completedLessonIds: string[];
   xp: number;
   achievements: string[];
   streak: number;
   lastCompletionDate: string; // YYYY-MM-DD
-  // Campos estratégicos para ONG
+  mustChangePassword?: boolean;
+  hasCompletedOnboardingTour?: boolean;
+  
+  // -- Detailed Onboarding Fields --
+  profileStatus?: 'incomplete' | 'complete';
   dateOfBirth?: string; // YYYY-MM-DD
-  location?: string; // Ex: "Cidade, Estado" ou "Bairro, Cidade"
+  rg?: string;
+  cpf?: string;
+  civilStatus?: 'Solteiro(a)' | 'Casado(a)' | 'Divorciado(a)' | 'Viúvo(a)' | 'Outro';
+  hasChildren?: boolean;
+  motherName?: string;
+  fatherName?: string;
+  parentsLiveTogether?: boolean;
+  legalGuardianName?: string;
+  legalGuardianRelationship?: string;
+  guardianEducationLevel?: 'Ensino fundamental incompleto' | 'Ensino fundamental completo' | 'Ensino médio incompleto' | 'Ensino médio completo' | 'Graduação incompleta' | 'Graduação completa' | 'Pós-graduação incompleta' | 'Pós-graduação completa' | 'Outro';
+  guardianEducationOther?: string;
+  address?: string;
+  city?: string;
+  neighborhood?: string;
+  cep?: string;
   phoneNumber?: string;
+  emergencyPhoneNumber?: string;
+  gender?: 'Masculino' | 'Feminino' | 'Não-binário' | 'Outro';
+  genderOther?: string;
+  race?: 'Preto' | 'Pardo' | 'Indígena' | 'Branco' | 'Amarelo';
+  indigenousEthnicity?: string;
+  hasDisability?: boolean;
+  disabilityDescription?: string;
+  hasAllergy?: boolean;
+  allergyDescription?: string;
+  bloodType?: string;
+  livesNearProject?: 'Sim' | 'Não' | 'Talvez';
+  transportToProject?: 'Andando' | 'Carro' | 'Transporte público' | 'Outro';
+  familyIncome?: string; // Faixa de renda, e.g., "Até 1 salário mínimo"
+  residentsInHome?: number;
+  isBolsaFamiliaBeneficiary?: boolean;
+  isOtherSocialProgramBeneficiary?: boolean;
+  otherSocialProgramDescription?: string;
+  hasInternetAccess?: boolean;
+  internetAccessDevice?: ('Celular' | 'Computador' | 'Tablet' | 'Outro')[];
+  internetAccessDeviceOther?: string;
+  internetConnectionType?: 'Plano pré-pago' | 'Plano pós-pago' | 'Banda larga fixa';
+  internetAccessLimit?: 'Limitado' | 'Ilimitado';
+
+  // Campos estratégicos para ONG (alguns já existiam e foram mantidos)
+  location?: string; // Ex: "Cidade, Estado" ou "Bairro, Cidade"
   educationLevel?: 'Ensino Fundamental' | 'Ensino Médio Incompleto' | 'Ensino Médio Completo' | 'Ensino Superior Incompleto' | 'Ensino Superior Completo' | 'Outro';
   motivation?: string; // Campo para o aluno descrever seus objetivos
   notes?: { [lessonId: string]: string }; // Notas pessoais por aula
   githubUrl?: string;
   linkedinUrl?: string;
+  notificationPreferences?: {
+    newCoursesAndClasses: boolean;
+    communityEvents: boolean;
+    platformUpdates: boolean;
+  };
 }
 
 export interface Lesson {
@@ -214,7 +266,7 @@ export interface Partner {
 }
 
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'uploadTest';
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'uploadTest' | 'changePassword' | 'digitalLiteracy' | 'pythonCourse' | 'csharpCourse' | 'gameDevCourse' | 'englishCourse' | 'entrepreneurshipCourse';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
@@ -248,9 +300,12 @@ export interface AppContextType {
   monitoringCourse: Course | null;
   isProfileModalOpen: boolean;
   selectedProfile: User | null;
+  isBottleneckModalOpen: boolean;
+  selectedBottleneck: { lesson: Lesson, students: User[] } | null;
   instructors: User[];
   mentors: User[];
   loading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 
   // Actions
   navigate: (view: View) => void;
@@ -265,7 +320,10 @@ export interface AppContextType {
   navigateToProjectEditor: (project?: Project) => void;
   openProfileModal: (member: User) => void;
   closeProfileModal: () => void;
+  openBottleneckModal: (lesson: Lesson, students: User[]) => void;
+  closeBottleneckModal: () => void;
   completeLesson: (lessonId: string) => void;
+  handleCompleteOnboarding: () => Promise<void>;
   handleSaveNote: (lessonId: string, note: string) => void;
   showToast: (message: string) => void;
   

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { Logo } from '../assets/Logo';
 import { useAppContext } from '../App';
@@ -33,22 +33,6 @@ const Login: React.FC = () => {
         setLoading(false);
       });
   };
-  
-  const handleGoogleLogin = () => {
-    setLoading(true);
-    setError(null);
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // Google sign-in successful.
-        navigate('dashboard');
-      }).catch((error) => {
-        setError('Falha ao entrar com o Google. Tente novamente.');
-        console.error(error);
-      }).finally(() => {
-        setLoading(false);
-      });
-  };
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-12 px-4 sm:px-6 lg:px-8 aurora-background">
@@ -58,10 +42,10 @@ const Login: React.FC = () => {
         </div>
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Acesse sua conta
+            Bem-vindo(a) de volta!
           </h2>
           <p className="mt-2 text-center text-sm text-gray-400">
-            E continue sua jornada para o futuro.
+            Insira seus dados para acessar a plataforma.
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleEmailLogin}>
@@ -112,21 +96,12 @@ const Login: React.FC = () => {
             </button>
           </div>
         </form>
-        <div className="relative flex py-2 items-center">
-            <div className="flex-grow border-t border-white/20"></div>
-            <span className="flex-shrink mx-4 text-gray-400 text-sm">Ou continue com</span>
-            <div className="flex-grow border-t border-white/20"></div>
-        </div>
-        <div>
-             <button
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              className="group relative w-full flex justify-center items-center gap-2 py-3 px-4 border border-white/20 text-sm font-medium rounded-md text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8a4add] transition-all"
-            >
-              <svg className="w-5 h-5" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 111.8 512 0 400.2 0 261.8 0 123.3 111.8 11.8 244 11.8c70.3 0 129.8 27.8 174.2 71.9l-65.7 64.3C330.5 155.6 291.6 136 244 136c-80.6 0-146.4 65.8-146.4 146.4s65.8 146.4 146.4 146.4c94.9 0 121.7-65.8 125.1-100.2H244v-85.3h236.1c2.3 12.7 3.9 26.9 3.9 41.4z"></path></svg>
-              Entrar com Google
-            </button>
-        </div>
+         <p className="mt-8 text-center text-sm text-gray-400">
+          Ainda não tem uma conta?{' '}
+          <button onClick={() => navigate('register')} className="font-medium text-[#c4b5fd] hover:text-[#8a4add] hover:underline">
+            Cadastre-se aqui
+          </button>
+        </p>
       </div>
     </div>
   );

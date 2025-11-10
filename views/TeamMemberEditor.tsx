@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// FIX: The 'TeamMember' type does not exist in 'types.ts'. Replaced with 'User'.
 import { User } from '../types';
 import { useAppContext } from '../App';
 
@@ -8,7 +7,6 @@ interface TeamMemberEditorProps {
 }
 
 const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMember }) => {
-  // FIX: The function 'handleSaveTeamMember' does not exist in the context. Replaced with 'handleSaveUser'.
   const { handleSaveUser, navigate } = useAppContext();
   const [member, setMember] = useState<User>(initialMember);
 
@@ -30,7 +28,7 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
     handleSaveUser(member);
   };
 
-  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors sm:text-sm text-white";
+  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
   const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
   const checkboxLabelClasses = "font-medium text-white";
   const checkboxDescriptionClasses = "text-gray-400 text-sm";
@@ -47,7 +45,7 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
             <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
               Cancelar
             </button>
-            <button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+            <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
               Salvar Membro
             </button>
           </div>
@@ -87,33 +85,39 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
                     <input id="githubUrl" name="githubUrl" type="url" value={member.githubUrl || ''} onChange={handleChange} className={inputClasses} />
                 </div>
             </div>
-
+            
+            {/* FIX: Added a new fieldset to manage the isMentor and showOnTeamPage properties. */}
             <fieldset className="space-y-5 border-t border-white/10 pt-6">
-              <legend className="text-lg font-bold text-white mb-2">Permissões e Visibilidade</legend>
-              <div>
-                <label htmlFor="role" className={labelClasses}>Papel na Plataforma</label>
-                <select id="role" name="role" value={member.role} onChange={handleChange} className={inputClasses}>
-                    <option value="student">Aluno</option>
-                    <option value="instructor">Instrutor</option>
-                    <option value="admin">Admin</option>
-                </select>
-              </div>
+                <legend className="text-lg font-bold text-white mb-2">Papéis e Visibilidade</legend>
+                <div className="relative flex items-start">
+                    <div className="flex h-5 items-center">
+                    <input id="isMentor" name="isMentor" type="checkbox" checked={member.isMentor || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]" />
+                    </div>
+                    <div className="ml-3 text-sm">
+                    <label htmlFor="isMentor" className={checkboxLabelClasses}>É Mentor(a)</label>
+                    <p className={checkboxDescriptionClasses}>Marque se este membro pode oferecer mentorias individuais na plataforma.</p>
+                    </div>
+                </div>
+                <div className="relative flex items-start">
+                    <div className="flex h-5 items-center">
+                    <input id="showOnTeamPage" name="showOnTeamPage" type="checkbox" checked={member.showOnTeamPage || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]" />
+                    </div>
+                    <div className="ml-3 text-sm">
+                    <label htmlFor="showOnTeamPage" className={checkboxLabelClasses}>Mostrar na página "Nossa Equipe"</label>
+                    <p className={checkboxDescriptionClasses}>Marque se o perfil deste membro deve ser exibido publicamente.</p>
+                    </div>
+                </div>
+            </fieldset>
+            
+             <fieldset className="space-y-5 border-t border-white/10 pt-6">
+              <legend className="text-lg font-bold text-white mb-2">Segurança</legend>
               <div className="relative flex items-start">
                 <div className="flex h-5 items-center">
-                  <input id="isMentor" name="isMentor" type="checkbox" checked={member.isMentor || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
+                  <input id="mustChangePassword" name="mustChangePassword" type="checkbox" checked={member.mustChangePassword || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]" />
                 </div>
                 <div className="ml-3 text-sm">
-                  <label htmlFor="isMentor" className={checkboxLabelClasses}>É Mentor?</label>
-                  <p className={checkboxDescriptionClasses}>Aparecerá na página de mentorias para agendamentos.</p>
-                </div>
-              </div>
-              <div className="relative flex items-start">
-                <div className="flex h-5 items-center">
-                  <input id="showOnTeamPage" name="showOnTeamPage" type="checkbox" checked={member.showOnTeamPage || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-purple-600 focus:ring-purple-500" />
-                </div>
-                <div className="ml-3 text-sm">
-                  <label htmlFor="showOnTeamPage" className={checkboxLabelClasses}>Mostrar na página 'Nossa Equipe'?</label>
-                  <p className={checkboxDescriptionClasses}>Exibirá o perfil publicamente na página da equipe.</p>
+                  <label htmlFor="mustChangePassword" className={checkboxLabelClasses}>Forçar alteração de senha no próximo login</label>
+                  <p className={checkboxDescriptionClasses}>O usuário será obrigado a criar uma nova senha ao entrar na plataforma.</p>
                 </div>
               </div>
             </fieldset>
@@ -123,5 +127,4 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
   );
 };
 
-// FIX: Add default export to resolve import error in App.tsx
 export default TeamMemberEditor;

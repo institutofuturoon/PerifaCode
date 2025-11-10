@@ -8,11 +8,11 @@ export const ARTICLES: Article[] = [
     id: 'art1',
     title: '5 Dicas para Conseguir seu Primeiro Emprego como Dev em 2024',
     subtitle: 'Uma jornada de persistência, comunidade e muito código.',
-    author: 'Vitor Santos',
+    author: 'Luiz Guilherme Bandeira',
     date: '15 de Julho, 2024',
     summary: 'O mercado de tecnologia está aquecido, mas a primeira vaga é sempre um desafio. Veja dicas práticas para se destacar e conquistar seu espaço.',
     imageUrl: 'https://picsum.photos/seed/article1/600/400',
-    authorAvatarUrl: 'https://media.licdn.com/dms/image/v2/D5603AQHQYTpCPcROvA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725502652689?e=1764201600&v=beta&t=faPDzVvjRTzGbRvr1FmiZ7Ow_AI6vs4IIXAOXSO1GXs',
+    authorAvatarUrl: 'https://media.licdn.com/dms/image/v2/C4E03AQHY285KSVhOIA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1633218149828?e=1764201600&v=beta&t=MB42B1OwsODKmFYAScLHjMLGnSAU1BMjDb0SfE9KaO4',
     category: 'Dicas',
     content: `
 ## O Sonho da Primeira Vaga
@@ -142,7 +142,7 @@ export const MOCK_COURSES: Course[] = [
     lessonsCount: 15,
     duration: '9h',
     skillLevel: 'Avançado',
-    instructorId: 'inst2',
+    instructorId: 'inst1',
     longDescription: 'Para quem já tem base em programação, este curso aprofunda em C# e no ecossistema .NET, ensinando a construir APIs RESTful robustas e prontas para o mercado.',
     modules: []
   },
@@ -157,7 +157,7 @@ export const MOCK_COURSES: Course[] = [
     lessonsCount: 10,
     duration: '5h',
     skillLevel: 'Intermediário',
-    instructorId: 'inst2',
+    instructorId: 'inst1',
     longDescription: 'Transforme sua paixão por jogos em uma carreira. Este curso ensina os fundamentos da Unity e da linguagem C# para criar seus próprios jogos 2D e 3D.',
     modules: []
   },
@@ -171,7 +171,7 @@ export const MOCK_COURSES: Course[] = [
     tags: ['ONLINE', 'TECH', 'INGLÊS'],
     duration: 'N/A',
     skillLevel: 'Iniciante',
-    instructorId: 'inst3',
+    instructorId: 'inst1',
     longDescription: 'O inglês é a língua da tecnologia. Este curso é focado em preparar você para ler documentações, participar de comunidades e se destacar em entrevistas, com vocabulário técnico e conversação.',
     modules: []
   },
@@ -185,7 +185,7 @@ export const MOCK_COURSES: Course[] = [
     tags: ['NEGÓCIOS', 'STARTUP', 'DIGITAL'],
     duration: 'N/A',
     skillLevel: 'Iniciante',
-    instructorId: 'inst3',
+    instructorId: 'inst1',
     longDescription: 'Tem uma ideia de app ou site? Este curso te ensina o caminho das pedras para criar um negócio digital, desde a validação da sua ideia, criação de um MVP, até as primeiras estratégias de marketing.',
     modules: []
   },
@@ -207,7 +207,7 @@ export const MOCK_COURSES: Course[] = [
 
 
 export const MOCK_USERS: User[] = [
-  // Alunos
+  // Aluno
   {
     id: 'u1',
     name: 'Jessica Silva',
@@ -230,18 +230,14 @@ export const MOCK_USERS: User[] = [
     },
     githubUrl: 'https://github.com/jessicasilva',
     linkedinUrl: 'https://linkedin.com/in/jessicasilva',
+    notificationPreferences: {
+      newCoursesAndClasses: true,
+      communityEvents: true,
+      platformUpdates: true,
+    },
+    hasCompletedOnboardingTour: true,
   },
-   {
-    id: 'u2',
-    name: 'Carlos Souza',
-    email: 'carlos.souza@email.com',
-    avatarUrl: 'https://picsum.photos/seed/carlos/200',
-    bio: 'Fascinado por backend e pela forma como os dados se movem na internet.',
-    role: 'student',
-    completedLessonIds: [], xp: 10, achievements: [], streak: 1, lastCompletionDate: '',
-    notes: {},
-  },
-  // Equipe (Instrutores e Admin)
+  // Instrutor
   {
     id: 'inst1',
     name: 'Luiz Guilherme Bandeira',
@@ -250,124 +246,20 @@ export const MOCK_USERS: User[] = [
     bio: 'Cursando pós-graduação em Inteligência Artificial pela UFV. Acredito no poder do código para resolver problemas complexos e construir aplicações escaláveis.',
     role: 'instructor',
     title: 'Desenvolvedor Backend & Entusiasta em IA',
+    // FIX: Added isMentor and showOnTeamPage to align with the updated User type and application logic.
     isMentor: true,
     showOnTeamPage: true,
-    googleMeetUrl: 'https://meet.google.com/abc-def-ghi',
     completedLessonIds: [], xp: 1500, achievements: [], streak: 42, lastCompletionDate: yesterday, notes: {},
     githubUrl: 'https://github.com/lguilherme',
     linkedinUrl: 'https://www.linkedin.com/in/luiz-guilherme-bandeira/',
+    notificationPreferences: {
+      newCoursesAndClasses: true,
+      communityEvents: true,
+      platformUpdates: true,
+    },
+    hasCompletedOnboardingTour: true,
   },
-  {
-    id: 'inst2',
-    name: 'Vitor Santos',
-    email: 'vitor.santos@email.com',
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/D5603AQHQYTpCPcROvA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725502652689?e=1764201600&v=beta&t=faPDzVvjRTzGbRvr1FmiZ7Ow_AI6vs4IIXAOXSO1GXs',
-    bio: 'Software Developer com expertise em JavaScript, Python e C#. Acredito na construção de soluções inovadoras com código limpo e eficiente.',
-    role: 'instructor',
-    title: 'Software Developer',
-    isMentor: true,
-    showOnTeamPage: true,
-    googleMeetUrl: 'https://meet.google.com/jkl-mno-pqr',
-    completedLessonIds: [], xp: 1800, achievements: [], streak: 50, lastCompletionDate: yesterday, notes: {},
-  },
-   {
-    id: 'inst3',
-    name: 'Thaís Santana',
-    email: 'thais.santana@email.com',
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQERbQ7RnKzlEA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1691721804193?e=1764201600&v=beta&t=c2HPPb24zMUizWLVlXTFDhk3534DX3BLPhTFBBH4Sig',
-    bio: 'Coordenadora de Medição de Energia e Empreendedora Social, com expertise em transformar dados de energia em insights valiosos e impacto social.',
-    role: 'instructor',
-    title: 'Coordenadora de Medição de Energia | Empreendedora Social',
-    isMentor: true,
-    showOnTeamPage: true,
-    googleMeetUrl: 'https://meet.google.com/stu-vwx-yza',
-    completedLessonIds: [], xp: 2200, achievements: [], streak: 65, lastCompletionDate: yesterday, notes: {},
-  },
-   {
-    id: 'inst4',
-    name: 'Rafael Dantas',
-    email: 'rafael.dantas@email.com',
-    avatarUrl: 'https://picsum.photos/seed/rafaeldantas/200',
-    bio: 'Desenvolvedor Python apaixonado por resolver problemas e criar soluções eficientes. Sempre buscando aprender e compartilhar conhecimento.',
-    role: 'instructor',
-    title: 'Desenvolvedor de Python',
-    isMentor: true,
-    showOnTeamPage: true,
-    completedLessonIds: [], xp: 1200, achievements: [], streak: 30, lastCompletionDate: '', notes: {},
-  },
-  {
-    id: 'adm1',
-    name: 'Admin FuturoOn',
-    email: 'admin@institutofuturoon.org',
-    avatarUrl: 'https://picsum.photos/seed/admin/200',
-    bio: 'Gerenciando a plataforma e as parcerias para transformar o futuro da tecnologia no Brasil, um talento de cada vez.',
-    role: 'admin',
-    title: 'Coordenação Geral',
-    isMentor: false,
-    showOnTeamPage: false,
-    completedLessonIds: [], xp: 9999, achievements: [], streak: 100, lastCompletionDate: yesterday, notes: {},
-  },
-  // Equipe (Voluntários etc.)
-   { 
-    id: 'vol1', 
-    name: 'Luiza Carmelo',
-    email: 'luiza.carmelo@futuroon.org',
-    role: 'student', // Mantido como student para não ter acesso admin, mas exibido na página de equipe
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/C4D03AQED7gUCwnsqZg/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1660759911679?e=1764201600&v=beta&t=yzV8V8DNdxxxK0nSPEFAnFKZ4qn5gb-k2LsKceoxC2U',
-    title: 'Coordenadora Pedagógica',
-    bio: 'Tradutora Literária e Empresária (Gaia Atlas Carnívoras)',
-    isMentor: false, showOnTeamPage: true,
-    linkedinUrl: 'https://www.linkedin.com/in/luizacarmelo/',
-    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {}
-   },
-   {
-    id: 'vol2',
-    name: 'Yasmin Gomes',
-    email: 'yasmin.gomes@futuroon.org',
-    role: 'student',
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQGRopz9lr93SA/profile-displayphoto-shrink_200_200/B4DZO1QTUmGUAY-/0/1733912770606?e=1764201600&v=beta&t=wBdlAt1zEepT6COLev3dSARpGQsWi2tAp2vkefkSFK8',
-    title: 'Administração | Power BI | Social Media',
-    bio: 'Administração | Power BI | Atitude Infinita | Social Media do Futuroon | Análise de Dados | HRBP',
-    isMentor: false, showOnTeamPage: true,
-    linkedinUrl: 'https://www.linkedin.com/in/yasmin-gomes-/',
-    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {}
-   },
-   {
-    id: 'vol3',
-    name: 'Renata D.S. Rocha',
-    email: 'renata.rocha@futuroon.org',
-    role: 'student',
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQGIVgDAzEjY5Q/profile-displayphoto-shrink_200_200/B4DZc3N.HwGYAc-/0/1748978099190?e=1764201600&v=beta&t=dNzR-a1YoRK7h2HlM3OUGq8uD_zqkG0ruP9S01iudc0',
-    title: 'Gerente de Projetos | Tecnóloga Criativa',
-    bio: 'Gerente de Projetos | Tecnóloga Criativa',
-    isMentor: false, showOnTeamPage: true,
-    linkedinUrl: 'https://www.linkedin.com/in/renatadsrocha/',
-    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {}
-   },
-   {
-    id: 'vol4',
-    name: 'Marcela Canto',
-    email: 'marcela.canto@futuroon.org',
-    role: 'student',
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQHaFcaEr6J-pA/profile-displayphoto-shrink_200_200/B4DZUl29DCHYAc-/0/1740096919362?e=1764201600&v=beta&t=bWUcRTb6FvF9exUHDqom-15OBhSxgPq839TcbOwGDQ8',
-    title: 'Cientista Social | Mestranda em Humanidades Digitais',
-    bio: 'Cientista Social | Mestranda em Humanidades Digitais na Universidade Federal Rural do Rio de Janeiro | Pesquisadora no Observatório de Educação Digital do Legal Fronts Institute | Educadora popular',
-    isMentor: false, showOnTeamPage: true,
-    linkedinUrl: 'https://www.linkedin.com/in/marcela-canto/',
-    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {}
-   },
-   {
-    id: 'vol5',
-    name: 'Gabriela Monerat',
-    email: 'gabriela.monerat@futuroon.org',
-    role: 'student',
-    avatarUrl: 'https://media.licdn.com/dms/image/v2/D4E03AQE-ioQRh-dtPg/profile-displayphoto-shrink_200_200/B4EZTX4HZcHcAg-/0/1738788600725?e=1764201600&v=beta&t=0x795sY4Z2qnWskds5YxDG7d4pdAl9wsSoDwFsVlBKA',
-    title: 'Assistente administrativo',
-    bio: 'Com experiência em atendimento ao público e processos de vendas, estou em busca de novas experiências no mercado de trabalho, em especial funções nas quais possa desenvolver os aprendizados acadêmicos.',
-    isMentor: false, showOnTeamPage: true,
-    linkedinUrl: 'https://www.linkedin.com/in/gabriela-monerat-71984634a/',
-    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {}
-   },
+  // Admin
    {
     id: 'marlon1',
     name: 'Marlon Souza',
@@ -376,10 +268,61 @@ export const MOCK_USERS: User[] = [
     avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQE6gV_60L_8yw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1687550882103?e=1764201600&v=beta&t=Ue89n6p4Q7b8QZz4Y9eX_W2wF_vC_jYc_Z_qX_y_3s',
     title: 'Coordenador Institucional',
     bio: 'Apaixonado por tecnologia e Impacto social. Acredito que a educação é a principal ferramenta para a transformação social. Minha missão é criar oportunidades para que jovens de periferia possam ser protagonistas de suas próprias histórias.',
-    isMentor: false, showOnTeamPage: true,
+    // FIX: Added isMentor and showOnTeamPage to align with the updated User type and application logic.
+    isMentor: false,
+    showOnTeamPage: true,
     linkedinUrl: 'https://www.linkedin.com/in/marlon-souza-a1b2b345/',
-    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {}
+    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '', notes: {},
+    notificationPreferences: {
+      newCoursesAndClasses: true,
+      communityEvents: true,
+      platformUpdates: true,
+    },
+    hasCompletedOnboardingTour: true,
    },
+   // Test User
+   {
+    id: 'test-user-1',
+    name: 'Usuário de Teste',
+    email: 'teste@futuroon.org',
+    role: 'student',
+    avatarUrl: 'https://picsum.photos/seed/testuser/200',
+    bio: 'Este é um usuário de teste para verificar as funcionalidades da plataforma.',
+    profileStatus: 'complete',
+    completedLessonIds: [],
+    xp: 0,
+    achievements: [],
+    streak: 0,
+    lastCompletionDate: '',
+    notes: {},
+    notificationPreferences: {
+      newCoursesAndClasses: true,
+      communityEvents: true,
+      platformUpdates: true,
+    },
+    hasCompletedOnboardingTour: false,
+  },
+   {
+    id: 'risk-user-1',
+    name: 'Carlos Mendes',
+    email: 'carlos.mendes@futuroon.org',
+    role: 'student',
+    avatarUrl: 'https://picsum.photos/seed/riskuser/200',
+    bio: 'Estudante com dificuldades de acesso.',
+    profileStatus: 'complete',
+    completedLessonIds: ['fe1-m1-l1'], // Has started but not progressed
+    xp: 10,
+    achievements: [],
+    streak: 0,
+    lastCompletionDate: '',
+    notes: {},
+    notificationPreferences: {
+      newCoursesAndClasses: true,
+      communityEvents: true,
+      platformUpdates: true,
+    },
+    hasCompletedOnboardingTour: true,
+  },
 ];
 
 
@@ -437,9 +380,9 @@ export const MOCK_FORUM_POSTS: ForumPost[] = [
     {
         id: 'fp1',
         lessonId: 'fe1-m1-l1',
-        authorId: 'u2',
-        authorName: 'Carlos Souza',
-        authorAvatarUrl: 'https://picsum.photos/seed/carlos/100',
+        authorId: 'u1',
+        authorName: 'Jessica Silva',
+        authorAvatarUrl: 'https://picsum.photos/seed/jessica/100',
         text: 'Galera, não entendi muito bem a diferença entre a tag <head> e a <header>. Alguém pode me dar uma luz?',
         createdAt: 'Há 1 hora',
         replies: [
@@ -456,9 +399,9 @@ export const MOCK_FORUM_POSTS: ForumPost[] = [
     {
         id: 'fp2',
         lessonId: 'fe1-m1-l1',
-        authorId: 'u3',
-        authorName: 'Ana Beatriz',
-        authorAvatarUrl: 'https://picsum.photos/seed/anabeatriz/100',
+        authorId: 'u1',
+        authorName: 'Jessica Silva',
+        authorAvatarUrl: 'https://picsum.photos/seed/jessica/100',
         text: 'Esse `<!DOCTYPE html>` é obrigatório mesmo em todas as páginas? O que acontece se eu esquecer de colocar?',
         createdAt: 'Há 3 horas',
         replies: []
@@ -478,13 +421,13 @@ export const MOCK_PROJECTS: Project[] = [
     claps: 128,
     comments: [
       { id: 'c1', authorId: 'inst1', text: 'Que orgulho, Jessica! O layout ficou super limpo e profissional. Continue assim!', createdAt: 'Há 2 dias' },
-      { id: 'c2', authorId: 'u2', text: 'Ficou muito bom! Me inspirou a começar o meu.', createdAt: 'Há 1 dia' },
+      { id: 'c2', authorId: 'u1', text: 'Ficou muito bom! Me inspirou a começar o meu.', createdAt: 'Há 1 dia' },
     ],
     createdAt: '5 dias atrás',
   },
   {
     id: 'proj2',
-    authorId: 'u2',
+    authorId: 'u1',
     title: 'Calculadora com JavaScript',
     description: 'Uma calculadora funcional construída com JavaScript puro para praticar a manipulação do DOM e lógica de programação. O objetivo era criar uma interface interativa e precisa.',
     imageUrl: 'https://picsum.photos/seed/calculator/600/400',
@@ -497,7 +440,7 @@ export const MOCK_PROJECTS: Project[] = [
   },
   {
     id: 'proj3',
-    authorId: 'u3',
+    authorId: 'u1',
     title: 'Landing Page para Barbearia Local',
     description: 'Projeto freelancer para uma barbearia do meu bairro. O foco foi criar uma página moderna e responsiva para atrair novos clientes e facilitar o agendamento online.',
     imageUrl: 'https://picsum.photos/seed/barbershop/600/400',
@@ -526,7 +469,7 @@ export const MOCK_EVENTS: Event[] = [
     title: 'Roda de Conversa: O Mercado de Python',
     date: 'SET 27', 
     time: '10:00', 
-    hostId: 'inst4', 
+    hostId: 'inst1', 
     description: 'Uma conversa aberta com Rafael Dantas, Desenvolvedor de Python, e mediação de Luiza Carmelo, nossa Coordenadora Pedagógica. Vamos explorar as oportunidades, desafios e o futuro do mercado de trabalho para quem programa em Python. Haverá brindes para os participantes presenciais!', 
     imageUrl: 'https://picsum.photos/seed/python-talk/600/400', 
     eventType: 'Palestra',
@@ -538,7 +481,7 @@ export const MOCK_EVENTS: Event[] = [
     title: 'Live Coding: Construindo um App de Finanças com React', 
     date: 'AGO 25', 
     time: '19:00', 
-    hostId: 'inst2', 
+    hostId: 'inst1', 
     description: 'Junte-se a Rodrigo Alves para construir um aplicativo de controle financeiro do zero, com dicas de performance e boas práticas.', 
     imageUrl: 'https://picsum.photos/seed/livecoding/600/400', 
     eventType: 'Live' 
@@ -558,7 +501,7 @@ export const MOCK_EVENTS: Event[] = [
     title: 'Oficina de Currículo: Do Zero ao Destaque',
     date: 'EM BREVE',
     time: 'A definir',
-    hostId: 'inst3',
+    hostId: 'inst1',
     description: `💼 Quer aprender a montar um currículo do zero e ainda descobrir como usar plataformas de emprego e cursos pra aumentar suas chances no mercado? 🚀
 
 Vem aí a Oficina de Currículo do FuturoON!
@@ -580,7 +523,7 @@ Serão 4 encontros presenciais, com duração de 1h30 cada, na sede do FuturoON 
 export const MOCK_MENTOR_SESSIONS: MentorSession[] = [
     { id: 'sess1', mentorId: 'inst1', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], time: '14:00', isBooked: true, studentId: 'u1' },
     { id: 'sess2', mentorId: 'inst1', date: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0], time: '15:00', isBooked: false, studentId: null },
-    { id: 'sess3', mentorId: 'inst2', date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0], time: '16:00', isBooked: false, studentId: null },
+    { id: 'sess3', mentorId: 'inst1', date: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0], time: '16:00', isBooked: false, studentId: null },
 ];
 
 
@@ -643,11 +586,9 @@ export const MOCK_ANALYTICS_DATA_V2 = {
     topStudents: [
       { id: 'u1', name: 'Jessica Silva', avatarUrl: 'https://picsum.photos/seed/jessica/200', xp: 1250 },
       { id: 'inst1', name: 'Luiz Guilherme Bandeira', avatarUrl: 'https://media.licdn.com/dms/image/v2/C4E03AQHY285KSVhOIA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1633218149828?e=1764201600&v=beta&t=MB42B1OwsODKmFYAScLHjMLGnSAU1BMjDb0SfE9KaO4', xp: 1500},
-      { id: 'inst2', name: 'Vitor Santos', avatarUrl: 'https://media.licdn.com/dms/image/v2/D5603AQHQYTpCPcROvA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1725502652689?e=1764201600&v=beta&t=faPDzVvjRTzGbRvr1FmiZ7Ow_AI6vs4IIXAOXSO1GXs', xp: 1800},
     ],
     atRiskStudents: [
-      { id: 'u2', name: 'Carlos Souza', avatarUrl: 'https://picsum.photos/seed/carlos/200', lastLoginDaysAgo: 15 },
-      { id: 'vol3', name: 'Renata D.S. Rocha', avatarUrl: 'https://media.licdn.com/dms/image/v2/D4D03AQGIVgDAzEjY5Q/profile-displayphoto-shrink_200_200/B4DZc3N.HwGYAc-/0/1748978099190?e=1764201600&v=beta&t=dNzR-a1YoRK7h2HlM3OUGq8uD_zqkG0ruP9S01iudc0', lastLoginDaysAgo: 22 },
+      { id: 'risk-user-1', name: 'Carlos Mendes', avatarUrl: 'https://picsum.photos/seed/riskuser/200', lastLoginDaysAgo: 15 },
     ],
   },
 };

@@ -11,7 +11,7 @@ const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({
 );
 
 const Header: React.FC = () => {
-  const { user, navigate, handleLogout } = useAppContext();
+  const { user, users, setUser, navigate, handleLogout } = useAppContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -48,6 +48,20 @@ const Header: React.FC = () => {
     setIsMenuOpen(false);
   };
   
+  const handleUserSwitch = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const userId = e.target.value;
+    if (userId === 'logout') {
+        setUser(null);
+        navigate('login');
+    } else {
+        const selectedUser = users.find(u => u.id === userId);
+        if (selectedUser) {
+            setUser(selectedUser);
+            navigate('dashboard');
+        }
+    }
+};
+
   return (
     <header className="bg-[#09090B]/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,6 +71,7 @@ const Header: React.FC = () => {
               <Logo />
             </button>
             <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
+              {user && <NavLink onClick={() => navigate('dashboard')}>Meu Painel</NavLink>}
               <NavLink onClick={() => navigate('courses')}>Cursos</NavLink>
               <NavLink onClick={() => navigate('community')}>Comunidade</NavLink>
               <NavLink onClick={() => navigate('about')}>Sobre Nós</NavLink>
@@ -66,6 +81,23 @@ const Header: React.FC = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
+             <div className="flex items-center gap-2 border-r border-white/10 pr-4 mr-2">
+                <label htmlFor="user-switcher" className="text-xs text-yellow-400 font-mono">TEST:</label>
+                <select
+                    id="user-switcher"
+                    value={user?.id || 'logout'}
+                    onChange={handleUserSwitch}
+                    className="bg-transparent text-white text-sm border-none focus:ring-0 p-1 rounded"
+                    style={{ backgroundColor: '#1a202c', border: '1px solid #4a5568' }}
+                >
+                    <option value="logout" style={{ backgroundColor: '#1a202c' }}>Log Out</option>
+                    {users.map(u => (
+                        <option key={u.id} value={u.id} style={{ backgroundColor: '#1a202c' }}>
+                            {u.name} ({u.role})
+                        </option>
+                    ))}
+                </select>
+            </div>
              <button onClick={() => navigate('donate')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
                 Faça uma Doação
             </button>
@@ -99,7 +131,6 @@ const Header: React.FC = () => {
                   </button>
                   {isProfileMenuOpen && (
                     <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-[#1a202c] ring-1 ring-white/10">
-                      <button onClick={() => { navigate('dashboard'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Meu Painel</button>
                       <button onClick={() => { navigate('profile'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Meu Perfil</button>
                       {(user.role === 'admin' || user.role === 'instructor') && <button onClick={() => { navigate('admin'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Painel de Admin</button>}
                       <button onClick={() => { handleLogout(); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5">Sair</button>
@@ -108,9 +139,14 @@ const Header: React.FC = () => {
                 </div>
               </>
             ) : (
-              <button onClick={() => navigate('login')} className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300">
-                Entrar
-              </button>
+              <div className="flex items-center gap-2">
+                <button onClick={() => navigate('login')} className="text-gray-300 hover:text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/10 transition-all duration-300 text-sm">
+                    Entrar
+                </button>
+                <button onClick={() => navigate('register')} className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-all duration-300 text-sm">
+                    Cadastre-se Grátis
+                </button>
+              </div>
             )}
           </div>
           
@@ -126,6 +162,7 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-black border-t border-white/10">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            {user && <button onClick={() => handleMobileNav('dashboard')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Painel</button>}
             <button onClick={() => handleMobileNav('courses')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
             <button onClick={() => handleMobileNav('community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
             <button onClick={() => handleMobileNav('about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
@@ -145,7 +182,6 @@ const Header: React.FC = () => {
                   </div>
                 </div>
                 <div className="mt-3 px-2 space-y-1">
-                  <button onClick={() => handleMobileNav('dashboard')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Painel</button>
                   <button onClick={() => handleMobileNav('profile')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Perfil</button>
                   <button onClick={handleLogout} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sair</button>
                 </div>
@@ -153,7 +189,8 @@ const Header: React.FC = () => {
             ) : (
               <div className="px-5 space-y-3">
                 <button onClick={() => handleMobileNav('donate')} className="w-full text-center border border-[#c4b5fd]/50 text-[#c4b5fd] font-bold py-2 rounded-lg hover:bg-[#8a4add]/20 transition-colors">Faça uma Doação</button>
-                <button onClick={() => handleMobileNav('login')} className="w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Entrar</button>
+                <button onClick={() => handleMobileNav('login')} className="w-full text-center bg-white/10 text-white font-bold py-2 rounded-lg hover:bg-white/20 transition-colors">Entrar</button>
+                <button onClick={() => handleMobileNav('register')} className="w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Cadastre-se Grátis</button>
               </div>
             )}
           </div>

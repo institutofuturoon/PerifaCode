@@ -28,7 +28,7 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
     handleSaveUser(user);
   };
 
-  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors sm:text-sm text-white";
+  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
   const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
   const checkboxLabelClasses = "font-medium text-white";
   const checkboxDescriptionClasses = "text-gray-400 text-sm";
@@ -46,7 +46,7 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
             <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
               Cancelar
             </button>
-            <button type="submit" className="bg-gradient-to-r from-blue-600 to-sky-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40">
+            <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
               Salvar Usuário
             </button>
           </div>
@@ -88,31 +88,14 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
             </div>
 
             <fieldset className="space-y-5 border-t border-white/10 pt-6">
-              <legend className="text-lg font-bold text-white mb-2">Permissões e Visibilidade</legend>
-              <div>
-                <label htmlFor="role" className={labelClasses}>Papel na Plataforma</label>
-                <select id="role" name="role" value={user.role} onChange={handleChange} className={inputClasses}>
-                    <option value="student">Aluno</option>
-                    <option value="instructor">Instrutor</option>
-                    <option value="admin">Admin</option>
-                </select>
-              </div>
+              <legend className="text-lg font-bold text-white mb-2">Segurança</legend>
               <div className="relative flex items-start">
                 <div className="flex h-5 items-center">
-                  <input id="isMentor" name="isMentor" type="checkbox" checked={user.isMentor || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-blue-600 focus:ring-blue-500" />
+                  <input id="mustChangePassword" name="mustChangePassword" type="checkbox" checked={user.mustChangePassword || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]" />
                 </div>
                 <div className="ml-3 text-sm">
-                  <label htmlFor="isMentor" className={checkboxLabelClasses}>É Mentor?</label>
-                  <p className={checkboxDescriptionClasses}>Aparecerá na página de mentorias para agendamentos.</p>
-                </div>
-              </div>
-              <div className="relative flex items-start">
-                <div className="flex h-5 items-center">
-                  <input id="showOnTeamPage" name="showOnTeamPage" type="checkbox" checked={user.showOnTeamPage || false} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-blue-600 focus:ring-blue-500" />
-                </div>
-                <div className="ml-3 text-sm">
-                  <label htmlFor="showOnTeamPage" className={checkboxLabelClasses}>Mostrar na página 'Nossa Equipe'?</label>
-                  <p className={checkboxDescriptionClasses}>Exibirá o perfil publicamente na página da equipe.</p>
+                  <label htmlFor="mustChangePassword" className={checkboxLabelClasses}>Forçar alteração de senha no próximo login</label>
+                  <p className={checkboxDescriptionClasses}>O usuário será obrigado a criar uma nova senha ao entrar na plataforma.</p>
                 </div>
               </div>
             </fieldset>

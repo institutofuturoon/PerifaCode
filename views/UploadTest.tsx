@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { put } from '@vercel/blob';
+import { upload } from '@vercel/blob/client';
 
 const UploadTest: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,14 +28,13 @@ const UploadTest: React.FC = () => {
     setUploadedUrl(null);
 
     try {
-      const blob = await put(`tests/${Date.now()}-${file.name}`, file, {
+      const newBlob = await upload(file.name, file, {
         access: 'public',
-        token: process.env.API_KEY, 
+        handleUploadUrl: `${window.location.origin}/api/upload`,
       });
-      setUploadedUrl(blob.url);
+      setUploadedUrl(newBlob.url);
     } catch (err: any) {
       console.error('Erro detalhado no upload:', err);
-      // Extrai a mensagem de erro da resposta, se disponível
       const message = err.message || 'Ocorreu um erro desconhecido.';
       setError(`Falha no upload: ${message}`);
     } finally {

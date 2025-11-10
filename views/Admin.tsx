@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../App';
-// FIX: The 'MentorSession' type was missing from the import, causing a compilation error.
 import { User, MentorSession } from '../types';
 
 const Admin: React.FC = () => {

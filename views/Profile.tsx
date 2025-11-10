@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../App';
-import { put } from '@vercel/blob';
+import { upload } from '@vercel/blob/client';
 
 const Profile: React.FC = () => {
   const { user, handleLogout, handleUpdateUserProfile, showToast } = useAppContext();
@@ -10,7 +10,12 @@ const Profile: React.FC = () => {
   const [formData, setFormData] = useState({
       name: user?.name || '',
       email: user?.email || '',
-      bio: user?.bio || ''
+      bio: user?.bio || '',
+      notificationPreferences: {
+          newCoursesAndClasses: user?.notificationPreferences?.newCoursesAndClasses ?? true,
+          communityEvents: user?.notificationPreferences?.communityEvents ?? true,
+          platformUpdates: user?.notificationPreferences?.platformUpdates ?? true,
+      }
   });
 
   useEffect(() => {
@@ -19,6 +24,11 @@ const Profile: React.FC = () => {
             name: user.name,
             email: user.email,
             bio: user.bio,
+            notificationPreferences: {
+                newCoursesAndClasses: user.notificationPreferences?.newCoursesAndClasses ?? true,
+                communityEvents: user.notificationPreferences?.communityEvents ?? true,
+                platformUpdates: user.notificationPreferences?.platformUpdates ?? true,
+            }
         });
     }
   }, [user]);
@@ -45,12 +55,12 @@ const Profile: React.FC = () => {
 
     setIsUploading(true);
     try {
-        const blob = await put(`images/volunteers/${user.id}-${Date.now()}-${file.name}`, file, {
-            access: 'public',
-            token: process.env.API_KEY,
+        const newBlob = await upload(file.name, file, {
+          access: 'public',
+          handleUploadUrl: `${window.location.origin}/api/upload`,
         });
 
-        await handleUpdateUserProfile({ ...user, avatarUrl: blob.url });
+        await handleUpdateUserProfile({ ...user, avatarUrl: newBlob.url });
         showToast('✅ Foto de perfil atualizada!');
 
     } catch (err) {
@@ -65,8 +75,21 @@ const Profile: React.FC = () => {
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
+      const { name, value, type } = e.target;
+      const isNotificationPref = ['newCoursesAndClasses', 'communityEvents', 'platformUpdates'].includes(name);
+
+      if (type === 'checkbox' && isNotificationPref) {
+          const { checked } = e.target as HTMLInputElement;
+          setFormData(prev => ({
+              ...prev,
+              notificationPreferences: {
+                  ...prev.notificationPreferences,
+                  [name]: checked
+              }
+          }));
+      } else {
+          setFormData(prev => ({ ...prev, [name]: value }));
+      }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -96,7 +119,7 @@ const Profile: React.FC = () => {
                     aria-label="Alterar foto de perfil"
                 >
                     <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </button>
@@ -132,28 +155,64 @@ const Profile: React.FC = () => {
           </div>
         </div>
         
-        <div className="mt-10 border-t border-white/10 pt-8">
-            <h2 className="text-xl font-bold text-white mb-4">Configurações da Conta</h2>
-            <form className="space-y-6" onSubmit={handleFormSubmit}>
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Nome Completo</label>
-                    <input type="text" name="name" id="name" value={formData.name} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
+        <form onSubmit={handleFormSubmit}>
+            <div className="mt-10 border-t border-white/10 pt-8">
+                <h2 className="text-xl font-bold text-white mb-4">Configurações da Conta</h2>
+                <div className="space-y-6">
+                    <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">Nome Completo</label>
+                        <input type="text" name="name" id="name" value={formData.name} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
+                    </div>
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                        <input type="email" name="email" id="email" value={formData.email} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
+                    </div>
+                     <div>
+                        <label htmlFor="bio" className="block text-sm font-medium text-gray-300 mb-1">Sua Bio</label>
+                        <textarea rows={3} name="bio" id="bio" value={formData.bio} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
+                    </div>
                 </div>
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email</label>
-                    <input type="email" name="email" id="email" value={formData.email} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
-                </div>
-                 <div>
-                    <label htmlFor="bio" className="block text-sm font-medium text-gray-300 mb-1">Sua Bio</label>
-                    <textarea rows={3} name="bio" id="bio" value={formData.bio} onChange={handleFormChange} className="appearance-none relative block w-full px-4 py-3 border border-white/10 bg-white/5 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:border-[#8a4add] sm:text-sm transition-all" />
-                </div>
-                <div className="flex justify-end">
-                     <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
-                        Salvar Alterações
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+
+            <div className="mt-10 border-t border-white/10 pt-8">
+                <h2 className="text-xl font-bold text-white mb-4">Preferências de Notificação por Email</h2>
+                <fieldset className="space-y-4">
+                    <div className="relative flex items-start">
+                        <div className="flex h-5 items-center">
+                            <input id="newCoursesAndClasses" name="newCoursesAndClasses" type="checkbox" checked={formData.notificationPreferences.newCoursesAndClasses} onChange={handleFormChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]" />
+                        </div>
+                        <div className="ml-3 text-sm">
+                            <label htmlFor="newCoursesAndClasses" className="font-medium text-white">Novas aulas e cursos</label>
+                            <p className="text-gray-400">Receba alertas quando novos conteúdos de aprendizado forem lançados.</p>
+                        </div>
+                    </div>
+                    <div className="relative flex items-start">
+                        <div className="flex h-5 items-center">
+                            <input id="communityEvents" name="communityEvents" type="checkbox" checked={formData.notificationPreferences.communityEvents} onChange={handleFormChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]" />
+                        </div>
+                        <div className="ml-3 text-sm">
+                            <label htmlFor="communityEvents" className="font-medium text-white">Eventos e workshops da comunidade</label>
+                            <p className="text-gray-400">Não perca nenhuma live, mentoria ou evento de networking.</p>
+                        </div>
+                    </div>
+                    <div className="relative flex items-start">
+                        <div className="flex h-5 items-center">
+                            <input id="platformUpdates" name="platformUpdates" type="checkbox" checked={formData.notificationPreferences.platformUpdates} onChange={handleFormChange} className="h-4 w-4 rounded border-gray-300 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]" />
+                        </div>
+                        <div className="ml-3 text-sm">
+                            <label htmlFor="platformUpdates" className="font-medium text-white">Atualizações importantes da plataforma</label>
+                            <p className="text-gray-400">Fique por dentro de novas funcionalidades e anúncios institucionais.</p>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div className="flex justify-end mt-8">
+                 <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
+                    Salvar Alterações
+                </button>
+            </div>
+        </form>
 
         <div className="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
