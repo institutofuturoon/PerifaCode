@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Achievement } from '../types';
+import { Achievement, Lesson } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
 import { useAppContext } from '../App';
@@ -22,7 +22,7 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 
 
 const Dashboard: React.FC = () => {
-    const { user, users, courses, navigate, navigateToCourse, navigateToCertificate, courseProgress, navigateToInstructorDashboard, openInscriptionModal } = useAppContext();
+    const { user, users, courses, navigate, navigateToCourse, navigateToCertificate, courseProgress, navigateToInstructorDashboard, openInscriptionModal, mentorSessions, mentors, navigateToLesson, projects, articles, events, navigateToProject, navigateToArticle, navigateToEvent } = useAppContext();
     const [showAllCourses, setShowAllCourses] = useState(false);
     
   if (!user) return null; // Should be redirected by router logic, but as a safeguard
@@ -42,7 +42,7 @@ const Dashboard: React.FC = () => {
         
         {/* KPIs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <StatCard title="Total de Alunos" value={totalStudents.toLocaleString('pt-BR')} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
+            <StatCard title="Total de Alunos" value={totalStudents.toLocaleString('pt-BR')} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
             <StatCard title="Novos Alunos (30d)" value={`+${newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
             <StatCard title="Taxa de Conclusão Média" value={`${avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
             <StatCard title="Engajamento Semanal" value={`${weeklyEngagement}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>} />
@@ -116,6 +116,121 @@ const Dashboard: React.FC = () => {
   // Render Student Dashboard
   const { inProgressCourses, completedCourses } = courseProgress;
   
+  const latestInProgress = inProgressCourses.length > 0 ? inProgressCourses[0] : null;
+
+  const nextLesson: Lesson | null = useMemo(() => {
+    if (!latestInProgress || !user) return null;
+    const allLessons = latestInProgress.course.modules.flatMap(m => m.lessons);
+    return allLessons.find(l => !user.completedLessonIds.includes(l.id)) || null;
+  }, [latestInProgress, user]);
+
+  const upcomingAppointments = useMemo(() => {
+    if (!user) return [];
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const bookedSessions = mentorSessions
+        .filter(s => s.studentId === user.id)
+        .map(s => {
+            const mentor = mentors.find(m => m.id === s.mentorId);
+            const sessionDate = new Date(`${s.date}T${s.time}:00`);
+            return {
+                date: sessionDate,
+                title: `Mentoria com ${mentor?.name || 'Mentor'}`,
+                type: 'mentoria' as const,
+                data: s
+            };
+        });
+
+    return bookedSessions
+        .filter(app => app.date >= now)
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .slice(0, 3);
+  }, [user, mentorSessions, mentors]);
+
+  const feedItems = useMemo(() => {
+    const items = [];
+
+    // Latest Project
+    if (projects.length > 0) {
+        const sortedProjects = [...projects].sort((a, b) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            const isAValid = !isNaN(dateA.getTime());
+            const isBValid = !isNaN(dateB.getTime());
+
+            if (isAValid && isBValid) return dateB.getTime() - dateA.getTime();
+            if (!isAValid && isBValid) return -1;
+            if (isAValid && !isBValid) return 1;
+            return 0;
+        });
+        const latestProject = sortedProjects[0];
+        const author = users.find(u => u.id === latestProject.authorId);
+        items.push({
+            type: 'project',
+            title: `${author?.name.split(' ')[0] || 'Alguém'} publicou um projeto:`,
+            subtitle: latestProject.title,
+            icon: '🚀',
+            action: () => navigateToProject(latestProject),
+        });
+    }
+
+    // Latest Article
+    const publishedArticles = articles.filter(a => a.status === 'published');
+    if (publishedArticles.length > 0) {
+        publishedArticles.sort((a, b) => {
+            try {
+                const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+                const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+                return new Date(yearB, monthB - 1, dayB).getTime() - new Date(yearA, monthA - 1, dayA).getTime();
+            } catch { return 0; }
+        });
+        const latestArticle = publishedArticles[0];
+        if (latestArticle) {
+            items.push({
+                type: 'article',
+                title: `Novo artigo no blog:`,
+                subtitle: latestArticle.title,
+                icon: '📝',
+                action: () => navigateToArticle(latestArticle),
+            });
+        }
+    }
+
+    // Upcoming Event
+    if (events.length > 0) {
+        const monthMap: { [key: string]: number } = { JAN: 0, FEV: 1, MAR: 2, ABR: 3, MAI: 4, JUN: 5, JUL: 6, AGO: 7, SET: 8, OUT: 9, NOV: 10, DEZ: 11 };
+        const now = new Date();
+        now.setHours(0,0,0,0);
+        
+        const sortedEvents = [...events].map(event => {
+            try {
+                const [monthStr, day] = event.date.split(' ');
+                if (!monthStr || !day) return { event, date: new Date(0) };
+                const eventDate = new Date(now.getFullYear(), monthMap[monthStr.toUpperCase()], Number(day));
+                if (eventDate < now) eventDate.setFullYear(now.getFullYear() + 1);
+                return { event, date: eventDate };
+            } catch {
+                return { event, date: new Date(0) };
+            }
+        }).filter(item => item.date.getTime() !== new Date(0).getTime()).sort((a, b) => a.date.getTime() - b.date.getTime());
+
+        if (sortedEvents.length > 0) {
+            const nextEvent = sortedEvents[0].event;
+            items.push({
+                type: 'event',
+                title: `Próximo evento ao vivo:`,
+                subtitle: nextEvent.title,
+                icon: '🗓️',
+                action: () => navigateToEvent(nextEvent),
+            });
+        }
+    }
+    
+    return items.slice(0, 3);
+}, [projects, articles, events, users, navigateToProject, navigateToArticle, navigateToEvent]);
+
+
   const startedOrCompletedCourseIds = useMemo(() => {
     const inProgressIds = inProgressCourses.map(item => item.course.id);
     const completedIds = completedCourses.map(course => course.id);
@@ -138,58 +253,121 @@ const Dashboard: React.FC = () => {
         <div className="mb-12">
           <h1 className="text-4xl font-black text-white">Bem-vindo de volta, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">{user.name.split(' ')[0]}</span>!</h1>
           <p className="mt-2 text-lg text-gray-400">
-            Acompanhe seu progresso e continue sua jornada.
+            Sua jornada de aprendizado continua. Vamos pra cima!
           </p>
         </div>
         
-        {/* Summary Panel */}
-        <div className="bg-black/20 backdrop-blur-xl p-8 rounded-2xl border border-white/10 mb-12">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 items-center text-center">
-                {/* Level */}
-                <div>
-                    <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Nível</p>
-                    <p className="text-6xl font-black text-[#c4b5fd] mt-1">{userLevel}</p>
+        {latestInProgress && nextLesson && (
+          <div className="mb-12 p-8 rounded-2xl border border-[#8a4add]/30 bg-gradient-to-br from-[#8a4add]/10 via-[#09090B]/50 to-[#09090B]/50 flex flex-col md:flex-row items-center gap-8 shadow-2xl shadow-[#8a4add]/10">
+            <img src={latestInProgress.course.imageUrl} alt={latestInProgress.course.title} className="w-full md:w-64 h-40 object-cover rounded-lg"/>
+            <div className="flex-1 w-full">
+              <p className="text-sm font-semibold text-gray-400">Continue de onde parou</p>
+              <h2 className="text-2xl font-bold text-white mt-1">{latestInProgress.course.title}</h2>
+              <p className="text-md text-[#c4b5fd] mt-2">Próxima aula: {nextLesson.title}</p>
+              <ProgressBar progress={latestInProgress.progress} className="my-4"/>
+            </div>
+            <button
+              onClick={() => navigateToLesson(latestInProgress.course, nextLesson!)}
+              className="w-full md:w-auto flex-shrink-0 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
+            >
+              Continuar Aula
+            </button>
+          </div>
+        )}
+
+        <div className="grid lg:grid-cols-3 gap-8 mb-12">
+            <div className="lg:col-span-2 bg-black/20 backdrop-blur-xl p-8 rounded-2xl border border-white/10">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 items-center text-center">
+                    <div>
+                        <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Nível</p>
+                        <p className="text-6xl font-black text-[#c4b5fd] mt-1">{userLevel}</p>
+                    </div>
+                    <div>
+                        <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Dias de Foco</p>
+                        <p className="text-6xl font-black text-white flex items-center justify-center gap-2 mt-1">
+                            🔥<span>{user.streak}</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Conquistas</p>
+                        <div className="flex flex-wrap gap-4 justify-center min-h-[48px] items-center">
+                            {userAchievements.length > 0 ? (
+                                userAchievements.map(ach => (
+                                    <div key={ach.id} className="group relative" title={`${ach.title}: ${ach.description}`}>
+                                        <span className="text-4xl cursor-pointer transition-transform transform hover:scale-110">{ach.icon}</span>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-sm text-gray-500">Nenhuma ainda.</p>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                
-                {/* Streak */}
-                <div>
-                    <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Dias de Foco</p>
-                    <p className="text-6xl font-black text-white flex items-center justify-center gap-2 mt-1">
-                        🔥<span>{user.streak}</span>
-                    </p>
+                <div className="mt-8 border-t border-white/10 pt-6">
+                    <h3 className="text-lg font-bold text-white mb-1">Progresso de XP</h3>
+                    <ProgressBar progress={xpInCurrentLevel} />
+                    <p className="text-xs text-gray-500 text-right mt-1">{xpInCurrentLevel} / {xpForNextLevel} XP para o próximo nível</p>
                 </div>
-                
-                {/* Achievements */}
-                <div>
-                    <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Conquistas</p>
-                    <div className="flex flex-wrap gap-4 justify-center min-h-[48px] items-center">
-                        {userAchievements.length > 0 ? (
-                            userAchievements.map(ach => (
-                                <div key={ach.id} className="group relative" title={`${ach.title}: ${ach.description}`}>
-                                    <span className="text-4xl cursor-pointer transition-transform transform hover:scale-110">{ach.icon}</span>
-                                </div>
+            </div>
+
+            <div className="space-y-8">
+                <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
+                    <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    Minha Agenda
+                    </h2>
+                    <div className="space-y-4">
+                    {upcomingAppointments.length > 0 ? (
+                        upcomingAppointments.map((app, index) => (
+                        <div key={index} className="bg-white/5 p-3 rounded-lg flex items-center gap-4">
+                            <div className="flex-shrink-0 text-center w-14 bg-black/20 p-2 rounded-md">
+                            <p className="text-xs font-bold text-gray-400">{app.date.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase()}</p>
+                            <p className="text-xl font-black text-white">{app.date.getDate()}</p>
+                            </div>
+                            <div>
+                            <p className="font-semibold text-white text-sm">{app.title}</p>
+                            <p className="text-xs text-gray-400">{app.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} • Mentoria</p>
+                            </div>
+                        </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-8">
+                        <p className="text-gray-400">Nenhum compromisso agendado.</p>
+                        <button onClick={() => navigate('connect')} className="mt-2 text-sm text-[#c4b5fd] font-semibold">Agendar mentoria</button>
+                        </div>
+                    )}
+                    </div>
+                </div>
+
+                <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
+                    <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3h2m0 0h2" /></svg>
+                        Acontece na Quebrada
+                    </h2>
+                    <div className="space-y-4">
+                        {feedItems.length > 0 ? (
+                            feedItems.map((item, index) => (
+                                <button key={index} onClick={item.action} className="w-full text-left bg-white/5 p-3 rounded-lg flex items-start gap-4 hover:bg-white/10 transition-colors">
+                                    <div className="flex-shrink-0 text-center w-10 h-10 bg-black/20 flex items-center justify-center rounded-md text-xl">
+                                        {item.icon}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-white text-sm">{item.title}</p>
+                                        <p className="text-xs text-gray-400 line-clamp-1">{item.subtitle}</p>
+                                    </div>
+                                </button>
                             ))
                         ) : (
-                            <p className="text-sm text-gray-500">Nenhuma ainda.</p>
+                            <div className="text-center py-8">
+                                <p className="text-gray-400">Nenhuma novidade no momento.</p>
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
-
-            {/* XP Progress Bar */}
-            <div className="mt-8 border-t border-white/10 pt-6">
-                <div className="flex justify-between items-baseline mb-1">
-                    <h3 className="text-lg font-bold text-white">Progresso de XP</h3>
-                    <p className="text-sm font-semibold text-gray-300">{user.xp} XP Total</p>
-                </div>
-                <ProgressBar progress={xpInCurrentLevel} />
-                <p className="text-xs text-gray-500 text-right mt-1">{xpInCurrentLevel} / {xpForNextLevel} XP para o próximo nível</p>
-            </div>
         </div>
 
-
         <div className="space-y-12">
-            {/* NEW SECTION: EXPLORE COURSES */}
             <div>
                 <h2 className="text-2xl font-bold text-white mb-6">Comece uma Nova Jornada</h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-500">
