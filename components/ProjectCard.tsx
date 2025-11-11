@@ -8,19 +8,22 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) => {
-  const { users } = useAppContext();
+  const { users, openProfileModal } = useAppContext();
   const author = users.find(u => u.id === project.authorId);
 
   return (
-    <button
-      onClick={() => onProjectSelect(project)}
+    <div
       className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8a4add]/20"
     >
-      <div className="overflow-hidden aspect-video">
-        <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={project.imageUrl} alt={project.title} />
-      </div>
+      <button onClick={() => onProjectSelect(project)} className="block w-full text-left">
+        <div className="overflow-hidden aspect-video">
+          <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={project.imageUrl} alt={project.title} />
+        </div>
+      </button>
       <div className="p-5 flex flex-col flex-grow">
-        <h3 className="text-md font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-1">{project.title}</h3>
+        <button onClick={() => onProjectSelect(project)} className="block w-full text-left">
+            <h3 className="text-md font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-1">{project.title}</h3>
+        </button>
         
         <div className="mt-3 flex flex-wrap gap-2">
           {project.technologies.slice(0, 3).map(tech => (
@@ -36,17 +39,24 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) =
         </div>
 
         <div className="mt-auto pt-4 flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2 overflow-hidden">
+            <button
+              type="button"
+              onClick={(e) => {
+                if (author) openProfileModal(author);
+              }}
+              className="flex items-center gap-2 overflow-hidden rounded-md p-1 -ml-1 hover:bg-white/10 transition-colors"
+              title={`Ver perfil de ${author?.name}`}
+            >
                 <img src={author?.avatarUrl} alt={author?.name} className="h-6 w-6 rounded-full flex-shrink-0"/>
-                <span className="text-gray-300 truncate">{author?.name}</span>
-            </div>
+                <span className="text-gray-300 truncate hover:text-white">{author?.name}</span>
+            </button>
             <div className="flex items-center gap-2 text-gray-400 flex-shrink-0">
                 <span>👏</span>
                 <span>{project.claps}</span>
             </div>
         </div>
       </div>
-    </button>
+    </div>
   );
 };
 

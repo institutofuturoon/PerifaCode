@@ -67,7 +67,7 @@ const calculateReadingTime = (content: string): number => {
 
 
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [view, setView] = useState<View>('login');
+  const [view, setView] = useState<View>('home');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -682,7 +682,7 @@ const App: React.FC = () => {
                 case 'profile': return <Profile />;
                 case 'courseDetail': return <CourseDetail />;
                 case 'lesson': return <LessonView />;
-                case 'admin': return <Admin />;
+                case 'admin': return <Dashboard />;
                 case 'courseEditor': return <CourseEditor course={useAppContext().editingCourse!} />;
                 case 'certificate': return <CertificateView />;
                 case 'analytics': return <Analytics />;

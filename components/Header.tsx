@@ -138,11 +138,11 @@ const Header: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="flex items-center gap-2">
-                <button onClick={() => navigate('login')} className="text-gray-300 hover:text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/10 transition-all duration-300 text-sm">
+              <div className="flex items-center">
+                <button onClick={() => navigate('login')} className="border border-[#8a4add]/80 bg-transparent text-gray-300 hover:bg-[#8a4add]/20 font-semibold py-2 px-4 rounded-l-lg transition-all duration-300 text-sm">
                     Entrar
                 </button>
-                <button onClick={() => navigate('register')} className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-all duration-300 text-sm">
+                <button onClick={() => navigate('register')} className="border border-[#8a4add] bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-4 rounded-r-lg hover:opacity-90 transition-all duration-300 text-sm -ml-px">
                     Cadastre-se Grátis
                 </button>
               </div>
