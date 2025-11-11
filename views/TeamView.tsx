@@ -47,21 +47,8 @@ const TeamView: React.FC = () => {
         fullTeam.filter(member => member.showOnTeamPage)
     , [fullTeam]);
 
-    const leadershipTitles = [
-        'Coordenador Institucional',
-        'Coordenadora Pedagógica',
-    ];
-
-    const leadership = useMemo(() =>
-        visibleTeamMembers.filter(member => 
-            member.role === 'admin' || leadershipTitles.includes(member.title || '')
-        ).sort((a, b) => a.name.localeCompare(b.name))
-    , [visibleTeamMembers]);
-
-    const instructorsAndMentors = useMemo(() =>
-        visibleTeamMembers.filter(member => 
-            member.role === 'instructor' && !leadershipTitles.includes(member.title || '')
-        ).sort((a, b) => a.name.localeCompare(b.name))
+    const sortedTeam = useMemo(() =>
+        [...visibleTeamMembers].sort((a, b) => a.name.localeCompare(b.name))
     , [visibleTeamMembers]);
 
 
@@ -76,25 +63,13 @@ const TeamView: React.FC = () => {
                 </p>
             </div>
 
-            {leadership.length > 0 && (
-                <section className="mb-16">
-                    <h2 className="text-3xl font-bold text-white text-center mb-8">Coordenação & Gestão</h2>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                        {leadership.map(member => <TeamCard key={member.id} member={member} />)}
-                    </div>
-                </section>
-            )}
-
-            {instructorsAndMentors.length > 0 && (
+            {sortedTeam.length > 0 ? (
                 <section>
-                    <h2 className="text-3xl font-bold text-white text-center mb-8">Instrutores & Mentores</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {instructorsAndMentors.map(member => <TeamCard key={member.id} member={member} />)}
+                        {sortedTeam.map(member => <TeamCard key={member.id} member={member} />)}
                     </div>
                 </section>
-            )}
-
-            {leadership.length === 0 && instructorsAndMentors.length === 0 && (
+            ) : (
                 <div className="text-center text-gray-400 py-16">
                     <p>Nenhum membro da equipe para exibir no momento.</p>
                 </div>
