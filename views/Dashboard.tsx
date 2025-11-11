@@ -241,6 +241,8 @@ const Dashboard: React.FC = () => {
     courses.filter(course => !startedOrCompletedCourseIds.has(course.id)),
     [courses, startedOrCompletedCourseIds]
   );
+  
+  const firstCourseToStart = notStartedCourses.length > 0 ? notStartedCourses[0] : null;
 
   const userAchievements = MOCK_ACHIEVEMENTS.filter(ach => user.achievements.includes(ach.id));
   const userLevel = Math.floor((user.xp || 0) / 100) + 1;
@@ -257,7 +259,7 @@ const Dashboard: React.FC = () => {
           </p>
         </div>
         
-        {latestInProgress && nextLesson && (
+        {latestInProgress && nextLesson ? (
           <div className="mb-12 p-8 rounded-2xl border border-[#8a4add]/30 bg-gradient-to-br from-[#8a4add]/10 via-[#09090B]/50 to-[#09090B]/50 flex flex-col md:flex-row items-center gap-8 shadow-2xl shadow-[#8a4add]/10">
             <img src={latestInProgress.course.imageUrl} alt={latestInProgress.course.title} className="w-full md:w-64 h-40 object-cover rounded-lg"/>
             <div className="flex-1 w-full">
@@ -271,6 +273,21 @@ const Dashboard: React.FC = () => {
               className="w-full md:w-auto flex-shrink-0 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
             >
               Continuar Aula
+            </button>
+          </div>
+        ) : firstCourseToStart && (
+           <div className="mb-12 p-8 rounded-2xl border border-[#8a4add]/30 bg-gradient-to-br from-[#8a4add]/10 via-[#09090B]/50 to-[#09090B]/50 flex flex-col md:flex-row items-center gap-8 shadow-2xl shadow-[#8a4add]/10">
+            <img src={firstCourseToStart.imageUrl} alt={firstCourseToStart.title} className="w-full md:w-64 h-40 object-cover rounded-lg"/>
+            <div className="flex-1 w-full text-center md:text-left">
+                <p className="text-sm font-semibold text-gray-400">Sua jornada começa aqui</p>
+                <h2 className="text-2xl font-bold text-white mt-1">Comece sua primeira trilha de aprendizado</h2>
+                <p className="text-md text-[#c4b5fd] mt-2">Nossa sugestão para você: {firstCourseToStart.title}</p>
+            </div>
+            <button
+              onClick={() => navigateToCourse(firstCourseToStart)}
+              className="w-full md:w-auto flex-shrink-0 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
+            >
+              Começar a Aprender
             </button>
           </div>
         )}
