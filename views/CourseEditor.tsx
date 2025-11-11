@@ -283,13 +283,21 @@ Retorne APENAS no formato JSON especificado.`;
                     <div>
                         <label htmlFor="track" className={labelClasses}>Trilha</label>
                         <select id="track" name="track" value={course.track} onChange={handleChange} className={inputClasses}>
-                            <option>Frontend</option><option>Backend</option><option>IA</option><option>UX/UI</option>
+                            <option>Frontend</option><option>Backend</option><option>IA</option><option>UX/UI</option><option>Games</option><option>Idiomas</option><option>Negócios</option><option>Digital</option>
                         </select>
                     </div>
                     <div>
                         <label htmlFor="skillLevel" className={labelClasses}>Nível de Dificuldade</label>
                         <select id="skillLevel" name="skillLevel" value={course.skillLevel} onChange={handleChange} className={inputClasses}>
                             <option>Iniciante</option><option>Intermediário</option><option>Avançado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="format" className={labelClasses}>Formato do Curso</label>
+                        <select id="format" name="format" value={course.format} onChange={handleChange} className={inputClasses}>
+                            <option value="online">Online</option>
+                            <option value="presencial">Presencial</option>
+                            <option value="hibrido">Híbrido</option>
                         </select>
                     </div>
                 </div>

@@ -24,9 +24,45 @@ const TeamCard: React.FC<{ member: User }> = ({ member }) => {
 const TeamView: React.FC = () => {
     const { team } = useAppContext();
 
+    const pedagogicalCoordinator: User = {
+        id: 'coord-ped-1',
+        name: 'Ana Silva',
+        email: 'ana.silva@futuroon.com',
+        avatarUrl: 'https://picsum.photos/seed/anasilva/200',
+        bio: 'Apaixonada por educação e tecnologia, Ana lidera a criação de nossas trilhas de aprendizado, garantindo que cada curso seja uma experiência transformadora e alinhada com as demandas do mercado.',
+        role: 'instructor', // Role can be instructor for permission purposes
+        title: 'Coordenadora Pedagógica',
+        showOnTeamPage: true,
+        isMentor: false,
+        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
+    };
+
+    const fullTeam = useMemo(() => {
+        // Prevent duplicates if coordinator is already fetched
+        const teamIds = new Set(team.map(m => m.id));
+        return teamIds.has(pedagogicalCoordinator.id) ? team : [...team, pedagogicalCoordinator];
+    }, [team]);
+
     const visibleTeamMembers = useMemo(() => 
-        team.filter(member => member.showOnTeamPage)
-    , [team]);
+        fullTeam.filter(member => member.showOnTeamPage)
+    , [fullTeam]);
+
+    const leadershipTitles = [
+        'Coordenador Institucional',
+        'Coordenadora Pedagógica',
+    ];
+
+    const leadership = useMemo(() =>
+        visibleTeamMembers.filter(member => 
+            member.role === 'admin' || leadershipTitles.includes(member.title || '')
+        ).sort((a, b) => a.name.localeCompare(b.name))
+    , [visibleTeamMembers]);
+
+    const instructorsAndMentors = useMemo(() =>
+        visibleTeamMembers.filter(member => 
+            member.role === 'instructor' && !leadershipTitles.includes(member.title || '')
+        ).sort((a, b) => a.name.localeCompare(b.name))
+    , [visibleTeamMembers]);
 
 
     return (
@@ -40,13 +76,29 @@ const TeamView: React.FC = () => {
                 </p>
             </div>
 
-            <section>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {visibleTeamMembers.map(member => (
-                        <TeamCard key={member.id} member={member} />
-                    ))}
+            {leadership.length > 0 && (
+                <section className="mb-16">
+                    <h2 className="text-3xl font-bold text-white text-center mb-8">Coordenação & Gestão</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                        {leadership.map(member => <TeamCard key={member.id} member={member} />)}
+                    </div>
+                </section>
+            )}
+
+            {instructorsAndMentors.length > 0 && (
+                <section>
+                    <h2 className="text-3xl font-bold text-white text-center mb-8">Instrutores & Mentores</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {instructorsAndMentors.map(member => <TeamCard key={member.id} member={member} />)}
+                    </div>
+                </section>
+            )}
+
+            {leadership.length === 0 && instructorsAndMentors.length === 0 && (
+                <div className="text-center text-gray-400 py-16">
+                    <p>Nenhum membro da equipe para exibir no momento.</p>
                 </div>
-            </section>
+            )}
         </div>
     );
 };

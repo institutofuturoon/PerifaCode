@@ -37,6 +37,13 @@ const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
 }
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
+
+  const formatInfo = {
+    online: { icon: '🌐', text: 'Online' },
+    presencial: { icon: '📍', text: 'Presencial' },
+    hibrido: { icon: '📹', text: 'Híbrido' }
+  };
+
   return (
     <div 
       className="bg-[#1f2328] rounded-lg overflow-hidden border border-gray-700/80 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-[#8a4add]/10 h-full"
@@ -70,6 +77,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
                 <span>{course.duration}</span>
             </div>
           )}
+           {course.format && (
+            <div className="flex items-center gap-1.5" title={`Formato: ${formatInfo[course.format].text}`}>
+                <span>{formatInfo[course.format].icon}</span>
+                <span>{formatInfo[course.format].text}</span>
+            </div>
+           )}
         </div>
          <div className="mt-6">
             <button

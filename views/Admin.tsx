@@ -18,7 +18,7 @@ const Admin: React.FC = () => {
 
   const coursesForUser = user.role === 'admin' ? courses : courses.filter(c => c.instructorId === user.id);
   const articlesForUser = user.role === 'admin' ? articles : articles.filter(a => a.author === user.name);
-  const students = users.filter(u => u.role === 'student');
+  const students = users.filter(u => u.role === 'student' && u.accountStatus !== 'inactive');
 
   const CoursesTable = () => (
     <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 overflow-hidden">
@@ -185,7 +185,7 @@ const Admin: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                       <button onClick={() => handleEditUser(member)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                       {user?.id !== member.id && (
-                        <button onClick={() => handleDeleteUser(member.id)} className="text-red-400 hover:text-red-300">Excluir</button>
+                        <button onClick={() => handleDeleteUser(member.id)} className="text-red-400 hover:text-red-300">Desativar</button>
                       )}
                     </td>
                 </tr>
@@ -245,7 +245,7 @@ const Admin: React.FC = () => {
                       </button>
                       {user?.id !== student.id && (
                         <button onClick={() => handleDeleteUser(student.id)} className="text-red-400 hover:text-red-300">
-                            Excluir
+                            Desativar
                         </button>
                       )}
                     </td>

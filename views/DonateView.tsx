@@ -10,7 +10,7 @@ const ImpactCard: React.FC<{ amount: string, description: string }> = ({ amount,
 
 const DonateView: React.FC = () => {
     const { navigate } = useAppContext();
-    const pixKey = "50.880.593/0001-14"; // CNPJ
+    const pixKey = "51.662.000/0001-98"; // CNPJ
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(pixKey);

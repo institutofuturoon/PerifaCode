@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import CourseCard from '../components/CourseCard';
 import ProgressBar from '../components/ProgressBar';
 import { useAppContext } from '../App';
+import OnsiteCourseCard from '../components/OnsiteCourseCard';
 
 // -- Novos Componentes de Layout --
 
@@ -22,42 +23,25 @@ const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> =
     </div>
 );
 
-
-const FormatCard: React.FC<{ icon: string; title: string; description: string; benefits: string[]; ctaText: string; ctaAction: () => void; ctaClassName: string; }> = ({ icon, title, description, benefits, ctaText, ctaAction, ctaClassName }) => (
-    <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col h-full transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10">
-        <div className="text-5xl mb-4">{icon}</div>
-        <h3 className="text-2xl font-bold text-white">{title}</h3>
-        <p className="mt-2 text-gray-400">{description}</p>
-        <ul className="mt-6 space-y-3 text-gray-300 flex-grow">
-            {benefits.map((benefit, index) => (
-                <li key={index} className="flex items-start gap-3">
-                    <svg className="h-5 w-5 text-green-400 flex-shrink-0 mt-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                    <span>{benefit}</span>
-                </li>
-            ))}
-        </ul>
-        <button onClick={ctaAction} className={`mt-8 w-full font-bold py-3 px-8 rounded-lg transition-all duration-300 ${ctaClassName}`}>
-            {ctaText}
-        </button>
-    </div>
-);
-
 type Track = 'Todos' | 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Games' | 'Idiomas' | 'Negócios' | 'Digital';
 
 const PerifaCodeView: React.FC = () => {
   const { user, navigate, courses, navigateToCourse, navigateToLesson, courseProgress } = useAppContext();
   const [activeTrack, setActiveTrack] = useState<Track>('Todos');
 
+  const onlineCourses = useMemo(() => courses.filter(c => c.format === 'online'), [courses]);
+  const onsiteCourses = useMemo(() => courses.filter(c => c.format === 'presencial' || c.format === 'hibrido'), [courses]);
+
   const tracks = useMemo(() => {
-    const allTracks = courses.map(c => c.track);
+    const allTracks = onlineCourses.map(c => c.track);
     const uniqueTracks = ['Todos', ...Array.from(new Set(allTracks))];
     const sortedTracks = uniqueTracks.slice(1).sort();
     return ['Todos', ...sortedTracks] as Track[];
-  }, [courses]);
+  }, [onlineCourses]);
   
-  const filteredCourses = useMemo(() => activeTrack === 'Todos'
-    ? courses
-    : courses.filter(course => course.track === activeTrack), [courses, activeTrack]);
+  const filteredOnlineCourses = useMemo(() => activeTrack === 'Todos'
+    ? onlineCourses
+    : onlineCourses.filter(course => course.track === activeTrack), [onlineCourses, activeTrack]);
   
   const inProgressData = courseProgress.inProgressCourses[0] || null;
 
@@ -113,10 +97,16 @@ const PerifaCodeView: React.FC = () => {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={() => navigate('login')}
+              onClick={() => document.getElementById('online-courses')?.scrollIntoView({ behavior: 'smooth' })}
               className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 hover:shadow-[#8a4add]/50"
             >
-              Comece a aprender
+              Ver Cursos
+            </button>
+             <button
+              onClick={() => navigate('register')}
+              className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300"
+            >
+              Cadastre-se Grátis
             </button>
           </div>
         </div>
@@ -128,46 +118,30 @@ const PerifaCodeView: React.FC = () => {
       {user ? <LoggedInHome /> : <LoggedOutHome />}
       
        <main>
-            {/* Dois Formatos Section */}
+            {/* Cursos Presenciais */}
             <Section className="bg-black/20">
                 <SectionTitle 
-                    subtitle="Sua jornada na tecnologia, do jeito que funciona pra você. Escolha entre a flexibilidade do online e a força da vivência presencial.">
-                    Dois Formatos, Um Objetivo
+                    subtitle="Participe das nossas turmas presenciais no Complexo da Coruja (São Gonçalo/RJ). Uma experiência de aprendizado coletiva e transformadora. Vagas limitadas!">
+                    Turmas Presenciais Abertas
                 </SectionTitle>
                 <div className="mt-12 grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-                    <FormatCard 
-                        icon="🌐"
-                        title="Cursos Online"
-                        description="Aprenda no seu tempo, de qualquer lugar, com acesso a uma comunidade vibrante e mentores dedicados."
-                        benefits={[
-                            'Flexibilidade total de horários',
-                            'Acesso ao conteúdo de onde estiver',
-                            'Comunidade e suporte online 24/7'
-                        ]}
-                        ctaText="Explorar Cursos Online"
-                        ctaAction={() => document.getElementById('online-courses')?.scrollIntoView({ behavior: 'smooth' })}
-                        ctaClassName="bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20"
-                    />
-                    <FormatCard 
-                        icon="🤝"
-                        title="Cursos Presenciais"
-                        description="Vivencie o aprendizado em um ambiente colaborativo, com networking direto e projetos em equipe."
-                        benefits={[
-                            'Aulas práticas em nosso espaço',
-                            'Networking direto com colegas e instrutores',
-                            'Experiência de trabalho em equipe'
-                        ]}
-                        ctaText="Ver Turmas Presenciais"
-                        ctaAction={() => alert('As informações sobre turmas presenciais serão divulgadas em breve!')}
-                        ctaClassName="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white hover:opacity-90 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
-                    />
+                    {onsiteCourses.length > 0 ? (
+                      onsiteCourses.map(course => (
+                        <OnsiteCourseCard key={course.id} course={course} />
+                      ))
+                    ) : (
+                      <div className="md:col-span-2 text-center py-10 bg-white/5 rounded-lg border border-dashed border-white/10">
+                        <p className="text-gray-400">Nenhuma turma presencial com inscrições abertas no momento.</p>
+                        <p className="text-gray-500 text-sm mt-1">Fique de olho em nossas redes sociais para novidades!</p>
+                      </div>
+                    )}
                 </div>
             </Section>
             
             {/* Cursos Online em Destaque Section */}
-            <Section id="online-courses" className="bg-black/20">
-                <SectionTitle subtitle="Do zero ao código, sua jornada para o mercado de tecnologia começa aqui. Escolha sua trilha e transforme seu futuro hoje.">
-                    Cursos em Destaque
+            <Section id="online-courses">
+                <SectionTitle subtitle="Aprenda no seu ritmo, de onde estiver. Explore nosso catálogo de cursos online e comece a estudar agora mesmo.">
+                    Catálogo de Cursos Online
                 </SectionTitle>
 
                 <div className="mt-12 mb-12 flex justify-center flex-wrap gap-2 sm:gap-4">
@@ -187,7 +161,7 @@ const PerifaCodeView: React.FC = () => {
                 </div>
 
                 <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {filteredCourses.map(course => (
+                    {filteredOnlineCourses.map(course => (
                         <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse} />
                     ))}
                 </div>

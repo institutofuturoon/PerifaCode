@@ -10,7 +10,7 @@ const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }
         </div>
         <div>
             <p className="text-sm text-gray-400">{label}</p>
-            <p className="font-bold text-white">{value}</p>
+            <p className="font-bold text-white capitalize">{value}</p>
         </div>
     </div>
 );
@@ -92,7 +92,7 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
 };
 
 const CourseDetail: React.FC = () => {
-    const { user, currentCourse, instructors, navigate, navigateToLesson, navigateToCertificate } = useAppContext();
+    const { user, currentCourse, instructors, navigate, navigateToLesson, navigateToCertificate, openInscriptionModal } = useAppContext();
 
     if (!currentCourse) {
         return <div className="text-center py-20">Curso não encontrado.</div>;
@@ -104,6 +104,7 @@ const CourseDetail: React.FC = () => {
     const completedLessonIds = user?.completedLessonIds.filter(id => allLessonIds.includes(id)) || [];
     const progress = allLessonIds.length > 0 ? Math.round((completedLessonIds.length / allLessonIds.length) * 100) : 0;
     const isCompleted = progress === 100;
+    const isOnlineCourse = course.format === 'online';
 
     const handleStartOrContinue = () => {
         if (!user) {
@@ -167,33 +168,43 @@ const CourseDetail: React.FC = () => {
 
                     <aside>
                         <div className="sticky top-24 bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10 space-y-6">
-                            {isCompleted ? (
-                                <>
-                                    <h3 className="text-xl font-bold text-white">Parabéns!</h3>
-                                    <p className="text-gray-300">Você concluiu este curso.</p>
-                                    <ProgressBar progress={100} />
-                                    <button
-                                        onClick={() => navigateToCertificate(course)}
-                                        className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
-                                    >
-                                        Ver Certificado
-                                    </button>
-                                </>
+                            {isOnlineCourse ? (
+                                isCompleted ? (
+                                    <>
+                                        <h3 className="text-xl font-bold text-white">Parabéns!</h3>
+                                        <p className="text-gray-300">Você concluiu este curso.</p>
+                                        <ProgressBar progress={100} />
+                                        <button
+                                            onClick={() => navigateToCertificate(course)}
+                                            className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
+                                        >
+                                            Ver Certificado
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        {user && progress > 0 && <ProgressBar progress={progress} />}
+                                        <button 
+                                            onClick={handleStartOrContinue}
+                                            className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
+                                        >
+                                            {progress > 0 ? 'Continuar Curso' : 'Iniciar Curso'}
+                                        </button>
+                                    </>
+                                )
                             ) : (
-                                <>
-                                    {user && progress > 0 && <ProgressBar progress={progress} />}
-                                    <button 
-                                        onClick={handleStartOrContinue}
-                                        className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
-                                    >
-                                        {progress > 0 ? 'Continuar Curso' : 'Iniciar Curso'}
-                                    </button>
-                                </>
+                                <button 
+                                    onClick={() => openInscriptionModal(course)}
+                                    className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
+                                >
+                                    Inscrever-se no curso
+                                </button>
                             )}
                             
                             <div className="border-t border-white/10 pt-6 space-y-4">
                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Duração" value={course.duration} />
                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V3m0 18v-3" /></svg>} label="Nível" value={course.skillLevel} />
+                               <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>} label="Formato" value={course.format} />
                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10.392C3.057 15.71 4.245 16 5.5 16c1.255 0 2.443-.29 3.5-.804V4.804zM14.5 4c-1.255 0-2.443.29-3.5.804v10.392c1.057.514 2.245.804 3.5.804c1.255 0 2.443-.29 3.5-.804V4.804C16.943 4.29 15.755 4 14.5 4z" /></svg>} label="Aulas" value={`${allLessonIds.length}`} />
                             </div>
                         </div>
@@ -204,5 +215,4 @@ const CourseDetail: React.FC = () => {
     );
 };
 
-// FIX: Add default export to resolve import error in App.tsx
 export default CourseDetail;

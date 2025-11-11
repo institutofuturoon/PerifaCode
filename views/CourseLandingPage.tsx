@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../App';
 import { Course, CourseBenefit, CurriculumItem } from '../types';
-import InscriptionFormModal from '../components/InscriptionFormModal';
 
 // Data mapping for course landing pages
 const courseContentMap: Record<string, Omit<Course, keyof Omit<Course, 'heroContent' | 'benefitsSection' | 'curriculumSection' | 'methodologySection' | 'ctaSection'>>> = {
@@ -306,8 +305,7 @@ const CurriculumItem: React.FC<CurriculumItem> = ({ title, description }) => (
 
 // --- Main Component ---
 const CourseLandingPage: React.FC = () => {
-    const { currentCourse } = useAppContext();
-    const [isFormOpen, setIsFormOpen] = useState(false);
+    const { currentCourse, openInscriptionModal } = useAppContext();
     
     if (!currentCourse) {
         return <div className="text-center py-20">Curso não encontrado.</div>;
@@ -334,7 +332,7 @@ const CourseLandingPage: React.FC = () => {
                             {content.heroContent.description}
                         </p>
                          <div className="mt-10">
-                            <button onClick={() => setIsFormOpen(true)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
+                            <button onClick={() => openInscriptionModal(currentCourse)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
                                 Quero me inscrever!
                             </button>
                         </div>
@@ -394,7 +392,7 @@ const CourseLandingPage: React.FC = () => {
                                {content.ctaSection.description}
                             </p>
                             <div className="mt-8">
-                                 <button onClick={() => setIsFormOpen(true)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
+                                 <button onClick={() => openInscriptionModal(currentCourse)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
                                     Inscreva-se Agora
                                 </button>
                             </div>
@@ -402,7 +400,6 @@ const CourseLandingPage: React.FC = () => {
                     </Section>
                 )}
             </main>
-            <InscriptionFormModal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} courseName={currentCourse.title} />
         </div>
     );
 };

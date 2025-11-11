@@ -73,6 +73,7 @@ const Header: React.FC = () => {
               <NavLink onClick={() => navigate('courses')}>Cursos</NavLink>
               <NavLink onClick={() => navigate('community')}>Comunidade</NavLink>
               <NavLink onClick={() => navigate('about')}>Sobre Nós</NavLink>
+              <NavLink onClick={() => navigate('team')}>Nossa Equipe</NavLink>
               <NavLink onClick={() => navigate('blog')}>Blog</NavLink>
               {user && <NavLink onClick={() => navigate('dashboard')}>Meu Painel</NavLink>}
             </nav>
@@ -164,6 +165,7 @@ const Header: React.FC = () => {
             <button onClick={() => handleMobileNav('courses')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
             <button onClick={() => handleMobileNav('community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
             <button onClick={() => handleMobileNav('about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
+            <button onClick={() => handleMobileNav('team')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossa Equipe</button>
             <button onClick={() => handleMobileNav('blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
           </div>
           <div className="pt-4 pb-3 border-t border-white/10">

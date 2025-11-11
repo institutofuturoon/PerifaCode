@@ -6,6 +6,7 @@ export interface User {
   name: string;
   email: string;
   avatarUrl: string;
+  bannerUrl?: string;
   bio: string;
   role: 'student' | 'instructor' | 'admin';
   title?: string;
@@ -20,6 +21,7 @@ export interface User {
   lastCompletionDate: string; // YYYY-MM-DD
   mustChangePassword?: boolean;
   hasCompletedOnboardingTour?: boolean;
+  accountStatus?: 'active' | 'inactive';
   
   // -- Detailed Onboarding Fields --
   profileStatus?: 'incomplete' | 'complete';
@@ -125,6 +127,8 @@ export interface Course {
   projectTitle?: string;
   projectDescription?: string;
   projectCriteria?: string;
+  format: 'online' | 'presencial' | 'hibrido';
+  lessonRelease?: 'sequencial' | 'manual';
 
   // Fields for dynamic landing pages
   heroContent?: {
@@ -391,6 +395,8 @@ export interface AppContextType {
   selectedProfile: User | null;
   isBottleneckModalOpen: boolean;
   selectedBottleneck: { lesson: Lesson, students: User[] } | null;
+  isInscriptionModalOpen: boolean;
+  selectedCourseForInscription: Course | null;
   instructors: User[];
   mentors: User[];
   loading: boolean;
@@ -411,6 +417,8 @@ export interface AppContextType {
   closeProfileModal: () => void;
   openBottleneckModal: (lesson: Lesson, students: User[]) => void;
   closeBottleneckModal: () => void;
+  openInscriptionModal: (course: Course) => void;
+  closeInscriptionModal: () => void;
   completeLesson: (lessonId: string) => void;
   handleCompleteOnboarding: () => Promise<void>;
   handleSaveNote: (lessonId: string, note: string) => void;
@@ -430,7 +438,7 @@ export interface AppContextType {
   handleUpdateUserProfile: (userToUpdate: User) => Promise<void>;
   handleEditUser: (user: User) => void;
   handleCreateUser: (role: 'student' | 'instructor') => void;
-  handleDeleteUser: (userId: string) => void;
+  handleDeleteUser: (userId: string) => Promise<void>;
   handleSaveProject: (projectToSave: Project) => void;
   handleAddClap: (projectId: string) => void;
   handleAddComment: (projectId: string, text: string) => void;

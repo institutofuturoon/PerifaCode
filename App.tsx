@@ -44,6 +44,7 @@ import EventDetailView from './views/EventDetailView';
 import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
+import InscriptionFormModal from './components/InscriptionFormModal';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -99,6 +100,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
   const [isBottleneckModalOpen, setIsBottleneckModalOpen] = useState(false);
   const [selectedBottleneck, setSelectedBottleneck] = useState<{ lesson: Lesson, students: User[] } | null>(null);
+
+  const [isInscriptionModalOpen, setIsInscriptionModalOpen] = useState(false);
+  const [selectedCourseForInscription, setSelectedCourseForInscription] = useState<Course | null>(null);
 
   const [toast, setToast] = useState<string | null>(null);
   
@@ -165,8 +169,14 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
 
         if (userDoc.exists()) {
-            console.log("Documento do usuário encontrado.");
-            setUser(userDoc.data() as User);
+            const userData = userDoc.data() as User;
+            if (userData.accountStatus === 'inactive') {
+                console.warn(`Tentativa de login do usuário desativado: ${userData.id}. Desconectando.`);
+                await signOut(auth);
+                setUser(null);
+            } else {
+                setUser(userData);
+            }
         } else {
             // If it's still not there, regardless of whether the user is new or old,
             // create a fallback document to ensure a smooth user experience and self-heal the data.
@@ -181,6 +191,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               profileStatus: 'incomplete', // Critical for onboarding flow
               completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
               hasCompletedOnboardingTour: false,
+              accountStatus: 'active',
             };
             try {
                 await setDoc(doc(db, "users", firebaseUser.uid), newUser);
@@ -313,7 +324,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
   const handleEditCourse = (course: Course) => { setEditingCourse(course); navigate('courseEditor'); };
   const handleCreateCourse = () => {
-    const newCourse: Course = { id: `course_${Date.now()}`, title: '', description: '', longDescription: '', track: 'Frontend', imageUrl: 'https://picsum.photos/seed/newcourse/600/400', duration: '10 horas', skillLevel: 'Iniciante', instructorId: user?.id || '', modules: [] };
+    const newCourse: Course = { id: `course_${Date.now()}`, title: '', description: '', longDescription: '', track: 'Frontend', imageUrl: 'https://picsum.photos/seed/newcourse/600/400', duration: '10 horas', skillLevel: 'Iniciante', instructorId: user?.id || '', modules: [], format: 'online' };
     setEditingCourse(newCourse);
     navigate('courseEditor');
   };
@@ -425,14 +436,21 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
     const handleDeleteUser = async (userId: string) => {
-      if(window.confirm("Tem certeza que deseja excluir este usuário?")) {
-          setUsers(prev => prev.filter(u => u.id !== userId));
-          showToast("🗑️ Usuário excluído com sucesso.");
+      if(window.confirm("Tem certeza que deseja desativar este usuário? Ele não poderá mais acessar a plataforma.")) {
+          const userToDeactivate = users.find(u => u.id === userId);
+          if (!userToDeactivate) return;
+
+          const deactivatedUser = { ...userToDeactivate, accountStatus: 'inactive' as const };
+          
+          setUsers(prev => prev.map(u => u.id === userId ? deactivatedUser : u));
+          showToast("🗑️ Usuário desativado com sucesso.");
+
           try {
-            await deleteDoc(doc(db, "users", userId));
-        } catch (error) {
-            console.error("Erro ao excluir usuário:", error);
-        }
+            await updateDoc(doc(db, "users", userId), { accountStatus: 'inactive' });
+          } catch (error) {
+              console.error("Erro ao desativar usuário:", error);
+               showToast("❌ Erro ao desativar usuário.");
+          }
       }
   };
 
@@ -577,9 +595,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
   const closeBottleneckModal = () => setIsBottleneckModalOpen(false);
 
-  const team = useMemo(() => users.filter(u => u.role === 'instructor' || u.role === 'admin'), [users]);
-  const instructors = useMemo(() => users.filter(u => u.role === 'instructor' || u.role === 'admin'), [users]);
-  const mentors = useMemo(() => users.filter(u => u.role === 'instructor' || u.role === 'admin'), [users]);
+  const openInscriptionModal = (course: Course) => { setSelectedCourseForInscription(course); setIsInscriptionModalOpen(true); };
+  const closeInscriptionModal = () => setIsInscriptionModalOpen(false);
+
+  const team = useMemo(() => users.filter(u => (u.role === 'instructor' || u.role === 'admin') && u.accountStatus !== 'inactive'), [users]);
+  const instructors = useMemo(() => users.filter(u => (u.role === 'instructor' || u.role === 'admin') && u.accountStatus !== 'inactive'), [users]);
+  const mentors = useMemo(() => users.filter(u => (u.role === 'instructor' || u.role === 'admin') && u.accountStatus !== 'inactive'), [users]);
   const courseProgress: CourseProgress = useMemo(() => {
     if (!user || user.role !== 'student') return { inProgressCourses: [], completedCourses: [] };
 
@@ -607,12 +628,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     view, user, users, courses, articles, team, projects, partners, events, mentorSessions, toast,
     currentCourse, currentLesson, currentArticle, currentProject, currentEvent, editingCourse, editingArticle, editingUser,
     editingProject, editingEvent, courseProgress, monitoringCourse, isProfileModalOpen, selectedProfile,
-    isBottleneckModalOpen, selectedBottleneck,
+    isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading,
     setUser,
     navigate, handleLogout, navigateToCourse, navigateToLesson, navigateToArticle, navigateToEvent, navigateToCertificate,
     navigateToInstructorDashboard, navigateToProject, navigateToProjectEditor, openProfileModal, closeProfileModal,
-    openBottleneckModal, closeBottleneckModal,
+    openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
     completeLesson, handleSaveNote, handleSaveCourse, handleEditCourse, handleCreateCourse, handleSaveArticle, handleEditArticle,
     handleCreateArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap, handleSaveUser, handleEditUser, handleCreateUser, handleDeleteUser,
     handleSaveProject, handleAddClap, handleAddComment, handleSaveEvent, handleCreateEvent, handleEditEvent,
@@ -703,6 +724,7 @@ const App: React.FC = () => {
                 <ProfileModalContainer />
                 <OnboardingTourContainer />
                 <BottleneckModalContainer />
+                <InscriptionFormModalContainer />
             </div>
         </AppProvider>
     );
@@ -732,6 +754,16 @@ const BottleneckModalContainer = () => {
         onClose={closeBottleneckModal} 
         lesson={selectedBottleneck.lesson}
         students={selectedBottleneck.students}
+    />;
+};
+
+const InscriptionFormModalContainer = () => {
+    const { isInscriptionModalOpen, selectedCourseForInscription, closeInscriptionModal } = useAppContext();
+    if (!isInscriptionModalOpen || !selectedCourseForInscription) return null;
+    return <InscriptionFormModal 
+        isOpen={isInscriptionModalOpen} 
+        onClose={closeInscriptionModal} 
+        courseName={selectedCourseForInscription.title}
     />;
 };
 
