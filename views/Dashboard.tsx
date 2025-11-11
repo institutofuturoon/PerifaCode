@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Achievement } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
@@ -23,6 +23,7 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 
 const Dashboard: React.FC = () => {
     const { user, users, courses, navigate, navigateToCourse, navigateToCertificate, courseProgress, navigateToInstructorDashboard, openInscriptionModal } = useAppContext();
+    const [showAllCourses, setShowAllCourses] = useState(false);
     
   if (!user) return null; // Should be redirected by router logic, but as a safeguard
 
@@ -191,8 +192,8 @@ const Dashboard: React.FC = () => {
             {/* NEW SECTION: EXPLORE COURSES */}
             <div>
                 <h2 className="text-2xl font-bold text-white mb-6">Comece uma Nova Jornada</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {notStartedCourses.slice(0, 4).map(course => (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-500">
+                    {(showAllCourses ? notStartedCourses : notStartedCourses.slice(0, 4)).map(course => (
                         <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse} />
                     ))}
                 </div>
@@ -204,8 +205,8 @@ const Dashboard: React.FC = () => {
                 )}
                 {notStartedCourses.length > 4 && (
                     <div className="text-center mt-8">
-                        <button onClick={() => navigate('courses')} className="bg-white/10 text-white font-semibold py-2 px-6 rounded-lg hover:bg-white/20 transition-colors">
-                            Ver todos os cursos
+                        <button onClick={() => setShowAllCourses(prev => !prev)} className="bg-white/10 text-white font-semibold py-2 px-6 rounded-lg hover:bg-white/20 transition-colors">
+                            {showAllCourses ? 'Mostrar menos' : 'Ver todos os cursos'}
                         </button>
                     </div>
                 )}
