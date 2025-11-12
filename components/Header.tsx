@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { View, Notification } from '../types';
 import { Logo } from '../assets/Logo';
 import { useAppContext } from '../App';
@@ -10,7 +11,8 @@ const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({
 );
 
 const Header: React.FC = () => {
-  const { user, users, setUser, navigate, handleLogout } = useAppContext();
+  const { user, users, setUser, handleLogout } = useAppContext();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -42,21 +44,26 @@ const Header: React.FC = () => {
     }
   };
 
-  const handleMobileNav = (view: View) => {
-    navigate(view);
+  const handleMobileNav = (path: string) => {
+    navigate(path);
     setIsMenuOpen(false);
   };
+
+  const handleLogoutClick = () => {
+    handleLogout();
+    navigate('/');
+  }
   
   const handleUserSwitch = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const userId = e.target.value;
     if (userId === 'logout') {
         setUser(null);
-        navigate('login');
+        navigate('/login');
     } else {
         const selectedUser = users.find(u => u.id === userId);
         if (selectedUser) {
             setUser(selectedUser);
-            navigate('dashboard');
+            navigate('/dashboard');
         }
     }
 };
@@ -66,16 +73,16 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <button onClick={() => navigate('home')} className="flex-shrink-0">
+            <button onClick={() => navigate('/')} className="flex-shrink-0">
               <Logo />
             </button>
             <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
-              <NavLink onClick={() => navigate('courses')}>Cursos</NavLink>
-              <NavLink onClick={() => navigate('community')}>Comunidade</NavLink>
-              <NavLink onClick={() => navigate('about')}>Sobre Nós</NavLink>
-              <NavLink onClick={() => navigate('team')}>Nossa Equipe</NavLink>
-              <NavLink onClick={() => navigate('blog')}>Blog</NavLink>
-              {user && <NavLink onClick={() => navigate('dashboard')}>Meu Painel</NavLink>}
+              <NavLink onClick={() => navigate('/courses')}>Cursos</NavLink>
+              <NavLink onClick={() => navigate('/community')}>Comunidade</NavLink>
+              <NavLink onClick={() => navigate('/about')}>Sobre Nós</NavLink>
+              <NavLink onClick={() => navigate('/team')}>Nossa Equipe</NavLink>
+              <NavLink onClick={() => navigate('/blog')}>Blog</NavLink>
+              {user && <NavLink onClick={() => navigate('/dashboard')}>Meu Painel</NavLink>}
             </nav>
           </div>
 
@@ -97,7 +104,7 @@ const Header: React.FC = () => {
                     ))}
                 </select>
             </div>
-             <button onClick={() => navigate('donate')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
+             <button onClick={() => navigate('/donate')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
                 Faça uma Doação
             </button>
             {user ? (
@@ -130,19 +137,19 @@ const Header: React.FC = () => {
                   </button>
                   {isProfileMenuOpen && (
                     <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-[#1a202c] ring-1 ring-white/10">
-                      <button onClick={() => { navigate('profile'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Meu Perfil</button>
-                      {(user.role === 'admin' || user.role === 'instructor') && <button onClick={() => { navigate('admin'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Painel de Admin</button>}
-                      <button onClick={() => { handleLogout(); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5">Sair</button>
+                      <button onClick={() => { navigate('/profile'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Meu Perfil</button>
+                      {(user.role === 'admin' || user.role === 'instructor') && <button onClick={() => { navigate('/admin'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Painel de Admin</button>}
+                      <button onClick={() => { handleLogoutClick(); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5">Sair</button>
                     </div>
                   )}
                 </div>
               </>
             ) : (
               <div className="flex items-center">
-                <button onClick={() => navigate('login')} className="border border-[#8a4add]/80 bg-transparent text-gray-300 hover:bg-[#8a4add]/20 font-semibold py-2 px-4 rounded-l-lg transition-all duration-300 text-sm">
+                <button onClick={() => navigate('/login')} className="border border-[#8a4add]/80 bg-transparent text-gray-300 hover:bg-[#8a4add]/20 font-semibold py-2 px-4 rounded-l-lg transition-all duration-300 text-sm">
                     Entrar
                 </button>
-                <button onClick={() => navigate('register')} className="border border-[#8a4add] bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-4 rounded-r-lg hover:opacity-90 transition-all duration-300 text-sm -ml-px">
+                <button onClick={() => navigate('/register')} className="border border-[#8a4add] bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-4 rounded-r-lg hover:opacity-90 transition-all duration-300 text-sm -ml-px">
                     Cadastre-se Grátis
                 </button>
               </div>
@@ -161,12 +168,12 @@ const Header: React.FC = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-black border-t border-white/10">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {user && <button onClick={() => handleMobileNav('dashboard')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Painel</button>}
-            <button onClick={() => handleMobileNav('courses')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
-            <button onClick={() => handleMobileNav('community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
-            <button onClick={() => handleMobileNav('about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
-            <button onClick={() => handleMobileNav('team')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossa Equipe</button>
-            <button onClick={() => handleMobileNav('blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
+            {user && <button onClick={() => handleMobileNav('/dashboard')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Painel</button>}
+            <button onClick={() => handleMobileNav('/courses')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
+            <button onClick={() => handleMobileNav('/community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
+            <button onClick={() => handleMobileNav('/about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
+            <button onClick={() => handleMobileNav('/team')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossa Equipe</button>
+            <button onClick={() => handleMobileNav('/blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
           </div>
           <div className="pt-4 pb-3 border-t border-white/10">
             {user ? (
@@ -181,15 +188,15 @@ const Header: React.FC = () => {
                   </div>
                 </div>
                 <div className="mt-3 px-2 space-y-1">
-                  <button onClick={() => handleMobileNav('profile')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Perfil</button>
-                  <button onClick={handleLogout} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sair</button>
+                  <button onClick={() => handleMobileNav('/profile')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Perfil</button>
+                  <button onClick={handleLogoutClick} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sair</button>
                 </div>
               </>
             ) : (
               <div className="px-5 space-y-3">
-                <button onClick={() => handleMobileNav('donate')} className="w-full text-center border border-[#c4b5fd]/50 text-[#c4b5fd] font-bold py-2 rounded-lg hover:bg-[#8a4add]/20 transition-colors">Faça uma Doação</button>
-                <button onClick={() => handleMobileNav('login')} className="w-full text-center bg-white/10 text-white font-bold py-2 rounded-lg hover:bg-white/20 transition-colors">Entrar</button>
-                <button onClick={() => handleMobileNav('register')} className="w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Cadastre-se Grátis</button>
+                <button onClick={() => handleMobileNav('/donate')} className="w-full text-center border border-[#c4b5fd]/50 text-[#c4b5fd] font-bold py-2 rounded-lg hover:bg-[#8a4add]/20 transition-colors">Faça uma Doação</button>
+                <button onClick={() => handleMobileNav('/login')} className="w-full text-center bg-white/10 text-white font-bold py-2 rounded-lg hover:bg-white/20 transition-colors">Entrar</button>
+                <button onClick={() => handleMobileNav('/register')} className="w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Cadastre-se Grátis</button>
               </div>
             )}
           </div>

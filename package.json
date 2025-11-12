@@ -17,7 +17,9 @@
     "@vercel/blob": "^0.23.2",
     "next": "^16.0.1",
     "marked": "^14.0.0",
-    "dompurify": "^3.1.6"
+    "dompurify": "^3.1.6",
+    "react-router-dom": "^6.24.1",
+    "react-router": "^6.24.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

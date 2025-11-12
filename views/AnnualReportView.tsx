@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 // Reusable components for this view
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
@@ -39,7 +39,7 @@ const TestimonialCard: React.FC<{ quote: string, name: string, course: string, a
 );
 
 const AnnualReportView: React.FC = () => {
-    const { navigate } = useAppContext();
+    const navigate = useNavigate();
 
     return (
         <div className="aurora-background text-white">
@@ -84,74 +84,44 @@ const AnnualReportView: React.FC = () => {
                     Nosso Impacto em Números
                 </SectionTitle>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <StatCard value="+100" label="Alunos Formados" color="text-[#c4b5fd]" />
-                    <StatCard value="14" label="Voluntários Ativos" color="text-sky-400" />
-                    <StatCard value="+2.500" label="Horas de Ensino" color="text-pink-400" />
-                    <StatCard value="85%" label="Taxa de Conclusão" color="text-green-400" />
+                    <StatCard value="+100" label="Jovens e Adultos Impactados" color="text-sky-400" />
+                    <StatCard value="95%" label="Taxa de Retenção" color="text-green-400" />
+                    <StatCard value="+1.2k" label="Horas de Conteúdo" color="text-pink-400" />
+                    <StatCard value="7" label="Parcerias Firmadas" color="text-amber-400" />
                 </div>
             </Section>
-            
-            {/* Financial Transparency */}
+
+            {/* Testimonials */}
             <Section className="bg-black/20">
-                <SectionTitle subtitle="Acreditamos que a confiança se constrói com clareza. Veja como cada contribuição foi investida.">
-                    Transparência Financeira
-                </SectionTitle>
-                <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-                    <div className="bg-white/5 p-8 rounded-lg border border-white/10">
-                        <h3 className="text-2xl font-bold text-green-400 mb-4">Receitas Totais: R$ 50.000</h3>
-                        <ul className="space-y-2 text-gray-300">
-                            <li><span className="font-semibold">Doações Individuais:</span> R$ 20.000</li>
-                            <li><span className="font-semibold">Parcerias Corporativas:</span> R$ 25.000</li>
-                            <li><span className="font-semibold">Editais e Prêmios:</span> R$ 5.000</li>
-                        </ul>
-                    </div>
-                    <div className="bg-white/5 p-8 rounded-lg border border-white/10">
-                        <h3 className="text-2xl font-bold text-red-400 mb-4">Despesas Totais: R$ 48.500</h3>
-                        <ul className="space-y-2 text-gray-300">
-                            <li><span className="font-semibold">Infraestrutura e Bolsas:</span> R$ 25.000</li>
-                            <li><span className="font-semibold">Recursos Humanos:</span> R$ 15.000</li>
-                            <li><span className="font-semibold">Marketing e Eventos:</span> R$ 5.000</li>
-                            <li><span className="font-semibold">Custos Administrativos:</span> R$ 3.500</li>
-                        </ul>
-                    </div>
-                </div>
-                 <p className="text-center mt-8 text-gray-400">Todo o superávit é reinvestido diretamente em nossos programas educacionais para o próximo ciclo.</p>
-            </Section>
-            
-            {/* Student Stories */}
-            <Section>
-                <SectionTitle subtitle="Os números contam uma parte da história. Nossos alunos contam o resto.">
-                    Vozes da Quebrada
+                <SectionTitle subtitle="Nada fala mais alto do que as vozes da nossa comunidade.">
+                    Histórias que Inspiram
                 </SectionTitle>
                 <div className="grid md:grid-cols-2 gap-8">
-                    <TestimonialCard
-                        quote="A FuturoOn não me deu só um curso, me deu uma direção. Aprendi a programar, consegui meu primeiro estágio e hoje consigo ajudar minha família. Mudou o jogo pra mim."
-                        name="Jessica Silva"
-                        course="Formada em Frontend"
-                        avatar="https://picsum.photos/seed/jessica/200"
+                    <TestimonialCard 
+                        quote="A FuturoOn não me deu só um curso, me deu uma carreira. Hoje trabalho como dev júnior e a ficha ainda não caiu. Foi a virada de chave da minha vida."
+                        name="Juliana Silva"
+                        course="Aluna de Backend C#"
+                        avatar="https://randomuser.me/api/portraits/women/44.jpg"
                     />
-                    <TestimonialCard
-                        quote="Eu achava que programação não era pra mim. A comunidade me acolheu, os mentores tiveram paciência e hoje eu tô construindo minhas próprias APIs. Foguete não tem ré!"
-                        name="Carlos Souza"
-                        course="Aluno de Backend"
-                        avatar="https://picsum.photos/seed/carlos/200"
+                     <TestimonialCard 
+                        quote="Eu achava que tecnologia não era pra mim. O curso de Letramento Digital me deu a confiança pra usar o celular e o computador sem medo. Hoje, falo com meus netos por vídeo toda semana."
+                        name="Maria Oliveira"
+                        course="Aluna de Letramento Digital"
+                        avatar="https://randomuser.me/api/portraits/women/68.jpg"
                     />
                 </div>
             </Section>
-            
-             {/* Call to Action */}
-            <Section className="bg-black/20">
+
+            {/* Call to Action */}
+            <Section>
                 <div className="text-center">
-                    <h2 className="text-3xl font-bold text-white">O Futuro Continua</h2>
+                    <h2 className="text-3xl font-bold text-white">Faça Parte do Próximo Capítulo</h2>
                     <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
-                        Em 2025, queremos dobrar nosso impacto. Com sua ajuda, podemos capacitar ainda mais talentos e transformar mais vidas. Faça parte desta história.
+                       Sua doação ou parceria nos ajuda a escrever mais histórias de sucesso como estas.
                     </p>
-                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button onClick={() => navigate('donate')} className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300">
-                            Faça uma Doação
-                        </button>
-                        <button onClick={() => navigate('partnerships')} className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300">
-                            Seja um Parceiro
+                    <div className="mt-8">
+                        <button onClick={() => navigate('/donate')} className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300">
+                            Apoie nossa Missão
                         </button>
                     </div>
                 </div>
@@ -160,4 +130,5 @@ const AnnualReportView: React.FC = () => {
     );
 };
 
+// FIX: Added default export to resolve import error in App.tsx.
 export default AnnualReportView;

@@ -1,21 +1,43 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
 
-interface ArticleEditorProps {
-  article: Article;
-}
+const ArticleEditor: React.FC = () => {
+  const { articles, handleSaveArticle, user } = useAppContext();
+  const { articleId } = useParams<{ articleId: string }>();
+  const navigate = useNavigate();
 
-const ArticleEditor: React.FC<ArticleEditorProps> = ({ article: initialArticle }) => {
-  const { handleSaveArticle, navigate } = useAppContext();
-  const [article, setArticle] = useState<Article>(initialArticle);
+  const initialArticle = useMemo(() => {
+    if (articleId && articleId !== 'new') {
+        return articles.find(a => a.id === articleId);
+    }
+    return {
+        id: `article_${Date.now()}`,
+        title: '', subtitle: '', author: user?.name || '',
+        date: new Date().toLocaleDateString('pt-BR'),
+        summary: '', imageUrl: user?.avatarUrl || '', authorAvatarUrl: user?.avatarUrl || '',
+        category: 'Dicas', content: '', status: 'draft', tags: []
+    };
+  }, [articleId, articles, user]);
+
+  const [article, setArticle] = useState<Article>(initialArticle || {
+    id: `article_${Date.now()}`, title: '', subtitle: '', author: user?.name || '',
+    date: new Date().toLocaleDateString('pt-BR'), summary: '', imageUrl: user?.avatarUrl || '',
+    authorAvatarUrl: user?.avatarUrl || '', category: 'Dicas', content: '', status: 'draft', tags: []
+  });
+
   const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
   const [isImprovingText, setIsImprovingText] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  
+  if (!initialArticle) {
+      return <div className="text-center py-20">Artigo não encontrado.</div>;
+  }
 
-  const onCancel = () => navigate('admin');
+  const onCancel = () => navigate('/admin');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -30,6 +52,7 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article: initialArticle }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveArticle(article);
+    navigate('/admin');
   };
 
   const handleGenerateTitles = async () => {

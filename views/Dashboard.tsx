@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Achievement, Lesson, MentorSession, User } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
@@ -24,29 +25,34 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 const Dashboard: React.FC = () => {
     const { 
       user, users, courses, articles, team, mentorSessions,
-      navigate, navigateToCourse, navigateToCertificate, courseProgress, 
-      navigateToInstructorDashboard, openInscriptionModal, mentors, 
-      navigateToLesson, projects, events, navigateToProject, 
-      navigateToArticle, navigateToEvent,
-      handleEditCourse, handleCreateCourse,
-      handleEditArticle, handleCreateArticle, handleDeleteArticle, handleToggleArticleStatus,
-      handleCreateUser, handleEditUser, handleDeleteUser, handleSaveTeamOrder,
+      courseProgress, openInscriptionModal, mentors, 
+      projects, events,
+      handleSaveCourse, handleDeleteArticle, handleToggleArticleStatus,
+      handleSaveUser, handleDeleteUser, handleSaveTeamOrder,
       handleAddSessionSlot, handleRemoveSessionSlot,
     } = useAppContext();
+    const navigate = useNavigate();
     const [showAllCourses, setShowAllCourses] = useState(false);
     const [activeTab, setActiveTab] = useState(user?.role === 'instructor' ? 'myAgenda' : 'courses');
     
-  if (!user) return null; // Should be redirected by router logic, but as a safeguard
+  if (!user) return null;
 
   // Render Instructor/Admin Dashboard
   if (user.role === 'instructor' || user.role === 'admin') {
       const { totalStudents, newStudentsLast30d, avgCompletionRate, weeklyEngagement, coursePerformance, studentEngagement } = MOCK_ANALYTICS_DATA_V2;
       const [isTeamOrdering, setIsTeamOrdering] = useState(false);
 
-      // --- Copied from Admin.tsx ---
       const coursesForUser = user.role === 'admin' ? courses : courses.filter(c => c.instructorId === user.id);
       const articlesForUser = user.role === 'admin' ? articles : articles.filter(a => a.author === user.name);
       const students = users.filter(u => u.role === 'student' && u.accountStatus !== 'inactive');
+      
+      const handleCreateCourse = () => navigate('/admin/course-editor');
+      const handleEditCourse = (courseId: string) => navigate(`/admin/course-editor/${courseId}`);
+      const handleCreateArticle = () => navigate('/admin/article-editor');
+      const handleEditArticle = (articleId: string) => navigate(`/admin/article-editor/${articleId}`);
+      const handleCreateUser = (role: 'student' | 'instructor') => navigate(role === 'student' ? '/admin/user-editor/new' : '/admin/teammember-editor/new');
+      const handleEditUser = (userId: string, role: User['role']) => navigate(role === 'student' ? `/admin/user-editor/${userId}` : `/admin/teammember-editor/${userId}`);
+
 
       const CoursesTable = () => (
         <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 overflow-hidden">
@@ -71,8 +77,8 @@ const Dashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{course.modules.length}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{course.modules.reduce((acc, module) => acc + module.lessons.length, 0)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                        <button onClick={() => navigateToInstructorDashboard(course)} className="text-green-400 hover:text-green-300">Ver Progresso</button>
-                        <button onClick={() => handleEditCourse(course)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                        <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-green-400 hover:text-green-300">Ver Progresso</button>
+                        <button onClick={() => handleEditCourse(course.id)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                       </td>
                     </tr>
                   ))
@@ -108,7 +114,7 @@ const Dashboard: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{article.date}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                         <button onClick={() => handleToggleArticleStatus(article.id)} className={article.status === 'published' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'}>{article.status === 'published' ? 'Desativar' : 'Publicar'}</button>
-                        <button onClick={() => handleEditArticle(article)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                        <button onClick={() => handleEditArticle(article.id)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                         <button onClick={() => handleDeleteArticle(article.id)} className="text-red-400 hover:text-red-300">Excluir</button>
                       </td>
                     </tr>
@@ -147,7 +153,7 @@ const Dashboard: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 capitalize">{member.role}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">{member.isMentor ? '✅' : '❌'}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                        <button onClick={() => handleEditUser(member)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                        <button onClick={() => handleEditUser(member.id, member.role)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                         {user?.id !== member.id && (<button onClick={() => handleDeleteUser(member.id)} className="text-red-400 hover:text-red-300">Desativar</button>)}
                         </td>
                     </tr>
@@ -184,7 +190,7 @@ const Dashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm text-gray-300">{student.email}</div></td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.xp}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                      <button onClick={() => handleEditUser(student)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                      <button onClick={() => handleEditUser(student.id, student.role)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                       {user?.id !== student.id && (<button onClick={() => handleDeleteUser(student.id)} className="text-red-400 hover:text-red-300">Desativar</button>)}
                     </td>
                 </tr>
@@ -320,7 +326,6 @@ const Dashboard: React.FC = () => {
       
       const createButton = getCreateButtonAction();
       const showCreateButton = (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog'))) && !isTeamOrdering;
-      // --- End of Copied from Admin.tsx ---
 
       return (
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -359,7 +364,7 @@ const Dashboard: React.FC = () => {
                                             <span>🏆 {perf.completionRate}% Conclusão</span>
                                         </div>
                                     </div>
-                                    <button onClick={() => navigateToInstructorDashboard(course)} className="text-xs font-semibold text-white bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 transition-colors">
+                                    <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-xs font-semibold text-white bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 transition-colors">
                                         Ver Detalhes
                                     </button>
                                 </div>
@@ -505,7 +510,7 @@ const Dashboard: React.FC = () => {
             title: `${author?.name.split(' ')[0] || 'Alguém'} publicou um projeto:`,
             subtitle: latestProject.title,
             icon: '🚀',
-            action: () => navigateToProject(latestProject),
+            action: () => navigate(`/project/${latestProject.id}`),
         });
     }
 
@@ -526,7 +531,7 @@ const Dashboard: React.FC = () => {
                 title: `Novo artigo no blog:`,
                 subtitle: latestArticle.title,
                 icon: '📝',
-                action: () => navigateToArticle(latestArticle),
+                action: () => navigate(`/article/${latestArticle.id}`),
             });
         }
     }
@@ -556,13 +561,13 @@ const Dashboard: React.FC = () => {
                 title: `Próximo evento ao vivo:`,
                 subtitle: nextEvent.title,
                 icon: '🗓️',
-                action: () => navigateToEvent(nextEvent),
+                action: () => navigate(`/event/${nextEvent.id}`),
             });
         }
     }
     
     return items.slice(0, 3);
-}, [projects, articles, events, users, navigateToProject, navigateToArticle, navigateToEvent]);
+}, [projects, articles, events, users, navigate]);
 
 
   const startedOrCompletedCourseIds = useMemo(() => {
@@ -603,7 +608,7 @@ const Dashboard: React.FC = () => {
               <ProgressBar progress={latestInProgress.progress} className="my-4"/>
             </div>
             <button
-              onClick={() => navigateToLesson(latestInProgress.course, nextLesson!)}
+              onClick={() => navigate(`/course/${latestInProgress.course.id}/lesson/${nextLesson!.id}`)}
               className="w-full md:w-auto flex-shrink-0 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
             >
               Continuar Aula
@@ -618,7 +623,7 @@ const Dashboard: React.FC = () => {
                 <p className="text-md text-[#c4b5fd] mt-2">Nossa sugestão para você: {firstCourseToStart.title}</p>
             </div>
             <button
-              onClick={() => navigateToCourse(firstCourseToStart)}
+              onClick={() => navigate(`/course/${firstCourseToStart.id}`)}
               className="w-full md:w-auto flex-shrink-0 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
             >
               Começar a Aprender
@@ -684,7 +689,7 @@ const Dashboard: React.FC = () => {
                     ) : (
                         <div className="text-center py-8">
                         <p className="text-gray-400">Nenhum compromisso agendado.</p>
-                        <button onClick={() => navigate('connect')} className="mt-2 text-sm text-[#c4b5fd] font-semibold">Agendar mentoria</button>
+                        <button onClick={() => navigate('/connect')} className="mt-2 text-sm text-[#c4b5fd] font-semibold">Agendar mentoria</button>
                         </div>
                     )}
                     </div>
@@ -723,7 +728,7 @@ const Dashboard: React.FC = () => {
                 <h2 className="text-2xl font-bold text-white mb-6">Comece uma Nova Jornada</h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-500">
                     {(showAllCourses ? notStartedCourses : notStartedCourses.slice(0, 4)).map(course => (
-                        <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse} />
+                        <CourseCard key={course.id} course={course} onCourseSelect={(c) => navigate(`/course/${c.id}`)} />
                     ))}
                 </div>
                 {notStartedCourses.length === 0 && (
@@ -749,7 +754,7 @@ const Dashboard: React.FC = () => {
                   return (
                     <button 
                       key={course.id} 
-                      onClick={() => navigateToCourse(course)}
+                      onClick={() => navigate(`/course/${course.id}`)}
                       className="w-full bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10 flex flex-col sm:flex-row items-center gap-6 hover:border-[#8a4add]/50 hover:shadow-lg transition-all duration-300 text-left"
                     >
                       <img src={course.imageUrl} alt={course.title} className="w-full sm:w-40 h-auto rounded-md object-cover"/>
@@ -764,7 +769,7 @@ const Dashboard: React.FC = () => {
                 {inProgressCourses.length === 0 && (
                   <div className="text-center py-10 bg-black/20 rounded-lg border border-white/10">
                     <p className="text-gray-400">Você ainda não iniciou nenhum curso.</p>
-                    <button onClick={() => navigate('courses')} className="mt-4 text-[#c4b5fd] font-semibold">Explorar cursos</button>
+                    <button onClick={() => navigate('/courses')} className="mt-4 text-[#c4b5fd] font-semibold">Explorar cursos</button>
                   </div>
                 )}
               </div>
@@ -782,7 +787,7 @@ const Dashboard: React.FC = () => {
                             </div>
                             <div>
                                 <h4 className="font-bold text-white">{course.title}</h4>
-                                <button onClick={() => navigateToCertificate(course)} className="text-sm text-[#c4b5fd] hover:underline">Ver certificado</button>
+                                <button onClick={() => navigate(`/course/${course.id}/certificate`)} className="text-sm text-[#c4b5fd] hover:underline">Ver certificado</button>
                             </div>
                         </div>
                     )

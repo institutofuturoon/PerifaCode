@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { Logo } from '../assets/Logo';
-import { useAppContext } from '../App';
 import { User } from '../types';
 
 const Register: React.FC = () => {
-  const { navigate } = useAppContext();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -50,8 +50,9 @@ const Register: React.FC = () => {
 
         await setDoc(doc(db, "users", firebaseUser.uid), newUser);
         
-        // The onAuthStateChanged listener will pick up the user and redirect to the profile completion
-        navigate('dashboard');
+        // The onAuthStateChanged listener will pick up the user and App.tsx router logic will handle redirection.
+        // We can navigate to a temporary loading or straight to dashboard and let the router redirect.
+        navigate('/dashboard');
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -126,7 +127,7 @@ const Register: React.FC = () => {
         </form>
          <p className="mt-2 text-center text-sm text-gray-400">
             Já tem uma conta?{' '}
-            <button onClick={() => navigate('login')} className="font-medium text-[#c4b5fd] hover:text-[#8a4add] hover:underline">
+            <button onClick={() => navigate('/login')} className="font-medium text-[#c4b5fd] hover:text-[#8a4add] hover:underline">
               Faça login
             </button>
           </p>

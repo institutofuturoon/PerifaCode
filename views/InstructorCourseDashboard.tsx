@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { User, Course, Lesson } from '../types';
 import ProgressBar from '../components/ProgressBar';
@@ -48,8 +49,12 @@ const StudentRow: React.FC<{ student: User; course: Course }> = ({ student, cour
 };
 
 const InstructorCourseDashboard: React.FC = () => {
-    const { monitoringCourse, users, navigate, openBottleneckModal, showToast } = useAppContext();
+    const { courses, users, openBottleneckModal, showToast } = useAppContext();
+    const { courseId } = useParams<{ courseId: string }>();
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+
+    const monitoringCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
 
     const courseAnalytics = useMemo(() => MOCK_ANALYTICS_DATA_V2.coursePerformance.find(p => p.courseId === monitoringCourse?.id), [monitoringCourse]);
     const lessonPerformanceData = useMemo(() => monitoringCourse ? MOCK_ANALYTICS_DATA_V2.lessonPerformance[monitoringCourse.id as keyof typeof MOCK_ANALYTICS_DATA_V2.lessonPerformance] || [] : [], [monitoringCourse]);
@@ -172,7 +177,7 @@ const InstructorCourseDashboard: React.FC = () => {
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-8">
-                <button onClick={() => navigate('admin')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+                <button onClick={() => navigate('/admin')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
                     <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o painel
                 </button>
             </div>

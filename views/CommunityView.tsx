@@ -1,9 +1,12 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import ProjectCard from '../components/ProjectCard';
+import { Project } from '../types';
 
 const CommunityView: React.FC = () => {
-    const { projects, navigateToProject, navigateToProjectEditor, user } = useAppContext();
+    const { projects, user } = useAppContext();
+    const navigate = useNavigate();
     const [activeFilter, setActiveFilter] = useState<string>('Todos');
 
     const allTechs = useMemo(() => {
@@ -20,6 +23,14 @@ const CommunityView: React.FC = () => {
         }
         return projects.filter(project => project.technologies.includes(activeFilter));
     }, [projects, activeFilter]);
+    
+    const handleProjectSelect = (project: Project) => {
+        navigate(`/project/${project.id}`);
+    };
+    
+    const handleNavigateToProjectEditor = () => {
+        navigate('/project/edit');
+    };
 
 
     return (
@@ -35,7 +46,7 @@ const CommunityView: React.FC = () => {
                 </div>
                 {user && (
                     <button
-                        onClick={() => navigateToProjectEditor()}
+                        onClick={handleNavigateToProjectEditor}
                         className="mt-6 sm:mt-0 w-full sm:w-auto flex-shrink-0 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
                     >
                         Submeter Projeto
@@ -64,7 +75,7 @@ const CommunityView: React.FC = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {filteredProjects.length > 0 ? (
                     filteredProjects.map(project => (
-                        <ProjectCard key={project.id} project={project} onProjectSelect={navigateToProject} />
+                        <ProjectCard key={project.id} project={project} onProjectSelect={handleProjectSelect} />
                     ))
                 ) : (
                     <div className="text-center py-20 col-span-1 sm:col-span-2 lg:col-span-3 xl:col-span-4">

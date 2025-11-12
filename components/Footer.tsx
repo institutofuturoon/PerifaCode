@@ -1,7 +1,6 @@
 import React from 'react';
-import { View } from '../types';
+import { useNavigate } from 'react-router-dom';
 import { Logo } from '../assets/Logo';
-import { useAppContext } from '../App';
 
 const FooterLink: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({ onClick, children }) => (
   <button onClick={onClick} className="text-gray-400 hover:text-white transition-colors duration-200">
@@ -23,7 +22,7 @@ const ContactInfo: React.FC<{ icon: React.ReactNode; children: React.ReactNode }
 )
 
 const Footer: React.FC = () => {
-  const { navigate } = useAppContext();
+  const navigate = useNavigate();
   return (
     <footer className="bg-[#09090B] text-white border-t border-white/10">
       <div className="container mx-auto py-16 px-4 sm:px-6 lg:px-8">
@@ -52,10 +51,10 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Plataforma</h3>
             <ul className="mt-4 space-y-3">
-              <li><FooterLink onClick={() => navigate('courses')}>Cursos</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('community')}>Comunidade</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('connect')}>Mentorias & Eventos</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('blog')}>Blog</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/courses')}>Cursos</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/community')}>Comunidade</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/connect')}>Mentorias & Eventos</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/blog')}>Blog</FooterLink></li>
             </ul>
           </div>
 
@@ -63,10 +62,10 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase">Institucional</h3>
             <ul className="mt-4 space-y-3">
-              <li><FooterLink onClick={() => navigate('about')}>Sobre Nós</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('team')}>Nossa Equipe</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('annualReport')}>Transparência</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('donate')}>Faça uma Doação</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/about')}>Sobre Nós</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/team')}>Nossa Equipe</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/annual-report')}>Transparência</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/donate')}>Faça uma Doação</FooterLink></li>
             </ul>
           </div>
 
@@ -84,8 +83,8 @@ const Footer: React.FC = () => {
         <div className="mt-16 border-t border-white/10 pt-8 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
           <p>&copy; {new Date().getFullYear()} Instituto FuturoOn. Todos os direitos reservados.</p>
           <div className="flex space-x-6 mt-4 sm:mt-0">
-            <button onClick={() => navigate('privacy')} className="hover:text-gray-300 transition-colors">Política de Privacidade</button>
-            <button onClick={() => navigate('terms')} className="hover:text-gray-300 transition-colors">Termos de Uso</button>
+            <button onClick={() => navigate('/privacy')} className="hover:text-gray-300 transition-colors">Política de Privacidade</button>
+            <button onClick={() => navigate('/terms')} className="hover:text-gray-300 transition-colors">Termos de Uso</button>
           </div>
         </div>
       </div>

@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 
 const EventDetailView: React.FC = () => {
-  const { currentEvent, navigate } = useAppContext();
+  const { events } = useAppContext();
+  const { eventId } = useParams<{ eventId: string }>();
+  const navigate = useNavigate();
+
+  const event = useMemo(() => events.find(e => e.id === eventId), [events, eventId]);
+
   const [copyButtonText, setCopyButtonText] = useState('Compartilhar');
 
-  if (!currentEvent) {
-    // Navigate back or show an error. Let's redirect to the connect page.
-    navigate('connect');
-    return <div className="text-center py-20">Evento não encontrado. Redirecionando...</div>;
+  if (!event) {
+    return <div className="text-center py-20">Evento não encontrado.</div>;
   }
 
-  const event = currentEvent;
-  
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}?event=${event.id}`;
     const shareText = `🚀 Participe do evento "${event.title}" da FuturoOn! Saiba mais e inscreva-se.`;
@@ -111,7 +113,7 @@ const EventDetailView: React.FC = () => {
               </button>
             </div>
             <div className="mt-8 border-t border-white/10 pt-8">
-              <button onClick={() => navigate('connect')} className="text-purple-400 font-semibold hover:text-purple-300 transition-colors group">
+              <button onClick={() => navigate('/connect')} className="text-purple-400 font-semibold hover:text-purple-300 transition-colors group">
                 <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para Eventos
               </button>
             </div>

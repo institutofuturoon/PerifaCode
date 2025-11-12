@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, createContext, useContext, use
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc, addDoc } from 'firebase/firestore';
+import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress } from './types';
 import Header from './components/Header';
@@ -67,31 +68,18 @@ const calculateReadingTime = (content: string): number => {
 
 
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [view, setView] = useState<View>('home');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [users, setUsers] = useState<User[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [currentCourse, setCurrentCourse] = useState<Course | null>(null);
-  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(null);
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
-  const [monitoringCourse, setMonitoringCourse] = useState<Course | null>(null);
   
   const [articles, setArticles] = useState<Article[]>([]);
-  const [currentArticle, setCurrentArticle] = useState<Article | null>(null);
-  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-
   const [projects, setProjects] = useState<Project[]>([]);
-  const [currentProject, setCurrentProject] = useState<Project | null>(null);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
-
+  
   const [partners, setPartners] = useState<Partner[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const [currentEvent, setCurrentEvent] = useState<Event | null>(null);
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   
   const [mentorSessions, setMentorSessions] = useState<MentorSession[]>([]);
   
@@ -119,7 +107,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const snapshot = await getDocs(collRef);
         let dataFromDb = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         
-        // Calculate reading time for articles on fetch
         if (collectionName === 'articles') {
             dataFromDb = dataFromDb.map(article => ({
                 ...article,
@@ -162,8 +149,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
         if (!userDoc.exists()) {
             console.warn("Documento do usuário não encontrado. Tentando novamente em 1.5s para lidar com possível race condition de registro...");
-            
-            // Wait a moment and retry, giving the registration function time to complete.
             await new Promise(resolve => setTimeout(resolve, 1500));
             userDoc = await getDoc(userDocRef);
         }
@@ -178,8 +163,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 setUser(userData);
             }
         } else {
-            // If it's still not there, regardless of whether the user is new or old,
-            // create a fallback document to ensure a smooth user experience and self-heal the data.
             console.warn("Documento do usuário não existe no Firestore. Criando perfil de fallback para garantir o fluxo de onboarding e corrigir inconsistência.");
             const newUser: User = {
               id: firebaseUser.uid,
@@ -188,7 +171,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               avatarUrl: firebaseUser.photoURL || `https://picsum.photos/seed/${firebaseUser.uid}/200`,
               bio: 'Entusiasta de tecnologia pronto para aprender!',
               role: 'student',
-              profileStatus: 'incomplete', // Critical for onboarding flow
+              profileStatus: 'incomplete',
               completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
               hasCompletedOnboardingTour: false,
               accountStatus: 'active',
@@ -199,8 +182,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 console.log("Perfil de fallback criado com sucesso no Firestore.");
             } catch (error) {
                 console.error("Falha crítica ao criar documento de fallback no Firestore:", error);
-                // If we can't even create the doc, something is seriously wrong with Firestore permissions.
-                // In this case, logging out is the only safe option.
                 await signOut(auth);
                 setUser(null);
             }
@@ -219,10 +200,13 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             const eventId = urlParams.get('event');
 
             if (eventId) {
+                // Since this logic now lives inside the router context, we'd need access to navigate.
+                // For now, let's assume direct manipulation is okay for this one-off deep link.
+                // In a full refactor, this might be a useEffect inside a specific component.
                 const eventToOpen = events.find(e => e.id === eventId);
                 if (eventToOpen) {
-                    navigateToEvent(eventToOpen);
-                    window.history.replaceState({}, document.title, window.location.pathname);
+                    window.location.hash = `#/event/${eventId}`;
+                    // A better way is to use the navigate function from react-router, but this is a temporary fix.
                 }
             }
             setInitialEventChecked(true);
@@ -230,60 +214,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }, [events, loading, initialEventChecked]);
 
 
-  const navigate = useCallback((newView: View) => {
-    window.scrollTo(0, 0);
-    setView(newView);
-  }, []);
-
   const handleLogout = () => {
     signOut(auth).then(() => {
       setUser(null);
-      navigate('home');
+      // Navigation will be handled by the component calling this.
     });
-  };
-
-  const navigateToCourse = (course: Course) => {
-    // Check if the course has specific landing page content.
-    // The presence of `heroContent` is a good indicator.
-    if (course.heroContent) {
-        setCurrentCourse(course);
-        navigate('courseLanding');
-    } else {
-        // Fallback to the generic course detail for courses without landing page data
-        setCurrentCourse(course);
-        navigate('courseDetail');
-    }
-  };
-
-  const navigateToLesson = (course: Course, lesson: Lesson) => {
-    setCurrentCourse(course);
-    setCurrentLesson(lesson);
-    navigate('lesson');
-  };
-
-  const navigateToArticle = (article: Article) => {
-    setCurrentArticle(article);
-    navigate('articleDetail');
-  };
-  
-  const navigateToEvent = (event: Event) => {
-    setCurrentEvent(event);
-    navigate('eventDetail');
-  };
-
-  const navigateToCertificate = (course: Course) => {
-    setCurrentCourse(course);
-    navigate('certificate');
-  };
-
-  const navigateToInstructorDashboard = (course: Course) => {
-    setMonitoringCourse(course);
-    navigate('instructorCourseDashboard');
-  };
-
-  const navigateToProject = (project: Project) => {
-    setCurrentProject(project);
-    navigate('projectDetail');
   };
   
     const completeLesson = async (lessonId: string) => {
@@ -294,7 +229,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const updatedCompletedIds = [...user.completedLessonIds, lessonId];
         
         const updatedUser = { ...user, completedLessonIds: updatedCompletedIds, xp: newXp };
-        setUser(updatedUser); // Optimistic update
+        setUser(updatedUser);
         showToast(`✨ Aula concluída! +${lesson?.xp || 0} XP`);
 
         try {
@@ -304,7 +239,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             });
         } catch (error) {
             console.error("Erro ao completar aula:", error);
-            // Revert state if necessary
         }
     };
 
@@ -322,16 +256,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
   
-  const handleEditCourse = (course: Course) => { setEditingCourse(course); navigate('courseEditor'); };
-  const handleCreateCourse = () => {
-    const newCourse: Course = { id: `course_${Date.now()}`, title: '', description: '', longDescription: '', track: 'Frontend', imageUrl: 'https://picsum.photos/seed/newcourse/600/400', duration: '10 horas', skillLevel: 'Iniciante', instructorId: user?.id || '', modules: [], format: 'online' };
-    setEditingCourse(newCourse);
-    navigate('courseEditor');
-  };
     const handleSaveCourse = async (courseToSave: Course) => {
         const isNew = !courses.some(c => c.id === courseToSave.id);
         setCourses(prev => isNew ? [...prev, courseToSave] : prev.map(c => c.id === courseToSave.id ? courseToSave : c));
-        navigate('admin');
         showToast("✅ Curso salvo com sucesso!");
 
         try {
@@ -341,12 +268,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
-  const handleEditArticle = (article: Article) => { setEditingArticle(article); navigate('articleEditor'); };
-  const handleCreateArticle = () => {
-    const newArticle: Article = { id: `article_${Date.now()}`, title: '', subtitle: '', author: user?.name || '', date: new Date().toLocaleDateString('pt-BR'), summary: '', imageUrl: 'https://picsum.photos/seed/newarticle/600/400', authorAvatarUrl: user?.avatarUrl || '', category: 'Dicas', content: '', status: 'draft', claps: 0 };
-    setEditingArticle(newArticle);
-    navigate('articleEditor');
-  };
     const handleSaveArticle = async (articleToSave: Article) => {
         const articleWithReadingTime = {
             ...articleToSave,
@@ -355,7 +276,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
         const isNew = !articles.some(a => a.id === articleWithReadingTime.id);
         setArticles(prev => isNew ? [...prev, articleWithReadingTime] : prev.map(a => a.id === articleWithReadingTime.id ? articleWithReadingTime : a));
-        navigate('admin');
         showToast("✅ Artigo salvo com sucesso!");
 
         try {
@@ -405,28 +325,17 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         
         const updateClaps = (prev: Article[]) => prev.map(a => a.id === articleId ? { ...a, claps: newClaps } : a);
         setArticles(updateClaps);
-        if (currentArticle?.id === articleId) {
-            setCurrentArticle(prev => prev ? { ...prev, claps: newClaps } : null);
-        }
         
         try {
             await updateDoc(doc(db, "articles", articleId), { claps: newClaps });
         } catch (error) {
             console.error("Erro ao adicionar clap ao artigo:", error);
-            // Optionally revert state here
         }
     };
 
-  const handleEditUser = (user: User) => { setEditingUser(user); navigate('studentEditor'); };
-  const handleCreateUser = (role: 'student' | 'instructor') => {
-    const newUser: User = { id: `user_${Date.now()}`, name: '', email: '', avatarUrl: 'https://picsum.photos/seed/newuser/200', bio: '', role, completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '' };
-    setEditingUser(newUser);
-    navigate('studentEditor');
-  };
     const handleSaveUser = async (userToSave: User) => {
         const isNew = !users.some(u => u.id === userToSave.id);
         setUsers(prev => isNew ? [...prev, userToSave] : prev.map(u => u.id === userToSave.id ? userToSave : u));
-        navigate('admin');
         showToast("✅ Usuário salvo com sucesso!");
 
         try {
@@ -435,6 +344,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             console.error("Erro ao salvar usuário:", error);
         }
     };
+
     const handleDeleteUser = async (userId: string) => {
       if(window.confirm("Tem certeza que deseja desativar este usuário? Ele não poderá mais acessar a plataforma.")) {
           const userToDeactivate = users.find(u => u.id === userId);
@@ -452,7 +362,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                showToast("❌ Erro ao desativar usuário.");
           }
       }
-  };
+    };
 
     const handleUpdateUserProfile = async (userToUpdate: User) => {
        setUser(userToUpdate);
@@ -465,19 +375,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
        }
     };
 
-  const navigateToProjectEditor = (project?: Project) => {
-    if (project) {
-        setEditingProject(project);
-    } else {
-        const newProject: Project = { id: `proj_${Date.now()}`, authorId: user!.id, title: '', description: '', imageUrl: 'https://picsum.photos/seed/newproject/600/400', technologies: [], repoUrl: '', liveUrl: '', claps: 0, comments: [], createdAt: 'Agora mesmo' };
-        setEditingProject(newProject);
-    }
-    navigate('projectEditor');
-  };
     const handleSaveProject = async (projectToSave: Project) => {
         const isNew = !projects.some(p => p.id === projectToSave.id);
         setProjects(prev => isNew ? [...prev, projectToSave] : prev.map(p => p.id === projectToSave.id ? projectToSave : p));
-        navigateToProject(projectToSave);
         showToast("🚀 Projeto salvo com sucesso!");
         try {
             await setDoc(doc(db, "projects", projectToSave.id), projectToSave);
@@ -485,6 +385,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             console.error("Erro ao salvar projeto:", error);
         }
     };
+
     const handleAddClap = async (projectId: string) => {
         const project = projects.find(p => p.id === projectId);
         if (!project) return;
@@ -496,6 +397,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             console.error("Erro ao adicionar clap:", error);
         }
     };
+    
     const handleAddComment = async (projectId: string, text: string) => {
         if (!user) return;
         const newComment: ProjectComment = { id: `comm_${Date.now()}`, authorId: user.id, text, createdAt: new Date().toISOString() };
@@ -510,16 +412,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
-  const handleEditEvent = (event: Event) => { setEditingEvent(event); navigate('eventEditor'); };
-  const handleCreateEvent = () => {
-      const newEvent: Event = { id: `event_${Date.now()}`, title: '', date: '', time: '', hostId: user?.id || '', description: '', imageUrl: 'https://picsum.photos/seed/newevent/600/400', eventType: 'Live' };
-      setEditingEvent(newEvent);
-      navigate('eventEditor');
-  };
     const handleSaveEvent = async (eventToSave: Event) => {
         const isNew = !events.some(e => e.id === eventToSave.id);
         setEvents(prev => isNew ? [...prev, eventToSave] : prev.map(e => e.id === eventToSave.id ? eventToSave : e));
-        navigate('connect');
         showToast("🗓️ Evento salvo com sucesso!");
         try {
             await setDoc(doc(db, "events", eventToSave.id), eventToSave);
@@ -527,6 +422,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             console.error("Erro ao salvar evento:", error);
         }
     };
+    
     const handleDeleteEvent = async (eventId: string) => {
         if (window.confirm("Tem certeza que deseja excluir este evento?")) {
             setEvents(prev => prev.filter(e => e.id !== eventId));
@@ -584,7 +480,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
     };
     const handleBookSession = async (sessionId: string) => {
-        if (!user) { navigate('login'); return; }
+        if (!user) { return; }
         setMentorSessions(prev => prev.map(s => s.id === sessionId ? { ...s, isBooked: true, studentId: user.id } : s));
         showToast("✅ Mentoria agendada com sucesso!");
         try {
@@ -650,18 +546,16 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [user, courses]);
 
   const value = {
-    view, user, users, courses, articles, team, projects, partners, events, mentorSessions, toast,
-    currentCourse, currentLesson, currentArticle, currentProject, currentEvent, editingCourse, editingArticle, editingUser,
-    editingProject, editingEvent, courseProgress, monitoringCourse, isProfileModalOpen, selectedProfile,
+    user, users, courses, articles, team, projects, partners, events, mentorSessions, toast,
+    courseProgress, isProfileModalOpen, selectedProfile,
     isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading,
     setUser,
-    navigate, handleLogout, navigateToCourse, navigateToLesson, navigateToArticle, navigateToEvent, navigateToCertificate,
-    navigateToInstructorDashboard, navigateToProject, navigateToProjectEditor, openProfileModal, closeProfileModal,
+    handleLogout, openProfileModal, closeProfileModal,
     openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
-    completeLesson, handleSaveNote, handleSaveCourse, handleEditCourse, handleCreateCourse, handleSaveArticle, handleEditArticle,
-    handleCreateArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap, handleSaveUser, handleEditUser, handleCreateUser, handleDeleteUser,
-    handleSaveProject, handleAddClap, handleAddComment, handleSaveEvent, handleCreateEvent, handleEditEvent,
+    completeLesson, handleSaveNote, handleSaveCourse, handleSaveArticle,
+    handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap, handleSaveUser, 
+    handleDeleteUser, handleSaveProject, handleAddClap, handleAddComment, handleSaveEvent, 
     handleDeleteEvent, handleSaveTeamOrder, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession,
     showToast, handleUpdateUserProfile, handleCompleteOnboarding,
   };
@@ -669,88 +563,120 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-const App: React.FC = () => {
-    const renderView = () => {
-        const InnerComponent = () => {
-            const { view, user, loading } = useAppContext();
-            
-            if (loading) {
-                return (
-                    <div className="flex items-center justify-center h-screen">
-                        <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </div>
-                );
-            }
+const AppRoutes: React.FC = () => {
+    const { user, loading } = useAppContext();
+    const location = useLocation();
 
-            if (user) {
-                if (user.profileStatus === 'incomplete' && view !== 'completeProfile') {
-                    return <CompleteProfile />;
-                }
-                if (user.mustChangePassword === true && view !== 'changePassword') {
-                    return <ChangePassword />;
-                }
-            }
+    const Layout = () => (
+        <div className="flex flex-col min-h-screen bg-transparent">
+            <Header />
+            <main className="flex-grow"><Outlet /></main>
+            <Footer />
+            <ToastContainer />
+            <ProfileModalContainer />
+            <OnboardingTourContainer />
+            <BottleneckModalContainer />
+            <InscriptionFormModalContainer />
+        </div>
+    );
 
-
-            switch (view) {
-                case 'home': return <Home />;
-                case 'courses': return <PerifaCodeView />;
-                case 'dashboard': return <Dashboard />;
-                case 'connect': return <ConnectView />;
-                case 'blog': return <Blog />;
-                case 'login': return <Login />;
-                case 'register': return <Register />;
-                case 'completeProfile': return <CompleteProfile />;
-                case 'profile': return <Profile />;
-                case 'courseDetail': return <CourseDetail />;
-                case 'lesson': return <LessonView />;
-                case 'admin': return <Dashboard />;
-                case 'courseEditor': return <CourseEditor course={useAppContext().editingCourse!} />;
-                case 'certificate': return <CertificateView />;
-                case 'analytics': return <Analytics />;
-                case 'articleDetail': return <ArticleView />;
-                case 'articleEditor': return <ArticleEditor article={useAppContext().editingArticle!} />;
-                case 'studentEditor': return <StudentEditor student={useAppContext().editingUser!} />;
-                case 'teamMemberEditor': return <TeamMemberEditor member={useAppContext().editingUser!} />;
-                case 'instructorCourseDashboard': return <InstructorCourseDashboard />;
-                case 'community': return <CommunityView />;
-                case 'projectDetail': return <ProjectDetailView />;
-                case 'projectEditor': return <ProjectEditor project={useAppContext().editingProject!} />;
-                case 'partnerships': return <PartnershipsView />;
-                case 'eventEditor': return <EventEditor event={useAppContext().editingEvent!} />;
-                case 'eventDetail': return <EventDetailView />;
-                case 'privacy': return <PrivacyPolicyView />;
-                case 'terms': return <TermsOfUseView />;
-                case 'team': return <TeamView />;
-                case 'donate': return <DonateView />;
-                case 'about': return <AboutUsView />;
-                case 'annualReport': return <AnnualReportView />;
-                case 'financialStatement': return <FinancialStatementView />;
-                case 'changePassword': return <ChangePassword />;
-                case 'courseLanding': return <CourseLandingPage />;
-                default: return <Home />;
-            }
-        };
-        return <InnerComponent />;
+    const ProtectedRoute = () => {
+        if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+        if (user.profileStatus === 'incomplete' && location.pathname !== '/complete-profile') return <Navigate to="/complete-profile" replace />;
+        if (user.mustChangePassword === true && location.pathname !== '/change-password') return <Navigate to="/change-password" replace />;
+        return <Outlet />;
     };
+
+    const PublicOnlyRoute = () => !user ? <Outlet /> : <Navigate to="/dashboard" replace />;
+
+    const SpecialAccessRoute = () => {
+        if (!user) return <Navigate to="/login" replace />;
+        return <Outlet />;
+    }
     
+    const AdminRoute = () => {
+        if (!user || (user.role !== 'admin' && user.role !== 'instructor')) {
+            return <Navigate to="/dashboard" replace />;
+        }
+        return <Outlet />;
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+        );
+    }
+
+    return (
+        <Routes>
+            <Route element={<Layout />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/courses" element={<PerifaCodeView />} />
+                <Route path="/community" element={<CommunityView />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/connect" element={<ConnectView />} />
+                <Route path="/partnerships" element={<PartnershipsView />} />
+                <Route path="/about" element={<AboutUsView />} />
+                <Route path="/team" element={<TeamView />} />
+                <Route path="/donate" element={<DonateView />} />
+                <Route path="/privacy" element={<PrivacyPolicyView />} />
+                <Route path="/terms" element={<TermsOfUseView />} />
+                <Route path="/annual-report" element={<AnnualReportView />} />
+                <Route path="/financial-statement" element={<FinancialStatementView />} />
+                
+                <Route path="/course/:courseId" element={<CourseDetail />} />
+                <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
+                <Route path="/article/:articleId" element={<ArticleView />} />
+                <Route path="/project/:projectId" element={<ProjectDetailView />} />
+                <Route path="/event/:eventId" element={<EventDetailView />} />
+                
+                <Route element={<PublicOnlyRoute />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </Route>
+
+                <Route element={<SpecialAccessRoute />}>
+                    <Route path="/complete-profile" element={<CompleteProfile />} />
+                    <Route path="/change-password" element={<ChangePassword />} />
+                </Route>
+
+                <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
+                    <Route path="/course/:courseId/certificate" element={<CertificateView />} />
+                    <Route path="/project/edit" element={<ProjectEditor />} />
+                    <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
+
+                    <Route element={<AdminRoute />}>
+                        <Route path="/admin" element={<Dashboard />} />
+                        <Route path="/admin/analytics" element={<Analytics />} />
+                        <Route path="/admin/course-editor" element={<CourseEditor />} />
+                        <Route path="/admin/course-editor/:courseId" element={<CourseEditor />} />
+                        <Route path="/admin/article-editor" element={<ArticleEditor />} />
+                        <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
+                        <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
+                        <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
+                        <Route path="/admin/event-editor" element={<EventEditor />} />
+                        <Route path="/admin/event-editor/:eventId" element={<EventEditor />} />
+                        <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                    </Route>
+                </Route>
+            </Route>
+        </Routes>
+    );
+};
+
+
+const App: React.FC = () => {
     return (
         <AppProvider>
-            <div className="flex flex-col min-h-screen bg-transparent">
-                <Header />
-                <main className="flex-grow">
-                    {renderView()}
-                </main>
-                <Footer />
-                <ToastContainer />
-                <ProfileModalContainer />
-                <OnboardingTourContainer />
-                <BottleneckModalContainer />
-                <InscriptionFormModalContainer />
-            </div>
+            <AppRoutes />
         </AppProvider>
     );
 };
@@ -799,6 +725,5 @@ const OnboardingTourContainer = () => {
     }
     return null;
 };
-
 
 export default App;

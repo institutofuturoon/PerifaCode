@@ -4,6 +4,7 @@ import { Article } from '../types';
 interface ArticleCardProps {
   article: Article;
   onArticleSelect: (article: Article) => void;
+  layout?: 'vertical' | 'horizontal';
 }
 
 const getCategoryColor = (category: Article['category']) => {
@@ -16,7 +17,34 @@ const getCategoryColor = (category: Article['category']) => {
     }
 }
 
-const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleSelect }) => {
+const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleSelect, layout = 'vertical' }) => {
+
+    if (layout === 'horizontal') {
+        return (
+            <button 
+              onClick={() => onArticleSelect(article)}
+              className="bg-[#1f2328] rounded-lg overflow-hidden border border-gray-700/80 group flex flex-col md:flex-row text-left hover:border-[#8a4add]/50 transition-all duration-300 w-full"
+            >
+              <div className="w-full md:w-2/5 flex-shrink-0 overflow-hidden aspect-video md:aspect-auto">
+                <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={article.imageUrl} alt={article.title} />
+              </div>
+              <div className="p-6 flex flex-col flex-grow justify-center">
+                <p className={`text-sm font-bold uppercase tracking-wider mb-2 ${getCategoryColor(article.category)}`}>
+                  {article.category}
+                </p>
+                <h3 className="text-xl font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-3 flex-grow">{article.title}</h3>
+                <div className="flex items-center gap-3 text-sm text-gray-400 mt-4">
+                    <img className="h-8 w-8 rounded-full" src={article.authorAvatarUrl} alt={article.author} />
+                    <div>
+                        <p className="font-semibold text-white text-sm">{article.author}</p>
+                        <p className="text-gray-500 text-xs">{article.date}</p>
+                    </div>
+                </div>
+              </div>
+            </button>
+        );
+    }
+    
   return (
     <button 
       onClick={() => onArticleSelect(article)}

@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Event } from '../types';
 import { useAppContext } from '../App';
 
-interface EventEditorProps {
-  event: Event;
-}
+const EventEditor: React.FC = () => {
+  const { events, handleSaveEvent, instructors } = useAppContext();
+  const { eventId } = useParams<{ eventId: string }>();
+  const navigate = useNavigate();
 
-const EventEditor: React.FC<EventEditorProps> = ({ event: initialEvent }) => {
-  const { handleSaveEvent, navigate, instructors } = useAppContext();
-  const [event, setEvent] = useState<Event>(initialEvent);
+  const initialEvent = useMemo(() => {
+    if (eventId && eventId !== 'new') {
+        return events.find(e => e.id === eventId);
+    }
+    return {
+        id: `event_${Date.now()}`, title: '', date: '', time: '',
+        hostId: instructors[0]?.id || '', description: '',
+        imageUrl: '', eventType: 'Live'
+    };
+  }, [eventId, events, instructors]);
 
-  // FIX: Changed 'events' to 'connect' as 'events' is not a valid view type. The 'connect' view handles events.
-  const onCancel = () => navigate('connect');
+  const [event, setEvent] = useState<Event>(initialEvent || {
+    id: `event_${Date.now()}`, title: '', date: '', time: '',
+    hostId: instructors[0]?.id || '', description: '',
+    imageUrl: '', eventType: 'Live'
+  });
+
+  if (!initialEvent) {
+      return <div className="text-center py-20">Evento não encontrado.</div>;
+  }
+  
+  const onCancel = () => navigate('/admin');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -21,6 +39,7 @@ const EventEditor: React.FC<EventEditorProps> = ({ event: initialEvent }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveEvent(event);
+    navigate('/admin');
   };
 
   const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";

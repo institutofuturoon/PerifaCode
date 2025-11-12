@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CourseCard from '../components/CourseCard';
 import { useAppContext } from '../App';
+import { Course } from '../types';
 
 type Track = 'Todos' | 'Frontend' | 'Backend' | 'IA' | 'UX/UI';
 
 const Courses: React.FC = () => {
-  const { courses, navigateToCourse } = useAppContext();
+  const { courses } = useAppContext();
+  const navigate = useNavigate();
   const [activeTrack, setActiveTrack] = useState<Track>('Todos');
 
   const tracks: Track[] = ['Todos', 'Frontend', 'Backend', 'IA', 'UX/UI'];
@@ -13,6 +16,14 @@ const Courses: React.FC = () => {
   const filteredCourses = activeTrack === 'Todos'
     ? courses
     : courses.filter(course => course.track === activeTrack);
+
+  const handleCourseSelect = (course: Course) => {
+    if (course.heroContent) {
+        navigate(`/course-landing/${course.id}`);
+    } else {
+        navigate(`/course/${course.id}`);
+    }
+  };
 
   return (
     <div className="bg-transparent">
@@ -44,7 +55,7 @@ const Courses: React.FC = () => {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredCourses.map(course => (
-            <CourseCard key={course.id} course={course} onCourseSelect={navigateToCourse}/>
+            <CourseCard key={course.id} course={course} onCourseSelect={handleCourseSelect}/>
             ))}
         </div>
         </div>

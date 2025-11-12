@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 
 const ProjectDetailView: React.FC = () => {
-    const { currentProject, users, user, navigate, handleAddClap, handleAddComment } = useAppContext();
+    const { projects, users, user, handleAddClap, handleAddComment } = useAppContext();
+    const { projectId } = useParams<{ projectId: string }>();
+    const navigate = useNavigate();
     const [commentText, setCommentText] = useState('');
 
-    if (!currentProject) {
+    const project = useMemo(() => projects.find(p => p.id === projectId), [projects, projectId]);
+
+    if (!project) {
         return <div className="text-center py-20">Projeto não encontrado.</div>;
     }
-    const project = currentProject;
+    
     const author = users.find(u => u.id === project.authorId);
 
     const handleCommentSubmit = (e: React.FormEvent) => {
@@ -21,7 +26,7 @@ const ProjectDetailView: React.FC = () => {
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-8">
-                <button onClick={() => navigate('community')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+                <button onClick={() => navigate('/community')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
                     <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para a comunidade
                 </button>
             </div>

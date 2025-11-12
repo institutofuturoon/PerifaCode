@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { Logo } from '../assets/Logo';
-import { useAppContext } from '../App';
 
 const Login: React.FC = () => {
-  const { navigate } = useAppContext();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in successfully, the onAuthStateChanged listener in App.tsx will handle the rest.
-        navigate('dashboard');
+        navigate('/dashboard');
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -98,7 +98,7 @@ const Login: React.FC = () => {
         </form>
          <p className="mt-8 text-center text-sm text-gray-400">
           Ainda não tem uma conta?{' '}
-          <button onClick={() => navigate('register')} className="font-medium text-[#c4b5fd] hover:text-[#8a4add] hover:underline">
+          <button onClick={() => navigate('/register')} className="font-medium text-[#c4b5fd] hover:text-[#8a4add] hover:underline">
             Cadastre-se aqui
           </button>
         </p>

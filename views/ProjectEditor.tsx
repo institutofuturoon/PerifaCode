@@ -1,16 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Project } from '../types';
 import { useAppContext } from '../App';
 
-interface ProjectEditorProps {
-    project: Project;
-}
+const ProjectEditor: React.FC = () => {
+    const { projects, user, handleSaveProject } = useAppContext();
+    const { projectId } = useParams<{ projectId: string }>();
+    const navigate = useNavigate();
 
-const ProjectEditor: React.FC<ProjectEditorProps> = ({ project: initialProject }) => {
-    const { handleSaveProject, navigate } = useAppContext();
-    const [project, setProject] = useState<Project>(initialProject);
+    const initialProject = useMemo(() => {
+        if (projectId) {
+            return projects.find(p => p.id === projectId);
+        }
+        return {
+            id: `proj_${Date.now()}`,
+            authorId: user?.id || '',
+            title: '', description: '', imageUrl: '',
+            technologies: [], repoUrl: '', liveUrl: '',
+            claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR')
+        };
+    }, [projectId, projects, user]);
+    
+    const [project, setProject] = useState<Project>(initialProject || {
+        id: `proj_${Date.now()}`, authorId: user?.id || '', title: '',
+        description: '', imageUrl: '', technologies: [], repoUrl: '',
+        liveUrl: '', claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR')
+    });
 
-    const onCancel = () => navigate('community');
+    if (!initialProject) {
+        return <div className="text-center py-20">Projeto não encontrado.</div>;
+    }
+
+    const onCancel = () => navigate('/community');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -24,6 +45,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project: initialProject }
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         handleSaveProject(project);
+        navigate('/community');
     };
 
     const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";

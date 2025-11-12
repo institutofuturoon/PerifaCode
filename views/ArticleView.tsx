@@ -3,6 +3,7 @@ import { useAppContext } from '../App';
 import { Article } from '../types';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
@@ -13,20 +14,30 @@ const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({
 
 
 const ArticleView: React.FC = () => {
-  const { currentArticle, articles, navigate, user, users, handleEditArticle, handleDeleteArticle, handleAddArticleClap, navigateToArticle } = useAppContext();
+  const { articles, user, users, handleDeleteArticle, handleAddArticleClap } = useAppContext();
+  const { articleId } = useParams<{ articleId: string }>();
+  const navigate = useNavigate();
 
-  if (!currentArticle) {
+  const article = useMemo(() => articles.find(a => a.id === articleId), [articles, articleId]);
+  
+  const author = useMemo(() => {
+    if (!article) return null;
+    return users.find(u => u.name === article.author);
+  }, [users, article]);
+
+  if (!article) {
     return <div className="text-center py-20">Artigo não encontrado.</div>;
   }
-  const article = currentArticle;
-  const author = useMemo(() => users.find(u => u.name === article.author), [users, article.author]);
-
 
   const handleDelete = async () => {
     const wasDeleted = await handleDeleteArticle(article.id);
     if (wasDeleted) {
-      navigate('blog');
+      navigate('/blog');
     }
+  };
+
+  const handleEditArticle = () => {
+      navigate(`/admin/article-editor/${article.id}`);
   };
 
   const getCategoryColor = (category: Article['category']) => {
@@ -89,7 +100,7 @@ const ArticleView: React.FC = () => {
             {user && (user.role === 'admin' || (user.role === 'instructor' && user.name === article.author)) && (
               <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10">
                   <p className="text-sm font-semibold text-yellow-400 flex-grow">Opções de Administrador:</p>
-                  <button onClick={() => handleEditArticle(article)} className="font-semibold py-2 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors text-sm">
+                  <button onClick={handleEditArticle} className="font-semibold py-2 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors text-sm">
                     Editar
                   </button>
                   <button onClick={handleDelete} className="font-semibold py-2 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors text-sm">
@@ -103,7 +114,7 @@ const ArticleView: React.FC = () => {
             >
             </div>
             <div className="mt-12 border-t border-white/10 pt-8 flex items-center justify-between">
-              <button onClick={() => navigate('blog')} className="text-purple-400 font-semibold hover:text-purple-300 transition-colors group">
+              <button onClick={() => navigate('/blog')} className="text-purple-400 font-semibold hover:text-purple-300 transition-colors group">
                 <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o blog
               </button>
               <button onClick={() => handleAddArticleClap(article.id)} className="group flex items-center gap-2 font-semibold py-2 px-4 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
@@ -130,7 +141,7 @@ const ArticleView: React.FC = () => {
               <SidebarWidget title="Leia a Seguir">
                 <div className="space-y-4">
                   {relatedArticles.map(related => (
-                    <button key={related.id} onClick={() => navigateToArticle(related)} className="w-full text-left group">
+                    <button key={related.id} onClick={() => navigate(`/article/${related.id}`)} className="w-full text-left group">
                         <div className="flex items-start gap-4 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
                             <img src={related.imageUrl} alt={related.title} className="w-16 h-16 object-cover rounded-md flex-shrink-0"/>
                             <div>

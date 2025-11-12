@@ -1,25 +1,50 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { useAppContext } from '../App';
 import { put } from '@vercel/blob';
 
-interface UserEditorProps {
-  student: User; // Prop name is kept for compatibility with App.tsx router
-}
-
 const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
 
-const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
-  const { handleSaveUser, navigate, showToast } = useAppContext();
-  const [user, setUser] = useState<User>(initialUser);
+const StudentEditor: React.FC = () => {
+  const { users, handleSaveUser, showToast } = useAppContext();
+  const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
+
+  const initialUser = useMemo(() => {
+    if (userId && userId !== 'new') {
+        return users.find(u => u.id === userId);
+    }
+    return {
+        id: `user_${Date.now()}`, name: '', email: '',
+        avatarUrl: `https://picsum.photos/seed/new_user/200`,
+        bio: 'Entusiasta de tecnologia pronto para aprender!',
+        role: 'student', profileStatus: 'incomplete',
+        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
+        hasCompletedOnboardingTour: false,
+    };
+  }, [userId, users]);
+  
+  const [user, setUser] = useState<User>(initialUser || {
+        id: `user_${Date.now()}`, name: '', email: '',
+        avatarUrl: `https://picsum.photos/seed/new_user/200`,
+        bio: 'Entusiasta de tecnologia pronto para aprender!',
+        role: 'student', profileStatus: 'incomplete',
+        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
+        hasCompletedOnboardingTour: false,
+  });
+
   const [isUploading, setIsUploading] = useState(false);
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
+  
+  if (!initialUser) {
+    return <div className="text-center py-20">Usuário não encontrado.</div>;
+  }
 
-
-  const onCancel = () => navigate('admin');
+  const onCancel = () => navigate('/admin');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -110,6 +135,7 @@ const StudentEditor: React.FC<UserEditorProps> = ({ student: initialUser }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveUser(user);
+    navigate('/admin');
   };
 
   const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";

@@ -1,25 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
-
-const FeaturedArticleCard: React.FC<{ article: Article, onArticleSelect: (article: Article) => void }> = ({ article, onArticleSelect }) => (
-    <div 
-        className="group relative col-span-1 lg:col-span-2 rounded-lg overflow-hidden cursor-pointer h-full min-h-[420px] flex items-end p-8"
-        onClick={() => onArticleSelect(article)}
-    >
-        <div className="absolute inset-0">
-            <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
-        </div>
-        <div className="relative z-10">
-            <span className="text-sm font-bold uppercase tracking-wider text-purple-400">{article.category}</span>
-            <h2 className="text-3xl lg:text-4xl font-black text-white mt-2 transition-colors group-hover:text-purple-300">{article.title}</h2>
-            <p className="mt-2 text-gray-300 max-w-2xl line-clamp-2">{article.summary}</p>
-        </div>
-    </div>
-);
 
 const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
@@ -28,8 +12,8 @@ const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({
     </div>
 );
 
-const AISuggestions: React.FC = () => {
-    const { articles, navigateToArticle } = useAppContext();
+const AISuggestions: React.FC<{ navigateToArticle: (article: Article) => void }> = ({ navigateToArticle }) => {
+    const { articles } = useAppContext();
     const [suggestions, setSuggestions] = useState<{ title: string; reason: string; }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -117,10 +101,15 @@ ${articlesForPrompt}
 };
 
 const Blog: React.FC = () => {
-  const { articles, navigateToArticle } = useAppContext();
+  const { articles } = useAppContext();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [activeTag, setActiveTag] = useState<string | null>(null);
+
+  const handleArticleSelect = (article: Article) => {
+    navigate(`/article/${article.id}`);
+  };
 
   const publishedArticles = useMemo(() => 
     articles
@@ -179,15 +168,27 @@ const Blog: React.FC = () => {
             </div>
         </header>
 
-        {/* Articles Grid & Sidebar */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="grid lg:grid-cols-4 gap-8">
+        {/* Main Content & Sidebar */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20 -mt-16 relative z-20">
+            <div className="grid lg:grid-cols-4 gap-12">
                 {/* Main Content */}
                 <div className="lg:col-span-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {filteredArticles.map(article => (
-                            <ArticleCard key={article.id} article={article} onArticleSelect={navigateToArticle} />
-                        ))}
+                   <div className="space-y-8">
+                        {filteredArticles.length > 0 ? (
+                           filteredArticles.map(article => (
+                               <ArticleCard 
+                                   key={article.id} 
+                                   article={article} 
+                                   onArticleSelect={handleArticleSelect} 
+                                   layout="horizontal" 
+                               />
+                           ))
+                        ) : (
+                            <div className="text-center py-20 bg-black/20 rounded-lg border border-white/10">
+                                <p className="text-gray-400 text-lg">Nenhum artigo encontrado.</p>
+                                <p className="text-sm text-gray-500 mt-2">Tente ajustar seus filtros ou limpar a busca.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -209,13 +210,13 @@ const Blog: React.FC = () => {
                     </SidebarWidget>
 
                      <SidebarWidget title="✨ Sugestões da IA">
-                        <AISuggestions />
+                        <AISuggestions navigateToArticle={handleArticleSelect} />
                     </SidebarWidget>
 
                     <SidebarWidget title="Mais Populares">
                         <div className="space-y-3">
                             {popularArticles.map(article => (
-                                <button key={article.id} onClick={() => navigateToArticle(article)} className="w-full text-left group">
+                                <button key={article.id} onClick={() => handleArticleSelect(article)} className="w-full text-left group">
                                     <div className="flex items-start gap-4 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
                                         <img src={article.imageUrl} alt={article.title} className="w-16 h-16 object-cover rounded-md flex-shrink-0"/>
                                         <div>

@@ -1,21 +1,39 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Course, Module, Lesson } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
-
-interface CourseEditorProps {
-  course: Course;
-}
 
 type SelectedItem = 
   | { type: 'course' }
   | { type: 'module'; moduleIndex: number }
   | { type: 'lesson'; moduleIndex: number; lessonIndex: number };
 
-const CourseEditor: React.FC<CourseEditorProps> = ({ course: initialCourse }) => {
-  const { user, instructors, handleSaveCourse, navigate } = useAppContext();
-  const [course, setCourse] = useState<Course>(initialCourse);
+const CourseEditor: React.FC = () => {
+  const { user, instructors, courses, handleSaveCourse } = useAppContext();
+  const { courseId } = useParams<{ courseId: string }>();
+  const navigate = useNavigate();
+
+  const initialCourse = useMemo(() => {
+    if (courseId && courseId !== 'new') {
+        return courses.find(c => c.id === courseId);
+    }
+    return {
+        id: `course_${Date.now()}`,
+        title: '', description: '', longDescription: '',
+        track: 'Frontend', imageUrl: '', duration: '',
+        skillLevel: 'Iniciante', instructorId: user?.id || '',
+        modules: [], format: 'online'
+    };
+  }, [courseId, courses, user]);
+  
+  const [course, setCourse] = useState<Course>(initialCourse || {
+    id: `course_${Date.now()}`, title: '', description: '', longDescription: '',
+    track: 'Frontend', imageUrl: '', duration: '', skillLevel: 'Iniciante',
+    instructorId: user?.id || '', modules: [], format: 'online'
+  });
+  
   const [selectedItem, setSelectedItem] = useState<SelectedItem>({ type: 'course' });
   const [aiTopic, setAiTopic] = useState('');
   const [isGeneratingStructure, setIsGeneratingStructure] = useState(false);
@@ -27,7 +45,11 @@ const CourseEditor: React.FC<CourseEditorProps> = ({ course: initialCourse }) =>
   const summaryRef = useRef<HTMLTextAreaElement>(null);
   const objectiveRef = useRef<HTMLTextAreaElement>(null);
 
-  const onCancel = () => navigate('admin');
+  const onCancel = () => navigate('/admin');
+  
+  if (!initialCourse) {
+      return <div className="text-center py-20">Curso não encontrado.</div>;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -239,6 +261,7 @@ Retorne APENAS no formato JSON especificado.`;
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveCourse(course);
+    navigate('/admin');
   };
   
   const renderEditPanel = () => {

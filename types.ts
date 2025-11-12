@@ -370,7 +370,6 @@ export interface CourseProgress {
 
 export interface AppContextType {
   // State
-  view: View;
   user: User | null;
   users: User[];
   courses: Course[];
@@ -381,18 +380,7 @@ export interface AppContextType {
   events: Event[];
   mentorSessions: MentorSession[];
   toast: string | null;
-  currentCourse: Course | null;
-  currentLesson: Lesson | null;
-  currentArticle: Article | null;
-  currentProject: Project | null;
-  currentEvent: Event | null;
-  editingCourse: Course | null;
-  editingArticle: Article | null;
-  editingUser: User | null;
-  editingProject: Project | null;
-  editingEvent: Event | null;
   courseProgress: CourseProgress;
-  monitoringCourse: Course | null;
   isProfileModalOpen: boolean;
   selectedProfile: User | null;
   isBottleneckModalOpen: boolean;
@@ -405,16 +393,7 @@ export interface AppContextType {
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 
   // Actions
-  navigate: (view: View) => void;
   handleLogout: () => void;
-  navigateToCourse: (course: Course) => void;
-  navigateToLesson: (course: Course, lesson: Lesson) => void;
-  navigateToArticle: (article: Article) => void;
-  navigateToEvent: (event: Event) => void;
-  navigateToCertificate: (course: Course) => void;
-  navigateToInstructorDashboard: (course: Course) => void;
-  navigateToProject: (project: Project) => void;
-  navigateToProjectEditor: (project?: Project) => void;
   openProfileModal: (member: User) => void;
   closeProfileModal: () => void;
   openBottleneckModal: (lesson: Lesson, students: User[]) => void;
@@ -428,25 +407,17 @@ export interface AppContextType {
   
   // Data Management
   handleSaveCourse: (courseToSave: Course) => void;
-  handleEditCourse: (course: Course) => void;
-  handleCreateCourse: () => void;
   handleSaveArticle: (articleToSave: Article) => void;
-  handleEditArticle: (article: Article) => void;
-  handleCreateArticle: () => void;
   handleDeleteArticle: (articleId: string) => Promise<boolean>;
   handleToggleArticleStatus: (articleId: string) => Promise<void>;
   handleAddArticleClap: (articleId: string) => Promise<void>;
   handleSaveUser: (userToSave: User) => void;
   handleUpdateUserProfile: (userToUpdate: User) => Promise<void>;
-  handleEditUser: (user: User) => void;
-  handleCreateUser: (role: 'student' | 'instructor') => void;
   handleDeleteUser: (userId: string) => Promise<void>;
   handleSaveProject: (projectToSave: Project) => void;
   handleAddClap: (projectId: string) => void;
   handleAddComment: (projectId: string, text: string) => void;
   handleSaveEvent: (eventToSave: Event) => void;
-  handleCreateEvent: () => void;
-  handleEditEvent: (event: Event) => void;
   handleDeleteEvent: (eventId: string) => void;
   handleSaveTeamOrder: (orderedTeam: User[]) => Promise<void>;
   handleAddSessionSlot: (mentorId: string, date: string, time: string) => void;

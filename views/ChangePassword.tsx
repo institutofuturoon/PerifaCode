@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { updatePassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { useAppContext } from '../App';
 import { Logo } from '../assets/Logo';
 
 const ChangePassword = () => {
-  const { user, handleUpdateUserProfile, navigate, showToast } = useAppContext();
+  const { user, handleUpdateUserProfile, showToast } = useAppContext();
+  const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ const ChangePassword = () => {
       }
       
       showToast('✅ Senha atualizada com sucesso!');
-      navigate('dashboard');
+      navigate('/dashboard');
 
     } catch (error: any) {
       console.error("Password change error:", error);

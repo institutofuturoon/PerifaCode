@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { User, Event } from '../types';
 
 const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
-    const { user, navigate } = useAppContext();
+    const { user } = useAppContext();
+    const navigate = useNavigate();
     return (
         <div className="bg-[#18181B] border border-purple-500/30 rounded-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 transform hover:-translate-y-1 group">
             <div className="relative mb-4">
@@ -14,7 +16,7 @@ const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
             <p className="text-purple-400 font-semibold text-sm">{mentor.title}</p>
             <p className="mt-3 text-gray-400 text-sm flex-grow">{mentor.bio}</p>
             <button
-                onClick={() => user ? alert(`Funcionalidade de agendamento com ${mentor.name} em breve!`) : navigate('login')}
+                onClick={() => user ? alert(`Funcionalidade de agendamento com ${mentor.name} em breve!`) : navigate('/login')}
                 className="mt-6 w-full bg-gray-700/50 text-gray-300 font-semibold py-3 px-4 rounded-lg hover:bg-gray-600/60 hover:text-white transition-colors"
             >
                 {user ? 'Ver agenda' : 'Faça login para ver a agenda'}
@@ -25,7 +27,7 @@ const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
 
 
 const EventCard: React.FC<{ event: Event, host?: User }> = ({ event, host }) => {
-    const { navigateToEvent } = useAppContext();
+    const navigate = useNavigate();
     
     const renderDate = () => {
         if (event.date === 'EM BREVE') {
@@ -62,7 +64,7 @@ const EventCard: React.FC<{ event: Event, host?: User }> = ({ event, host }) => 
             </div>
             <div className="w-full sm:w-auto mt-4 sm:mt-0">
                  <button 
-                    onClick={() => navigateToEvent(event)}
+                    onClick={() => navigate(`/event/${event.id}`)}
                     className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 transform hover:scale-105">
                     Ver Detalhes
                 </button>

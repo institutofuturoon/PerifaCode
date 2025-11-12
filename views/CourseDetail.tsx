@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Lesson, Module } from '../types';
+import React, { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Lesson, Module, Course } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { useAppContext } from '../App';
 
@@ -46,13 +47,16 @@ const LessonItem: React.FC<{ lesson: Lesson, index: number, onLessonClick: () =>
     );
 };
 
-const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, index }) => {
-    const { user, currentCourse, navigateToLesson } = useAppContext();
+const ModuleAccordion: React.FC<{ module: Module, index: number, course: Course }> = ({ module, index, course }) => {
+    const { user } = useAppContext();
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(index === 0);
     
-    if (!currentCourse) return null;
-
-    const allCourseLessons = currentCourse.modules.flatMap(m => m.lessons);
+    const allCourseLessons = course.modules.flatMap(m => m.lessons);
+    
+    const navigateToLesson = (lesson: Lesson) => {
+      navigate(`/course/${course.id}/lesson/${lesson.id}`);
+    };
 
     return (
         <div className="bg-white/5 border border-white/10 rounded-lg overflow-hidden">
@@ -79,7 +83,7 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
                                 key={lesson.id}
                                 lesson={lesson}
                                 index={lessonIndex}
-                                onLessonClick={() => navigateToLesson(currentCourse, lesson)}
+                                onLessonClick={() => navigateToLesson(lesson)}
                                 isCompleted={isCompleted}
                                 isLocked={isLocked}
                             />
@@ -92,12 +96,16 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
 };
 
 const CourseDetail: React.FC = () => {
-    const { user, currentCourse, instructors, navigate, navigateToLesson, navigateToCertificate, openInscriptionModal } = useAppContext();
+    const { user, courses, instructors, openInscriptionModal } = useAppContext();
+    const { courseId } = useParams<{ courseId: string }>();
+    const navigate = useNavigate();
 
-    if (!currentCourse) {
+    const course = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
+
+    if (!course) {
         return <div className="text-center py-20">Curso não encontrado.</div>;
     }
-    const course = currentCourse;
+
     const instructor = instructors.find(i => i.id === course.instructorId);
     
     const allLessonIds = course.modules.flatMap(m => m.lessons.map(l => l.id));
@@ -108,14 +116,14 @@ const CourseDetail: React.FC = () => {
 
     const handleStartOrContinue = () => {
         if (!user) {
-            navigate('login');
+            navigate('/login');
             return;
         }
         const firstUncompletedLesson = course.modules.flatMap(m => m.lessons).find(l => !completedLessonIds.includes(l.id));
         if (firstUncompletedLesson) {
-             navigateToLesson(course, firstUncompletedLesson);
+             navigate(`/course/${course.id}/lesson/${firstUncompletedLesson.id}`);
         } else if (course.modules.length > 0 && course.modules[0].lessons.length > 0) {
-            navigateToLesson(course, course.modules[0].lessons[0]);
+            navigate(`/course/${course.id}/lesson/${course.modules[0].lessons[0].id}`);
         }
     };
 
@@ -150,7 +158,7 @@ const CourseDetail: React.FC = () => {
                     <div className="lg:col-span-2 space-y-6">
                         <h2 className="text-2xl font-bold text-white">Conteúdo do Curso</h2>
                         {course.modules.map((module, index) => (
-                            <ModuleAccordion key={module.id} module={module} index={index} />
+                            <ModuleAccordion key={module.id} module={module} index={index} course={course} />
                         ))}
 
                         {course.projectTitle && (
@@ -175,7 +183,7 @@ const CourseDetail: React.FC = () => {
                                         <p className="text-gray-300">Você concluiu este curso.</p>
                                         <ProgressBar progress={100} />
                                         <button
-                                            onClick={() => navigateToCertificate(course)}
+                                            onClick={() => navigate(`/course/${course.id}/certificate`)}
                                             className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-4 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20"
                                         >
                                             Ver Certificado

@@ -1,19 +1,26 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import { Logo } from '../assets/Logo';
 import { useAppContext } from '../App';
 
 const CertificateView: React.FC = () => {
-  const { currentCourse, user, navigate } = useAppContext();
+  const { courses, user, instructors } = useAppContext();
+  const { courseId } = useParams<{ courseId: string }>();
+  const navigate = useNavigate();
+
+  const course = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
+  const instructor = useMemo(() => {
+    if (!course) return null;
+    return instructors.find(inst => inst.id === course.instructorId);
+  }, [course, instructors]);
+
   const certificateRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   
-  if (!currentCourse || !user) {
+  if (!course || !user) {
     return <div className="text-center py-20">Informações do certificado indisponíveis.</div>;
   }
-  const course = currentCourse;
-
-  const instructor = useAppContext().instructors.find(inst => inst.id === course.instructorId);
 
   const completionDate = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -82,7 +89,7 @@ const CertificateView: React.FC = () => {
       </div>
       <div className="mt-8 flex gap-4">
         <button
-            onClick={() => navigate('dashboard')}
+            onClick={() => navigate('/dashboard')}
             className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-2 px-6 rounded-lg hover:bg-white/20 transition-all duration-300"
         >
             &larr; Voltar ao Painel

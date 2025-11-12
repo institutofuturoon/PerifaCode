@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ForumPost, ChatMessage, Reply } from '../types';
 import { EXERCISES } from '../constants';
 import QuizExercise from '../components/QuizExercise';
@@ -8,7 +9,11 @@ import { useAppContext } from '../App';
 
 
 const AITutor: React.FC = () => {
-  const { currentCourse, currentLesson } = useAppContext();
+  const { courses } = useAppContext();
+  const { courseId, lessonId } = useParams<{ courseId: string, lessonId: string }>();
+  const currentCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
+  const currentLesson = useMemo(() => currentCourse?.modules.flatMap(m => m.lessons).find(l => l.id === lessonId), [currentCourse, lessonId]);
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -261,9 +266,14 @@ const Forum: React.FC<{
   );
 };
 
-// FIX: Changed from named to default export to match convention in other view files.
 const LessonView: React.FC = () => {
-  const { user, currentCourse, currentLesson, completeLesson, navigate, navigateToLesson, handleSaveNote } = useAppContext();
+  const { user, courses, completeLesson, handleSaveNote } = useAppContext();
+  const { courseId, lessonId } = useParams<{ courseId: string, lessonId: string }>();
+  const navigate = useNavigate();
+
+  const currentCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
+  const currentLesson = useMemo(() => currentCourse?.modules.flatMap(m => m.lessons).find(l => l.id === lessonId), [currentCourse, lessonId]);
+
   const [activeTab, setActiveTab] = useState<'content' | 'notes' | 'forum' | 'exercise'>('content');
   const [note, setNote] = useState('');
   const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
@@ -326,11 +336,17 @@ const LessonView: React.FC = () => {
   const currentLessonIndex = allLessons.findIndex(l => l.id === currentLesson.id);
   const prevLesson = currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1] : null;
   const nextLesson = currentLessonIndex < allLessons.length - 1 ? allLessons[currentLessonIndex + 1] : null;
+  
+  const navigateToLesson = (lesson: {id: string} | null) => {
+      if(lesson) {
+          navigate(`/course/${currentCourse.id}/lesson/${lesson.id}`);
+      }
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-8">
-            <button onClick={() => navigate('courseDetail')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+            <button onClick={() => navigate(`/course/${courseId}`)} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
                 <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o curso
             </button>
         </div>
@@ -388,13 +404,13 @@ const LessonView: React.FC = () => {
                     <h3 className="text-lg font-bold text-white mb-4">Navegação da Aula</h3>
                     <div className="flex justify-between items-center gap-2">
                         {prevLesson ? (
-                             <button onClick={() => navigateToLesson(currentCourse, prevLesson)} className="flex-1 text-left bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors">
+                             <button onClick={() => navigateToLesson(prevLesson)} className="flex-1 text-left bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors">
                                 <p className="text-xs text-gray-400">Anterior</p>
                                 <p className="text-sm font-semibold text-white truncate">{prevLesson.title}</p>
                             </button>
                         ) : <div className="flex-1"></div>}
                         {nextLesson && (
-                            <button onClick={() => navigateToLesson(currentCourse, nextLesson)} className="flex-1 text-right bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors">
+                            <button onClick={() => navigateToLesson(nextLesson)} className="flex-1 text-right bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors">
                                 <p className="text-xs text-gray-400">Próxima</p>
                                 <p className="text-sm font-semibold text-white truncate">{nextLesson.title}</p>
                             </button>

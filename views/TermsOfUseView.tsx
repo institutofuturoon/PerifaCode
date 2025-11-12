@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAppContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 const TermsOfUseView: React.FC = () => {
-    const { navigate } = useAppContext();
+    const navigate = useNavigate();
     const sectionClasses = "mb-10";
     const h2Classes = "text-2xl font-bold text-white mb-4";
     const pClasses = "text-gray-300 leading-relaxed mb-4";
@@ -71,7 +71,7 @@ const TermsOfUseView: React.FC = () => {
                     </p>
                     <p className={pClasses}>
                         Para entender como lidamos com seus dados, por favor, leia nossa {' '}
-                        <button onClick={() => navigate('privacy')} className="text-purple-400 hover:underline">
+                        <button onClick={() => navigate('/privacy')} className="text-purple-400 hover:underline">
                             Política de Privacidade
                         </button>.
                     </p>

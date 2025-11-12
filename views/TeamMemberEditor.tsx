@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { useAppContext } from '../App';
 
-interface TeamMemberEditorProps {
-  member: User;
-}
+const TeamMemberEditor: React.FC = () => {
+  const { users, handleSaveUser } = useAppContext();
+  const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
 
-const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMember }) => {
-  const { handleSaveUser, navigate } = useAppContext();
-  const [member, setMember] = useState<User>(initialMember);
+  const initialMember = useMemo(() => {
+    if (userId && userId !== 'new') {
+        return users.find(u => u.id === userId);
+    }
+    return {
+        id: `user_${Date.now()}`,
+        name: '', email: '', avatarUrl: `https://picsum.photos/seed/new_user/200`,
+        bio: '', role: 'instructor', title: '',
+        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
+        isMentor: false, showOnTeamPage: true
+    };
+  }, [userId, users]);
 
-  const onCancel = () => navigate('admin');
+  const [member, setMember] = useState<User>(initialMember || {
+    id: `user_${Date.now()}`,
+    name: '', email: '', avatarUrl: `https://picsum.photos/seed/new_user/200`,
+    bio: '', role: 'instructor', title: '',
+    completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
+    isMentor: false, showOnTeamPage: true
+  });
+  
+  if (!initialMember) {
+    return <div className="text-center py-20">Membro da equipe não encontrado.</div>;
+  }
+
+  const onCancel = () => navigate('/admin');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -26,6 +49,7 @@ const TeamMemberEditor: React.FC<TeamMemberEditorProps> = ({ member: initialMemb
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveUser(member);
+    navigate('/admin');
   };
 
   const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";

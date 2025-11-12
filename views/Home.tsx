@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 
 // Reusable component for Mission/Vision/Values cards
@@ -91,7 +92,8 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
 
 
 const Home: React.FC = () => {
-  const { navigate, partners } = useAppContext();
+  const { partners } = useAppContext();
+  const navigate = useNavigate();
   
   const impactData = [
     { stat: "+100", title: "Alunos Formados", text: "Jovens e adultos capacitados em tecnologia", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
@@ -115,13 +117,13 @@ const Home: React.FC = () => {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
-                onClick={() => navigate('courses')}
+                onClick={() => navigate('/courses')}
                 className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
               >
                 Comece a estudar agora
               </button>
               <button
-                onClick={() => navigate('connect')}
+                onClick={() => navigate('/connect')}
                 className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300"
               >
                 Conheça as mentorias
@@ -141,7 +143,7 @@ const Home: React.FC = () => {
                     </p>
                      <div className="mt-10">
                         <button
-                            onClick={() => navigate('about')}
+                            onClick={() => navigate('/about')}
                             className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300"
                         >
                             Conheça nossa história
@@ -197,7 +199,7 @@ const Home: React.FC = () => {
                 <div className="text-center mt-12">
                     <p className="text-gray-400">
                         Quer ser nosso parceiro?{' '}
-                        <button onClick={() => navigate('partnerships')} className="text-[#c4b5fd] font-semibold hover:underline">
+                        <button onClick={() => navigate('/partnerships')} className="text-[#c4b5fd] font-semibold hover:underline">
                             Entre em contato
                         </button>.
                     </p>
@@ -218,7 +220,7 @@ const Home: React.FC = () => {
                         </p>
                     </div>
                     <div className="space-y-4">
-                        <button onClick={() => navigate('annualReport')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <button onClick={() => navigate('/annual-report')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
                             <div className="flex items-center gap-4">
                                 <span className="text-[#8a4add]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -231,7 +233,7 @@ const Home: React.FC = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                             </span>
                         </button>
-                        <button onClick={() => navigate('financialStatement')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <button onClick={() => navigate('/financial-statement')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
                             <div className="flex items-center gap-4">
                                 <span className="text-[#8a4add]">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
