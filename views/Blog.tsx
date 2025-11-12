@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
 import { Article } from '../types';
+import { GoogleGenAI, Type } from "@google/genai";
 
 const FeaturedArticleCard: React.FC<{ article: Article, onArticleSelect: (article: Article) => void }> = ({ article, onArticleSelect }) => (
     <div 
-        className="group relative col-span-1 md:col-span-2 lg:col-span-2 rounded-lg overflow-hidden cursor-pointer h-full min-h-[380px] flex items-end p-8"
+        className="group relative col-span-1 lg:col-span-2 rounded-lg overflow-hidden cursor-pointer h-full min-h-[420px] flex items-end p-8"
         onClick={() => onArticleSelect(article)}
     >
         <div className="absolute inset-0">
@@ -14,36 +15,155 @@ const FeaturedArticleCard: React.FC<{ article: Article, onArticleSelect: (articl
         </div>
         <div className="relative z-10">
             <span className="text-sm font-bold uppercase tracking-wider text-purple-400">{article.category}</span>
-            <h2 className="text-3xl font-black text-white mt-2 transition-colors group-hover:text-purple-300">{article.title}</h2>
+            <h2 className="text-3xl lg:text-4xl font-black text-white mt-2 transition-colors group-hover:text-purple-300">{article.title}</h2>
             <p className="mt-2 text-gray-300 max-w-2xl line-clamp-2">{article.summary}</p>
         </div>
     </div>
 );
 
+const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
+    <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
+        <h3 className="text-lg font-bold text-white mb-4">{title}</h3>
+        {children}
+    </div>
+);
+
+const AISuggestions: React.FC = () => {
+    const { articles, navigateToArticle } = useAppContext();
+    const [suggestions, setSuggestions] = useState<{ title: string; reason: string; }[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (articles.length === 0) {
+                setIsLoading(false);
+                return;
+            };
+
+            try {
+                const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+                const articlesForPrompt = articles
+                    .filter(a => a.status === 'published')
+                    .map(a => `- Título: "${a.title}", Categoria: ${a.category}, Resumo: "${a.summary}"`)
+                    .join('\n');
+
+                const prompt = `Você é um curador de conteúdo para a FuturoOn. Baseado na lista de artigos abaixo, sugira 3 leituras interessantes para um jovem da periferia iniciando em tecnologia. Para cada sugestão, forneça uma justificativa de uma frase. Retorne APENAS no formato JSON especificado.
+
+Artigos Disponíveis:
+${articlesForPrompt}
+`;
+
+                const response = await ai.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: Type.ARRAY,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    title: { type: Type.STRING },
+                                    reason: { type: Type.STRING }
+                                },
+                                required: ["title", "reason"]
+                            }
+                        }
+                    }
+                });
+                
+                const result = JSON.parse(response.text);
+                setSuggestions(result);
+
+            } catch (error) {
+                console.error("Erro ao buscar sugestões da IA:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSuggestions();
+    }, [articles]);
+
+    const findArticleByTitle = (title: string) => {
+        return articles.find(a => a.title === title);
+    }
+
+    if (isLoading) {
+        return (
+            <div className="space-y-3 animate-pulse">
+                <div className="h-10 bg-white/10 rounded-md"></div>
+                <div className="h-10 bg-white/10 rounded-md"></div>
+                <div className="h-10 bg-white/10 rounded-md"></div>
+            </div>
+        );
+    }
+    
+    if (suggestions.length === 0) return null;
+
+    return (
+        <div className="space-y-3">
+            {suggestions.map((s, i) => {
+                const article = findArticleByTitle(s.title);
+                return article ? (
+                    <button key={i} onClick={() => navigateToArticle(article)} className="w-full text-left p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <p className="font-semibold text-white text-sm">{s.title}</p>
+                        <p className="text-xs text-gray-400 mt-1">{s.reason}</p>
+                    </button>
+                ) : null;
+            })}
+        </div>
+    );
+};
 
 const Blog: React.FC = () => {
   const { articles, navigateToArticle } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
   const publishedArticles = useMemo(() => 
     articles
       .filter(article => article.status === 'published')
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => {
+        try {
+            const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+            const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+            return new Date(yearB, monthB - 1, dayB).getTime() - new Date(yearA, monthA - 1, dayA).getTime();
+        } catch { return 0; }
+      })
   , [articles]);
-  
-  const featuredArticle = publishedArticles[0];
-  const otherArticles = publishedArticles.slice(1);
   
   const categories = useMemo(() => 
-    ['Todos', ...Array.from(new Set(articles.map(a => a.category)))]
-  , [articles]);
-  
-  const filteredArticles = useMemo(() => {
-    return (activeCategory === 'Todos' ? otherArticles : otherArticles.filter(a => a.category === activeCategory))
-        .filter(a => a.title.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [otherArticles, activeCategory, searchTerm]);
+    ['Todos', ...Array.from(new Set(publishedArticles.map(a => a.category)))]
+  , [publishedArticles]);
 
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    publishedArticles.forEach(a => a.tags?.forEach(tag => tags.add(tag)));
+    return Array.from(tags).sort();
+  }, [publishedArticles]);
+  
+  const popularArticles = useMemo(() => 
+      [...publishedArticles].sort((a, b) => (b.claps || 0) - (a.claps || 0)).slice(0, 3)
+  , [publishedArticles]);
+
+  const filteredArticles = useMemo(() => {
+    return publishedArticles
+        .filter(a => a.title.toLowerCase().includes(searchTerm.toLowerCase()))
+        .filter(a => activeCategory === 'Todos' || a.category === activeCategory)
+        .filter(a => !activeTag || a.tags?.includes(activeTag));
+  }, [publishedArticles, searchTerm, activeCategory, activeTag]);
+
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory(category);
+    setActiveTag(null);
+  };
+  
+  const handleTagClick = (tag: string) => {
+    setActiveTag(tag);
+    setActiveCategory('Todos');
+  };
 
   return (
     <div className="aurora-background text-white">
@@ -59,48 +179,91 @@ const Blog: React.FC = () => {
             </div>
         </header>
 
-        {/* Filters and Search */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 pb-12">
-            <div className="bg-black/20 backdrop-blur-lg border border-white/10 rounded-lg p-4 flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-grow w-full md:w-auto">
-                    <input 
-                        type="search" 
-                        placeholder="Buscar por título..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full p-3 pl-10 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm"
-                    />
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        {/* Articles Grid & Sidebar */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+            <div className="grid lg:grid-cols-4 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {filteredArticles.map(article => (
+                            <ArticleCard key={article.id} article={article} onArticleSelect={navigateToArticle} />
+                        ))}
                     </div>
                 </div>
-                <div className="flex flex-wrap justify-center gap-2">
-                    {categories.map(category => (
-                         <button
-                            key={category}
-                            onClick={() => setActiveCategory(category)}
-                            className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 transform hover:scale-105 ${
-                            activeCategory === category
-                                ? 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-lg shadow-[#8a4add]/30'
-                                : 'bg-white/10 text-gray-300 hover:bg-white/20'
-                            }`}
-                        >
-                            {category}
-                        </button>
-                    ))}
-                </div>
-            </div>
-        </section>
 
-        {/* Articles Grid */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {featuredArticle && (
-                    <FeaturedArticleCard article={featuredArticle} onArticleSelect={navigateToArticle} />
-                )}
-                {filteredArticles.map(article => (
-                    <ArticleCard key={article.id} article={article} onArticleSelect={navigateToArticle} />
-                ))}
+                {/* Sidebar */}
+                <aside className="lg:col-span-1 space-y-8 lg:sticky top-24 h-fit">
+                    <SidebarWidget title="Pesquisar">
+                        <div className="relative">
+                            <input 
+                                type="search" 
+                                placeholder="Buscar por título..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full p-3 pl-10 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm"
+                            />
+                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            </div>
+                        </div>
+                    </SidebarWidget>
+
+                     <SidebarWidget title="✨ Sugestões da IA">
+                        <AISuggestions />
+                    </SidebarWidget>
+
+                    <SidebarWidget title="Mais Populares">
+                        <div className="space-y-3">
+                            {popularArticles.map(article => (
+                                <button key={article.id} onClick={() => navigateToArticle(article)} className="w-full text-left group">
+                                    <div className="flex items-start gap-4 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                                        <img src={article.imageUrl} alt={article.title} className="w-16 h-16 object-cover rounded-md flex-shrink-0"/>
+                                        <div>
+                                            <p className="font-semibold text-sm text-white line-clamp-2 group-hover:text-[#c4b5fd]">{article.title}</p>
+                                            <p className="text-xs text-gray-500 mt-1">{article.date}</p>
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </SidebarWidget>
+
+                    <SidebarWidget title="Categorias">
+                        <div className="flex flex-wrap gap-2">
+                            {categories.map(category => (
+                                <button
+                                    key={category}
+                                    onClick={() => handleCategoryClick(category)}
+                                    className={`px-3 py-1 text-xs font-semibold rounded-full transition-all duration-300 ${
+                                    activeCategory === category && !activeTag
+                                        ? 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white'
+                                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                    }`}
+                                >
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
+                    </SidebarWidget>
+
+                     <SidebarWidget title="Navegar por Tags">
+                        <div className="flex flex-wrap gap-2">
+                            {allTags.map(tag => (
+                                <button
+                                    key={tag}
+                                    onClick={() => handleTagClick(tag)}
+                                    className={`px-3 py-1 text-xs font-semibold rounded-full transition-all duration-300 ${
+                                    activeTag === tag
+                                        ? 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white'
+                                        : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                    }`}
+                                >
+                                   # {tag}
+                                </button>
+                            ))}
+                        </div>
+                    </SidebarWidget>
+                </aside>
             </div>
         </section>
     </div>

@@ -22,6 +22,11 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article: initialArticle }
     setArticle(prev => ({ ...prev, [name]: value }));
   };
   
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const tags = e.target.value.split(',').map(tag => tag.trim()).filter(Boolean);
+    setArticle(prev => ({ ...prev, tags }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveArticle(article);
@@ -188,6 +193,11 @@ const ArticleEditor: React.FC<ArticleEditorProps> = ({ article: initialArticle }
                         <option value="published">Publicado</option>
                     </select>
                 </div>
+            </div>
+            <div>
+                <label htmlFor="tags" className={labelClasses}>Tags</label>
+                <input id="tags" name="tags" value={article.tags?.join(', ') || ''} onChange={handleTagsChange} placeholder="react, carreira, css, javascript" className={inputClasses} />
+                <p className="text-xs text-gray-500 mt-1">Separe as tags por vírgula.</p>
             </div>
              <div>
                 <label htmlFor="imageUrl" className={labelClasses}>URL da Imagem de Capa</label>

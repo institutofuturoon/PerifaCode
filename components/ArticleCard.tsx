@@ -32,6 +32,16 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleSelect }) =
         <h3 className="text-xl font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-2">{article.title}</h3>
         <p className="mt-3 text-sm text-gray-400 flex-grow line-clamp-3">{article.summary}</p>
         
+        {article.tags && article.tags.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+                {article.tags.map(tag => (
+                    <span key={tag} className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-700/60 text-gray-300">
+                       # {tag}
+                    </span>
+                ))}
+            </div>
+        )}
+
         <div className="flex items-center gap-4 text-xs text-gray-400 border-t border-white/10 pt-4 mt-4">
             {article.readingTime && (
                 <div className="flex items-center gap-1.5" title={`${article.readingTime} min de leitura`}>

@@ -173,6 +173,7 @@ export interface Article {
   status: 'published' | 'draft';
   claps?: number;
   readingTime?: number; // Em minutos
+  tags?: string[];
 }
 
 
