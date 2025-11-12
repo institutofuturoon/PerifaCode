@@ -539,6 +539,31 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handleSaveTeamOrder = async (orderedTeam: User[]) => {
+        const batch = writeBatch(db);
+        const updatedUsers = [...users];
+
+        orderedTeam.forEach((member, index) => {
+            const userDocRef = doc(db, "users", member.id);
+            batch.update(userDocRef, { displayOrder: index });
+
+            const userIndexInState = updatedUsers.findIndex(u => u.id === member.id);
+            if (userIndexInState !== -1) {
+                updatedUsers[userIndexInState].displayOrder = index;
+            }
+        });
+
+        try {
+            await batch.commit();
+            setUsers(updatedUsers);
+            showToast("✅ Ordem da equipe salva com sucesso!");
+        } catch (error) {
+            console.error("Erro ao salvar a ordem da equipe:", error);
+            showToast("❌ Erro ao salvar a ordem. Tente novamente.");
+        }
+    };
+
+
     const handleAddSessionSlot = async (mentorId: string, date: string, time: string) => {
       const newSession: MentorSession = { id: `sess_${Date.now()}`, mentorId, date, time, isBooked: false, studentId: null };
       setMentorSessions(prev => [...prev, newSession]);
@@ -637,7 +662,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     completeLesson, handleSaveNote, handleSaveCourse, handleEditCourse, handleCreateCourse, handleSaveArticle, handleEditArticle,
     handleCreateArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap, handleSaveUser, handleEditUser, handleCreateUser, handleDeleteUser,
     handleSaveProject, handleAddClap, handleAddComment, handleSaveEvent, handleCreateEvent, handleEditEvent,
-    handleDeleteEvent, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession,
+    handleDeleteEvent, handleSaveTeamOrder, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession,
     showToast, handleUpdateUserProfile, handleCompleteOnboarding,
   };
 

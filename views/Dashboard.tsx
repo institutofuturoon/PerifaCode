@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { Achievement, Lesson, MentorSession, User } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
@@ -30,7 +30,7 @@ const Dashboard: React.FC = () => {
       navigateToArticle, navigateToEvent,
       handleEditCourse, handleCreateCourse,
       handleEditArticle, handleCreateArticle, handleDeleteArticle, handleToggleArticleStatus,
-      handleCreateUser, handleEditUser, handleDeleteUser,
+      handleCreateUser, handleEditUser, handleDeleteUser, handleSaveTeamOrder,
       handleAddSessionSlot, handleRemoveSessionSlot,
     } = useAppContext();
     const [showAllCourses, setShowAllCourses] = useState(false);
@@ -41,6 +41,7 @@ const Dashboard: React.FC = () => {
   // Render Instructor/Admin Dashboard
   if (user.role === 'instructor' || user.role === 'admin') {
       const { totalStudents, newStudentsLast30d, avgCompletionRate, weeklyEngagement, coursePerformance, studentEngagement } = MOCK_ANALYTICS_DATA_V2;
+      const [isTeamOrdering, setIsTeamOrdering] = useState(false);
 
       // --- Copied from Admin.tsx ---
       const coursesForUser = user.role === 'admin' ? courses : courses.filter(c => c.instructorId === user.id);
@@ -229,6 +230,73 @@ const Dashboard: React.FC = () => {
     );
 };
 
+      const TeamOrderingPanel = () => {
+        const sortedTeamForOrdering = useMemo(() => 
+            [...team].sort((a, b) => (a.displayOrder ?? Infinity) - (b.displayOrder ?? Infinity))
+        , [team]);
+
+        const [orderedMembers, setOrderedMembers] = useState<User[]>(sortedTeamForOrdering);
+        const dragItem = useRef<number | null>(null);
+        const dragOverItem = useRef<number | null>(null);
+
+        const handleDragStart = (e: React.DragEvent<HTMLDivElement>, position: number) => {
+            dragItem.current = position;
+        };
+
+        const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, position: number) => {
+            dragOverItem.current = position;
+        };
+
+        const handleDrop = () => {
+            if (dragItem.current === null || dragOverItem.current === null || dragItem.current === dragOverItem.current) return;
+
+            const newOrderedMembers = [...orderedMembers];
+            const dragItemContent = newOrderedMembers[dragItem.current];
+            newOrderedMembers.splice(dragItem.current, 1);
+            newOrderedMembers.splice(dragOverItem.current, 0, dragItemContent);
+
+            dragItem.current = null;
+            dragOverItem.current = null;
+            setOrderedMembers(newOrderedMembers);
+        };
+
+        const handleSave = async () => {
+            await handleSaveTeamOrder(orderedMembers);
+            setIsTeamOrdering(false);
+        };
+
+        return (
+            <div className="bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 p-6">
+                <h3 className="text-xl font-bold text-white mb-4">Ordenar Membros da Equipe</h3>
+                <p className="text-sm text-gray-400 mb-6">Arraste e solte os cards para reordenar como eles aparecerão na página "Nossa Equipe".</p>
+                <div className="space-y-3">
+                    {orderedMembers.map((member, index) => (
+                        <div
+                            key={member.id}
+                            className="flex items-center gap-4 p-3 bg-white/5 rounded-lg border border-white/10 cursor-grab active:cursor-grabbing"
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, index)}
+                            onDragEnter={(e) => handleDragEnter(e, index)}
+                            onDragEnd={handleDrop}
+                            onDragOver={(e) => e.preventDefault()}
+                        >
+                            <span className="text-gray-500 font-mono text-lg w-6 text-center">{index + 1}</span>
+                            <img src={member.avatarUrl} alt={member.name} className="h-10 w-10 rounded-full object-cover" />
+                            <div>
+                                <p className="font-semibold text-white">{member.name}</p>
+                                <p className="text-xs text-gray-400">{member.title}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex justify-end gap-4 mt-6">
+                    <button type="button" onClick={() => setIsTeamOrdering(false)} className="bg-white/10 text-white font-semibold py-2 px-5 rounded-lg hover:bg-white/20">Cancelar</button>
+                    <button type="button" onClick={handleSave} className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90">Salvar Ordem</button>
+                </div>
+            </div>
+        );
+      };
+
       const renderActiveTab = () => {
         switch (activeTab) {
             case 'courses': return <CoursesTable />;
@@ -251,7 +319,7 @@ const Dashboard: React.FC = () => {
       }
       
       const createButton = getCreateButtonAction();
-      const showCreateButton = user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog'));
+      const showCreateButton = (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog'))) && !isTeamOrdering;
       // --- End of Copied from Admin.tsx ---
 
       return (
@@ -351,16 +419,28 @@ const Dashboard: React.FC = () => {
                   </>
                   )}
               </nav>
-              {showCreateButton && createButton && (
-                  <button
-                  onClick={createButton.action}
-                  className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300 text-sm mb-2"
-                  >
-                  {createButton.text}
-                  </button>
-              )}
+              <div className="flex items-center gap-4">
+                  {activeTab === 'teamMembers' && user.role === 'admin' && (
+                    <button
+                        onClick={() => setIsTeamOrdering(prev => !prev)}
+                        className="bg-white/10 text-white font-semibold py-2 px-5 rounded-lg hover:bg-white/20 transition-all duration-300 text-sm mb-2"
+                    >
+                        {isTeamOrdering ? 'Ver Tabela' : 'Ordenar Posições'}
+                    </button>
+                  )}
+                  {showCreateButton && (
+                      <button
+                      onClick={createButton.action}
+                      className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300 text-sm mb-2"
+                      >
+                      {createButton.text}
+                      </button>
+                  )}
+              </div>
             </div>
-            <div className="mt-4">{renderActiveTab()}</div>
+            <div className="mt-4">
+                {isTeamOrdering && activeTab === 'teamMembers' ? <TeamOrderingPanel /> : renderActiveTab()}
+            </div>
         </div>
 
       </div>

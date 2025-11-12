@@ -14,6 +14,7 @@ export interface User {
   isMentor?: boolean;
   // FIX: Added showOnTeamPage to satisfy type checks in TeamView.tsx.
   showOnTeamPage?: boolean;
+  displayOrder?: number;
   completedLessonIds: string[];
   xp: number;
   achievements: string[];
@@ -446,6 +447,7 @@ export interface AppContextType {
   handleCreateEvent: () => void;
   handleEditEvent: (event: Event) => void;
   handleDeleteEvent: (eventId: string) => void;
+  handleSaveTeamOrder: (orderedTeam: User[]) => Promise<void>;
   handleAddSessionSlot: (mentorId: string, date: string, time: string) => void;
   handleRemoveSessionSlot: (mentorId: string, date: string, time: string) => void;
   handleBookSession: (sessionId: string) => void;

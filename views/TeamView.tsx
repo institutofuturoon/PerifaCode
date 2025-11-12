@@ -36,13 +36,11 @@ const TeamCard: React.FC<{ member: User }> = ({ member }) => {
 const TeamView: React.FC = () => {
     const { team } = useAppContext();
 
-    const visibleTeamMembers = useMemo(() => 
-        team.filter(member => member.showOnTeamPage)
+    const sortedVisibleTeam = useMemo(() => 
+        team
+            .filter(member => member.showOnTeamPage)
+            .sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999))
     , [team]);
-
-    const sortedTeam = useMemo(() =>
-        [...visibleTeamMembers].sort((a, b) => a.name.localeCompare(b.name))
-    , [visibleTeamMembers]);
 
 
     return (
@@ -56,10 +54,10 @@ const TeamView: React.FC = () => {
                 </p>
             </div>
 
-            {sortedTeam.length > 0 ? (
+            {sortedVisibleTeam.length > 0 ? (
                 <section>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {sortedTeam.map(member => <TeamCard key={member.id} member={member} />)}
+                        {sortedVisibleTeam.map(member => <TeamCard key={member.id} member={member} />)}
                     </div>
                 </section>
             ) : (
