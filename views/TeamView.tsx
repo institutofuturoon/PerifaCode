@@ -4,48 +4,41 @@ import { User } from '../types';
 
 const TeamCard: React.FC<{ member: User }> = ({ member }) => {
     const { openProfileModal } = useAppContext();
+    const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
     return (
-        <div className="bg-white/5 backdrop-blur-sm p-8 rounded-lg border border-white/10 text-center group transition-all duration-300 hover:border-[#8a4add]/50 hover:shadow-2xl hover:shadow-[#8a4add]/10 flex flex-col">
-            <img src={member.avatarUrl} alt={member.name} className="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-[#8a4add]/50 group-hover:border-[#8a4add] transition-colors duration-300 transform group-hover:scale-105"/>
-            <h3 className="text-xl font-bold text-white">{member.name}</h3>
-            <p className="text-[#8a4add] font-semibold">{member.title}</p>
-            <p className="mt-4 text-gray-400 text-sm flex-grow line-clamp-3">{member.bio}</p>
-            <button 
-                onClick={() => openProfileModal(member)}
-                className="mt-6 w-full bg-white/10 text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/20 transition-colors"
-            >
-                Ver Bio
-            </button>
+        <div 
+            onClick={() => openProfileModal(member)}
+            className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg shadow-[#8a4add]/10 overflow-hidden cursor-pointer group transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/20 hover:-translate-y-1"
+        >
+            {/* Profile Header */}
+            <div className="relative">
+                <div 
+                    className="h-32 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${member.bannerUrl || DEFAULT_BANNER_URL})` }}
+                />
+                <div className="absolute left-1/2 -translate-x-1/2 top-32 -translate-y-1/2">
+                    <img className="h-24 w-24 rounded-full border-4 border-[#18181B]" src={member.avatarUrl} alt={member.name} />
+                </div>
+            </div>
+
+            {/* Profile Content */}
+            <div className="p-6 pt-14 text-center">
+                <h3 className="text-xl font-bold text-white">{member.name}</h3>
+                <p className="text-sm text-[#c4b5fd] truncate">{member.email}</p>
+                <p className="mt-2 text-sm text-gray-300 line-clamp-2 h-10">{member.title}</p>
+            </div>
         </div>
     );
 }
 
+
 const TeamView: React.FC = () => {
     const { team } = useAppContext();
 
-    const pedagogicalCoordinator: User = {
-        id: 'coord-ped-1',
-        name: 'Ana Silva',
-        email: 'ana.silva@futuroon.com',
-        avatarUrl: 'https://picsum.photos/seed/anasilva/200',
-        bio: 'Apaixonada por educação e tecnologia, Ana lidera a criação de nossas trilhas de aprendizado, garantindo que cada curso seja uma experiência transformadora e alinhada com as demandas do mercado.',
-        role: 'instructor', // Role can be instructor for permission purposes
-        title: 'Coordenadora Pedagógica',
-        showOnTeamPage: true,
-        isMentor: false,
-        completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
-    };
-
-    const fullTeam = useMemo(() => {
-        // Prevent duplicates if coordinator is already fetched
-        const teamIds = new Set(team.map(m => m.id));
-        return teamIds.has(pedagogicalCoordinator.id) ? team : [...team, pedagogicalCoordinator];
-    }, [team]);
-
     const visibleTeamMembers = useMemo(() => 
-        fullTeam.filter(member => member.showOnTeamPage)
-    , [fullTeam]);
+        team.filter(member => member.showOnTeamPage)
+    , [team]);
 
     const sortedTeam = useMemo(() =>
         [...visibleTeamMembers].sort((a, b) => a.name.localeCompare(b.name))
