@@ -45,15 +45,14 @@
         display: flex;
         overflow: hidden;
         user-select: none;
-        gap: 2rem; /* The same gap as the inner container */
-        -webkit-mask-image: linear-gradient(to right, hsl(0 0% 0% / 0), hsl(0 0% 0% / 1) 10%, hsl(0 0% 0% / 1) 90%, hsl(0 0% 0% / 0));
-        mask-image: linear-gradient(to right, hsl(0 0% 0% / 0), hsl(0 0% 0% / 1) 10%, hsl(0 0% 0% / 1) 90%, hsl(0 0% 0% / 0));
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
       }
 
       .marquee-content {
         flex-shrink: 0;
         display: flex;
-        justify-content: space-around;
+        justify-content: flex-start;
         min-width: 100%;
         gap: 2rem;
         animation: marquee-scroll 80s linear infinite;
@@ -61,7 +60,7 @@
 
       @keyframes marquee-scroll {
         from { transform: translateX(0); }
-        to { transform: translateX(calc(-100% - 2rem)); } /* 2rem is the gap */
+        to { transform: translateX(-50%); }
       }
 
       /* Pause animation on hover */
