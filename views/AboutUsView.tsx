@@ -25,7 +25,7 @@ const InfoCard: React.FC<{ icon: React.ReactNode; title: string; description: st
 );
 
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <section className={`py-16 md:py-20 ${className}`}>
+    <section className={`py-16 md:py-20 relative z-10 ${className}`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {children}
         </div>
@@ -138,7 +138,7 @@ const AboutUsView: React.FC = () => {
                 </Section>
 
                 {/* Transparência Total Section */}
-                <Section className="relative z-10">
+                <Section>
                     <SectionTitle subtitle="Acreditamos que a confiança é construída com clareza. Acompanhe de perto como cada contribuição se transforma em oportunidade.">
                         Transparência Total
                     </SectionTitle>
@@ -174,7 +174,7 @@ const AboutUsView: React.FC = () => {
 
 
                 {/* Team & Donate CTA Section */}
-                <Section className="bg-black/20 relative z-10">
+                <Section className="bg-black/20">
                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                          <div className="grid md:grid-cols-2 gap-8">
                             <ActionCard

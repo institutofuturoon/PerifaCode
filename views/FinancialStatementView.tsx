@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Reusable components for this view
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <section className={`py-16 md:py-20 ${className}`}>
+    <section className={`py-16 md:py-20 relative z-10 ${className}`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {children}
         </div>
@@ -139,7 +139,7 @@ const FinancialStatementView: React.FC = () => {
             </Section>
 
             {/* Call to Action */}
-            <Section>
+            <Section className="bg-black/20">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold text-white">Junte-se a nós</h2>
                     <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">

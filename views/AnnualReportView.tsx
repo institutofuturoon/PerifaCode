@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Reusable components for this view
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <section className={`py-16 md:py-20 ${className}`}>
+    <section className={`py-16 md:py-20 relative z-10 ${className}`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {children}
         </div>
@@ -79,7 +79,7 @@ const AnnualReportView: React.FC = () => {
             </Section>
 
             {/* Impact in Numbers */}
-            <Section>
+            <Section className="bg-black/20">
                 <SectionTitle subtitle="Nossos resultados refletem o poder da nossa comunidade e a dedicação de cada indivíduo envolvido.">
                     Nosso Impacto em Números
                 </SectionTitle>
@@ -101,7 +101,7 @@ const AnnualReportView: React.FC = () => {
                         quote="A oportunidade de aprender de graça, e com qualidade coisas que eu teria que pagar muito dinheiro aqui fora. O ambiente amigável, as pessoas, os professores, a troca de informações, todos aprendendo juntos."
                         name="Elias Daniel"
                         course="Aluno Programação"
-                        avatar="https://www.gravatar.com/avatar/?d=mp"
+                        avatar="https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/avatar-elias-daniel-S49E7iPjC2jTqZ6jOZyY9lS8Ld9C3P.jpg"
                     />
                      <TestimonialCard 
                         quote="Com incentivo da minha filha pra entrar no Futuroon, tô conseguindo ter noção de informática. Futuroon me mostrou que nunca é tarde pra aprender!"
@@ -113,7 +113,7 @@ const AnnualReportView: React.FC = () => {
             </Section>
 
             {/* Call to Action */}
-            <Section>
+            <Section className="bg-black/20">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold text-white">Faça Parte do Próximo Capítulo</h2>
                     <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
