@@ -177,9 +177,9 @@ const Home: React.FC = () => {
                     <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Alguns dos marcos mais importantes da nossa história, que nos trouxeram até aqui.</p>
                 </div>
                 <SimplifiedTimeline />
-                 <div className="text-center mt-12">
-                    <button onClick={() => navigate('/about')} className="text-[#c4b5fd] font-semibold hover:underline">
-                        Veja a história completa &rarr;
+                 <div className="text-center mt-12 max-w-sm mx-auto">
+                    <button onClick={() => navigate('/about')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-md font-semibold text-white">Veja a história completa</span>
                     </button>
                 </div>
             </div>
@@ -198,12 +198,9 @@ const Home: React.FC = () => {
                         <TeamMemberPreviewCard key={member.id} member={member} />
                     ))}
                 </div>
-                <div className="text-center mt-12">
-                    <button
-                        onClick={() => navigate('/team')}
-                        className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300"
-                    >
-                        Ver equipe completa
+                <div className="text-center mt-12 max-w-sm mx-auto">
+                     <button onClick={() => navigate('/team')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-md font-semibold text-white">Ver equipe completa</span>
                     </button>
                 </div>
             </div>
@@ -247,32 +244,12 @@ const Home: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="mt-12 max-w-2xl mx-auto space-y-4">
-                    <button onClick={() => navigate('/annual-report')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <div className="flex items-center gap-4">
-                            <span className="text-[#8a4add]">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </span>
-                            <span className="text-lg font-semibold text-white">Relatório Anual 2024</span>
-                        </div>
-                        <span className="text-gray-400 transform transition-transform group-hover:translate-x-1 group-hover:text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                        </span>
+                <div className="mt-12 max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
+                    <button onClick={() => navigate('/annual-report')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-md font-semibold text-white">Relatório Anual 2024</span>
                     </button>
-                    <button onClick={() => navigate('/financial-statement')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                       <div className="flex items-center gap-4">
-                            <span className="text-[#8a4add]">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </span>
-                            <span className="text-lg font-semibold text-white">Prestação de Contas</span>
-                        </div>
-                        <span className="text-gray-400 transform transition-transform group-hover:translate-x-1 group-hover:text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                        </span>
+                    <button onClick={() => navigate('/financial-statement')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-md font-semibold text-white">Prestação de Contas</span>
                     </button>
                 </div>
             </div>
