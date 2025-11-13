@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useAppContext } from '../App';
 import { Article } from '../types';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -17,6 +17,8 @@ const ArticleView: React.FC = () => {
   const { articleId } = useParams<{ articleId: string }>();
   const navigate = useNavigate();
   const [isClapping, setIsClapping] = useState(false);
+  const [scrollPercentage, setScrollPercentage] = useState(0);
+  const articleContentRef = React.useRef<HTMLDivElement>(null);
 
   const article = useMemo(() => articles.find(a => a.id === articleId), [articles, articleId]);
   
@@ -24,6 +26,32 @@ const ArticleView: React.FC = () => {
     if (!article) return null;
     return users.find(u => u.name === article.author);
   }, [users, article]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const contentEl = articleContentRef.current;
+      if (!contentEl) return;
+
+      const { top, height } = contentEl.getBoundingClientRect();
+      const scrollDistance = height;
+      const scrolled = -top;
+
+      if (scrolled < 0) {
+        setScrollPercentage(0);
+        return;
+      }
+      if (scrolled > scrollDistance) {
+        setScrollPercentage(100);
+        return;
+      }
+      
+      const percentage = (scrolled / scrollDistance) * 100;
+      setScrollPercentage(percentage);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   if (!article) {
     return <div className="text-center py-20">Artigo não encontrado.</div>;
@@ -77,10 +105,14 @@ const ArticleView: React.FC = () => {
 
   return (
     <div className="aurora-background">
+      <div 
+        className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-[#8a4add] to-[#f27983] z-[60] transition-all duration-75 ease-out"
+        style={{ width: `${scrollPercentage}%` }}
+      />
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 bg-black/20">
         <div className="absolute inset-0">
-          <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover opacity-20" />
+          <img src={article.imageUrl} alt={article.title} className="w-full h-full object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] to-transparent"></div>
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -102,7 +134,7 @@ const ArticleView: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
           {/* Article Content */}
-          <div className="bg-[#121212] p-8 sm:p-16 rounded-lg border border-white/10 shadow-2xl -mt-16 relative z-20">
+          <div ref={articleContentRef} className="bg-[#121212] p-8 sm:p-16 rounded-lg border border-white/10 shadow-2xl -mt-16 relative z-20">
             {user && (user.role === 'admin' || (user.role === 'instructor' && user.name === article.author)) && (
               <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10">
                   <p className="text-sm font-semibold text-yellow-400 flex-grow">Opções de Administrador:</p>
