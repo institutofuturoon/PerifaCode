@@ -12,6 +12,37 @@
       body {
         font-family: 'Inter', sans-serif;
       }
+      /* Estilos para o conteúdo renderizado pelo Markdown */
+      .prose p {
+        margin-top: 1.25em;
+        margin-bottom: 1.25em;
+      }
+      .prose h2 {
+        font-size: 1.875rem; /* text-3xl */
+        font-weight: 800; /* font-extrabold */
+        margin-top: 2.5em;
+        margin-bottom: 1em;
+      }
+      .prose h3 {
+        font-size: 1.5rem; /* text-2xl */
+        font-weight: 700; /* font-bold */
+        margin-top: 2em;
+        margin-bottom: 0.8em;
+      }
+      .prose a {
+        color: #c4b5fd;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .prose a:hover {
+        color: #8a4add;
+        text-decoration: underline;
+      }
+      .prose blockquote {
+        border-left-color: #8a4add;
+        color: #d1d5db;
+        font-weight: 500;
+      }
       /* Estilos para blocos de código */
       .prose pre {
         background-color: #111827; /* Fundo escuro para o bloco de código */

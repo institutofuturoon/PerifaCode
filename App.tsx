@@ -46,7 +46,7 @@ import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
-import { MOCK_COURSES } from './constants';
+import { MOCK_COURSES, ARTICLES } from './constants';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -111,6 +111,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 ...article,
                 readingTime: calculateReadingTime(article.content)
             }));
+            const mockArticleIds = new Set(ARTICLES.map(a => a.id));
+            const additionalDbArticles = dataFromDb.filter(dbArticle => !mockArticleIds.has((dbArticle as Article).id));
+            dataFromDb = [...ARTICLES, ...additionalDbArticles];
         }
 
         if (collectionName === 'courses') {
@@ -125,7 +128,10 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         showToast(`❌ Erro ao carregar ${collectionName}.`);
         if (collectionName === 'courses') {
             setData(MOCK_COURSES); // Fallback to mock courses on error
-        } else {
+        } else if (collectionName === 'articles') {
+            setData(ARTICLES.map(article => ({ ...article, readingTime: calculateReadingTime(article.content) }))); // Fallback to mock articles on error
+        }
+        else {
             setData([]);
         }
       }
