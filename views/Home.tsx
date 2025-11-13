@@ -206,50 +206,6 @@ const Home: React.FC = () => {
                 </div>
             </div>
         </section>
-
-        {/* Transparência Total Section */}
-        <section className="py-24 bg-black/20 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle at 10% 20%, #8a4add, transparent 50%)'}}></div>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-                <div className="grid md:grid-cols-2 gap-12 items-center">
-                    <div className="text-center md:text-left">
-                        <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Transparência Total</h2>
-                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mt-4 mb-6 mx-auto md:mx-0"></div>
-                        <p className="text-lg text-gray-300 leading-relaxed">
-                            Acreditamos que a confiança é construída com clareza. Por isso, disponibilizamos publicamente nossos relatórios para que você possa acompanhar de perto como cada contribuição se transforma em oportunidade e impacto social.
-                        </p>
-                    </div>
-                    <div className="space-y-4">
-                        <button onClick={() => navigate('/annual-report')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                            <div className="flex items-center gap-4">
-                                <span className="text-[#8a4add]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </span>
-                                <span className="text-lg font-semibold text-white">Relatório Anual 2024</span>
-                            </div>
-                            <span className="text-gray-400 transform transition-transform group-hover:translate-x-1 group-hover:text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                            </span>
-                        </button>
-                        <button onClick={() => navigate('/financial-statement')} className="w-full text-left group flex items-center justify-between p-6 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                            <div className="flex items-center gap-4">
-                                <span className="text-[#8a4add]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </span>
-                                <span className="text-lg font-semibold text-white">Prestação de Contas</span>
-                            </div>
-                            <span className="text-gray-400 transform transition-transform group-hover:translate-x-1 group-hover:text-white">
-                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
       </main>
     </div>
   );
