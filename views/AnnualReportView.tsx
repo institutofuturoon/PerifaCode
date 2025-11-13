@@ -73,7 +73,7 @@ const AnnualReportView: React.FC = () => {
                         </div>
                     </div>
                      <div className="flex justify-center">
-                        <img src="https://media.licdn.com/dms/image/v2/D4D03AQE6gV_60L_8yw/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1687550882103?e=1764201600&v=beta&t=Ue89n6p4Q7b8QZz4Y9eX_W2wF_vC_jYc_Z_qX_y_3s" alt="Marlon Souza" className="w-48 h-48 rounded-full object-cover border-4 border-[#8a4add]" />
+                        <img src="https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png" alt="Marlon Souza" className="w-48 h-48 rounded-full object-cover border-4 border-[#8a4add]" />
                     </div>
                 </div>
             </Section>
@@ -98,16 +98,16 @@ const AnnualReportView: React.FC = () => {
                 </SectionTitle>
                 <div className="grid md:grid-cols-2 gap-8">
                     <TestimonialCard 
-                        quote="A FuturoOn não me deu só um curso, me deu uma carreira. Hoje trabalho como dev júnior e a ficha ainda não caiu. Foi a virada de chave da minha vida."
-                        name="Juliana Silva"
-                        course="Aluna de Backend C#"
-                        avatar="https://randomuser.me/api/portraits/women/44.jpg"
+                        quote="A oportunidade de aprender de graça, e com qualidade coisas que eu teria que pagar muito dinheiro aqui fora. O ambiente amigável, as pessoas, os professores, a troca de informações, todos aprendendo juntos."
+                        name="Elias Daniel"
+                        course="Aluno Programação"
+                        avatar="https://www.gravatar.com/avatar/?d=mp"
                     />
                      <TestimonialCard 
-                        quote="Eu achava que tecnologia não era pra mim. O curso de Letramento Digital me deu a confiança pra usar o celular e o computador sem medo. Hoje, falo com meus netos por vídeo toda semana."
-                        name="Maria Oliveira"
+                        quote="Com incentivo da minha filha pra entrar no Futuroon, tô conseguindo ter noção de informática. Futuroon me mostrou que nunca é tarde pra aprender!"
+                        name="Kelly Maciel"
                         course="Aluna de Letramento Digital"
-                        avatar="https://randomuser.me/api/portraits/women/68.jpg"
+                        avatar="https://randomuser.me/api/portraits/women/49.jpg"
                     />
                 </div>
             </Section>

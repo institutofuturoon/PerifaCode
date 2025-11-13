@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
               Feito na quebrada para o mundo. Capacitando a próxima geração de talentos em tecnologia.
             </p>
             <div className="flex space-x-6 pt-2">
-                <SocialIcon href="https://www.instagram.com/institutofuturoon/">
+                <SocialIcon href="https://www.instagram.com/futuro.on/">
                     <span className="sr-only">Instagram</span>
                     <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm.173 15.122a3.953 3.953 0 110-7.906 3.953 3.953 0 010 7.906zm4.18-8.89a1.096 1.096 0 11-2.191 0 1.096 1.096 0 012.19 0zm-8.832 1.393a5.553 5.553 0 1010.518-2.618 5.553 5.553 0 00-10.518 2.618z" clipRule="evenodd" /></svg>
                 </SocialIcon>
