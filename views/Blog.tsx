@@ -144,6 +144,14 @@ const Blog: React.FC = () => {
         .filter(a => !activeTag || a.tags?.includes(activeTag));
   }, [publishedArticles, searchTerm, activeCategory, activeTag]);
 
+  const { featuredArticle, otherArticles } = useMemo(() => {
+    if (filteredArticles.length === 0) {
+      return { featuredArticle: null, otherArticles: [] };
+    }
+    const [first, ...rest] = filteredArticles;
+    return { featuredArticle: first, otherArticles: rest };
+  }, [filteredArticles]);
+
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
     setActiveTag(null);
@@ -173,23 +181,42 @@ const Blog: React.FC = () => {
             <div className="grid lg:grid-cols-4 gap-12">
                 {/* Main Content */}
                 <div className="lg:col-span-3">
-                   <div className="space-y-8">
-                        {filteredArticles.length > 0 ? (
-                           filteredArticles.map(article => (
-                               <ArticleCard 
-                                   key={article.id} 
-                                   article={article} 
-                                   onArticleSelect={handleArticleSelect} 
-                                   layout="horizontal" 
-                               />
-                           ))
-                        ) : (
-                            <div className="text-center py-20 bg-black/20 rounded-lg border border-white/10">
-                                <p className="text-gray-400 text-lg">Nenhum artigo encontrado.</p>
-                                <p className="text-sm text-gray-500 mt-2">Tente ajustar seus filtros ou limpar a busca.</p>
-                            </div>
-                        )}
-                    </div>
+                   {filteredArticles.length > 0 ? (
+                       <div className="space-y-12">
+                           {/* Featured Article */}
+                           {featuredArticle && (
+                               <div>
+                                   <h2 className="text-3xl font-bold text-white mb-6 border-l-4 border-[#8a4add] pl-4">Destaque</h2>
+                                   <ArticleCard 
+                                       article={featuredArticle} 
+                                       onArticleSelect={handleArticleSelect} 
+                                       layout="horizontal" 
+                                   />
+                               </div>
+                           )}
+
+                           {/* Other Articles */}
+                           {otherArticles.length > 0 && (
+                               <div>
+                                   <h2 className="text-3xl font-bold text-white mb-6 border-l-4 border-gray-500 pl-4">Mais Recentes</h2>
+                                   <div className="grid md:grid-cols-2 gap-8">
+                                       {otherArticles.map(article => (
+                                           <ArticleCard 
+                                               key={article.id} 
+                                               article={article} 
+                                               onArticleSelect={handleArticleSelect}
+                                           />
+                                       ))}
+                                   </div>
+                               </div>
+                           )}
+                       </div>
+                    ) : (
+                        <div className="text-center py-20 bg-black/20 rounded-lg border border-white/10">
+                            <p className="text-gray-400 text-lg">Nenhum artigo encontrado.</p>
+                            <p className="text-sm text-gray-500 mt-2">Tente ajustar seus filtros ou limpar a busca.</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Sidebar */}
