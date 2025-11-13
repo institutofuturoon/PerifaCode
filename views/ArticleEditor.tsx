@@ -108,15 +108,24 @@ const ArticleEditor: React.FC = () => {
       setIsImprovingText(true);
       try {
           const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-          const prompt = `Você é um editor especialista para o blog da FuturoOn. Sua tarefa é revisar o conteúdo do artigo abaixo.
-          Corrija erros de ortografia e gramática. Melhore o estilo, a fluidez e a clareza para tornar o texto mais profissional e engajante.
-          Mantenha a voz original do autor e o tom inspirador da plataforma. O público são jovens da periferia.
-          Retorne APENAS o conteúdo do artigo melhorado, mantendo a formatação Markdown original.
+          const prompt = `Você é um especialista em UX Writing e Design Instrucional para a FuturoOn, uma plataforma de educação digital para jovens da periferia. Sua missão é reescrever o texto a seguir, tornando-o mais claro, acessível e motivador.
 
-          Conteúdo Original:
-          ---
-          ${article.content}
-          ---`;
+OBJETIVO DA REESCRITA:
+1.  **Clareza e Simplicidade:** Use uma linguagem direta e evite jargões técnicos complexos. Se um termo técnico for essencial, explique-o de forma simples.
+2.  **Tom de Voz:** Mantenha um tom inspirador, encorajador e próximo da realidade do público. Use uma voz ativa e positiva.
+3.  **Engajamento:** Melhore a fluidez e o ritmo do texto para prender a atenção do leitor.
+4.  **Correção:** Corrija todos os erros de ortografia e gramática.
+5.  **Preservação:** Mantenha a intenção original do autor e a formatação Markdown (títulos, listas, shortcodes como [CODE] e [ALERT]).
+
+REGRAS DE SAÍDA:
+- Retorne APENAS o conteúdo do artigo reescrito.
+- Não adicione introduções, conclusões ou comentários sobre o que você mudou.
+- Mantenha a formatação Markdown e os shortcodes intactos.
+
+CONTEÚDO ORIGINAL PARA REESCRITA:
+---
+${article.content}
+---`;
           
           const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',

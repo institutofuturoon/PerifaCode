@@ -53,12 +53,15 @@ const RichContentEditor: React.FC<RichContentEditorProps> = ({ value, onChange, 
   };
 
   const toolbarActions = [
+    { label: 'Título 2', icon: 'H2', action: () => insertText({ start: '\n## ', end: '', placeholder: 'Título 2' }) },
+    { label: 'Título 3', icon: 'H3', action: () => insertText({ start: '\n### ', end: '', placeholder: 'Título 3' }) },
     { label: 'Bold', icon: 'B', action: () => insertText({ start: '**', end: '**', placeholder: 'texto' }) },
     { label: 'Italic', icon: 'I', action: () => insertText({ start: '_', end: '_', placeholder: 'texto' }) },
+    { label: 'Lista', icon: '•', action: () => insertText({ start: '\n- ', end: '', placeholder: 'Item' }) },
+    { label: 'Citação', icon: '“', action: () => insertText({ start: '\n> ', end: '', placeholder: 'Citação' }) },
     { label: 'Link', icon: '🔗', action: () => insertText({ start: '[', end: '](url)', placeholder: 'texto do link' }) },
-    { label: 'Image', icon: '🖼️', action: () => insertText({ start: '![', end: '](url)', placeholder: 'alt text' }) },
-    { label: 'Code', icon: '\`', action: () => insertText({ start: '\`', end: '\`', placeholder: 'código' }) },
-    { label: 'Code Block', icon: '{}', action: () => insertText({ start: '\n\`\`\`\n', end: '\n\`\`\`\n', placeholder: 'código' }) },
+    { label: 'Code', icon: '`', action: () => insertText({ start: '`', end: '`', placeholder: 'código' }) },
+    { label: 'Code Block', icon: '{}', action: () => insertText({ start: '\n[CODE lang="auto"]\n', end: '\n[/CODE]', placeholder: 'código' }) },
     { label: 'Alert', icon: '⚠️', action: () => insertText({ start: '\n[ALERT type="info"]\n', end: '\n[/ALERT]', placeholder: 'Mensagem de alerta.' }) },
     { label: 'Tip', icon: '💡', action: () => insertText({ start: '\n[TIP]\n', end: '\n[/TIP]', placeholder: 'Dica útil.' }) },
   ];
@@ -69,7 +72,7 @@ const RichContentEditor: React.FC<RichContentEditorProps> = ({ value, onChange, 
         <div className="bg-white/5 border border-white/10 rounded-md">
             <div className="sticky top-16 z-20 flex flex-wrap items-center gap-1 p-2 border-b border-white/10 bg-[#121212]">
                 {toolbarActions.map(action => (
-                    <button key={action.label} type="button" onClick={action.action} title={action.label} className="h-8 w-8 rounded text-gray-300 hover:bg-white/10 transition-colors flex items-center justify-center font-mono text-lg">
+                    <button key={action.label} type="button" onClick={action.action} title={action.label} className="h-8 w-8 rounded text-gray-300 hover:bg-white/10 transition-colors flex items-center justify-center font-mono text-lg font-bold">
                         {action.icon}
                     </button>
                 ))}

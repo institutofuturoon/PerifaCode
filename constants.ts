@@ -124,6 +124,120 @@ E aí, pronto para começar a construir o futuro?`,
     status: 'published',
     claps: 152,
     tags: ['c#', '.net', 'boas-praticas', 'arquitetura', 'solid']
+  },
+  {
+    id: 'article_git_guide',
+    title: 'Cartilha Git: Guia Prático para Iniciantes',
+    subtitle: 'Desvende o versionamento de código de forma simples e visual. Comandos essenciais para começar a usar Git e GitHub hoje mesmo.',
+    author: 'Marlon Souza',
+    date: '02/08/2024',
+    summary: 'Pense no Git como uma máquina do tempo para o seu código. Aprenda os comandos essenciais para versionar seus projetos, colaborar com outros devs e construir um portfólio incrível no GitHub.',
+    imageUrl: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
+    category: 'Tutoriais',
+    content: `Se você está começando no mundo da programação, já deve ter ouvido falar de Git e GitHub. Parecem complicados, né? Mas relaxa! A real é que eles são seus melhores amigos na jornada de dev.
+
+Pense no Git como uma máquina do tempo para o seu código. Sabe quando você está trabalhando num projeto, faz uma alteração... e tudo quebra? Com o Git, você pode simplesmente voltar para a versão anterior que estava funcionando. Sem estresse, sem perder horas de trabalho.
+
+Nesta cartilha, vamos desmistificar o Git de uma vez por todas, com uma linguagem que você entende. Bora?
+
+## Git vs. GitHub: Qual a diferença?
+
+Essa é a primeira dúvida de todo mundo. É simples:
+
+*   **Git:** É a ferramenta, o programa que você instala no seu computador. Ele controla as versões do seu código, registrando cada mudança.
+*   **GitHub:** É uma plataforma online (um site) onde você pode guardar seus projetos que usam Git. É como uma rede social para desenvolvedores, onde você pode hospedar seu código, colaborar com outras pessoas e criar seu portfólio.
+
+[TIP]
+Pense assim: O Git é o motor do carro, e o GitHub é a garagem na nuvem onde você estaciona o carro e pode mostrá-lo para os amigos. Existem outras "garagens" como GitLab e Bitbucket, mas o GitHub é a mais popular.
+[/TIP]
+
+## Os 3 Conceitos Essenciais
+
+Para começar, você só precisa entender três ideias principais:
+
+1.  **Repository (ou Repo):** É simplesmente a pasta do seu projeto. O Git cria uma "pasta mágica" oculta chamada \`.git\` dentro dela para rastrear tudo.
+2.  **Commit:** É um "ponto de salvamento" ou uma foto do seu código em um determinado momento. Cada commit tem uma mensagem descrevendo o que foi alterado. Ex: "Adiciona botão de login na página inicial".
+3.  **Branch:** São "ramificações" ou linhas do tempo paralelas do seu projeto. A principal é chamada de \`main\` (ou \`master\`). Quando você quer criar uma nova funcionalidade sem bagunçar o que já funciona, você cria uma nova branch. Depois de terminar, você "junta" (faz um *merge*) essa branch de volta na \`main\`.
+
+## O Fluxo de Trabalho Básico: Sua Primeira Viagem no Tempo
+
+Vamos para a prática! Esse é o passo a passo que você vai usar 90% do tempo.
+
+**1. Iniciando o Git no seu projeto**
+Abra o terminal na pasta do seu projeto e rode:
+[CODE lang="bash"]
+git init
+[/CODE]
+Isso cria o repositório e começa a "observar" a pasta.
+
+**2. Verificando o status**
+A qualquer momento, você pode perguntar ao Git: "E aí, o que tá rolando?".
+[CODE lang="bash"]
+git status
+[/CODE]
+Ele vai te dizer quais arquivos foram modificados, quais são novos, etc.
+
+**3. Adicionando arquivos para o "pacote"**
+Antes de salvar (commitar), você precisa dizer ao Git QUAIS arquivos quer salvar. Isso é chamado de "staging".
+[CODE lang="bash"]
+# Para adicionar um arquivo específico
+git add nome_do_arquivo.html
+
+# Para adicionar TODOS os arquivos modificados (use com cuidado!)
+git add .
+[/CODE]
+
+**4. Salvando o pacote (Commit)**
+Agora que os arquivos estão no "pacote", você salva essa versão com uma mensagem clara.
+[CODE lang="bash"]
+git commit -m "O que eu fiz nesta alteração"
+[/CODE]
+Exemplo: \`git commit -m "Cria a estrutura inicial do projeto HTML e CSS"\`
+
+[ALERT type="info"]
+**Analogia:** Pense que você está se mudando. \`git add\` é colocar as coisas dentro da caixa de papelão. \`git commit\` é fechar a caixa e escrever com um canetão o que tem dentro ("livros da sala", "pratos da cozinha").
+[/ALERT]
+
+## Conectando com o GitHub: Mostre seu Corre pro Mundo!
+
+Agora vamos pegar nosso projeto local e colocar online no GitHub.
+
+**1. Crie um novo repositório no site do GitHub.**
+Vá no GitHub, clique em "New repository", dê um nome e crie (sem marcar nenhuma caixinha como README por enquanto).
+
+**2. Conecte seu projeto local ao repositório do GitHub.**
+O GitHub vai te dar um link. Você vai usar o comando abaixo para "apontar" seu projeto para essa garagem na nuvem.
+[CODE lang="bash"]
+git remote add origin https://github.com/seu-usuario/seu-repo.git
+[/CODE]
+
+**3. Envie suas alterações (Push)**
+Finalmente, envie seus commits para o GitHub!
+[CODE lang="bash"]
+git push -u origin main
+[/CODE]
+O \`-u origin main\` só é necessário na primeira vez. Depois, você só precisa usar \`git push\`.
+
+## Colaborando e Pegando Atualizações
+
+*   **Clonar um projeto:** Para baixar um projeto que já está no GitHub para a sua máquina:
+    [CODE lang="bash"]
+    git clone https://github.com/usuario/repo.git
+    [/CODE]
+*   **Puxar atualizações:** Se alguém alterou o projeto no GitHub, para baixar essas alterações para o seu computador:
+    [CODE lang="bash"]
+    git pull
+    [/CODE]
+
+## Conclusão
+
+É isso! Com esses comandos, você já consegue começar a versionar seus projetos e construir seu portfólio no GitHub. No começo pode parecer estranho, mas quanto mais você usa, mais natural se torna.
+
+A chave é praticar. Crie um projeto, faça pequenas alterações e vá fazendo commits. Logo, o Git vai se tornar uma ferramenta indispensável no seu dia a dia. Foguete não tem ré, mas seu código agora tem! Pra cima!`,
+    status: 'published',
+    claps: 215,
+    tags: ['git', 'github', 'iniciante', 'versionamento', 'carreira']
   }
 ];
 export const MOCK_COURSES: Course[] = [
