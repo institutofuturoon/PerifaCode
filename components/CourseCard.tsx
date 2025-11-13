@@ -49,7 +49,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
       className="bg-[#1f2328] rounded-lg overflow-hidden border border-gray-700/80 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-[#8a4add]/10 h-full"
     >
       <div onClick={() => onCourseSelect(course)} className="relative overflow-hidden aspect-video cursor-pointer">
-        <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl} alt={course.title} />
+        <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl || `https://placehold.co/400x225/1f2328/c4b5fd?text=${encodeURIComponent(course.title)}`} alt={course.title} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         <CategoryIcon category={course.category} />
       </div>

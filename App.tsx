@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc, addDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress } from './types';
@@ -36,7 +36,7 @@ import TeamView from './views/TeamView';
 import TeamMemberEditor from './views/TeamMemberEditor';
 import ProfileModal from './components/ProfileModal';
 import OnboardingTour from './components/OnboardingTour';
-import PerifaCodeView from './views/PerifaCodeView';
+import Courses from './views/Courses';
 import DonateView from './views/DonateView';
 import AboutUsView from './views/AboutUsView';
 import AnnualReportView from './views/AnnualReportView';
@@ -46,6 +46,7 @@ import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
+import { MOCK_COURSES } from './constants';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -94,8 +95,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const [toast, setToast] = useState<string | null>(null);
   
-  const [initialEventChecked, setInitialEventChecked] = useState(false);
-
   const showToast = (message: string) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
@@ -114,11 +113,21 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             }));
         }
 
+        if (collectionName === 'courses') {
+            const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
+            const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
+            dataFromDb = [...MOCK_COURSES, ...additionalDbCourses];
+        }
+
         setData(dataFromDb);
       } catch (error) {
         console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
         showToast(`❌ Erro ao carregar ${collectionName}.`);
-        setData([]);
+        if (collectionName === 'courses') {
+            setData(MOCK_COURSES); // Fallback to mock courses on error
+        } else {
+            setData([]);
+        }
       }
     };
 
@@ -194,25 +203,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return () => unsubscribe();
   }, []);
   
-    useEffect(() => {
-        if (!initialEventChecked && !loading && events.length > 0) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const eventId = urlParams.get('event');
-
-            if (eventId) {
-                // Since this logic now lives inside the router context, we'd need access to navigate.
-                // For now, let's assume direct manipulation is okay for this one-off deep link.
-                // In a full refactor, this might be a useEffect inside a specific component.
-                const eventToOpen = events.find(e => e.id === eventId);
-                if (eventToOpen) {
-                    window.location.hash = `#/event/${eventId}`;
-                    // A better way is to use the navigate function from react-router, but this is a temporary fix.
-                }
-            }
-            setInitialEventChecked(true);
-        }
-    }, [events, loading, initialEventChecked]);
-
 
   const handleLogout = () => {
     signOut(auth).then(() => {
@@ -563,6 +553,29 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
+const DeepLinkHandler: React.FC = () => {
+    const { events, loading } = useAppContext();
+    const navigate = useNavigate();
+    const [hasChecked, setHasChecked] = useState(false);
+
+    useEffect(() => {
+        if (!hasChecked && !loading && events.length > 0) {
+            const searchParams = new URLSearchParams(window.location.search);
+            const eventId = searchParams.get('event');
+
+            if (eventId) {
+                const eventExists = events.some(e => e.id === eventId);
+                if (eventExists) {
+                    navigate(`/event/${eventId}`, { replace: true });
+                }
+            }
+            setHasChecked(true);
+        }
+    }, [events, loading, navigate, hasChecked]);
+
+    return null;
+};
+
 const AppRoutes: React.FC = () => {
     const { user, loading } = useAppContext();
     const location = useLocation();
@@ -613,62 +626,65 @@ const AppRoutes: React.FC = () => {
     }
 
     return (
-        <Routes>
-            <Route element={<Layout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/courses" element={<PerifaCodeView />} />
-                <Route path="/community" element={<CommunityView />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/connect" element={<ConnectView />} />
-                <Route path="/partnerships" element={<PartnershipsView />} />
-                <Route path="/about" element={<AboutUsView />} />
-                <Route path="/team" element={<TeamView />} />
-                <Route path="/donate" element={<DonateView />} />
-                <Route path="/privacy" element={<PrivacyPolicyView />} />
-                <Route path="/terms" element={<TermsOfUseView />} />
-                <Route path="/annual-report" element={<AnnualReportView />} />
-                <Route path="/financial-statement" element={<FinancialStatementView />} />
-                
-                <Route path="/course/:courseId" element={<CourseDetail />} />
-                <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
-                <Route path="/article/:articleId" element={<ArticleView />} />
-                <Route path="/project/:projectId" element={<ProjectDetailView />} />
-                <Route path="/event/:eventId" element={<EventDetailView />} />
-                
-                <Route element={<PublicOnlyRoute />}>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                </Route>
+        <>
+            <DeepLinkHandler />
+            <Routes>
+                <Route element={<Layout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/courses" element={<Courses />} />
+                    <Route path="/community" element={<CommunityView />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/connect" element={<ConnectView />} />
+                    <Route path="/partnerships" element={<PartnershipsView />} />
+                    <Route path="/about" element={<AboutUsView />} />
+                    <Route path="/team" element={<TeamView />} />
+                    <Route path="/donate" element={<DonateView />} />
+                    <Route path="/privacy" element={<PrivacyPolicyView />} />
+                    <Route path="/terms" element={<TermsOfUseView />} />
+                    <Route path="/annual-report" element={<AnnualReportView />} />
+                    <Route path="/financial-statement" element={<FinancialStatementView />} />
+                    
+                    <Route path="/course/:courseId" element={<CourseDetail />} />
+                    <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
+                    <Route path="/article/:articleId" element={<ArticleView />} />
+                    <Route path="/project/:projectId" element={<ProjectDetailView />} />
+                    <Route path="/event/:eventId" element={<EventDetailView />} />
+                    
+                    <Route element={<PublicOnlyRoute />}>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                    </Route>
 
-                <Route element={<SpecialAccessRoute />}>
-                    <Route path="/complete-profile" element={<CompleteProfile />} />
-                    <Route path="/change-password" element={<ChangePassword />} />
-                </Route>
+                    <Route element={<SpecialAccessRoute />}>
+                        <Route path="/complete-profile" element={<CompleteProfile />} />
+                        <Route path="/change-password" element={<ChangePassword />} />
+                    </Route>
 
-                <Route element={<ProtectedRoute />}>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
-                    <Route path="/course/:courseId/certificate" element={<CertificateView />} />
-                    <Route path="/project/edit" element={<ProjectEditor />} />
-                    <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
+                        <Route path="/course/:courseId/certificate" element={<CertificateView />} />
+                        <Route path="/project/edit" element={<ProjectEditor />} />
+                        <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
 
-                    <Route element={<AdminRoute />}>
-                        <Route path="/admin" element={<Dashboard />} />
-                        <Route path="/admin/analytics" element={<Analytics />} />
-                        <Route path="/admin/course-editor" element={<CourseEditor />} />
-                        <Route path="/admin/course-editor/:courseId" element={<CourseEditor />} />
-                        <Route path="/admin/article-editor" element={<ArticleEditor />} />
-                        <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
-                        <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
-                        <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
-                        <Route path="/admin/event-editor" element={<EventEditor />} />
-                        <Route path="/admin/event-editor/:eventId" element={<EventEditor />} />
-                        <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                        <Route element={<AdminRoute />}>
+                            <Route path="/admin" element={<Dashboard />} />
+                            <Route path="/admin/analytics" element={<Analytics />} />
+                            <Route path="/admin/course-editor" element={<CourseEditor />} />
+                            <Route path="/admin/course-editor/:courseId" element={<CourseEditor />} />
+                            <Route path="/admin/article-editor" element={<ArticleEditor />} />
+                            <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
+                            <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
+                            <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
+                            <Route path="/admin/event-editor" element={<EventEditor />} />
+                            <Route path="/admin/event-editor/:eventId" element={<EventEditor />} />
+                            <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                        </Route>
                     </Route>
                 </Route>
-            </Route>
-        </Routes>
+            </Routes>
+        </>
     );
 };
 

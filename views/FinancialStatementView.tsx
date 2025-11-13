@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 // Reusable components for this view
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
@@ -47,7 +47,7 @@ const BreakdownBar: React.FC<{ label: string, value: string, percentage: number,
 
 
 const FinancialStatementView: React.FC = () => {
-    const { navigate } = useAppContext();
+    const navigate = useNavigate();
 
     const revenueData = [
         { label: 'Parcerias Corporativas', value: 'R$ 25.000', percentage: 50, color: 'bg-sky-500' },
@@ -146,10 +146,10 @@ const FinancialStatementView: React.FC = () => {
                        Sua doação é o combustível que nos permite continuar formando a próxima geração de líderes em tecnologia.
                     </p>
                     <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button onClick={() => navigate('donate')} className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300">
+                        <button onClick={() => navigate('/donate')} className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300">
                             Faça uma Doação
                         </button>
-                        <button onClick={() => navigate('partnerships')} className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300">
+                        <button onClick={() => navigate('/partnerships')} className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300">
                             Seja um Parceiro
                         </button>
                     </div>

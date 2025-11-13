@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { put } from '@vercel/blob';
+import { upload } from '@vercel/blob/client';
 
 const UploadTest: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,15 +28,29 @@ const UploadTest: React.FC = () => {
     setUploadedUrl(null);
 
     try {
-      // AVISO: Esta implementação expõe o token de acesso no cliente.
-      // É insegura e adequada apenas para desenvolvimento/teste.
-      // Em produção, use um endpoint de API para gerar um token seguro.
-      const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc';
-
-      const newBlob = await put(`test-uploads/${file.name}`, file, {
-        access: 'public',
-        token: BLOB_READ_WRITE_TOKEN,
+      const pathname = file.name;
+      
+      const clientTokenResponse = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate-client-token',
+          payload: { pathname },
+        }),
       });
+
+      if (!clientTokenResponse.ok) {
+        const errorBody = await clientTokenResponse.json();
+        throw new Error(errorBody.error || 'Failed to get upload token');
+      }
+      
+      const clientToken = await clientTokenResponse.text();
+
+      const newBlob = await upload(pathname, file, {
+        access: 'public',
+        clientToken,
+      });
+
       setUploadedUrl(newBlob.url);
     } catch (err: any) {
       console.error('Erro detalhado no upload:', err);

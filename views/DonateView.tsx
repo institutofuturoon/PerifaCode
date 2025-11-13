@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 const ImpactCard: React.FC<{ amount: string, description: string }> = ({ amount, description }) => (
     <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-center transform transition-transform hover:-translate-y-1">
@@ -9,7 +9,7 @@ const ImpactCard: React.FC<{ amount: string, description: string }> = ({ amount,
 );
 
 const DonateView: React.FC = () => {
-    const { navigate } = useAppContext();
+    const navigate = useNavigate();
     const pixKey = "51.662.000/0001-98"; // CNPJ
 
     const copyToClipboard = () => {

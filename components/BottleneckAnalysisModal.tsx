@@ -10,7 +10,10 @@ interface BottleneckAnalysisModalProps {
 }
 
 const BottleneckAnalysisModal: React.FC<BottleneckAnalysisModalProps> = ({ isOpen, onClose, lesson, students }) => {
-    const { monitoringCourse } = useAppContext();
+    const { courses } = useAppContext();
+
+    const course = useMemo(() => courses.find(c => c.modules.some(m => m.lessons.some(l => l.id === lesson.id))), [courses, lesson]);
+    const courseLessonIds = useMemo(() => course?.modules.flatMap(m => m.lessons.map(l => l.id)) || [], [course]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -28,8 +31,6 @@ const BottleneckAnalysisModal: React.FC<BottleneckAnalysisModalProps> = ({ isOpe
         };
     }, [isOpen, onClose]);
     
-    const courseLessonIds = useMemo(() => monitoringCourse?.modules.flatMap(m => m.lessons.map(l => l.id)) || [], [monitoringCourse]);
-
     if (!isOpen) return null;
 
     return (

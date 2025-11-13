@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CourseCard from '../components/CourseCard';
 import { useAppContext } from '../App';
 import { Course } from '../types';
 
-type Track = 'Todos' | 'Frontend' | 'Backend' | 'IA' | 'UX/UI';
-
 const Courses: React.FC = () => {
   const { courses } = useAppContext();
   const navigate = useNavigate();
-  const [activeTrack, setActiveTrack] = useState<Track>('Todos');
+  const [activeTrack, setActiveTrack] = useState<string>('Todos');
 
-  const tracks: Track[] = ['Todos', 'Frontend', 'Backend', 'IA', 'UX/UI'];
+  const tracks = useMemo(() => {
+    const allTracks = courses.map(c => c.track);
+    const uniqueTracks = ['Todos', ...Array.from(new Set(allTracks))];
+    const sortedTracks = uniqueTracks.slice(1).sort();
+    return ['Todos', ...sortedTracks];
+  }, [courses]);
 
-  const filteredCourses = activeTrack === 'Todos'
+  const filteredCourses = useMemo(() => activeTrack === 'Todos'
     ? courses
-    : courses.filter(course => course.track === activeTrack);
+    : courses.filter(course => course.track === activeTrack), [courses, activeTrack]);
 
   const handleCourseSelect = (course: Course) => {
     if (course.heroContent) {
@@ -30,10 +33,10 @@ const Courses: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">
-            Trilhas de Aprendizado
+            Catálogo de Cursos
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
-            Do front-end ao back-end, da inteligência artificial ao design. Aqui você encontra o caminho certo para sua carreira em tecnologia.
+            Do online ao presencial, do front-end ao back-end. Aqui você encontra o caminho certo para sua carreira em tecnologia.
             </p>
         </div>
 

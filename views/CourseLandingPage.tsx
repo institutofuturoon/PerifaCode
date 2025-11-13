@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useParams } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { Course, CourseBenefit, CurriculumItem } from '../types';
 
@@ -305,7 +306,10 @@ const CurriculumItem: React.FC<CurriculumItem> = ({ title, description }) => (
 
 // --- Main Component ---
 const CourseLandingPage: React.FC = () => {
-    const { currentCourse, openInscriptionModal } = useAppContext();
+    const { courses, openInscriptionModal } = useAppContext();
+    const { courseId } = useParams<{ courseId: string }>();
+
+    const currentCourse = courses.find(c => c.id === courseId);
     
     if (!currentCourse) {
         return <div className="text-center py-20">Curso não encontrado.</div>;

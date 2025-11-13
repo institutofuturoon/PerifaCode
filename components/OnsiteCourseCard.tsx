@@ -1,13 +1,23 @@
 import React from 'react';
 import { Course } from '../types';
 import { useAppContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 interface OnsiteCourseCardProps {
   course: Course;
 }
 
 const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
-    const { openInscriptionModal, navigateToCourse } = useAppContext();
+    const { openInscriptionModal } = useAppContext();
+    const navigate = useNavigate();
+
+    const navigateToCourse = (course: Course) => {
+        if (course.heroContent) {
+            navigate(`/course-landing/${course.id}`);
+        } else {
+            navigate(`/course/${course.id}`);
+        }
+    };
 
     const formatInfo = {
         online: { icon: '🌐', text: 'Online' },

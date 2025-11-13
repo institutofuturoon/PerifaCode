@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { useAppContext } from '../App';
-import { put } from '@vercel/blob';
+import { upload } from '@vercel/blob/client';
 
 const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
@@ -72,11 +72,27 @@ const StudentEditor: React.FC = () => {
 
     setIsUploading(true);
     try {
-        const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc';
+        const pathname = `avatars/${user.id}-${Date.now()}-${file.name}`;
         
-        const newBlob = await put(`avatars/${user.id}-${Date.now()}-${file.name}`, file, {
-          access: 'public',
-          token: BLOB_READ_WRITE_TOKEN,
+        const clientTokenResponse = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'generate-client-token',
+                payload: { pathname },
+            }),
+        });
+
+        if (!clientTokenResponse.ok) {
+            const errorBody = await clientTokenResponse.json();
+            throw new Error(errorBody.error || 'Failed to get upload token');
+        }
+
+        const clientToken = await clientTokenResponse.text();
+
+        const newBlob = await upload(pathname, file, {
+            access: 'public',
+            clientToken,
         });
 
         setUser(prev => ({ ...prev, avatarUrl: newBlob.url }));
@@ -109,11 +125,27 @@ const StudentEditor: React.FC = () => {
 
     setIsUploadingBanner(true);
     try {
-        const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc';
-        
-        const newBlob = await put(`banners/${user.id}-${Date.now()}-${file.name}`, file, {
-          access: 'public',
-          token: BLOB_READ_WRITE_TOKEN,
+        const pathname = `banners/${user.id}-${Date.now()}-${file.name}`;
+
+        const clientTokenResponse = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'generate-client-token',
+                payload: { pathname },
+            }),
+        });
+
+        if (!clientTokenResponse.ok) {
+            const errorBody = await clientTokenResponse.json();
+            throw new Error(errorBody.error || 'Failed to get upload token');
+        }
+
+        const clientToken = await clientTokenResponse.text();
+
+        const newBlob = await upload(pathname, file, {
+            access: 'public',
+            clientToken,
         });
 
         setUser(prev => ({ ...prev, bannerUrl: newBlob.url }));

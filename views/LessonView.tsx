@@ -6,6 +6,7 @@ import QuizExercise from '../components/QuizExercise';
 import CodePlayground from '../components/CodePlayground';
 import { GoogleGenAI } from "@google/genai";
 import { useAppContext } from '../App';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 
 const AITutor: React.FC = () => {
@@ -325,13 +326,6 @@ const LessonView: React.FC = () => {
     setForumPosts(prev => prev.map(p => p.id === postId ? {...p, replies: [...p.replies, newReply]} : p));
   };
 
-  const renderContent = (markdown: string = '') => {
-    // A simplified markdown renderer.
-    let html = markdown;
-     html = html.replace(/`([^`].*?)`/g, '<code class="bg-[#8a4add]/10 text-[#c4b5fd] px-1 py-0.5 rounded text-sm">$1</code>');
-    return { __html: html.replace(/\n/g, '<br />') };
-  };
-
   const allLessons = currentCourse.modules.flatMap(m => m.lessons);
   const currentLessonIndex = allLessons.findIndex(l => l.id === currentLesson.id);
   const prevLesson = currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1] : null;
@@ -362,11 +356,24 @@ const LessonView: React.FC = () => {
                 </div>
                 <div className="mt-6 min-h-[400px]">
                     {activeTab === 'content' && (
-                        <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed space-y-4">
-                            <h2 className="text-xl font-bold text-white">Objetivo da Aula</h2>
-                            <p dangerouslySetInnerHTML={renderContent(currentLesson.objective)}></p>
-                            <h2 className="text-xl font-bold text-white">Conteúdo Principal</h2>
-                            <div dangerouslySetInnerHTML={renderContent(currentLesson.mainContent)}></div>
+                        <div className="space-y-8">
+                            {currentLesson.objective && (
+                                <div className="bg-white/5 border-l-4 border-[#8a4add] p-6 rounded-r-lg">
+                                    <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        Objetivo da Aula
+                                    </h2>
+                                    <div className="prose prose-invert max-w-none text-gray-300">
+                                        <MarkdownRenderer content={currentLesson.objective} />
+                                    </div>
+                                </div>
+                            )}
+                             <div>
+                                <h2 className="text-xl font-bold text-white mb-4">Conteúdo Principal</h2>
+                                <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed">
+                                  <MarkdownRenderer content={currentLesson.mainContent} />
+                                </div>
+                            </div>
                         </div>
                     )}
                     {activeTab === 'notes' && (

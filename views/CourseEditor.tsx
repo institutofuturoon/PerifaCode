@@ -4,14 +4,18 @@ import { Course, Module, Lesson } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
+import { upload } from '@vercel/blob/client';
 
 type SelectedItem = 
   | { type: 'course' }
   | { type: 'module'; moduleIndex: number }
   | { type: 'lesson'; moduleIndex: number; lessonIndex: number };
 
+type AiAction = 'create' | 'improve' | 'summarize' | 'create_code';
+
+
 const CourseEditor: React.FC = () => {
-  const { user, instructors, courses, handleSaveCourse } = useAppContext();
+  const { user, instructors, courses, handleSaveCourse, showToast } = useAppContext();
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
 
@@ -37,13 +41,18 @@ const CourseEditor: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<SelectedItem>({ type: 'course' });
   const [aiTopic, setAiTopic] = useState('');
   const [isGeneratingStructure, setIsGeneratingStructure] = useState(false);
-  const [isSuggestingMaterials, setIsSuggestingMaterials] = useState(false);
-  const [isGeneratingContent, setIsGeneratingContent] = useState(false);
+  const [isAiAssistantLoading, setIsAiAssistantLoading] = useState(false);
+  const [aiAction, setAiAction] = useState<AiAction>('create');
+  const [aiCommand, setAiCommand] = useState('');
   
-  const mainContentRef = useRef<HTMLTextAreaElement>(null);
-  const complementaryRef = useRef<HTMLTextAreaElement>(null);
-  const summaryRef = useRef<HTMLTextAreaElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
+  // Refs for the rich text editors
   const objectiveRef = useRef<HTMLTextAreaElement>(null);
+  const mainContentRef = useRef<HTMLTextAreaElement>(null);
+  const complementaryMaterialRef = useRef<HTMLTextAreaElement>(null);
+  const summaryRef = useRef<HTMLTextAreaElement>(null);
 
   const onCancel = () => navigate('/admin');
   
@@ -104,6 +113,60 @@ const CourseEditor: React.FC = () => {
     setCourse(prev => ({...prev, modules: newModules}));
     setSelectedItem({ type: 'module', moduleIndex });
   };
+  
+  const handleImageFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        showToast('❌ Por favor, selecione um arquivo de imagem válido.');
+        return;
+    }
+    if (file.size > 4 * 1024 * 1024) { // 4MB limit
+        showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
+        return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+        const pathname = `course-covers/${course.id}-${Date.now()}-${file.name}`;
+        
+        const clientTokenResponse = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'generate-client-token',
+                payload: { pathname },
+            }),
+        });
+
+        if (!clientTokenResponse.ok) {
+            const errorBody = await clientTokenResponse.json();
+            throw new Error(errorBody.error || 'Failed to get upload token');
+        }
+
+        const clientToken = await clientTokenResponse.text();
+
+        const newBlob = await upload(pathname, file, {
+            access: 'public',
+            clientToken,
+        });
+
+        setCourse(prev => ({ ...prev, imageUrl: newBlob.url }));
+        showToast('✅ Imagem de capa enviada com sucesso!');
+
+    } catch (err: any) {
+        console.error('Erro ao fazer upload da imagem de capa:', err);
+        const message = err.message || 'Ocorreu um erro desconhecido.';
+        showToast(`❌ Erro ao enviar a imagem: ${message}`);
+    } finally {
+        setIsUploadingImage(false);
+        if(imageFileInputRef.current) {
+            imageFileInputRef.current.value = "";
+        }
+    }
+  };
+
 
   const handleGenerateStructure = async () => {
     if (!aiTopic) {
@@ -168,92 +231,87 @@ Retorne APENAS no formato JSON especificado.`;
         setIsGeneratingStructure(false);
     }
   };
-  
-  const handleGenerateContent = async (moduleIndex: number, lessonIndex: number) => {
-    const lesson = course.modules[moduleIndex].lessons[lessonIndex];
-    if (!lesson.title || !lesson.objective) {
-        alert("Para gerar conteúdo, a aula precisa ter um título e um objetivo definidos.");
-        return;
-    }
-    setIsGeneratingContent(true);
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const prompt = `Você é um designer instrucional sênior da FuturoOn. Sua missão é criar conteúdo didático e acessível para jovens da periferia que estão aprendendo tecnologia.
 
-TAREFA: Gere o "Conteúdo Principal" para uma aula, usando Markdown para formatação (títulos com ##, negrito com **, listas com -, blocos de código com \`\`\`).
-
-CURSO: ${course.title}
-TÍTULO DA AULA: ${lesson.title}
-OBJETIVO DA AULA: ${lesson.objective}
-
-Baseado nessas informações, escreva o conteúdo. O tom deve ser encorajador e direto. Retorne APENAS o texto em Markdown.`;
-        
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-        });
-
-        const generatedText = response.text;
-        if (!generatedText) {
-          throw new Error("A IA retornou uma resposta vazia.");
-        }
-        handleLessonChange(moduleIndex, lessonIndex, 'mainContent', generatedText);
-
-    } catch (error) {
-        console.error("Erro ao gerar conteúdo com IA:", error);
-        alert("Não foi possível gerar o conteúdo. Tente novamente.");
-    } finally {
-        setIsGeneratingContent(false);
-    }
-  };
-
-  const handleSuggestMaterials = async (moduleIndex: number, lessonIndex: number) => {
-    const lesson = course.modules[moduleIndex].lessons[lessonIndex];
-    if (!lesson.title || !lesson.mainContent) {
-      alert("Para sugerir materiais, a aula precisa ter um título e conteúdo principal.");
+  const handleAiAssistantAction = async () => {
+    if (selectedItem.type !== 'lesson') {
+      showToast("Selecione uma aula para usar o assistente de IA.");
       return;
     }
-    setIsSuggestingMaterials(true);
+
+    const { moduleIndex, lessonIndex } = selectedItem;
+    const lesson = course.modules[moduleIndex].lessons[lessonIndex];
+    const textarea = mainContentRef.current;
+    if (!textarea) return;
+
+    const { selectionStart, selectionEnd } = textarea;
+    const selectedText = textarea.value.substring(selectionStart, selectionEnd);
+
+    if ((aiAction === 'improve' || aiAction === 'summarize') && !selectedText) {
+      showToast("Por favor, selecione um trecho do texto para usar esta função.");
+      return;
+    }
+    if ((aiAction === 'create' || aiAction === 'create_code') && !aiCommand) {
+      showToast("Por favor, descreva o que você quer criar.");
+      return;
+    }
+
+    setIsAiAssistantLoading(true);
+    
+    let prompt = '';
+    let insertionMode: 'replace' | 'insert' = 'insert';
+
+    switch (aiAction) {
+      case 'create':
+        prompt = `Você é um especialista em design instrucional para a FuturoOn. Seu público são jovens da periferia.
+        Crie um conteúdo claro e didático sobre o seguinte tópico: "${aiCommand}".
+        Use formatação Markdown (títulos com ##, negrito com **, listas) e nossos shortcodes ([TIP], [ALERT type="info"]) para deixar o conteúdo bem estruturado e com ótima legibilidade, como em um blog ou no Notion.
+        Retorne APENAS o conteúdo em Markdown.`;
+        break;
+      case 'create_code':
+        prompt = `Crie um exemplo de código sobre "${aiCommand}". Adicione comentários simples explicando as partes importantes.
+        Retorne o bloco de código completo dentro de um shortcode [CODE lang="auto"]...[/CODE].
+        Se a linguagem for óbvia (ex: "array em javascript"), use a sigla correta (ex: "js"). Senão, use "auto".
+        Retorne APENAS o shortcode e seu conteúdo.`;
+        break;
+      case 'improve':
+        prompt = `Você é um editor especialista. Melhore o texto a seguir para que fique mais claro, didático e engajante para um jovem iniciante em tecnologia. Corrija erros e melhore a fluidez.
+        Retorne APENAS o texto melhorado, mantendo a formatação Markdown.
+        Texto original: "${selectedText}"`;
+        insertionMode = 'replace';
+        break;
+      case 'summarize':
+        prompt = `Resuma o texto a seguir em 2 ou 3 frases principais, focando nos conceitos mais importantes para um iniciante.
+        Retorne APENAS o resumo.
+        Texto original: "${selectedText}"`;
+        insertionMode = 'replace';
+        break;
+    }
+    
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const prompt = `Aja como um curador de conteúdo para a FuturoOn.
-Baseado no título da aula "${lesson.title}" e no conteúdo:
----
-${lesson.mainContent}
----
-Sugira 3 a 5 recursos externos (artigos de blog, vídeos do YouTube, documentação oficial) que sejam relevantes e de alta qualidade para aprofundar o aprendizado.
-Retorne APENAS no formato JSON especificado.`;
-      
       const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
-          contents: prompt,
-          config: {
-              responseMimeType: "application/json",
-              responseSchema: {
-                  type: Type.ARRAY,
-                  items: {
-                      type: Type.OBJECT,
-                      properties: {
-                          title: { type: Type.STRING },
-                          url: { type: Type.STRING },
-                          type: { type: Type.STRING, enum: ['Artigo', 'Vídeo', 'Documentação'] }
-                      },
-                      required: ["title", "url", "type"]
-                  }
-              }
-          }
+        model: 'gemini-2.5-flash',
+        contents: prompt,
       });
 
-      const suggestions = JSON.parse(response.text);
-      const markdownSuggestions = suggestions.map((s: any) => `- **[${s.type}] ${s.title}:** [Acessar aqui](${s.url})`).join('\n');
-      const updatedMaterial = lesson.complementaryMaterial ? `${lesson.complementaryMaterial}\n\n${markdownSuggestions}` : markdownSuggestions;
-      handleLessonChange(moduleIndex, lessonIndex, 'complementaryMaterial', updatedMaterial);
+      const aiContent = response.text;
+      const currentFullText = lesson.mainContent || '';
+      
+      let newContent = '';
+      if (insertionMode === 'insert') {
+        newContent = currentFullText.substring(0, selectionStart) + aiContent + currentFullText.substring(selectionEnd);
+      } else { // replace
+        newContent = currentFullText.substring(0, selectionStart) + aiContent + currentFullText.substring(selectionEnd);
+      }
+      
+      handleLessonChange(moduleIndex, lessonIndex, 'mainContent', newContent);
+      setAiCommand('');
 
     } catch (error) {
-        console.error("Erro ao sugerir materiais:", error);
-        alert("Não foi possível sugerir materiais. Tente novamente.");
+      console.error("Erro no Assistente IA:", error);
+      showToast("❌ Ocorreu um erro ao usar o assistente. Tente novamente.");
     } finally {
-        setIsSuggestingMaterials(false);
+      setIsAiAssistantLoading(false);
     }
   };
 
@@ -286,6 +344,48 @@ Retorne APENAS no formato JSON especificado.`;
                     <label htmlFor="longDescription" className={labelClasses}>Descrição Longa e Detalhada</label>
                     <textarea id="longDescription" name="longDescription" value={course.longDescription} onChange={handleChange} placeholder="Descreva o curso em detalhes, o que o aluno aprenderá, etc." className={inputClasses} rows={5}/>
                 </div>
+                
+                 <div>
+                    <label className={labelClasses}>Imagem de Capa</label>
+                    <div className="mt-2 flex items-center gap-6">
+                        <div className="relative h-24 w-40 rounded-md bg-white/5 flex items-center justify-center border border-dashed border-white/20">
+                            {course.imageUrl ? (
+                                <img src={course.imageUrl} alt="Capa do curso" className="h-full w-full object-cover rounded-md" />
+                            ) : (
+                                <span className="text-xs text-gray-500">Sem imagem</span>
+                            )}
+                            {isUploadingImage && (
+                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center rounded-md">
+                                    <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex-grow">
+                            <input 
+                                type="file" 
+                                ref={imageFileInputRef}
+                                onChange={handleImageFileSelect}
+                                className="hidden" 
+                                accept="image/png, image/jpeg, image/gif, image/webp"
+                            />
+                            <button 
+                                type="button" 
+                                onClick={() => imageFileInputRef.current?.click()}
+                                disabled={isUploadingImage}
+                                className="bg-white/10 text-white font-semibold py-2 px-4 rounded-lg hover:bg-white/20 transition-colors text-sm disabled:opacity-50"
+                            >
+                                {isUploadingImage ? 'Enviando...' : 'Fazer Upload'}
+                            </button>
+                            <p className="text-xs text-gray-500 mt-2">ou cole a URL abaixo</p>
+                             <input id="imageUrl" name="imageUrl" value={course.imageUrl || ''} onChange={handleChange} placeholder="https://..." className={`${inputClasses} mt-2`} />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-6">
                      <div>
                         <label htmlFor="instructorId" className={labelClasses}>Instrutor(a)</label>
@@ -294,10 +394,6 @@ Retorne APENAS no formato JSON especificado.`;
                                 <option key={inst.id} value={inst.id}>{inst.name}</option>
                             ))}
                         </select>
-                    </div>
-                    <div>
-                        <label htmlFor="imageUrl" className={labelClasses}>URL da Imagem de Capa</label>
-                        <input id="imageUrl" name="imageUrl" value={course.imageUrl} onChange={handleChange} placeholder="https://..." className={inputClasses}/>
                     </div>
                     <div>
                         <label htmlFor="duration" className={labelClasses}>Duração Estimada</label>
@@ -363,6 +459,20 @@ Retorne APENAS no formato JSON especificado.`;
     if (selectedItem.type === 'lesson') {
         const { moduleIndex, lessonIndex } = selectedItem;
         const lesson = course.modules[moduleIndex].lessons[lessonIndex];
+        
+        const assistantButtonText = {
+            create: 'Gerar Conteúdo',
+            create_code: 'Gerar Código',
+            improve: 'Melhorar Texto',
+            summarize: 'Resumir'
+        };
+        const assistantPlaceholderText = {
+            create: 'Ex: O que são arrays em javascript',
+            create_code: 'Ex: um loop for em python',
+            improve: 'Selecione um texto para melhorar',
+            summarize: 'Selecione um texto para resumir'
+        };
+
         return (
             <div className="space-y-6">
                 <h3 className="text-xl font-bold text-white">Editando Aula: {lesson.title}</h3>
@@ -376,36 +486,46 @@ Retorne APENAS no formato JSON especificado.`;
                         <input id="lessonDuration" value={lesson.duration} onChange={e => handleLessonChange(moduleIndex, lessonIndex, 'duration', e.target.value)} placeholder="Ex: 15 min" className={inputClasses} />
                     </div>
                 </div>
-                <RichContentEditor label="Objetivo da Aula" value={lesson.objective || ''} onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'objective', v)} textareaRef={objectiveRef} />
-                
-                <div>
-                    <div className="flex justify-between items-center mb-2">
-                        <label className={labelClasses}>Conteúdo Principal</label>
-                        <button 
-                            type="button" 
-                            onClick={() => handleGenerateContent(moduleIndex, lessonIndex)} 
-                            disabled={isGeneratingContent} 
-                            className="flex items-center gap-2 font-semibold text-[#c4b5fd] hover:text-white text-sm py-2 px-4 rounded-lg bg-[#8a4add]/10 hover:bg-[#8a4add]/20 transition-colors disabled:opacity-50"
-                        >
-                            {isGeneratingContent ? 'Gerando...' : '✨ Gerar com IA'}
-                        </button>
-                    </div>
-                    <RichContentEditor 
-                        value={lesson.mainContent || ''} 
-                        onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'mainContent', v)} 
-                        textareaRef={mainContentRef} 
-                    />
+
+                <div className="p-4 bg-black/30 rounded-lg border border-[#8a4add]/20 space-y-3">
+                     <label className="block text-sm font-bold text-[#c4b5fd]">✨ Assistente de Conteúdo IA</label>
+                     <div className="grid grid-cols-3 gap-2">
+                        <select value={aiAction} onChange={e => setAiAction(e.target.value as AiAction)} className={`${inputClasses} col-span-1`}>
+                            <option value="create">Criar conteúdo</option>
+                            <option value="create_code">Criar código</option>
+                            <option value="improve">Melhorar texto</option>
+                            <option value="summarize">Resumir texto</option>
+                        </select>
+                        <input
+                            value={aiCommand}
+                            onChange={(e) => setAiCommand(e.target.value)}
+                            placeholder={assistantPlaceholderText[aiAction]}
+                            className={`${inputClasses} col-span-2`}
+                            disabled={aiAction === 'improve' || aiAction === 'summarize'}
+                        />
+                     </div>
+                      <button 
+                        type="button" 
+                        onClick={handleAiAssistantAction}
+                        disabled={isAiAssistantLoading} 
+                        className="w-full flex items-center justify-center gap-2 font-semibold text-white py-2 px-4 rounded-lg bg-[#8a4add] hover:bg-[#6d28d9] transition-colors disabled:opacity-50"
+                      >
+                        {isAiAssistantLoading ? 'Processando...' : assistantButtonText[aiAction]}
+                      </button>
+                      <p className="text-xs text-gray-500 text-center">A IA irá inserir o conteúdo na posição do cursor ou substituir o texto selecionado.</p>
                 </div>
 
-                <div>
-                  <RichContentEditor label="Material Complementar" value={lesson.complementaryMaterial || ''} onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'complementaryMaterial', v)} textareaRef={complementaryRef} />
-                  <div className="flex justify-end mt-2">
-                    <button type="button" onClick={() => handleSuggestMaterials(moduleIndex, lessonIndex)} disabled={isSuggestingMaterials} className="flex items-center gap-2 font-semibold text-[#c4b5fd] hover:text-white text-sm py-2 px-4 rounded-lg bg-[#8a4add]/10 hover:bg-[#8a4add]/20 transition-colors disabled:opacity-50">
-                       {isSuggestingMaterials ? 'Sugerindo...' : '✨ Sugerir com IA'}
-                    </button>
-                  </div>
-                </div>
-                <RichContentEditor label="Resumo e Próximos Passos" value={lesson.summary || ''} onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'summary', v)} textareaRef={summaryRef} />
+                <RichContentEditor label="Objetivo da Aula" value={lesson.objective || ''} onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'objective', v)} textareaRef={objectiveRef}/>
+                
+                <RichContentEditor 
+                    label="Conteúdo Principal"
+                    value={lesson.mainContent || ''} 
+                    onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'mainContent', v)} 
+                    textareaRef={mainContentRef} 
+                />
+
+                <RichContentEditor label="Material Complementar" value={lesson.complementaryMaterial || ''} onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'complementaryMaterial', v)} textareaRef={complementaryMaterialRef}/>
+                <RichContentEditor label="Resumo e Próximos Passos" value={lesson.summary || ''} onChange={v => handleLessonChange(moduleIndex, lessonIndex, 'summary', v)} textareaRef={summaryRef}/>
             </div>
         )
     }
@@ -464,9 +584,12 @@ Retorne APENAS no formato JSON especificado.`;
                         </div>
                         <div className="pl-4 mt-1 space-y-1">
                             {module.lessons.map((lesson, lessonIndex) => (
-                               <button key={lesson.id} type="button" onClick={() => setSelectedItem({type: 'lesson', moduleIndex, lessonIndex})} className={`w-full text-left p-2 rounded-md transition-colors text-xs ${selectedItem.type === 'lesson' && selectedItem.moduleIndex === moduleIndex && selectedItem.lessonIndex === lessonIndex ? 'bg-[#8a4add]/20 text-white' : 'text-gray-400 hover:bg-white/10'}`}>
+                               <div key={lesson.id} className="flex justify-between items-center group">
+                                <button type="button" onClick={() => setSelectedItem({type: 'lesson', moduleIndex, lessonIndex})} className={`flex-grow text-left p-2 rounded-md transition-colors text-xs ${selectedItem.type === 'lesson' && selectedItem.moduleIndex === moduleIndex && selectedItem.lessonIndex === lessonIndex ? 'bg-[#8a4add]/20 text-white' : 'text-gray-400 hover:bg-white/10'}`}>
                                    {lesson.title}
-                               </button>
+                                </button>
+                                <button type="button" onClick={() => removeLesson(moduleIndex, lessonIndex)} className="text-red-400 hover:text-red-300 text-xs px-2 opacity-0 group-hover:opacity-100 transition-opacity">&times;</button>
+                               </div>
                             ))}
                             <button type="button" onClick={() => addLesson(moduleIndex)} className="text-xs font-semibold text-[#c4b5fd] hover:text-white p-2">+ Adicionar Aula</button>
                         </div>
