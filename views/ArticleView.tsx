@@ -18,7 +18,6 @@ const ArticleView: React.FC = () => {
   const navigate = useNavigate();
   const [isClapping, setIsClapping] = useState(false);
   const [scrollPercentage, setScrollPercentage] = useState(0);
-  const articleContentRef = React.useRef<HTMLDivElement>(null);
 
   const article = useMemo(() => articles.find(a => a.id === articleId), [articles, articleId]);
   
@@ -29,27 +28,19 @@ const ArticleView: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const contentEl = articleContentRef.current;
-      if (!contentEl) return;
-
-      const { top, height } = contentEl.getBoundingClientRect();
-      const scrollDistance = height;
-      const scrolled = -top;
-
-      if (scrolled < 0) {
-        setScrollPercentage(0);
-        return;
-      }
-      if (scrolled > scrollDistance) {
-        setScrollPercentage(100);
-        return;
-      }
-      
-      const percentage = (scrolled / scrollDistance) * 100;
-      setScrollPercentage(percentage);
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        
+        if (docHeight > 0) {
+            const scrolled = (scrollTop / docHeight) * 100;
+            setScrollPercentage(scrolled);
+        } else {
+            setScrollPercentage(0);
+        }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial call
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -134,7 +125,7 @@ const ArticleView: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-7xl mx-auto">
           {/* Article Content */}
-          <div ref={articleContentRef} className="bg-[#121212] p-8 sm:p-16 rounded-lg border border-white/10 shadow-2xl -mt-16 relative z-20">
+          <div className="bg-[#121212] p-8 sm:p-16 rounded-lg border border-white/10 shadow-2xl -mt-16 relative z-20">
             {user && (user.role === 'admin' || (user.role === 'instructor' && user.name === article.author)) && (
               <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10">
                   <p className="text-sm font-semibold text-yellow-400 flex-grow">Opções de Administrador:</p>
