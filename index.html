@@ -11,6 +11,7 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
+        overflow-x: hidden; /* Prevent horizontal scroll from background effects */
       }
       /* Estilos para o conteúdo renderizado pelo Markdown */
       .prose p {
@@ -102,7 +103,7 @@
       .aurora-background {
         background-color: #09090B;
         position: relative;
-        overflow: hidden;
+        /* overflow: hidden; This was breaking scroll on long pages */
       }
 
       .aurora-background::before {
