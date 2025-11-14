@@ -103,7 +103,7 @@
       .aurora-background {
         background-color: #09090B;
         position: relative;
-        /* overflow: hidden; This was breaking scroll on long pages */
+        overflow: clip; /* Fix for preventing background from causing extra space */
       }
 
       .aurora-background::before {

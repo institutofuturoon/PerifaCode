@@ -1,9 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useAppContext } from '../App';
 import { Article } from '../types';
 import { useParams, useNavigate } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import ArticleCard from '../components/ArticleCard';
+import PageLayout from '../components/PageLayout';
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="mb-8">
@@ -17,7 +18,6 @@ const ArticleView: React.FC = () => {
   const { articleId } = useParams<{ articleId: string }>();
   const navigate = useNavigate();
   const [isClapping, setIsClapping] = useState(false);
-  const [scrollPercentage, setScrollPercentage] = useState(0);
 
   const article = useMemo(() => articles.find(a => a.id === articleId), [articles, articleId]);
   
@@ -26,27 +26,39 @@ const ArticleView: React.FC = () => {
     return users.find(u => u.name === article.author);
   }, [users, article]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-        const scrollTop = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        
-        if (docHeight > 0) {
-            const scrolled = (scrollTop / docHeight) * 100;
-            setScrollPercentage(scrolled);
-        } else {
-            setScrollPercentage(0);
-        }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial call
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   if (!article) {
     return <div className="text-center py-20">Artigo não encontrado.</div>;
   }
+  
+  const relatedArticles = useMemo(() => {
+    if (!article) return [];
+
+    const allOtherPublished = articles.filter(a => a.status === 'published' && a.id !== article.id);
+
+    const sortedByDate = [...allOtherPublished].sort((a, b) => {
+        try {
+            const [dayA, monthA, yearA] = a.date.split('/').map(Number);
+            const [dayB, monthB, yearB] = b.date.split('/').map(Number);
+            return new Date(yearB, monthB - 1, dayB).getTime() - new Date(yearA, monthA - 1, dayA).getTime();
+        } catch { return 0; }
+    });
+
+    let related = sortedByDate.filter(a => a.category === article.category);
+
+    if (related.length < 2) {
+        const otherCategoryArticles = sortedByDate.filter(a => a.category !== article.category);
+        const relatedIds = new Set(related.map(a => a.id));
+        for (const otherArticle of otherCategoryArticles) {
+            if (related.length >= 2) break;
+            if (!relatedIds.has(otherArticle.id)) {
+                related.push(otherArticle);
+            }
+        }
+    }
+
+    return related.slice(0, 2);
+  }, [articles, article]);
 
   const handleDelete = async () => {
     const wasDeleted = await handleDeleteArticle(article.id);
@@ -89,17 +101,9 @@ const ArticleView: React.FC = () => {
         default: return 'text-gray-400';
     }
   }
-  
-  const relatedArticles = articles
-    .filter(a => a.status === 'published' && a.category === article.category && a.id !== article.id)
-    .slice(0, 2);
 
   return (
-    <div className="aurora-background">
-      <div 
-        className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-[#8a4add] to-[#f27983] z-[60] transition-all duration-75 ease-out"
-        style={{ width: `${scrollPercentage}%` }}
-      />
+    <PageLayout>
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 bg-black/20">
         <div className="absolute inset-0">
@@ -123,7 +127,7 @@ const ArticleView: React.FC = () => {
       </section>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto relative z-10">
           {/* Article Content */}
           <div className="bg-[#121212] p-8 sm:p-16 rounded-lg border border-white/10 shadow-2xl -mt-16 relative z-20">
             {user && (user.role === 'admin' || (user.role === 'instructor' && user.name === article.author)) && (
@@ -173,7 +177,7 @@ const ArticleView: React.FC = () => {
 
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

@@ -4,6 +4,7 @@ import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
+import PageLayout from '../components/PageLayout';
 
 const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
@@ -61,6 +62,21 @@ ${articlesForPrompt}
 
             } catch (error) {
                 console.error("Erro ao buscar sugestões da IA:", error);
+                // Fallback suggestions on API error (e.g., rate limiting)
+                setSuggestions([
+                    {
+                        title: 'Cartilha Git: Guia Prático para Iniciantes',
+                        reason: 'Comece com o pé direito! Aprenda a ferramenta essencial que todo desenvolvedor usa para controlar versões do código.'
+                    },
+                    {
+                        title: 'Node.js Descomplicado: Seu Guia para o Backend e Futuro Tech!',
+                        reason: 'Leve seu JavaScript para o backend e descubra como construir o "cérebro" de aplicações web modernas.'
+                    },
+                    {
+                        title: 'Código C# à Prova de Futuro: Como Construir Software que Dura',
+                        reason: 'Aprenda princípios de arquitetura para escrever código limpo, manutenível e preparado para o futuro.'
+                    }
+                ]);
             } finally {
                 setIsLoading(false);
             }
@@ -163,7 +179,7 @@ const Blog: React.FC = () => {
   };
 
   return (
-    <div className="aurora-background text-white">
+    <PageLayout>
         {/* Hero Section */}
         <header className="py-20 md:py-24 text-center relative z-10 bg-grid-pattern">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -294,7 +310,7 @@ const Blog: React.FC = () => {
                 </aside>
             </div>
         </section>
-    </div>
+    </PageLayout>
   );
 };
 

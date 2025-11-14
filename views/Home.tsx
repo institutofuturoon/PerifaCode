@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import SimplifiedTimeline from '../components/SimplifiedTimeline';
 import TeamMemberPreviewCard from '../components/TeamMemberPreviewCard';
+import PageLayout from '../components/PageLayout';
 
 const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ finalStat, duration = 2000 }) => {
-  const [currentValue, setCurrentValue] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
+  const [currentValue, setCurrentValue] = React.useState(0);
+  const ref = React.useRef<HTMLSpanElement>(null);
 
   const endValue = parseInt(finalStat.replace(/\D/g, ''), 10);
   const prefix = finalStat.match(/^\D*/)?.[0] || '';
   const suffix = finalStat.match(/\D*$/)?.[0] || '';
 
 
-  useEffect(() => {
+  React.useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
@@ -81,25 +82,6 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
 const Home: React.FC = () => {
   const { partners, team } = useAppContext();
   const navigate = useNavigate();
-  const [scrollPercentage, setScrollPercentage] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-        const scrollTop = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        
-        if (docHeight > 0) {
-            const scrolled = (scrollTop / docHeight) * 100;
-            setScrollPercentage(scrolled);
-        } else {
-            setScrollPercentage(0);
-        }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial call
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
   
   const impactData = [
     { stat: "+300", title: "Jovens Formados", text: "Capacitados em tecnologia e prontos para o mercado", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
@@ -122,12 +104,7 @@ const Home: React.FC = () => {
   }, [team]);
 
   return (
-    <div className="aurora-background text-white">
-      <div 
-        className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-[#8a4add] to-[#f27983] z-[60] transition-all duration-75 ease-out"
-        style={{ width: `${scrollPercentage}%` }}
-      />
-      <main>
+    <PageLayout>
         {/* Hero Section */}
         <section className="py-32 md:py-48 text-center relative z-10 bg-grid-pattern">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -277,8 +254,7 @@ const Home: React.FC = () => {
                 </div>
             </div>
         </section>
-      </main>
-    </div>
+    </PageLayout>
   );
 };
 

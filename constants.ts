@@ -10,7 +10,7 @@ export const ARTICLES: Article[] = [
     author: 'Marlon Souza',
     date: '28/07/2024',
     summary: 'No mundo da tecnologia, tudo muda rápido. Aprenda a escrever código C# que não só funciona hoje, mas que continua robusto, manutenível e relevante por anos. Descubra os segredos dos princípios SOLID, Design Patterns e das práticas modernas do .NET.',
-    imageUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imageUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
     category: 'Carreira Tech',
     content: `No mundo da tecnologia, a única constante é a mudança. Um código que hoje é de ponta, amanhã pode ser considerado legado. Mas e se a gente pudesse escrever software que resiste ao teste do tempo? Isso não é mágica, é engenharia. É sobre construir uma base sólida que permite que seu código cresça e se adapte sem quebrar.
@@ -238,6 +238,105 @@ A chave é praticar. Crie um projeto, faça pequenas alterações e vá fazendo 
     status: 'published',
     claps: 215,
     tags: ['git', 'github', 'iniciante', 'versionamento', 'carreira']
+  },
+  {
+    id: 'article_nodejs_guide',
+    title: 'Node.js Descomplicado: Seu Guia para o Backend e Futuro Tech!',
+    subtitle: 'Entenda por que o JavaScript saiu do navegador e virou uma potência no backend. Um guia para iniciantes darem os primeiros passos com Node.js.',
+    author: 'Marlon Souza',
+    date: '10/08/2024',
+    summary: 'Você já mexe com JavaScript no frontend? Imagine usar essa mesma linguagem para construir o "cérebro" das aplicações. Isso é Node.js! Descubra como ele funciona, por que é tão popular e crie seu primeiro servidor em minutos.',
+    imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
+    category: 'Tutoriais',
+    content: `Se você está começando no mundo do desenvolvimento web, provavelmente já ouviu falar de HTML, CSS e JavaScript. Eles são o trio parada dura do **frontend** – a parte que o usuário vê e interage no navegador.
+
+Mas e a mágica que acontece por trás? O login, o salvamento de dados, as regras de negócio... Isso é o **backend**. E se eu te disser que você pode usar o mesmo JavaScript que você já conhece para construir isso?
+
+Bem-vindo ao mundo do Node.js!
+
+## O que é esse tal de Node.js?
+
+De forma simples: **Node.js é um ambiente que permite que o JavaScript rode fora do navegador.**
+
+É isso. Pegaram o motor do JavaScript que roda no Google Chrome (o V8), deram umas turbinadas e fizeram ele rodar direto no seu computador. Isso abriu um universo de possibilidades. Com Node.js, o JavaScript pode:
+
+-   Acessar arquivos do seu computador.
+-   Se conectar com bancos de dados.
+-   Criar servidores web (APIs).
+-   E muito mais!
+
+[TIP]
+Pense no JavaScript como um super-herói que antes só podia agir dentro do "prédio" do navegador. O Node.js deu a ele a chave da cidade, e agora ele pode voar por todo o sistema operacional!
+[/TIP]
+
+## Por que o Node.js é tão Popular? A Mágica do "Não-Bloqueante"
+
+A grande sacada do Node.js é seu modelo de I/O (Input/Output) **não-bloqueante**. O nome é complicado, mas a ideia é genial.
+
+Imagine um garçom em um restaurante:
+
+*   **Garçom Bloqueante (tradicional):** Ele anota seu pedido, leva para a cozinha, ESPERA o prato ficar pronto, pega o prato e só ENTÃO leva para a sua mesa. Enquanto ele espera, não atende mais ninguém. Ineficiente, né?
+*   **Garçom Node.js (Não-Bloqueante):** Ele anota seu pedido, entrega na cozinha e já vai atender outra mesa. Quando a cozinha avisa que seu prato está pronto, ele volta, pega e leva para você. Ele está sempre ocupado e atendendo várias pessoas "ao mesmo tempo".
+
+No código, isso significa que o Node.js é excelente para tarefas que envolvem espera, como uma consulta a um banco de dados ou a leitura de um arquivo. Ele não fica parado esperando; ele inicia a tarefa e parte para a próxima, sendo avisado quando a anterior termina. Isso o torna extremamente rápido e eficiente para construir APIs que precisam lidar com muitas requisições simultâneas.
+
+## Mão na Massa: Seu Primeiro Servidor "Olá, Mundo!"
+
+Bora ver como é simples criar um servidor web com Node.js.
+
+**1. Instale o Node.js:**
+Vá no site oficial [nodejs.org](https://nodejs.org/) e baixe a versão LTS (Long Term Support). É só seguir o instalador, sem segredo.
+
+**2. Crie um arquivo:**
+Crie uma pasta para o seu projeto e, dentro dela, um arquivo chamado \`servidor.js\`.
+
+**3. Escreva o código:**
+Abra o arquivo \`servidor.js\` e cole o código abaixo.
+
+[CODE lang="javascript"]
+// 1. Importa o módulo 'http' nativo do Node.js
+const http = require('http');
+
+// 2. Define a porta onde nosso servidor vai rodar
+const port = 3000;
+
+// 3. Cria o servidor
+const server = http.createServer((req, res) => {
+  // Configura o cabeçalho da resposta
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  
+  // Envia a resposta para o navegador
+  res.end('Olá, Quebrada! Meu primeiro servidor com Node.js tá no ar! 🚀');
+});
+
+// 4. "Liga" o servidor e o faz escutar na porta definida
+server.listen(port, () => {
+  console.log(\`🚀 Servidor rodando a todo vapor em http://localhost:\${port}/\`);
+});
+[/CODE]
+
+**4. Rode o servidor:**
+Abra o terminal na pasta do seu projeto e execute o comando:
+[CODE lang="bash"]
+node servidor.js
+[/CODE]
+Você verá a mensagem "🚀 Servidor rodando a todo vapor..." no seu terminal.
+
+**5. Teste no navegador:**
+Abra seu navegador e acesse [http://localhost:3000](http://localhost:3000). Parabéns! Você acabou de criar e rodar seu primeiro backend com Node.js!
+
+## O Futuro é Tech, e o Backend é a Base
+
+Aprender Node.js não é apenas aprender uma nova ferramenta. É entender como a web funciona por trás das cortinas. É abrir portas para vagas de backend, uma das áreas mais bem pagas e com maior demanda no mercado de tecnologia.
+
+Se você já gosta de JavaScript no frontend, dar o próximo passo para o Node.js é um caminho natural e poderoso para se tornar um desenvolvedor mais completo e preparado para o futuro.
+
+Foguete não tem ré! Bora codar!`,
+    status: 'published',
+    claps: 78,
+    tags: ['node.js', 'javascript', 'backend', 'iniciante', 'api']
   }
 ];
 export const MOCK_COURSES: Course[] = [
