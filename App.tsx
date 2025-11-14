@@ -47,6 +47,7 @@ import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import { MOCK_COURSES, ARTICLES } from './constants';
+import ScrollSpaceship from './components/ScrollSpaceship';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -589,6 +590,7 @@ const AppRoutes: React.FC = () => {
     const Layout = () => (
         <div className="flex flex-col min-h-screen bg-transparent">
             <Header />
+            <ScrollSpaceship />
             <main className="flex-grow"><Outlet /></main>
             <Footer />
             <ToastContainer />

@@ -24,7 +24,7 @@ const ContactInfo: React.FC<{ icon: React.ReactNode; children: React.ReactNode }
 const Footer: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <footer className="bg-[#09090B] text-white border-t border-white/10 relative z-20">
+    <footer id="landing-pad" className="bg-[#09090B] text-white border-t border-white/10 relative z-20">
       <div className="container mx-auto py-16 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Coluna 1: Logo e Descrição */}
