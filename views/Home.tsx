@@ -233,6 +233,34 @@ const Home: React.FC = () => {
             </div>
         </section>
 
+        {/* CTA Donate Section */}
+        <section className="py-24 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">
+                    Apoie essa causa e transforme
+                    <br />
+                    <span className="relative inline-block mt-2">
+                        vidas
+                        <span className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983]"></span>
+                    </span>
+                </h2>
+                <p className="mt-10 max-w-3xl mx-auto text-lg text-gray-300 leading-relaxed">
+                    Invista no futuro. Ajude a impulsionar a juventude e a transformação social por meio da educação digital. Cada contribuição é uma semente que transforma vidas e constrói um amanhã mais justo, inclusivo e tecnológico para todos.
+                </p>
+                <div className="mt-10">
+                    <button
+                        onClick={() => navigate('/donate')}
+                        className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                        </svg>
+                        <span>Faça sua doação</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
         {/* Transparency Section */}
         <section className="py-24 bg-black/20 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
