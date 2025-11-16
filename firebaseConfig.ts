@@ -1,5 +1,5 @@
-// FIX: Changed to namespace import to resolve module export errors.
-import * as firebaseApp from "firebase/app";
+// FIX: Changed to named imports for Firebase v9 modular SDK functions to resolve module export errors.
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -16,7 +16,8 @@ const firebaseConfig = {
 
 // Inicializa o Firebase, evitando reinicializações para
 // garantir que a instância seja única, especialmente em ambientes de desenvolvimento.
-const app = firebaseApp.getApps().length > 0 ? firebaseApp.getApp() : firebaseApp.initializeApp(firebaseConfig);
+// FIX: Call imported functions directly without namespace prefix to resolve property not found errors.
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 // Exporta instâncias dos serviços, usando a API modular v9.
 export const auth = getAuth(app);

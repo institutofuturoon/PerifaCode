@@ -583,6 +583,16 @@ const DeepLinkHandler: React.FC = () => {
     return null;
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 const AppRoutes: React.FC = () => {
     const { user, loading } = useAppContext();
     const location = useLocation();
@@ -635,6 +645,7 @@ const AppRoutes: React.FC = () => {
 
     return (
         <>
+            <ScrollToTop />
             <DeepLinkHandler />
             <Routes>
                 <Route element={<Layout />}>
