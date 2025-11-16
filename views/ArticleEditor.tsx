@@ -19,14 +19,15 @@ const ArticleEditor: React.FC = () => {
         title: '', subtitle: '', author: user?.name || '',
         date: new Date().toLocaleDateString('pt-BR'),
         summary: '', imageUrl: user?.avatarUrl || '', authorAvatarUrl: user?.avatarUrl || '',
-        category: 'Dicas', content: '', status: 'draft', tags: []
+        category: 'Dicas' as Article['category'], content: '', status: 'draft' as Article['status'], tags: []
     };
   }, [articleId, articles, user]);
 
   const [article, setArticle] = useState<Article>(initialArticle || {
     id: `article_${Date.now()}`, title: '', subtitle: '', author: user?.name || '',
     date: new Date().toLocaleDateString('pt-BR'), summary: '', imageUrl: user?.avatarUrl || '',
-    authorAvatarUrl: user?.avatarUrl || '', category: 'Dicas', content: '', status: 'draft', tags: []
+    // FIX: Explicitly cast properties to match the 'Article' type to resolve type error.
+    authorAvatarUrl: user?.avatarUrl || '', category: 'Dicas' as Article['category'], content: '', status: 'draft' as Article['status'], tags: []
   });
 
   const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);

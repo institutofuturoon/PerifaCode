@@ -24,8 +24,8 @@ const InfoCard: React.FC<{ icon: React.ReactNode; title: string; description: st
     </div>
 );
 
-const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <section className={`py-16 md:py-20 relative z-10 ${className}`}>
+const Section: React.FC<{ children: React.ReactNode, className?: string, style?: React.CSSProperties }> = ({ children, className = '', style }) => (
+    <section className={`py-16 md:py-20 relative z-10 ${className}`} style={style}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {children}
         </div>

@@ -224,6 +224,58 @@
         }
       }
 
+      #game-activate-button {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 49;
+        width: 56px;
+        height: 56px;
+        background-color: rgba(138, 74, 221, 0.3);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(138, 74, 221, 0.5);
+        border-radius: 50%;
+        color: #c4b5fd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 0 15px rgba(138, 74, 221, 0.3);
+      }
+      #game-activate-button:hover {
+        transform: scale(1.1);
+        background-color: rgba(138, 74, 221, 0.6);
+        box-shadow: 0 0 35px rgba(138, 74, 221, 0.7);
+      }
+
+      #game-over-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background-color: rgba(0,0,0,0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fade-in 0.3s ease;
+      }
+
+      #game-over-modal > div {
+        background-color: #111827;
+        border: 1px solid #8a4add;
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(138, 74, 221, 0.5);
+      }
+
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
     </style>
   <script type="importmap">
 {
@@ -246,7 +298,11 @@
     "marked/": "https://aistudiocdn.com/marked@^14.0.0/",
     "dompurify": "https://aistudiocdn.com/dompurify@^3.1.6",
     "react-router-dom": "https://aistudiocdn.com/react-router-dom@^6.24.1",
-    "react-router": "https://aistudiocdn.com/react-router@^6.24.1"
+    "react-router": "https://aistudiocdn.com/react-router@^6.24.1",
+    "@firebase/auth": "https://aistudiocdn.com/@firebase/auth@^1.11.1",
+    "@firebase/firestore": "https://aistudiocdn.com/@firebase/firestore@^4.9.2",
+    "@firebase/app": "https://aistudiocdn.com/@firebase/app@^0.14.6",
+    "firebase": "https://aistudiocdn.com/firebase@^12.6.0"
   }
 }
 </script>

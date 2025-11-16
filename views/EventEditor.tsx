@@ -15,14 +15,15 @@ const EventEditor: React.FC = () => {
     return {
         id: `event_${Date.now()}`, title: '', date: '', time: '',
         hostId: instructors[0]?.id || '', description: '',
-        imageUrl: '', eventType: 'Live'
+        imageUrl: '', eventType: 'Live' as Event['eventType']
     };
   }, [eventId, events, instructors]);
 
   const [event, setEvent] = useState<Event>(initialEvent || {
     id: `event_${Date.now()}`, title: '', date: '', time: '',
     hostId: instructors[0]?.id || '', description: '',
-    imageUrl: '', eventType: 'Live'
+    // FIX: Explicitly cast 'eventType' to match the 'Event' type to resolve type error.
+    imageUrl: '', eventType: 'Live' as Event['eventType']
   });
 
   if (!initialEvent) {

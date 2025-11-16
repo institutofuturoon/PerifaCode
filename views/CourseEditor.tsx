@@ -4,7 +4,6 @@ import { Course, Module, Lesson } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
-import { upload } from '@vercel/blob/client';
 
 type SelectedItem = 
   | { type: 'course' }
@@ -26,16 +25,17 @@ const CourseEditor: React.FC = () => {
     return {
         id: `course_${Date.now()}`,
         title: '', description: '', longDescription: '',
-        track: 'Frontend', imageUrl: '', duration: '',
-        skillLevel: 'Iniciante', instructorId: user?.id || '',
-        modules: [], format: 'online'
+        track: 'Frontend' as Course['track'], imageUrl: '', duration: '',
+        skillLevel: 'Iniciante' as Course['skillLevel'], instructorId: user?.id || '',
+        modules: [], format: 'online' as Course['format']
     };
   }, [courseId, courses, user]);
   
   const [course, setCourse] = useState<Course>(initialCourse || {
     id: `course_${Date.now()}`, title: '', description: '', longDescription: '',
-    track: 'Frontend', imageUrl: '', duration: '', skillLevel: 'Iniciante',
-    instructorId: user?.id || '', modules: [], format: 'online'
+    // FIX: Explicitly cast properties to match the 'Course' type to resolve type error.
+    track: 'Frontend' as Course['track'], imageUrl: '', duration: '', skillLevel: 'Iniciante' as Course['skillLevel'],
+    instructorId: user?.id || '', modules: [], format: 'online' as Course['format']
   });
   
   const [selectedItem, setSelectedItem] = useState<SelectedItem>({ type: 'course' });
@@ -131,34 +131,34 @@ const CourseEditor: React.FC = () => {
     try {
         const pathname = `course-covers/${course.id}-${Date.now()}-${file.name}`;
         
-        const clientTokenResponse = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'generate-client-token',
-                payload: { pathname },
-            }),
-        });
+        // AVISO DE SEGURANÇA: Token exposto no cliente apenas para fins de teste.
+        const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc';
 
-        if (!clientTokenResponse.ok) {
-            const errorBody = await clientTokenResponse.json();
-            throw new Error(errorBody.error || 'Failed to get upload token');
+        // FIX: Replaced unsupported `upload` function call with a direct `fetch` to Vercel Blob API.
+        const response = await fetch(
+            `https://blob.vercel-storage.com/${pathname}`,
+            {
+              method: 'PUT',
+              headers: {
+                Authorization: `Bearer ${BLOB_READ_WRITE_TOKEN}`,
+                'x-api-version': '8',
+                'Content-Type': file.type,
+              },
+              body: file,
+            },
+        );
+
+        const newBlob = await response.json();
+        if (!response.ok) {
+            throw new Error(`Falha no upload: ${newBlob.error?.message || 'Erro desconhecido do servidor'}`);
         }
-
-        const clientToken = await clientTokenResponse.text();
-
-        const newBlob = await upload(pathname, file, {
-            access: 'public',
-            clientToken,
-        });
 
         setCourse(prev => ({ ...prev, imageUrl: newBlob.url }));
         showToast('✅ Imagem de capa enviada com sucesso!');
 
     } catch (err: any) {
-        console.error('Erro ao fazer upload da imagem de capa:', err);
-        const message = err.message || 'Ocorreu um erro desconhecido.';
-        showToast(`❌ Erro ao enviar a imagem: ${message}`);
+        console.error('Erro detalhado no upload da imagem:', err);
+        showToast(`❌ Erro ao enviar a imagem: ${err.message}`);
     } finally {
         setIsUploadingImage(false);
         if(imageFileInputRef.current) {
@@ -494,7 +494,7 @@ Retorne APENAS no formato JSON especificado.`;
                             <option value="create">Criar conteúdo</option>
                             <option value="create_code">Criar código</option>
                             <option value="improve">Melhorar texto</option>
-                            <option value="summarize">Resumir texto</option>
+                            <option value="summarize">Resumir</option>
                         </select>
                         <input
                             value={aiCommand}

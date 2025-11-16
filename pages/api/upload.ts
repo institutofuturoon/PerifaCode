@@ -1,46 +1,91 @@
-import { generateClientTokenFromReadWriteToken } from '@vercel/blob/server';
-import { NextResponse } from 'next/server';
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/server';
 
-export default async function POST(request: Request): Promise<NextResponse | Response> {
-  // O corpo da requisição do `@vercel/blob/client` contém um campo `action`.
-  // Para o upload, a primeira chamada é para a ação `generate-client-token`.
-  const body = await request.json();
+export const runtime = 'edge';
 
-  if (body.action === 'generate-client-token') {
-    const { pathname } = body.payload;
-    try {
-      // Usamos a função `generateClientTokenFromReadWriteToken` para criar um token de curta duração
-      // que o cliente usará para fazer o upload diretamente para o Vercel Blob.
-      const clientToken = await generateClientTokenFromReadWriteToken({
-        pathname,
-        // O token de Leitura/Escrita do Vercel Blob, armazenado de forma segura no servidor.
-        token: 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc',
-        // Opções de segurança e configuração
-        allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-        maximumSizeInBytes: 4 * 1024 * 1024, // Limite de 4MB
-        addRandomSuffix: false, // Não adicionar sufixo aleatório ao nome do arquivo
-        cacheControlMaxAge: 0,  // Não usar cache para o token
-      });
+export async function POST(request: Request): Promise<Response> {
+  // Envolver todo o corpo da função em um bloco try...catch para garantir
+  // que qualquer erro, incluindo falhas de parsing do JSON, retorne uma resposta JSON.
+  try {
+    const body = (await request.json()) as HandleUploadBody;
 
-      // A biblioteca do cliente espera o token como uma string de texto puro no corpo da resposta.
-      return new Response(clientToken, {
-        status: 200,
-        headers: { 'Content-Type': 'text/plain' },
-      });
+    // A lógica de verificação para ambiente de desenvolvimento local e
+    // o tratamento do upload permanecem os mesmos.
+    if (body.type === 'blob.generate-client-token') {
+      const host = request.headers.get('host');
+      const isLocalDev = host?.includes('localhost') || host?.includes('127.0.0.1');
 
-    } catch (error) {
-      const message = (error as Error).message;
-      console.error('Erro ao gerar o token do cliente:', error);
-      return NextResponse.json({ error: `Falha ao gerar o token: ${message}` }, { status: 500 });
+      if (isLocalDev && !process.env.VERCEL_BLOB_CALLBACK_URL && !process.env.VERCEL_URL) {
+        return new Response(
+          JSON.stringify({ error: `[ERRO DE AMBIENTE LOCAL] A API está em 'localhost'. Para que os callbacks de upload funcionem, use uma ferramenta como 'ngrok' para criar uma URL pública e defina-a na variável de ambiente 'VERCEL_BLOB_CALLBACK_URL'.` }),
+          { status: 500, headers: { 'Content-Type': 'application/json' } },
+        );
+      }
     }
-  }
 
-  // Se a ação não for 'generate-client-token', é uma ação de upload que o cliente
-  // deve lidar diretamente com o URL do blob storage (incluído no clientToken).
-  // Portanto, este endpoint não deve ser chamado novamente para o upload do arquivo em si.
-  // Retornamos um erro para indicar que este endpoint é apenas para a geração de tokens.
-  return NextResponse.json(
-    { error: 'Ação inválida. Este endpoint é apenas para a geração de tokens de upload.' },
-    { status: 400 },
-  );
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async (pathname, /* clientPayload */) => {
+        const userPayload = {
+          userId: 'user-123-example', // Simulação: obter o ID do usuário da sessão/token.
+        };
+        return {
+          allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+          maximumSizeInBytes: 4 * 1024 * 1024, // 4MB
+          cacheControlMaxAge: 31536000,
+          tokenPayload: JSON.stringify(userPayload),
+          addRandomSuffix: true, // Evita sobrescrita de arquivos com o mesmo nome.
+        };
+      },
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
+        console.log('✅ Upload do blob concluído. Payload:', tokenPayload);
+        try {
+          if (tokenPayload) {
+            const { userId } = JSON.parse(tokenPayload);
+            // Lógica simulada para atualizar o banco de dados:
+            console.log(`- Lógica de DB simulada: Associando URL ${blob.url} com o usuário ${userId}`);
+          }
+        } catch (error) {
+          console.error("❌ Erro ao processar o payload do token:", error);
+        }
+      },
+    });
+
+    return new Response(JSON.stringify(jsonResponse), { headers: { 'Content-Type': 'application/json' } });
+  } catch (error) {
+    const unknownError = error;
+    console.error('❌ ERRO NA API DE UPLOAD:', unknownError);
+
+    // Bloco de tratamento de erro aprimorado para sempre retornar JSON.
+    if (unknownError instanceof Error) {
+        const message = unknownError.message;
+
+        if (message.includes('BLOB_READ_WRITE_TOKEN')) {
+            return new Response(
+                JSON.stringify({ error: "Erro de configuração no servidor: A variável de ambiente BLOB_READ_WRITE_TOKEN está faltando ou é inválida." }),
+                { status: 500, headers: { 'Content-Type': 'application/json' } },
+            );
+        }
+        if (message.includes('content type not allowed')) {
+            return new Response(
+                JSON.stringify({ error: 'Tipo de arquivo não permitido. Apenas imagens são aceitas.' }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } },
+            );
+        }
+        if (message.includes('size exceeded')) {
+            return new Response(
+                JSON.stringify({ error: 'Arquivo muito grande. O tamanho máximo permitido é de 4MB.' }),
+                { status: 400, headers: { 'Content-Type': 'application/json' } },
+            );
+        }
+        // Captura erros de parsing de JSON e outros erros genéricos.
+        return new Response(JSON.stringify({ error: message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    
+    // Fallback para erros que não são instâncias de Error.
+    return new Response(
+      JSON.stringify({ error: "Ocorreu uma falha desconhecida no servidor de upload." }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
 }

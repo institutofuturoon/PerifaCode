@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { useAppContext } from '../App';
-import { upload } from '@vercel/blob/client';
+import Uploader from '../components/Uploader';
 
-const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
 const TeamMemberEditor: React.FC = () => {
   const { users, handleSaveUser, showToast } = useAppContext();
@@ -18,7 +18,7 @@ const TeamMemberEditor: React.FC = () => {
     return {
         id: `user_${Date.now()}`,
         name: '', email: '', avatarUrl: `https://picsum.photos/seed/new_user/200`,
-        bio: '', role: 'instructor', title: '',
+        bio: '', role: 'instructor' as User['role'], title: '',
         completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
         isMentor: false, showOnTeamPage: true
     };
@@ -27,15 +27,11 @@ const TeamMemberEditor: React.FC = () => {
   const [member, setMember] = useState<User>(initialMember || {
     id: `user_${Date.now()}`,
     name: '', email: '', avatarUrl: `https://picsum.photos/seed/new_user/200`,
-    bio: '', role: 'instructor', title: '',
+    // FIX: Explicitly cast 'role' to match the 'User' type to resolve type error.
+    bio: '', role: 'instructor' as User['role'], title: '',
     completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
     isMentor: false, showOnTeamPage: true
   });
-
-  const [isUploading, setIsUploading] = useState(false);
-  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const bannerFileInputRef = useRef<HTMLInputElement>(null);
   
   if (!initialMember) {
     return <div className="text-center py-20">Membro da equipe não encontrado.</div>;
@@ -54,110 +50,14 @@ const TeamMemberEditor: React.FC = () => {
     }
   };
   
-    const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        showToast('❌ Por favor, selecione um arquivo de imagem válido.');
-        return;
-    }
-    if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
-        return;
-    }
-
-    setIsUploading(true);
-    try {
-        const pathname = `avatars/${member.id}-${Date.now()}-${file.name}`;
-        
-        const clientTokenResponse = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'generate-client-token',
-                payload: { pathname },
-            }),
-        });
-
-        if (!clientTokenResponse.ok) {
-            const errorBody = await clientTokenResponse.json();
-            throw new Error(errorBody.error || 'Failed to get upload token');
-        }
-
-        const clientToken = await clientTokenResponse.text();
-
-        const newBlob = await upload(pathname, file, {
-            access: 'public',
-            clientToken,
-        });
-
-        setMember(prev => ({ ...prev, avatarUrl: newBlob.url }));
-        showToast('✅ Foto de perfil pronta para ser salva!');
-
-    } catch (err: any) {
-        console.error('Erro ao fazer upload da imagem:', err);
-        const message = err.message || 'Ocorreu um erro desconhecido.';
-        showToast(`❌ Erro ao enviar a foto: ${message}`);
-    } finally {
-        setIsUploading(false);
-        if(fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
-    }
+  const handleAvatarUploadComplete = (url: string) => {
+    setMember(prev => ({...prev, avatarUrl: url}));
+    showToast('✅ Foto de perfil pronta para ser salva!');
   };
-  
-  const handleBannerFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-        showToast('❌ Por favor, selecione um arquivo de imagem válido.');
-        return;
-    }
-    if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
-        return;
-    }
-
-    setIsUploadingBanner(true);
-    try {
-        const pathname = `banners/${member.id}-${Date.now()}-${file.name}`;
-
-        const clientTokenResponse = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'generate-client-token',
-                payload: { pathname },
-            }),
-        });
-
-        if (!clientTokenResponse.ok) {
-            const errorBody = await clientTokenResponse.json();
-            throw new Error(errorBody.error || 'Failed to get upload token');
-        }
-
-        const clientToken = await clientTokenResponse.text();
-
-        const newBlob = await upload(pathname, file, {
-            access: 'public',
-            clientToken,
-        });
-
-        setMember(prev => ({ ...prev, bannerUrl: newBlob.url }));
-        showToast('✅ Imagem de fundo pronta para ser salva!');
-
-    } catch (err: any) {
-        console.error('Erro ao fazer upload do banner:', err);
-        const message = err.message || 'Ocorreu um erro desconhecido.';
-        showToast(`❌ Erro ao enviar o fundo: ${message}`);
-    } finally {
-        setIsUploadingBanner(false);
-        if(bannerFileInputRef.current) {
-            bannerFileInputRef.current.value = "";
-        }
-    }
+  const handleBannerUploadComplete = (url: string) => {
+    setMember(prev => ({...prev, bannerUrl: url}));
+    showToast('✅ Imagem de fundo pronta para ser salva!');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -195,54 +95,52 @@ const TeamMemberEditor: React.FC = () => {
                     className="h-40 bg-cover bg-center relative group"
                     style={{ backgroundImage: `url(${member.bannerUrl || DEFAULT_BANNER_URL})` }}
                 >
-                    {isUploadingBanner ? (
-                        <div className="absolute inset-0 rounded-t-2xl bg-black/70 flex items-center justify-center">
-                            <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        </div>
-                    ) : (
+                  <Uploader
+                    pathnamePrefix={`banners/${member.id}`}
+                    onUploadComplete={handleBannerUploadComplete}
+                  >
+                    {(triggerUpload, isUploading) => (
                         <button 
                             type="button"
-                            onClick={() => bannerFileInputRef.current?.click()}
+                            onClick={triggerUpload}
+                            disabled={isUploading}
                             className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                             aria-label="Alterar imagem de fundo"
                         >
+                            {isUploading ? (
+                              <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            ) : (
                              <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            )}
                         </button>
                     )}
+                  </Uploader>
                 </div>
-                <input
-                    type="file"
-                    ref={bannerFileInputRef}
-                    onChange={handleBannerFileSelect}
-                    className="hidden"
-                    accept="image/png, image/jpeg, image/gif, image/webp"
-                />
                 <div className="absolute left-1/2 -translate-x-1/2 top-40 -translate-y-1/2">
                     <div className="relative group w-24 h-24">
-                        <img className="h-24 w-24 rounded-full border-4 border-[#18181B] object-cover" src={member.avatarUrl} alt={member.name} />
-                        {isUploading ? (
-                            <div className="absolute inset-0 rounded-full bg-black/70 flex items-center justify-center">
-                                <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            </div>
-                        ) : (
+                        <img key={member.avatarUrl} className="h-24 w-24 rounded-full border-4 border-[#18181B] object-cover" src={member.avatarUrl} alt={member.name} />
+                        <Uploader
+                          pathnamePrefix={`avatars/${member.id}`}
+                          onUploadComplete={handleAvatarUploadComplete}
+                        >
+                          {(triggerUpload, isUploading) => (
                             <button
                                 type="button"
-                                onClick={() => fileInputRef.current?.click()}
+                                onClick={triggerUpload}
+                                disabled={isUploading}
                                 className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                 aria-label="Alterar foto de perfil"
                             >
-                                <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                {isUploading ? (
+                                    <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                ) : (
+                                    <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                )}
                             </button>
-                        )}
+                          )}
+                        </Uploader>
                     </div>
                 </div>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    accept="image/png, image/jpeg, image/gif, image/webp"
-                />
             </div>
             <div className="p-8 pt-16 space-y-6">
                 <h3 className="text-lg font-bold text-white border-b border-white/10 pb-2 text-center">Informações Principais</h3>
@@ -262,7 +160,7 @@ const TeamMemberEditor: React.FC = () => {
                 </div>
                 <div>
                     <label htmlFor="avatarUrl" className={labelClasses}>URL do Avatar (ou faça upload acima)</label>
-                    <input id="avatarUrl" name="avatarUrl" value={member.avatarUrl} onChange={handleChange} required className={inputClasses} />
+                    <input id="avatarUrl" name="avatarUrl" key={member.avatarUrl} value={member.avatarUrl} onChange={handleChange} required className={inputClasses} />
                 </div>
                 <div>
                     <label htmlFor="bio" className={labelClasses}>Bio</label>

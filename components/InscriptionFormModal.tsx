@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 interface InscriptionFormModalProps {
     isOpen: boolean;
@@ -8,7 +9,8 @@ interface InscriptionFormModalProps {
 }
 
 const InscriptionFormModal: React.FC<InscriptionFormModalProps> = ({ isOpen, onClose, courseName = "Inscrição Geral" }) => {
-    const { navigate } = useAppContext();
+    // FIX: Use the 'useNavigate' hook from react-router-dom instead of destructuring from context.
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         nomeCompleto: '', email: '', telefone: '', dataNascimento: '', endereco: '',
         escolaridade: '', trabalhando: '', possuiComputador: '', comoConheceu: '',

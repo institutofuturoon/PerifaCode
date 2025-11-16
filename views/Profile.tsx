@@ -1,17 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../App';
-import { upload } from '@vercel/blob/client';
+import Uploader from '../components/Uploader';
 
-const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib.rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG9toYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
 
 const Profile: React.FC = () => {
   const { user, handleLogout, handleUpdateUserProfile, showToast } = useAppContext();
-  const [isUploading, setIsUploading] = useState(false);
-  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const bannerFileInputRef = useRef<HTMLInputElement>(null);
-
+  
   const [formData, setFormData] = useState({
       name: user?.name || '',
       email: user?.email || '',
@@ -40,117 +36,17 @@ const Profile: React.FC = () => {
   
   if (!user) return null;
 
-  const handleAvatarClick = () => {
-    if (isUploading) return;
-    fileInputRef.current?.click();
+  const handleAvatarUploadComplete = async (url: string) => {
+    if (!user) return;
+    await handleUpdateUserProfile({ ...user, avatarUrl: url });
+    showToast('✅ Foto de perfil atualizada!');
   };
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        showToast('❌ Por favor, selecione um arquivo de imagem válido.');
-        return;
-    }
-    if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
-        return;
-    }
-
-    setIsUploading(true);
-    try {
-        const pathname = `avatars/${user.id}-${file.name}`;
-
-        const clientTokenResponse = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'generate-client-token',
-                payload: { pathname },
-            }),
-        });
-
-        if (!clientTokenResponse.ok) {
-            const errorBody = await clientTokenResponse.json();
-            throw new Error(errorBody.error || 'Failed to get upload token');
-        }
-
-        const clientToken = await clientTokenResponse.text();
-
-        const newBlob = await upload(pathname, file, {
-            access: 'public',
-            clientToken,
-        });
-
-        await handleUpdateUserProfile({ ...user, avatarUrl: newBlob.url });
-        showToast('✅ Foto de perfil atualizada!');
-
-    } catch (err: any) {
-        console.error('Erro ao fazer upload da imagem:', err);
-        const message = err.message || 'Ocorreu um erro desconhecido.';
-        showToast(`❌ Erro ao atualizar a foto: ${message}`);
-    } finally {
-        setIsUploading(false);
-        if(fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
-    }
+  const handleBannerUploadComplete = async (url: string) => {
+    if (!user) return;
+    await handleUpdateUserProfile({ ...user, bannerUrl: url });
+    showToast('✅ Imagem de fundo atualizada!');
   };
-  
-  const handleBannerFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-        showToast('❌ Por favor, selecione um arquivo de imagem válido.');
-        return;
-    }
-    if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
-        return;
-    }
-
-    setIsUploadingBanner(true);
-    try {
-        const pathname = `banners/${user.id}-${file.name}`;
-        
-        const clientTokenResponse = await fetch('/api/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'generate-client-token',
-                payload: { pathname },
-            }),
-        });
-
-        if (!clientTokenResponse.ok) {
-            const errorBody = await clientTokenResponse.json();
-            throw new Error(errorBody.error || 'Failed to get upload token');
-        }
-
-        const clientToken = await clientTokenResponse.text();
-
-        const newBlob = await upload(pathname, file, {
-            access: 'public',
-            clientToken,
-        });
-
-        await handleUpdateUserProfile({ ...user, bannerUrl: newBlob.url });
-        showToast('✅ Imagem de fundo atualizada!');
-
-    } catch (err: any) {
-        console.error('Erro ao fazer upload do banner:', err);
-        const message = err.message || 'Ocorreu um erro desconhecido.';
-        showToast(`❌ Erro ao atualizar o fundo: ${message}`);
-    } finally {
-        setIsUploadingBanner(false);
-        if(bannerFileInputRef.current) {
-            bannerFileInputRef.current.value = "";
-        }
-    }
-  };
-
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value, type } = e.target;
@@ -187,65 +83,58 @@ const Profile: React.FC = () => {
                 className="h-48 bg-cover bg-center relative group"
                 style={{ backgroundImage: `url(${user.bannerUrl || DEFAULT_BANNER_URL})` }}
             >
-                {isUploadingBanner ? (
-                    <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                        <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </div>
-                ) : (
+                <Uploader
+                  pathnamePrefix={`banners/${user.id}`}
+                  onUploadComplete={handleBannerUploadComplete}
+                >
+                  {(triggerUpload, isUploading) => (
                     <button 
                         type="button"
-                        onClick={() => bannerFileInputRef.current?.click()}
-                        className="absolute top-4 right-4 bg-black/50 p-2 rounded-full text-white hover:bg-black/70 transition-opacity opacity-0 group-hover:opacity-100"
+                        onClick={triggerUpload}
+                        disabled={isUploading}
+                        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         aria-label="Alterar imagem de fundo"
                     >
-                         <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        {isUploading ? (
+                          <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        ) : (
+                          <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        )}
                     </button>
-                )}
+                  )}
+                </Uploader>
             </div>
-             <input
-                type="file"
-                ref={bannerFileInputRef}
-                onChange={handleBannerFileSelect}
-                className="hidden"
-                accept="image/png, image/jpeg, image/gif, image/webp"
-            />
+             
              <div className="absolute left-1/2 -translate-x-1/2 top-48 -translate-y-1/2">
                 <div className="relative group">
                     <img className="h-32 w-32 rounded-full border-4 border-[#18181B]" src={user.avatarUrl} alt={user.name} />
-                    {isUploading ? (
-                        <div className="absolute inset-0 rounded-full bg-black/70 flex items-center justify-center">
-                            <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </div>
-                    ) : (
-                        <button
-                            onClick={handleAvatarClick}
-                            className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                            aria-label="Alterar foto de perfil"
-                        >
-                            <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </button>
-                    )}
+                    <Uploader
+                        pathnamePrefix={user.role === 'student' ? `images/Student/${user.id}` : `avatars/${user.id}`}
+                        onUploadComplete={handleAvatarUploadComplete}
+                    >
+                        {(triggerUpload, isUploading) => (
+                            <button
+                                onClick={triggerUpload}
+                                disabled={isUploading}
+                                className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                aria-label="Alterar foto de perfil"
+                            >
+                                {isUploading ? (
+                                    <svg className="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                ) : (
+                                    <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2-2H5a2 2 0 01-2-2V9z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                )}
+                            </button>
+                        )}
+                    </Uploader>
                 </div>
             </div>
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                className="hidden"
-                accept="image/png, image/jpeg, image/gif, image/webp"
-            />
         </div>
 
         {/* Profile Content */}

@@ -1,4 +1,5 @@
-import { initializeApp } from "firebase/app";
+// FIX: Changed to named imports for Firebase app functions to resolve module resolution error.
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -13,11 +14,13 @@ const firebaseConfig = {
   measurementId: "G-TV2MTZTZ8C"
 };
 
-// Inicializa o Firebase
-const app = initializeApp(firebaseConfig);
+// Inicializa o Firebase de forma segura para ambientes com HMR.
+// Garante que o app seja inicializado apenas uma vez.
+// FIX: Use named-imported functions directly instead of from a namespace.
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Inicializa o Firebase Authentication e obtém uma referência para o serviço
+// Inicializa e exporta o Firebase Authentication.
 export const auth = getAuth(app);
 
-// Inicializa o Cloud Firestore e obtém uma referência para o serviço
+// Inicializa e exporta o Cloud Firestore.
 export const db = getFirestore(app);
