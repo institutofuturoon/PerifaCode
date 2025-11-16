@@ -4,7 +4,7 @@ import { User } from '../types';
 import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
 
-const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib.rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
 const StudentEditor: React.FC = () => {
   const { users, handleSaveUser, showToast } = useAppContext();
@@ -62,13 +62,24 @@ const StudentEditor: React.FC = () => {
   };
   
   const handleAvatarUploadComplete = (url: string) => {
-    setFormData(prev => ({ ...prev, avatarUrl: url }));
-    showToast('✅ Foto de perfil pronta para ser salva!');
+    if (!formData) return;
+    const userToSave: User = {
+      ...(initialUser as User),
+      ...formData,
+      avatarUrl: url,
+    };
+    handleSaveUser(userToSave);
+    // O toast de sucesso já é exibido pela função handleSaveUser
   };
 
   const handleBannerUploadComplete = (url: string) => {
-    setFormData(prev => ({ ...prev, bannerUrl: url }));
-    showToast('✅ Imagem de fundo pronta para ser salva!');
+     if (!formData) return;
+    const userToSave: User = {
+      ...(initialUser as User),
+      ...formData,
+      bannerUrl: url,
+    };
+    handleSaveUser(userToSave);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -111,7 +122,6 @@ const StudentEditor: React.FC = () => {
         </div>
 
         <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-[#8a4add]/10 overflow-hidden">
-            {/* Seção de Preview do Cabeçalho do Perfil */}
             <div className="relative">
                 <div 
                     className="h-40 bg-cover bg-center relative group"
@@ -147,7 +157,6 @@ const StudentEditor: React.FC = () => {
                 <h3 className="text-lg font-bold text-white border-b border-white/10 pb-2 text-center">Informações Pessoais</h3>
                 <div><label htmlFor="name" className={labelClasses}>Nome Completo</label><input id="name" name="name" value={formData.name || ''} onChange={handleChange} required className={inputClasses} /></div>
                 <div><label htmlFor="email" className={labelClasses}>Email</label><input id="email" name="email" type="email" value={formData.email || ''} onChange={handleChange} required className={inputClasses} /></div>
-                <div><label htmlFor="avatarUrl" className={labelClasses}>URL do Avatar</label><input id="avatarUrl" name="avatarUrl" key={formData.avatarUrl} value={formData.avatarUrl || ''} onChange={handleChange} required className={inputClasses} /></div>
                 <div><label htmlFor="bio" className={labelClasses}>Bio</label><textarea id="bio" name="bio" value={formData.bio || ''} onChange={handleChange} required className={inputClasses} rows={3} /></div>
                 
                 <h3 className="text-lg font-bold text-white border-b border-white/10 pb-2 text-center pt-4">Informações Adicionais (ONG)</h3>

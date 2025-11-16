@@ -1,4 +1,5 @@
-// FIX: Changed to named imports for Firebase app functions to resolve module resolution error.
+// FIX: Switched from an incorrect namespace import to named imports for Firebase v9+ SDK compatibility.
+// This resolves 'property does not exist' errors for getApps, initializeApp, and getApp.
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -16,7 +17,8 @@ const firebaseConfig = {
 
 // Inicializa o Firebase de forma segura para ambientes com HMR.
 // Garante que o app seja inicializado apenas uma vez.
-// FIX: Use named-imported functions directly instead of from a namespace.
+// FIX: Replaced namespace-based calls (e.g., firebase.getApps) with direct function calls
+// to align with the modular Firebase v9+ SDK.
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 // Inicializa e exporta o Firebase Authentication.

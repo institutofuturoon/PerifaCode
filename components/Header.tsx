@@ -82,9 +82,6 @@ const Header: React.FC = () => {
               <NavLink onClick={() => navigate('/about')}>Sobre Nós</NavLink>
               <NavLink onClick={() => navigate('/team')}>Nossa Equipe</NavLink>
               <NavLink onClick={() => navigate('/blog')}>Blog</NavLink>
-              <NavLink onClick={() => navigate('/upload-test')}>Teste Upload</NavLink>
-              <NavLink onClick={() => navigate('/student-upload-test')}>Teste Upload Aluno</NavLink>
-              <NavLink onClick={() => navigate('/api-test')}>Teste API</NavLink>
               {user && <NavLink onClick={() => navigate('/dashboard')}>Meu Painel</NavLink>}
             </nav>
           </div>
@@ -177,9 +174,6 @@ const Header: React.FC = () => {
             <button onClick={() => handleMobileNav('/about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
             <button onClick={() => handleMobileNav('/team')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossa Equipe</button>
             <button onClick={() => handleMobileNav('/blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
-            <button onClick={() => handleMobileNav('/upload-test')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Teste Upload</button>
-            <button onClick={() => handleMobileNav('/student-upload-test')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Teste Upload Aluno</button>
-            <button onClick={() => handleMobileNav('/api-test')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Teste API</button>
           </div>
           <div className="pt-4 pb-3 border-t border-white/10">
             {user ? (

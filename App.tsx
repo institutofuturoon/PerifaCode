@@ -48,9 +48,6 @@ import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import { MOCK_COURSES, ARTICLES } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
-import UploadTest from './views/UploadTest';
-import StudentUploadTest from './views/StudentUploadTest';
-import ApiTest from './views/ApiTest';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -654,9 +651,6 @@ const AppRoutes: React.FC = () => {
                     <Route path="/terms" element={<TermsOfUseView />} />
                     <Route path="/annual-report" element={<AnnualReportView />} />
                     <Route path="/financial-statement" element={<FinancialStatementView />} />
-                    <Route path="/upload-test" element={<UploadTest />} />
-                    <Route path="/student-upload-test" element={<StudentUploadTest />} />
-                    <Route path="/api-test" element={<ApiTest />} />
                     
                     <Route path="/course/:courseId" element={<CourseDetail />} />
                     <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
