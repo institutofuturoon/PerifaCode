@@ -18,6 +18,8 @@ const ArticleView: React.FC = () => {
   const { articleId } = useParams<{ articleId: string }>();
   const navigate = useNavigate();
   const [isClapping, setIsClapping] = useState(false);
+  const [shareButtonText, setShareButtonText] = useState('Compartilhar');
+
 
   const article = useMemo(() => articles.find(a => a.id === articleId), [articles, articleId]);
   
@@ -78,17 +80,27 @@ const ArticleView: React.FC = () => {
     setTimeout(() => setIsClapping(false), 1000); // Prevent spamming
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareUrl = window.location.href;
     const shareText = `Confira este artigo incrível da FuturoOn: "${article.title}"`;
+    const shareTitle = `Artigo FuturoOn: ${article.title}`;
 
     if (navigator.share) {
-      navigator.share({ title: article.title, text: shareText, url: shareUrl })
-        .catch(error => console.log('Erro ao compartilhar', error));
+      try {
+        await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+      } catch (error) {
+        console.log('Web Share API foi fechada ou encontrou um erro:', error);
+      }
     } else {
-      navigator.clipboard.writeText(shareUrl).then(() => {
+      try {
+        await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
         showToast('✅ Link copiado para a área de transferência!');
-      });
+        setShareButtonText('Link Copiado!');
+        setTimeout(() => setShareButtonText('Compartilhar'), 2000);
+      } catch (err) {
+        console.error('Falha ao copiar link:', err);
+        showToast('❌ Não foi possível copiar o link.');
+      }
     }
   };
 
@@ -158,7 +170,7 @@ const ArticleView: React.FC = () => {
               </button>
                <button onClick={handleShare} className="group flex items-center gap-2 font-semibold py-2 px-4 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg>
-                  <span>Compartilhar</span>
+                  <span>{shareButtonText}</span>
               </button>
             </div>
           </div>

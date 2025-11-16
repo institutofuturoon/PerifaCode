@@ -1,6 +1,5 @@
-// FIX: Switched from an incorrect namespace import to named imports for Firebase v9+ SDK compatibility.
-// This resolves 'property does not exist' errors for getApps, initializeApp, and getApp.
-import { initializeApp, getApps, getApp } from "firebase/app";
+// FIX: Changed to namespace import to resolve module export errors.
+import * as firebaseApp from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -15,14 +14,10 @@ const firebaseConfig = {
   measurementId: "G-TV2MTZTZ8C"
 };
 
-// Inicializa o Firebase de forma segura para ambientes com HMR.
-// Garante que o app seja inicializado apenas uma vez.
-// FIX: Replaced namespace-based calls (e.g., firebase.getApps) with direct function calls
-// to align with the modular Firebase v9+ SDK.
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Inicializa o Firebase, evitando reinicializações para
+// garantir que a instância seja única, especialmente em ambientes de desenvolvimento.
+const app = firebaseApp.getApps().length > 0 ? firebaseApp.getApp() : firebaseApp.initializeApp(firebaseConfig);
 
-// Inicializa e exporta o Firebase Authentication.
+// Exporta instâncias dos serviços, usando a API modular v9.
 export const auth = getAuth(app);
-
-// Inicializa e exporta o Cloud Firestore.
 export const db = getFirestore(app);
