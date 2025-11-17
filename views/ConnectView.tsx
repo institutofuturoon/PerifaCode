@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { User, Event } from '../types';
+import PageLayout from '../components/PageLayout';
 
 const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
     const { user } = useAppContext();
@@ -77,7 +78,7 @@ const ConnectView: React.FC = () => {
     const { events, instructors, mentors } = useAppContext();
 
     return (
-        <div className="bg-[#09090B] min-h-screen">
+        <PageLayout>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
                 <div className="text-center max-w-4xl mx-auto">
                     <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">Mentorias & Eventos</h1>
@@ -107,7 +108,7 @@ const ConnectView: React.FC = () => {
                     </div>
                 </section>
             </div>
-        </div>
+        </PageLayout>
     );
 };
 

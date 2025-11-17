@@ -4,7 +4,6 @@ import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
-import PageLayout from '../components/PageLayout';
 
 const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
@@ -179,7 +178,7 @@ const Blog: React.FC = () => {
   };
 
   return (
-    <PageLayout>
+    <>
         {/* Hero Section */}
         <header className="py-20 md:py-24 text-center relative z-10 bg-grid-pattern">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -310,7 +309,7 @@ const Blog: React.FC = () => {
                 </aside>
             </div>
         </section>
-    </PageLayout>
+    </>
   );
 };
 

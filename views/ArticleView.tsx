@@ -4,7 +4,6 @@ import { Article } from '../types';
 import { useParams, useNavigate } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import ArticleCard from '../components/ArticleCard';
-import PageLayout from '../components/PageLayout';
 
 const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="mb-8">
@@ -115,7 +114,7 @@ const ArticleView: React.FC = () => {
   }
 
   return (
-    <PageLayout>
+    <>
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 bg-black/20">
         <div className="absolute inset-0">
@@ -189,7 +188,7 @@ const ArticleView: React.FC = () => {
 
         </div>
       </div>
-    </PageLayout>
+    </>
   );
 };
 

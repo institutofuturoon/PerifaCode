@@ -48,6 +48,7 @@ import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import { MOCK_COURSES, ARTICLES } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
+import PageLayout from './components/PageLayout';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -611,6 +612,12 @@ const AppRoutes: React.FC = () => {
         </div>
     );
 
+    const ContentPagesLayout = () => (
+        <PageLayout>
+            <Outlet />
+        </PageLayout>
+    );
+
     const ProtectedRoute = () => {
         if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
         if (user.profileStatus === 'incomplete' && location.pathname !== '/complete-profile') return <Navigate to="/complete-profile" replace />;
@@ -649,56 +656,63 @@ const AppRoutes: React.FC = () => {
             <DeepLinkHandler />
             <Routes>
                 <Route element={<Layout />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/courses" element={<Courses />} />
-                    <Route path="/community" element={<CommunityView />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/connect" element={<ConnectView />} />
-                    <Route path="/partnerships" element={<PartnershipsView />} />
-                    <Route path="/about" element={<AboutUsView />} />
-                    <Route path="/team" element={<TeamView />} />
-                    <Route path="/donate" element={<DonateView />} />
-                    <Route path="/privacy" element={<PrivacyPolicyView />} />
-                    <Route path="/terms" element={<TermsOfUseView />} />
-                    <Route path="/annual-report" element={<AnnualReportView />} />
-                    <Route path="/financial-statement" element={<FinancialStatementView />} />
                     
-                    <Route path="/course/:courseId" element={<CourseDetail />} />
-                    <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
-                    <Route path="/article/:articleId" element={<ArticleView />} />
-                    <Route path="/project/:projectId" element={<ProjectDetailView />} />
-                    <Route path="/event/:eventId" element={<EventDetailView />} />
-                    
+                    {/* Páginas de formulário com layout especial (sem barra de progresso) */}
                     <Route element={<PublicOnlyRoute />}>
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                     </Route>
-
                     <Route element={<SpecialAccessRoute />}>
                         <Route path="/complete-profile" element={<CompleteProfile />} />
                         <Route path="/change-password" element={<ChangePassword />} />
                     </Route>
-
-                    <Route element={<ProtectedRoute />}>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
+                     <Route element={<ProtectedRoute />}>
                         <Route path="/course/:courseId/certificate" element={<CertificateView />} />
-                        <Route path="/project/edit" element={<ProjectEditor />} />
-                        <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
+                    </Route>
 
-                        <Route element={<AdminRoute />}>
-                            <Route path="/admin" element={<Dashboard />} />
-                            <Route path="/admin/analytics" element={<Analytics />} />
-                            <Route path="/admin/course-editor" element={<CourseEditor />} />
-                            <Route path="/admin/course-editor/:courseId" element={<CourseEditor />} />
-                            <Route path="/admin/article-editor" element={<ArticleEditor />} />
-                            <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
-                            <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
-                            <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
-                            <Route path="/admin/event-editor" element={<EventEditor />} />
-                            <Route path="/admin/event-editor/:eventId" element={<EventEditor />} />
-                            <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+
+                    {/* Todas as outras páginas de conteúdo com a barra de progresso */}
+                    <Route element={<ContentPagesLayout />}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/courses" element={<Courses />} />
+                        <Route path="/community" element={<CommunityView />} />
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/connect" element={<ConnectView />} />
+                        <Route path="/partnerships" element={<PartnershipsView />} />
+                        <Route path="/about" element={<AboutUsView />} />
+                        <Route path="/team" element={<TeamView />} />
+                        <Route path="/donate" element={<DonateView />} />
+                        <Route path="/privacy" element={<PrivacyPolicyView />} />
+                        <Route path="/terms" element={<TermsOfUseView />} />
+                        <Route path="/annual-report" element={<AnnualReportView />} />
+                        <Route path="/financial-statement" element={<FinancialStatementView />} />
+                        
+                        <Route path="/course/:courseId" element={<CourseDetail />} />
+                        <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
+                        <Route path="/article/:articleId" element={<ArticleView />} />
+                        <Route path="/project/:projectId" element={<ProjectDetailView />} />
+                        <Route path="/event/:eventId" element={<EventDetailView />} />
+
+                        <Route element={<ProtectedRoute />}>
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/profile" element={<Profile />} />
+                            <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
+                            <Route path="/project/edit" element={<ProjectEditor />} />
+                            <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
+
+                            <Route element={<AdminRoute />}>
+                                <Route path="/admin" element={<Dashboard />} />
+                                <Route path="/admin/analytics" element={<Analytics />} />
+                                <Route path="/admin/course-editor" element={<CourseEditor />} />
+                                <Route path="/admin/course-editor/:courseId" element={<CourseEditor />} />
+                                <Route path="/admin/article-editor" element={<ArticleEditor />} />
+                                <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
+                                <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
+                                <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
+                                <Route path="/admin/event-editor" element={<EventEditor />} />
+                                <Route path="/admin/event-editor/:eventId" element={<EventEditor />} />
+                                <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                            </Route>
                         </Route>
                     </Route>
                 </Route>

@@ -63,7 +63,7 @@ const FinancialStatementView: React.FC = () => {
     ];
 
     return (
-        <div className="aurora-background text-white">
+        <>
             {/* Hero Section */}
             <header className="py-32 md:py-40 text-center relative z-10 bg-grid-pattern">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -155,7 +155,7 @@ const FinancialStatementView: React.FC = () => {
                     </div>
                 </div>
             </Section>
-        </div>
+        </>
     );
 };
 

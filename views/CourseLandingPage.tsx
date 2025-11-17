@@ -323,88 +323,86 @@ const CourseLandingPage: React.FC = () => {
     }
 
     return (
-        <div className="aurora-background text-white">
-            <main>
-                {/* Hero Section */}
-                <section className="pt-32 pb-32 md:pt-40 md:pb-40 text-center relative z-10 bg-grid-pattern">
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
-                            {content.heroContent.titleLine1}<br />
-                            <span className="text-[#c4b5fd]">{content.heroContent.titleAccent}</span>
-                        </h1>
-                        <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
-                            {content.heroContent.description}
+        <>
+            {/* Hero Section */}
+            <section className="pt-32 pb-32 md:pt-40 md:pb-40 text-center relative z-10 bg-grid-pattern">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
+                        {content.heroContent.titleLine1}<br />
+                        <span className="text-[#c4b5fd]">{content.heroContent.titleAccent}</span>
+                    </h1>
+                    <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
+                        {content.heroContent.description}
+                    </p>
+                     <div className="mt-10">
+                        <button onClick={() => openInscriptionModal(currentCourse)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
+                            Quero me inscrever!
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            {/* Benefits Section */}
+            {content.benefitsSection && (
+                <Section className="bg-black/20">
+                    <SectionTitle subtitle={content.benefitsSection.subtitle}>
+                        {content.benefitsSection.title}
+                    </SectionTitle>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {content.benefitsSection.benefits.map((benefit, index) => (
+                            <BenefitCard key={index} {...benefit} />
+                        ))}
+                    </div>
+                </Section>
+            )}
+            
+            {/* Curriculum Section */}
+            {content.curriculumSection && (
+                <Section>
+                    <SectionTitle subtitle={content.curriculumSection.subtitle}>
+                        {content.curriculumSection.title}
+                    </SectionTitle>
+                    <div className="max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
+                        <div className="grid md:grid-cols-2 gap-8">
+                            {content.curriculumSection.items.map((item, index) => (
+                                <CurriculumItem key={index} {...item} />
+                            ))}
+                        </div>
+                    </div>
+                </Section>
+            )}
+
+            {/* Methodology Section */}
+            {content.methodologySection && (
+                 <Section className="bg-black/20">
+                    <SectionTitle subtitle={content.methodologySection.subtitle}>
+                        {content.methodologySection.title}
+                    </SectionTitle>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {content.methodologySection.benefits.map((benefit, index) => (
+                            <BenefitCard key={index} {...benefit} />
+                        ))}
+                    </div>
+                </Section>
+            )}
+
+            {/* Final CTA */}
+            {content.ctaSection && (
+                <Section>
+                    <div className="text-center bg-grid-pattern p-8 md:p-16 rounded-2xl border border-[#8a4add]/20" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
+                        <h2 className="text-3xl md:text-4xl font-black text-white">{content.ctaSection.title}</h2>
+                        <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
+                           {content.ctaSection.description}
                         </p>
-                         <div className="mt-10">
-                            <button onClick={() => openInscriptionModal(currentCourse)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
-                                Quero me inscrever!
+                        <div className="mt-8">
+                             <button onClick={() => openInscriptionModal(currentCourse)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
+                                Inscreva-se Agora
                             </button>
                         </div>
                     </div>
-                </section>
-                
-                {/* Benefits Section */}
-                {content.benefitsSection && (
-                    <Section className="bg-black/20">
-                        <SectionTitle subtitle={content.benefitsSection.subtitle}>
-                            {content.benefitsSection.title}
-                        </SectionTitle>
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {content.benefitsSection.benefits.map((benefit, index) => (
-                                <BenefitCard key={index} {...benefit} />
-                            ))}
-                        </div>
-                    </Section>
-                )}
-                
-                {/* Curriculum Section */}
-                {content.curriculumSection && (
-                    <Section>
-                        <SectionTitle subtitle={content.curriculumSection.subtitle}>
-                            {content.curriculumSection.title}
-                        </SectionTitle>
-                        <div className="max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
-                            <div className="grid md:grid-cols-2 gap-8">
-                                {content.curriculumSection.items.map((item, index) => (
-                                    <CurriculumItem key={index} {...item} />
-                                ))}
-                            </div>
-                        </div>
-                    </Section>
-                )}
-
-                {/* Methodology Section */}
-                {content.methodologySection && (
-                     <Section className="bg-black/20">
-                        <SectionTitle subtitle={content.methodologySection.subtitle}>
-                            {content.methodologySection.title}
-                        </SectionTitle>
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            {content.methodologySection.benefits.map((benefit, index) => (
-                                <BenefitCard key={index} {...benefit} />
-                            ))}
-                        </div>
-                    </Section>
-                )}
-
-                {/* Final CTA */}
-                {content.ctaSection && (
-                    <Section>
-                        <div className="text-center bg-grid-pattern p-8 md:p-16 rounded-2xl border border-[#8a4add]/20" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
-                            <h2 className="text-3xl md:text-4xl font-black text-white">{content.ctaSection.title}</h2>
-                            <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
-                               {content.ctaSection.description}
-                            </p>
-                            <div className="mt-8">
-                                 <button onClick={() => openInscriptionModal(currentCourse)} className="inline-block bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30">
-                                    Inscreva-se Agora
-                                </button>
-                            </div>
-                        </div>
-                    </Section>
-                )}
-            </main>
-        </div>
+                </Section>
+            )}
+        </>
     );
 };
 
