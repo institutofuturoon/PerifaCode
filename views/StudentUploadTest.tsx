@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Uploader from '../components/Uploader';
 
 const StudentUploadTest: React.FC = () => {
@@ -8,6 +9,8 @@ const StudentUploadTest: React.FC = () => {
   const [isApiTesting, setIsApiTesting] = useState(false);
   const [apiTestResult, setApiTestResult] = useState<string | null>(null);
   const [apiTestSuccess, setApiTestSuccess] = useState<boolean | null>(null);
+
+  const navigate = useNavigate();
 
   const handleUploadComplete = (url: string) => {
     setUploadedUrl(url);
@@ -145,7 +148,14 @@ const StudentUploadTest: React.FC = () => {
                 )}
             </div>
         </div>
-
+        <div className="mt-8 text-center border-t border-white/10 pt-6">
+            <button
+            onClick={() => navigate('/admin')}
+            className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group"
+            >
+            <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o painel de admin
+            </button>
+        </div>
       </div>
     </div>
   );

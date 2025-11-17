@@ -27,7 +27,10 @@ const PageLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         className="fixed top-0 left-0 h-1.5 bg-gradient-to-r from-[#8a4add] to-[#f27983] z-[60] transition-all duration-75 ease-out"
         style={{ width: `${scrollPercentage}%` }}
       />
-      {children}
+      {/* Wrapper to isolate content rendering from background effects */}
+      <div style={{ position: 'relative', zIndex: 1, transform: 'translateZ(0px)' }}>
+        {children}
+      </div>
     </div>
   );
 };

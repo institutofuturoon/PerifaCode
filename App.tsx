@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
-import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
+// FIX: Changed firebase imports to use scoped packages for consistency.
+import { onAuthStateChanged, signOut, User as FirebaseUser } from '@firebase/auth';
 import { auth, db } from './firebaseConfig';
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
+// FIX: Changed firebase imports to use scoped packages for consistency.
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from '@firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress } from './types';
@@ -49,6 +51,7 @@ import InscriptionFormModal from './components/InscriptionFormModal';
 import { MOCK_COURSES, ARTICLES } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
+import StudentUploadTest from './views/StudentUploadTest';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -712,6 +715,7 @@ const AppRoutes: React.FC = () => {
                                 <Route path="/admin/event-editor" element={<EventEditor />} />
                                 <Route path="/admin/event-editor/:eventId" element={<EventEditor />} />
                                 <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                                <Route path="/admin/test-upload" element={<StudentUploadTest />} />
                             </Route>
                         </Route>
                     </Route>

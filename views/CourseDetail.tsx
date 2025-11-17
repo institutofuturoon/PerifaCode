@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Lesson, Module, Course } from '../types';
 import { useAppContext } from '../App';
 
@@ -67,6 +67,7 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
 const CourseDetail: React.FC = () => {
     const { courses, instructors, openInscriptionModal } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
+    const navigate = useNavigate();
 
     const course = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
 
@@ -89,6 +90,11 @@ const CourseDetail: React.FC = () => {
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="mb-8">
+                        <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+                            <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para os cursos
+                        </button>
+                    </div>
                     <div className="grid lg:grid-cols-3 gap-12 items-start">
                         
                         {/* Left Column: Course Info + Modules */}

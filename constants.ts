@@ -420,7 +420,48 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
                 { id: 'cs1-m4-l3', title: 'Projeto Final: Construindo as Aplicações', duration: '60 min', type: 'text', xp: 60, objective: "Aplicar todo o conhecimento para construir uma calculadora e um jogo de adivinhação.", mainContent: "Hora de juntar tudo! Neste desafio, você vai usar variáveis, `if/else`, laços e funções para construir dois programas do zero. Será o seu primeiro grande projeto, provando que você dominou os fundamentos da lógica de programação com C#." },
             ]
         }
-    ]
+    ],
+    heroContent: {
+        titleLine1: "Do Zero à Lógica,",
+        titleAccent: "com C#.",
+        description: "Aprenda os fundamentos da programação e construa uma base sólida para pensar como um desenvolvedor, usando a linguagem C#, uma das mais requisitadas pelo mercado."
+    },
+    benefitsSection: {
+        title: "Por que C# é a Linguagem das Grandes Empresas?",
+        subtitle: "Robusta, moderna e versátil. Descubra por que o ecossistema .NET é a escolha de gigantes da tecnologia.",
+        benefits: [
+            { title: "Mercado Corporativo", description: "C# é a linguagem preferida por grandes empresas para construir sistemas críticos, garantindo alta demanda por profissionais." },
+            { title: "Além do Backend", description: "Com C#, você pode criar não só APIs, mas também jogos com Unity, aplicativos desktop e soluções em nuvem com Azure." },
+            { title: "Performance e Segurança", description: "Construa aplicações rápidas, seguras e escaláveis com uma linguagem de alto desempenho e um framework robusto." },
+            { title: "Carreira Sólida", description: "Dominar C# e .NET abre portas para as vagas mais bem pagas e estáveis do mercado de desenvolvimento backend." }
+        ]
+    },
+    curriculumSection: {
+        title: "Uma Jornada Completa para Pensar como um Programador",
+        subtitle: "Nossa trilha foi desenhada para construir sua base lógica, do primeiro 'Olá, Mundo!' à criação de um programa funcional.",
+        items: [
+            { title: "O que é Lógica de Programação?", description: "Entenda o conceito de algoritmo e como organizar seu pensamento para resolver problemas." },
+            { title: "Fundamentos do C#", description: "Domine variáveis, tipos de dados e operadores para manipular informações no seu código." },
+            { title: "Tomando Decisões no Código", description: "Aprenda a usar estruturas condicionais (if/else) para criar programas inteligentes." },
+            { title: "Repetindo Tarefas com Laços", description: "Utilize laços de repetição (for/while) para automatizar tarefas e processar dados." },
+            { title: "Organizando com Funções e Arrays", description: "Escreva código limpo e reutilizável, e aprenda a trabalhar com coleções de dados." },
+            { title: "Projeto Prático Final", description: "Aplique todo o conhecimento construindo uma calculadora de console e um jogo simples." }
+        ]
+    },
+    methodologySection: {
+        title: "Nossa Metodologia: Mão na Massa e Foco no Mercado",
+        subtitle: "Acreditamos que se aprende a programar, programando. Nossas aulas são práticas, com desafios reais e suporte contínuo.",
+        benefits: [
+            { title: "Aulas Presenciais e Online", description: "Escolha o formato que funciona para você: a energia da sala de aula ou a flexibilidade do online." },
+            { title: "Instrutores do Mercado", description: "Aprenda com quem trabalha na área, trazendo experiências e desafios reais para a aula." },
+            { title: "Projetos para Portfólio", description: "Finalize o curso com um projeto prático para mostrar suas habilidades aos recrutadores." },
+            { title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa no Discord para tirar dúvidas e fazer networking." }
+        ]
+    },
+    ctaSection: {
+        title: "Pronto para Construir sua Base como Desenvolvedor?",
+        description: "Não espere mais para investir no seu futuro. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!"
+    }
   },
   {
     id: 'ld1',

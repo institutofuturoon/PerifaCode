@@ -1,7 +1,7 @@
-// FIX: Updated Firebase initialization to use the modular (v9) API. This resolves type errors by providing the correct service instances for v9 functions used throughout the application.
-import { initializeApp, getApp, getApps } from 'firebase/app';
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+// FIX: Changed firebase imports to use scoped packages to resolve module resolution errors.
+import { initializeApp, getApp, getApps } from '@firebase/app';
+import { getAuth } from '@firebase/auth';
+import { getFirestore } from '@firebase/firestore';
 
 // Configuração do seu projeto Firebase.
 const firebaseConfig = {
@@ -14,9 +14,9 @@ const firebaseConfig = {
   measurementId: "G-TV2MTZTZ8C"
 };
 
-// Initialize Firebase, preventing re-initialization in HMR environments.
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase, preventing re-initialization.
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Export v9 modular service instances.
+// Export modular services.
 export const auth = getAuth(app);
 export const db = getFirestore(app);

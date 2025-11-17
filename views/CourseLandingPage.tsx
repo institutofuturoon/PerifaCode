@@ -1,269 +1,7 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
-import { Course, CourseBenefit, CurriculumItem } from '../types';
-
-// Data mapping for course landing pages
-const courseContentMap: Record<string, Omit<Course, keyof Omit<Course, 'heroContent' | 'benefitsSection' | 'curriculumSection' | 'methodologySection' | 'ctaSection'>>> = {
-    'ld1': { // Letramento Digital
-        heroContent: {
-            titleLine1: "Conecte-se ao Mundo Digital,",
-            titleAccent: "Sem Medo.",
-            description: "Nosso curso de Letramento Digital foi criado especialmente para a melhor idade. Aprenda a usar o computador, celular e a internet com segurança e confiança, em um ambiente acolhedor e com instrutores pacientes."
-        },
-        benefitsSection: {
-            title: "Uma Nova Janela Para o Seu Mundo",
-            subtitle: "Descubra como a tecnologia pode facilitar seu dia a dia e te aproximar de quem você ama.",
-            benefits: [
-                { icon: "😊", title: "Perca o Medo", description: "Esqueça a complicação. Nossos instrutores mostram que a tecnologia pode ser sua grande aliada, com muita paciência e didática." },
-                { icon: "👨‍👩‍👧‍👦", title: "Fale com quem Ama", description: "Aprenda a usar o WhatsApp e as redes sociais para fazer chamadas de vídeo e estar sempre perto da família e dos amigos." },
-                { icon: "✅", title: "Sua Independência", description: "Resolva coisas do dia a dia, como marcar consultas ou usar apps de banco e transporte, com total autonomia." },
-                { icon: "🛡️", title: "Navegue com Segurança", description: "Entenda como identificar golpes, criar senhas fortes e proteger suas informações pessoais no mundo online." }
-            ]
-        },
-        curriculumSection: {
-            title: "O que você vai aprender na prática",
-            subtitle: "Um passo a passo completo para você dominar as ferramentas digitais mais importantes do dia a dia.",
-            items: [
-                { title: "Usando o Computador e Celular", description: "Desde o básico: ligar, usar o mouse, teclado, abrir programas e organizar arquivos e fotos." },
-                { title: "Navegando na Internet", description: "Aprenda a pesquisar no Google, acessar sites de notícias, vídeos e muito mais." },
-                { title: "Comunicação por E-mail", description: "Crie seu e-mail, envie e receba mensagens, e aprenda a lidar com anexos com segurança." },
-                { title: "Redes Sociais Essenciais", description: "Conecte-se com amigos e família através do WhatsApp e Facebook de forma prática." },
-                { title: "Segurança Digital Primeiro", description: "Proteja-se de vírus e golpes online. Aprenda a criar senhas seguras e a navegar com tranquilidade." },
-                { title: "Aplicativos Úteis", description: "Descubra como usar aplicativos de transporte, banco e outros serviços para facilitar sua rotina." }
-            ]
-        },
-        methodologySection: {
-            title: "Como Nossas Aulas Funcionam",
-            subtitle: "Nosso método foi pensado para oferecer um ambiente de aprendizado seguro, confortável e eficaz.",
-            benefits: [
-                { icon: "📍", title: "Aulas Presenciais", description: "Ambiente tranquilo e preparado para o seu aprendizado em nosso espaço no Complexo da Coruja." },
-                { icon: "👩‍🏫", title: "Instrutores Pacientes", description: "Nossa equipe tem experiência e didática para ensinar no seu ritmo, sem pressa." },
-                { icon: "👥", title: "Turmas Reduzidas", description: "Garantimos atenção individualizada para que nenhuma dúvida fique para trás." },
-                { icon: "📖", title: "Material de Apoio", description: "Apostilas simples e ilustradas para acompanhar as aulas e praticar em casa." }
-            ]
-        },
-        ctaSection: {
-            title: "Pronto para Começar essa Jornada?",
-            description: "As vagas são limitadas para garantir a qualidade do ensino. Preencha o formulário e garanta seu interesse na próxima turma!"
-        }
-    },
-    'py1': { // Python
-        heroContent: {
-            titleLine1: "Do Zero ao Código,",
-            titleAccent: "com Python.",
-            description: "Aprenda a programar com uma das linguagens mais populares do mercado. Desenvolva sua lógica, crie seus primeiros projetos e abra portas para uma nova carreira em tecnologia."
-        },
-        benefitsSection: {
-            title: "Por que Python é a Melhor Porta de Entrada para a Programação?",
-            subtitle: "Simples, poderosa e em alta no mercado. Descubra por que Python é a escolha ideal para quem está começando.",
-            benefits: [
-                { icon: "🎓", title: "Fácil de Aprender", description: "Sintaxe limpa e intuitiva, ideal para quem nunca programou. Você vai escrever seu primeiro 'Olá, Mundo!' em minutos." },
-                { icon: "🚀", title: "Porta para o Futuro", description: "Dominar Python abre caminhos para áreas como Inteligência Artificial, Análise de Dados e Desenvolvimento Web." },
-                { icon: "💰", title: "Salários Atrativos", description: "Profissionais de Python são muito valorizados, com salários iniciais competitivos que crescem com a sua experiência." },
-                { icon: "🌎", title: "Comunidade Gigante", description: "Conte com uma das maiores comunidades de desenvolvedores do mundo para tirar dúvidas e colaborar em projetos." }
-            ]
-        },
-        curriculumSection: {
-            title: "Uma Jornada Completa, do Básico ao seu Primeiro Projeto",
-            subtitle: "Nossa trilha foi desenhada para te levar do zero absoluto até a construção de um projeto prático e relevante para o seu portfólio.",
-            items: [
-                { title: "Lógica de Programação Essencial", description: "Construa a base de todo dev: como pensar de forma estruturada para resolver problemas com código." },
-                { title: "Fundamentos do Python", description: "Domine variáveis, tipos de dados, operadores e as estruturas que formam a linguagem." },
-                { title: "Estruturas de Controle", description: "Aprenda a criar condicionais (if/else) e laços de repetição (for/while) para dar vida aos seus programas." },
-                { title: "Funções e Organização", description: "Escreva código limpo e reutilizável, organizando seus projetos de forma profissional." },
-                { title: "Estruturas de Dados", description: "Trabalhe com listas, tuplas e dicionários para manipular e organizar informações de forma eficiente." },
-                { title: "Projeto Prático Final", description: "Aplique todo o seu conhecimento construindo uma aplicação do mundo real, pronta para o seu portfólio." }
-            ]
-        },
-        methodologySection: {
-            title: "Nossa Metodologia: Mão na Massa e Foco no Mercado",
-            subtitle: "Acreditamos que se aprende a programar, programando. Nossas aulas são práticas, com desafios reais e suporte contínuo.",
-            benefits: [
-                { icon: "📍", title: "Aulas Presenciais e Online", description: "Escolha o formato que funciona para você: a energia da sala de aula ou a flexibilidade do online." },
-                { icon: "👩‍🏫", title: "Instrutores do Mercado", description: "Aprenda com quem trabalha na área, trazendo experiências e desafios reais para a aula." },
-                { icon: "💼", title: "Projetos para Portfólio", description: "Finalize o curso com um projeto prático para mostrar suas habilidades aos recrutadores." },
-                { icon: "🤝", title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa no Discord para tirar dúvidas e fazer networking." }
-            ]
-        },
-        ctaSection: {
-            title: "Sua Carreira em Tech Começa Agora",
-            description: "Não espere mais para investir no seu futuro. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!"
-        }
-    },
-    'cs1': { // C#
-        heroContent: {
-            titleLine1: "Do Zero à API Profissional,",
-            titleAccent: "com C#.",
-            description: "Domine a linguagem da Microsoft e o ecossistema .NET. Crie aplicações robustas, escaláveis e prepare-se para as melhores vagas de backend no mercado."
-        },
-        benefitsSection: {
-            title: "Por que C# e .NET vão impulsionar sua carreira?",
-            subtitle: "Entenda por que o ecossistema da Microsoft é uma das escolhas mais seguras e poderosas para uma carreira sólida em desenvolvimento.",
-            benefits: [
-                { icon: "📈", title: "Alta Demanda", description: "Grandes empresas e startups confiam no .NET para suas aplicações críticas, garantindo um mercado aquecido." },
-                { icon: "⚙️", title: "Ecossistema Completo", description: "Do desenvolvimento web e mobile a jogos e IA, o .NET oferece ferramentas para tudo que você precisar." },
-                { icon: "⚡", title: "Performance", description: "C# é uma linguagem moderna e performática, ideal para construir sistemas que aguentam o tranco e rodam em alta velocidade." },
-                { icon: "💰", title: "Salários Competitivos", description: "Desenvolvedores .NET estão entre os mais bem pagos do mercado, refletindo a alta demanda por essa especialidade." }
-            ]
-        },
-        curriculumSection: {
-            title: "Uma Trilha Completa para o Desenvolvimento Backend Profissional",
-            subtitle: "Do básico da linguagem à publicação da sua primeira API na nuvem. Um currículo pensado para o mercado.",
-            items: [
-                { title: "Fundamentos de C# e .NET", description: "Entenda a sintaxe, tipos de dados, e a estrutura do ecossistema .NET." },
-                { title: "Orientação a Objetos na Prática", description: "Aprenda os pilares da OOP (Classes, Herança, Polimorfismo) para criar código organizado e robusto." },
-                { title: "APIs com ASP.NET Core", description: "Desenvolva APIs RESTful, a base da comunicação web moderna, seguindo as melhores práticas." },
-                { title: "Acesso a Dados com Entity Framework", description: "Conecte sua aplicação a bancos de dados de forma profissional e eficiente." },
-                { title: "Testes e Boas Práticas", description: "Aprenda a garantir a qualidade do seu código com testes unitários e princípios como SOLID." },
-                { title: "Projeto Final: API Completa", description: "Construa e publique uma API completa do mundo real, seu passaporte para entrevistas técnicas." }
-            ]
-        },
-        methodologySection: {
-            title: "Nossa Metodologia: Mão na Massa e Foco no Mercado",
-            subtitle: "Acreditamos que se aprende a programar, programando. Nossas aulas são práticas, com desafios reais e suporte contínuo.",
-            benefits: [
-                { icon: "📍", title: "Aulas Presenciais e Online", description: "Escolha o formato que funciona para você: a energia da sala de aula ou a flexibilidade do online." },
-                { icon: "👩‍🏫", title: "Instrutores do Mercado", description: "Aprenda com quem trabalha na área, trazendo experiências e desafios reais para a aula." },
-                { icon: "💼", title: "Projetos para Portfólio", description: "Finalize o curso com um projeto prático para mostrar suas habilidades aos recrutadores." },
-                { icon: "🤝", title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa no Discord para tirar dúvidas e fazer networking." }
-            ]
-        },
-        ctaSection: {
-            title: "Pronto para Construir Aplicações de Alto Nível?",
-            description: "As vagas são limitadas. Garanta seu interesse na próxima turma e dê um passo decisivo na sua carreira backend."
-        }
-    },
-    'gm1': { // Game Dev
-        heroContent: {
-            titleLine1: "Do Sonho ao Jogo Publicado,",
-            titleAccent: "com Unity.",
-            description: "Aprenda a criar seus próprios jogos 2D e 3D com a engine mais popular do mercado. Transforme sua paixão em uma carreira de sucesso."
-        },
-        benefitsSection: {
-            title: "Por que Aprender a Desenvolver Games com Unity?",
-            subtitle: "Descubra por que a Unity é a ferramenta escolhida por estúdios de todos os tamanhos para criar os jogos mais incríveis do mundo.",
-            benefits: [
-                { icon: "📈", title: "Mercado em Expansão", description: "A indústria de games é uma das que mais cresce no mundo, com infinitas oportunidades para novos desenvolvedores." },
-                { icon: "💻", title: "Uma Engine, Múltiplas Plataformas", description: "Crie seu jogo uma vez e publique para PC, consoles (PlayStation, Xbox, Nintendo) e celulares (Android e iOS)." },
-                { icon: "🎨", title: "Criatividade sem Limites", description: "Da arte 2D pixelada aos gráficos 3D realistas, a Unity te dá o poder de criar qualquer tipo de jogo que você imaginar." },
-                { icon: "🌍", title: "Carreira Global", description: "Com habilidades em Unity, você pode trabalhar para estúdios em qualquer lugar do mundo, muitas vezes de forma remota." }
-            ]
-        },
-        curriculumSection: {
-            title: "Da Ideia ao Jogo Funcional: Sua Jornada de Game Dev",
-            subtitle: "Nossa trilha te guia passo a passo, desde a primeira linha de código até a publicação do seu primeiro mini-jogo completo.",
-            items: [
-                { title: "Introdução à Unity", description: "Navegue pela interface, entenda os conceitos de GameObjects, Components e Cenas." },
-                { title: "Programação C# para Jogos", description: "Aprenda a lógica e a sintaxe do C# aplicadas para criar mecânicas e comportamentos nos seus jogos." },
-                { title: "Física e Movimentação 2D/3D", description: "Crie personagens que pulam, correm e interagem com o mundo do jogo de forma realista." },
-                { title: "Assets, Sprites e Animação", description: "Dê vida aos seus personagens e cenários com sprites, modelos 3D e animações fluidas." },
-                { title: "Interface (UI) e Som", description: "Desenvolva menus, placares de pontos (HUDs) e adicione efeitos sonoros e música para uma experiência completa." },
-                { title: "Projeto Final: Seu Primeiro Jogo", description: "Aplique todo o conhecimento para criar e customizar um mini-jogo, do início ao fim." }
-            ]
-        },
-        methodologySection: {
-            title: "Nossa Metodologia: Mão na Massa e Foco no Mercado",
-            subtitle: "Acreditamos que se aprende a programar, programando. Nossas aulas são práticas, com desafios reais e suporte contínuo.",
-            benefits: [
-                { icon: "📍", title: "Aulas Presenciais e Online", description: "Escolha o formato que funciona para você: a energia da sala de aula ou a flexibilidade do online." },
-                { icon: "👩‍🏫", title: "Instrutores Gamers", description: "Aprenda com quem não só trabalha na área, mas é apaixonado por jogos e pela criação de novas experiências." },
-                { icon: "🎮", title: "Projetos para Portfólio", description: "Finalize o curso com um jogo jogável para impressionar e mostrar suas habilidades." },
-                { icon: "🤝", title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa para testar jogos, trocar ideias e formar equipes." }
-            ]
-        },
-        ctaSection: {
-            title: "Pronto para Dar 'Play' na Sua Carreira?",
-            description: "As vagas são limitadas. Inscreva-se para garantir seu interesse na próxima turma e comece a criar os mundos que você imagina."
-        }
-    },
-    'en1': { // English
-        heroContent: {
-            titleLine1: "Fale a Língua da Tecnologia,",
-            titleAccent: "Inglês para Devs.",
-            description: "Destrave seu potencial global. Nosso curso foca no inglês que você realmente vai usar: em documentações, comunidades e entrevistas de emprego no exterior."
-        },
-        benefitsSection: {
-            title: "Por que o Inglês é o 'Framework' Essencial para sua Carreira?",
-            subtitle: "O código você já domina. Agora, aprenda o idioma que abre as portas do mundo para sua carreira.",
-            benefits: [
-                { icon: "📚", title: "Acesse o Conhecimento", description: "A maioria dos tutoriais, documentações e cursos de ponta são lançados primeiro em inglês. Não espere pela tradução." },
-                { icon: "💬", title: "Comunidade Global", description: "Participe de discussões no GitHub, Stack Overflow e em comunidades internacionais para resolver problemas e colaborar." },
-                { icon: "💼", title: "Vagas no Exterior", description: "As melhores oportunidades e salários muitas vezes estão em empresas internacionais que exigem inglês para o dia a dia." },
-                { icon: "🛠️", title: "Entenda as Ferramentas", description: "Domine o vocabulário de frameworks, bibliotecas e IDEs para usar as ferramentas de trabalho com máxima eficiência." }
-            ]
-        },
-        curriculumSection: {
-            title: "Do 'Hello World' ao 'Job Interview': Uma Trilha Prática",
-            subtitle: "Esqueça o 'The book is on the table'. Aqui, você aprende o inglês que vai usar para codar, colaborar e conquistar sua vaga.",
-            items: [
-                { title: "Vocabulário Técnico Essencial", description: "Git, APIs, databases, frameworks. Fale a língua que os devs falam no dia a dia." },
-                { title: "Leitura de Documentação", description: "Aprenda a ler e interpretar documentações técnicas com confiança para resolver problemas sozinho." },
-                { title: "Comunicação Escrita Profissional", description: "Escreva commits, pull requests, e-mails e mensagens no Slack de forma clara e profissional." },
-                { title: "Listening para Devs", description: "Entenda palestras, tutoriais em vídeo e reuniões técnicas sem precisar de legendas." },
-                { title: "Conversação e Entrevistas", description: "Pratique a fala para se apresentar, descrever seus projetos e responder perguntas em uma entrevista técnica." },
-                { title: "Cultura de Trabalho Global", description: "Entenda as nuances da comunicação em equipes multiculturais e trabalhe com pessoas do mundo todo." }
-            ]
-        },
-        methodologySection: {
-            title: "Nossa Metodologia: Aulas Ao Vivo e Foco em Tech",
-            subtitle: "Nossas aulas são online, ao vivo e em turmas reduzidas, com foco total na conversação e no vocabulário de tecnologia.",
-            benefits: [
-                { icon: "💻", title: "Aulas Online Ao Vivo", description: "Interaja em tempo real com o professor e colegas, de onde você estiver." },
-                { icon: "🗣️", title: "Foco em Conversação", description: "Turmas pequenas para você ter mais tempo de fala e ganhar confiança para se comunicar." },
-                { icon: "🚀", title: "Material Focado em Tech", description: "Estude com artigos, vídeos e exercícios do universo da programação e startups." },
-                { icon: "🤝", title: "Simulação de Entrevistas", description: "Treine para entrevistas de emprego reais com feedbacks para você se destacar." }
-            ]
-        },
-        ctaSection: {
-            title: "Ready to Level Up Your Career?",
-            description: "Não deixe a barreira do idioma limitar seu crescimento. As vagas são limitadas. Inscreva-se e abra as portas do mercado global."
-        }
-    },
-    'ed1': { // Empreendedorismo
-        heroContent: {
-            titleLine1: "Transforme seu Código",
-            titleAccent: "em Negócio.",
-            description: "Aprenda a criar, validar e lançar seu próprio produto digital. Do MVP à primeira venda, vamos te guiar na jornada de transformar sua paixão por tecnologia em uma startup de sucesso."
-        },
-        benefitsSection: {
-            title: "Por que todo Dev Deveria Aprender a Empreender?",
-            subtitle: "Você já sabe construir. Agora, aprenda a criar produtos que as pessoas amam e pagam para usar.",
-            benefits: [
-                { icon: "👑", title: "Seja seu Próprio Chefe", description: "Ganhe autonomia para trabalhar em seus próprios projetos e criar o futuro que você quer, nos seus termos." },
-                { icon: "💸", title: "Crie Novas Fontes de Renda", description: "Transforme suas ideias de apps, SaaS e ferramentas em negócios lucrativos e escaláveis." },
-                { icon: "🧠", title: "Pense como Dono", description: "Desenvolva uma mentalidade de negócios que te fará um dev mais valioso, mesmo em um emprego tradicional." },
-                { icon: "🎯", title: "Resolva Problemas Reais", description: "Aprenda a identificar problemas reais do mercado e a construir soluções que resolvem dores de verdade." }
-            ]
-        },
-        curriculumSection: {
-            title: "Da Ideia à Primeira Venda: Sua Jornada Empreendedora",
-            subtitle: "Uma trilha prática que te ensina o caminho das pedras para criar um negócio digital, do zero ao lançamento.",
-            items: [
-                { title: "Da Ideia ao MVP", description: "Como validar sua ideia, definir seu público-alvo e construir um Produto Mínimo Viável (MVP) de forma rápida." },
-                { title: "Modelo de Negócios", description: "Desenhe seu modelo com Canvas, defina sua proposta de valor e estratégias de monetização." },
-                { title: "No-Code & Low-Code", description: "Construa e valide ideias sem escrever uma linha de código, usando ferramentas modernas." },
-                { title: "Marketing Digital para Devs", description: "Aprenda o básico de SEO, marketing de conteúdo e como usar as redes sociais para atrair seus primeiros usuários." },
-                { title: "Vendas e Métricas", description: "Entenda como fazer sua primeira venda, definir preços e acompanhar as métricas que realmente importam (CAC, LTV)." },
-                { title: "Pitch e Captação", description: "Aprenda a apresentar sua ideia de forma convincente para clientes, parceiros e potenciais investidores." }
-            ]
-        },
-        methodologySection: {
-            title: "Nossa Metodologia: Construa seu Negócio, Não Apenas um Projeto",
-            subtitle: "Aulas práticas, estudos de caso e mentoria com quem já está no campo de batalha do empreendedorismo.",
-            benefits: [
-                { icon: "🚀", title: "Aulas Práticas", description: "Estudos de caso reais e workshops para aplicar os conceitos diretamente no seu projeto." },
-                { icon: "💡", title: "Mentoria com Fundadores", description: "Receba feedback de empreendedores que já trilharam o caminho e aprenderam com os erros e acertos." },
-                { icon: "🎤", title: "Pitch Day", description: "Apresente seu projeto final para uma banca de mentores e parceiros, simulando um ambiente real." },
-                { icon: "🤝", title: "Comunidade Empreendedora", description: "Conecte-se com outros devs que também estão na jornada de criar seus próprios negócios." }
-            ]
-        },
-        ctaSection: {
-            title: "Sua Ideia Merece Sair do Papel.",
-            description: "As vagas são limitadas. Inscreva-se para garantir seu interesse na próxima turma e comece a construir o futuro, hoje."
-        }
-    }
-};
+import { Course, CourseBenefit, Module, Lesson } from '../types';
 
 // --- Helper Components ---
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
@@ -292,22 +30,31 @@ const BenefitCard: React.FC<CourseBenefit> = ({ icon, title, description }) => (
     </div>
 );
 
-const CurriculumItem: React.FC<CurriculumItem> = ({ title, description }) => (
-    <div className="flex items-start gap-4">
-        <div className="flex-shrink-0 mt-1 h-6 w-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+const ModuleCard: React.FC<{ module: Module, index: number }> = ({ module, index }) => {
+    return (
+        <div className="bg-white/5 border border-white/10 rounded-lg p-6 h-full">
+            <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#8a4add]/20 text-[#c4b5fd] font-bold text-sm flex-shrink-0">{index + 1}</div>
+                <h3 className="font-bold text-lg text-white">{module.title}</h3>
+            </div>
+            <ul className="space-y-2">
+                {module.lessons.map((lesson) => (
+                    <li key={lesson.id} className="flex items-start gap-3 text-sm">
+                        <svg className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        <span className="text-gray-300">{lesson.title}</span>
+                    </li>
+                ))}
+            </ul>
         </div>
-        <div>
-            <h4 className="font-bold text-white">{title}</h4>
-            <p className="text-gray-400 text-sm">{description}</p>
-        </div>
-    </div>
-);
+    );
+};
+
 
 // --- Main Component ---
 const CourseLandingPage: React.FC = () => {
-    const { courses, openInscriptionModal } = useAppContext();
+    const { courses, instructors, openInscriptionModal, openProfileModal } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
+    const navigate = useNavigate();
 
     const currentCourse = courses.find(c => c.id === courseId);
     
@@ -315,11 +62,26 @@ const CourseLandingPage: React.FC = () => {
         return <div className="text-center py-20">Curso não encontrado.</div>;
     }
     
-    // Retrieve content from the map based on the current course ID
-    const content = courseContentMap[currentCourse.id];
+    const instructor = instructors.find(i => i.id === currentCourse.instructorId);
+    const content = currentCourse;
     
-    if (!content || !content.heroContent) {
-        return <div className="text-center py-20">Página para este curso em construção.</div>;
+    if (!content.heroContent) {
+        return <div className="text-center py-20">Página de apresentação para este curso em construção.</div>;
+    }
+    
+    const getIconForTitle = (title: string): React.ReactNode => {
+        const iconProps = { className: "h-8 w-8", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 1.5 };
+        switch (title) {
+            case "Mercado Corporativo": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>;
+            case "Além do Backend": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0h-2M5 11H3" /></svg>;
+            case "Performance e Segurança": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>;
+            case "Carreira Sólida": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>;
+            case "Aulas Presenciais e Online": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+            case "Instrutores do Mercado": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+            case "Projetos para Portfólio": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>;
+            case "Comunidade e Suporte": return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
+            default: return "💡";
+        }
     }
 
     return (
@@ -345,12 +107,17 @@ const CourseLandingPage: React.FC = () => {
             {/* Benefits Section */}
             {content.benefitsSection && (
                 <Section className="bg-black/20">
+                     <div className="mb-8">
+                        <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+                            <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para os cursos
+                        </button>
+                    </div>
                     <SectionTitle subtitle={content.benefitsSection.subtitle}>
                         {content.benefitsSection.title}
                     </SectionTitle>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {content.benefitsSection.benefits.map((benefit, index) => (
-                            <BenefitCard key={index} {...benefit} />
+                            <BenefitCard key={index} {...benefit} icon={getIconForTitle(benefit.title)} />
                         ))}
                     </div>
                 </Section>
@@ -358,18 +125,54 @@ const CourseLandingPage: React.FC = () => {
             
             {/* Curriculum Section */}
             {content.curriculumSection && (
-                <Section>
+                 <Section>
                     <SectionTitle subtitle={content.curriculumSection.subtitle}>
                         {content.curriculumSection.title}
                     </SectionTitle>
-                    <div className="max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12">
-                        <div className="grid md:grid-cols-2 gap-8">
-                            {content.curriculumSection.items.map((item, index) => (
-                                <CurriculumItem key={index} {...item} />
-                            ))}
+                    <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
+                        {currentCourse.modules.map((module, index) => (
+                            <ModuleCard key={module.id} module={module} index={index} />
+                        ))}
+                    </div>
+                </Section>
+            )}
+
+            {/* Project Section */}
+            {currentCourse.projectTitle && (
+                <Section className="bg-black/20">
+                    <SectionTitle subtitle={currentCourse.projectDescription}>
+                        Mão na Massa: Seu Projeto Final
+                    </SectionTitle>
+                    <div className="max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8">
+                        <div className="flex-1">
+                            <h3 className="text-2xl font-bold text-white">{currentCourse.projectTitle}</h3>
+                            <h4 className="font-bold text-gray-300 mt-6 mb-2">Critérios de Avaliação:</h4>
+                            <ul className="list-disc list-inside text-gray-400 space-y-2">
+                                {currentCourse.projectCriteria?.split('\n').map((crit, i) => <li key={i}>{crit.replace('- ', '')}</li>)}
+                            </ul>
+                        </div>
+                        <div className="flex-shrink-0 w-full md:w-1/3 p-8 bg-black/20 rounded-lg border border-dashed border-white/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-auto text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                             <p className="text-center text-xs text-gray-600 mt-2">Mockup do Projeto</p>
                         </div>
                     </div>
                 </Section>
+            )}
+
+            {/* Instructor Section */}
+            {instructor && (
+                 <Section>
+                    <SectionTitle>Conheça seu Instrutor</SectionTitle>
+                    <div className="max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col sm:flex-row items-center text-center sm:text-left gap-8">
+                        <img src={instructor.avatarUrl} alt={instructor.name} className="h-32 w-32 rounded-full flex-shrink-0" />
+                        <div>
+                            <h3 className="text-2xl font-bold text-white">{instructor.name}</h3>
+                            <p className="text-md font-semibold text-[#c4b5fd]">{instructor.title}</p>
+                            <p className="mt-2 text-gray-300">{instructor.bio}</p>
+                            <button onClick={() => openProfileModal(instructor)} className="mt-4 text-sm font-semibold text-gray-300 hover:text-white hover:underline">Ver perfil completo</button>
+                        </div>
+                    </div>
+                 </Section>
             )}
 
             {/* Methodology Section */}
@@ -380,7 +183,7 @@ const CourseLandingPage: React.FC = () => {
                     </SectionTitle>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {content.methodologySection.benefits.map((benefit, index) => (
-                            <BenefitCard key={index} {...benefit} />
+                            <BenefitCard key={index} {...benefit} icon={getIconForTitle(benefit.title)} />
                         ))}
                     </div>
                 </Section>
