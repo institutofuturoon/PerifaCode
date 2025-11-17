@@ -858,6 +858,64 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
         { title: "Turmas Reduzidas", description: "Grupos pequenos para garantir que todos recebam a atenção que merecem e possam tirar suas dúvidas." },
     ]},
     ctaSection: { title: "Pronto(a) para se Conectar?", description: "Nunca é tarde para aprender! Dê o primeiro passo para um mundo de novas possibilidades. As vagas são limitadas. Preencha o formulário e garanta seu interesse!" },
+  },
+  {
+    id: 'gd1',
+    title: 'Desenvolvimento de Games com Unity',
+    description: 'Transforme sua paixão por jogos em uma carreira. Aprenda a criar seus próprios jogos 2D e 3D com a engine mais popular do mercado.',
+    longDescription: 'Do zero ao seu primeiro jogo publicado. Este curso te ensina os fundamentos da engine Unity e da linguagem C# para que você possa dar vida às suas ideias, criando mecânicas, personagens e mundos interativos, tanto em 2D quanto em 3D.',
+    track: 'Game Dev',
+    imageUrl: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '60 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'user_marlon_souza',
+    format: 'hibrido',
+    enrollmentStatus: 'soon',
+    category: 'GAME DEV',
+    lessonsCount: 16,
+    modules: [
+        { id: 'gd1-m1', title: 'Introdução à Unity e ao Mundo dos Games', lessons: [
+            { id: 'gd1-m1-l1', title: 'O que é uma Game Engine?', duration: '20 min', type: 'text', xp: 10, objective: "Entender o papel da Unity na criação de jogos.", mainContent: "Uma Game Engine é como uma oficina completa para criar jogos. A Unity é uma das mais famosas, usada para fazer desde jogos de celular até grandes sucessos. Vamos descobrir por que ela é tão poderosa e como vamos usá-la." },
+            { id: 'gd1-m1-l2', title: 'Instalando a Unity Hub e o Editor', duration: '30 min', type: 'text', xp: 15, objective: "Configurar o ambiente de desenvolvimento de jogos no seu PC.", mainContent: "O primeiro passo é montar nosso 'laboratório'. Vamos instalar o Unity Hub, que gerencia nossas versões da Unity, e o Editor, que é onde a mágica acontece." },
+            { id: 'gd1-m1-l3', title: 'Navegando pela Interface da Unity', duration: '30 min', type: 'text', xp: 15, objective: "Familiarizar-se com as principais janelas: Scene, Game, Hierarchy, Project e Inspector.", mainContent: "A interface da Unity pode assustar no começo, mas vamos desvendar cada parte. A Scene é onde montamos o mundo, o Game é como o jogador vê, e o Inspector é onde ajustamos os detalhes de cada objeto." },
+        ]},
+        { id: 'gd1-m2', title: 'C# para Jogos: Dando Vida aos Objetos', lessons: [
+            { id: 'gd1-m2-l1', title: 'Seu Primeiro Script: Movendo um Cubo', duration: '35 min', type: 'text', xp: 20, objective: "Aprender a criar e anexar scripts a GameObjects e entender os métodos Start() e Update().", mainContent: "Chegou a hora de programar! Vamos criar nosso primeiro script em C# para fazer um simples cubo se mover. Você vai aprender a diferença fundamental entre `Start()` (o que acontece no início) e `Update()` (o que acontece a cada frame)." },
+            { id: 'gd1-m2-l2', title: 'Variáveis e Input do Jogador', duration: '30 min', type: 'text', xp: 20, objective: "Controlar o movimento do objeto usando o teclado.", mainContent: "Vamos deixar o jogo interativo! Aprenderemos a usar `Input.GetAxis()` para ler as setas do teclado ou as teclas W, A, S, D e mover nosso personagem pelo cenário. Também vamos usar variáveis para controlar a velocidade." },
+            { id: 'gd1-m2-l3', title: 'Colisões e Triggers', duration: '35 min', type: 'text', xp: 25, objective: "Detectar quando um objeto encosta no outro para criar interações.", mainContent: "O que acontece quando o jogador encosta numa moeda? Ou num inimigo? Vamos aprender a usar o sistema de física da Unity para detectar colisões e criar eventos, como coletar um item ou perder uma vida." },
+        ]},
+        { id: 'gd1-m3', title: 'Criando um Jogo 2D do Zero', lessons: [
+            { id: 'gd1-m3-l1', title: 'Sprites e Animações 2D', duration: '40 min', type: 'text', xp: 30, objective: "Importar imagens (sprites) e criar animações de personagem (parado, andando, pulando).", mainContent: "Vamos dar vida ao nosso personagem! Você vai aprender a importar uma 'sprite sheet' e a usar o Animator da Unity para criar animações de personagem que respondem aos comandos do jogador." },
+            { id: 'gd1-m3-l2', title: 'Física 2D: Pulos e Gravidade', duration: '35 min', type: 'text', xp: 25, objective: "Implementar um pulo realista usando o componente Rigidbody2D.", mainContent: "Um jogo de plataforma precisa de um bom pulo! Vamos usar o motor de física da Unity para adicionar gravidade e criar um sistema de pulo que seja gostoso de controlar." },
+            { id: 'gd1-m3-l3', title: 'Criando Coletáveis e UI Simples', duration: '35 min', type: 'text', xp: 25, objective: "Fazer moedas que desaparecem ao serem coletadas e mostrar a pontuação na tela.", mainContent: "Vamos adicionar um objetivo ao jogo: coletar moedas! E para o jogador saber quantas pegou, criaremos uma interface de usuário (UI) simples para mostrar a pontuação na tela." },
+        ]},
+         { id: 'gd1-m4', title: 'Explorando o Universo 3D', lessons: [
+            { id: 'gd1-m4-l1', title: 'Navegação e Câmera em 3D', duration: '30 min', type: 'text', xp: 20, objective: "Entender a movimentação no espaço 3D e configurar uma câmera que segue o jogador.", mainContent: "Vamos para a terceira dimensão! Aprenderemos a navegar no cenário 3D da Unity e a configurar uma câmera que segue o jogador de forma suave usando a ferramenta Cinemachine." },
+            { id: 'gd1-m4-l2', title: 'Iluminação e Materiais', duration: '30 min', type: 'text', xp: 20, objective: "Criar ambientes 3D mais bonitos e realistas ajustando luzes e materiais.", mainContent: "A aparência do seu jogo 3D depende muito da iluminação. Vamos explorar os tipos de luzes da Unity e como criar e aplicar 'materiais' para dar cor e textura aos objetos." },
+            { id: 'gd1-m4-l3', title: 'Projeto Final: Protótipo de Jogo 3D', duration: '60 min', type: 'text', xp: 50, objective: "Juntar todo o conhecimento para criar um pequeno protótipo de jogo de exploração 3D.", mainContent: "É hora do seu projeto final! Você vai construir um pequeno cenário 3D, um personagem que anda por ele e alguns itens para interagir. Será a base para você criar qualquer jogo que imaginar." },
+        ]},
+    ],
+    heroContent: { titleLine1: "Construa Mundos, Conte Histórias,", titleAccent: "Crie seu Jogo.", description: "Aprenda a usar a Unity, a engine de jogos mais popular do mundo, e a linguagem C# para transformar suas ideias em jogos 2D e 3D interativos e prontos para rodar." },
+    benefitsSection: { title: "Por que Aprender a Desenvolver Jogos?", subtitle: "A indústria de games é maior que a de cinema e música somadas. Descubra por que criar jogos é uma das carreiras mais criativas e promissoras da tecnologia.", benefits: [
+        { title: "Mercado em Expansão", description: "Trabalhe em estúdios de games, crie seus próprios jogos independentes (indie) ou use a tecnologia para outras áreas como arquitetura e simulações." },
+        { title: "Criatividade e Lógica", description: "Desenvolver jogos une o melhor dos dois mundos: a lógica da programação com a criatividade de criar artes, histórias e experiências." },
+        { title: "Unity é Multiplataforma", description: "Crie um jogo uma vez e publique para PC, celular (Android e iOS) e consoles como PlayStation, Xbox e Nintendo Switch." },
+        { title: "Comunidade e Recursos", description: "A Unity tem uma comunidade global gigantesca e uma loja de assets cheia de recursos prontos para acelerar seu desenvolvimento." },
+    ]},
+    curriculumSection: { title: "Do Zero ao seu Primeiro Jogo Publicado", subtitle: "Nossa trilha foi desenhada para te guiar passo a passo, desde a instalação da engine até a criação de um protótipo jogável.", items: [
+        { title: "Dominando a Unity", description: "Perca o medo da interface e aprenda a manipular objetos, cenas e componentes essenciais." },
+        { title: "Fundamentos de C# para Jogos", description: "Aprenda a programar de forma focada, criando scripts para movimentação, interações e regras do jogo." },
+        { title: "Construindo um Jogo 2D", description: "Crie um jogo de plataforma completo, com personagem, animações, coletáveis e interface." },
+        { title: "Explorando o Mundo 3D", description: "Entenda os conceitos de câmera, iluminação e movimentação em 3D para criar ambientes imersivos." },
+        { title: "Projeto Prático Final", description: "Aplique todo o conhecimento para construir um protótipo de jogo 3D, pronto para o seu portfólio." }
+    ]},
+    methodologySection: { title: "Nossa Metodologia: Mão na Massa e Foco no Mercado", subtitle: "Acreditamos que se aprende a fazer jogos, fazendo jogos. Nossas aulas são práticas, com desafios reais e suporte contínuo.", benefits: [
+        { title: "Aulas Presenciais e Online", description: "Escolha o formato que funciona para você: a energia da sala de aula ou a flexibilidade do online." },
+        { title: "Instrutores do Mercado", description: "Aprenda com quem trabalha na área, trazendo experiências e desafios reais para a aula." },
+        { title: "Projetos para Portfólio", description: "Finalize o curso com um projeto prático para mostrar suas habilidades aos recrutadores." },
+        { title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa no Discord para tirar dúvidas e fazer networking." }
+    ]},
+    ctaSection: { title: "Pronto para Criar seu Primeiro Jogo?", description: "Não espere mais para dar vida às suas ideias. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!" },
   }
 ];
 export const MOCK_USERS: User[] = [];

@@ -19,6 +19,9 @@ const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
         case 'BACKEND':
              icon = <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" /></svg>;
             break;
+        case 'GAME DEV':
+             icon = <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14.328 9.878a3 3 0 01-4.656 0L8.343 8.543a3 3 0 010-4.243L9.88 2.857a3 3 0 014.242 0l1.458 1.458a3 3 0 010 4.242l-1.252 1.253z" /><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 14.25L12 15.75l1.5-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 12l-1.5 1.5 1.5 1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 12l1.5 1.5-1.5 1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 110-18 9 9 0 010 18z" /></svg>;
+            break;
         case 'LETRAMENTO DIGITAL':
              icon = <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>;
             break;

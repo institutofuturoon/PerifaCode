@@ -116,7 +116,7 @@ export interface Course {
   title: string;
   description: string;
   longDescription: string;
-  track: 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Idiomas' | 'Negócios' | 'Letramento Digital';
+  track: 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Idiomas' | 'Negócios' | 'Letramento Digital' | 'Game Dev';
   imageUrl?: string;
   duration: string;
   skillLevel: 'Iniciante' | 'Intermediário' | 'Avançado';
