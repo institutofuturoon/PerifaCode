@@ -79,7 +79,6 @@ const Header: React.FC = () => {
             <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
               <NavLink onClick={() => navigate('/courses')}>Cursos</NavLink>
               <NavLink onClick={() => navigate('/about')}>Sobre Nós</NavLink>
-              <NavLink onClick={() => navigate('/team')}>Nossa Equipe</NavLink>
               <NavLink onClick={() => navigate('/community')}>Comunidade</NavLink>
               <NavLink onClick={() => navigate('/blog')}>Blog</NavLink>
               {user && <NavLink onClick={() => navigate('/dashboard')}>Meu Painel</NavLink>}

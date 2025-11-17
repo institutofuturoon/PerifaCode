@@ -293,6 +293,10 @@ const LessonView: React.FC = () => {
   if (!currentCourse || !currentLesson) {
     return <div className="text-center py-20">Aula não encontrada.</div>;
   }
+  
+  const handleBackToCourse = () => {
+    navigate('/courses');
+  };
 
   const handleCompleteLesson = () => {
     completeLesson(currentLesson.id);
@@ -340,8 +344,8 @@ const LessonView: React.FC = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-8">
-            <button onClick={() => navigate(`/course/${courseId}`)} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
-                <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o curso
+            <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+                <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para os cursos
             </button>
         </div>
       <div className="grid lg:grid-cols-3 gap-12">

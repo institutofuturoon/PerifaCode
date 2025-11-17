@@ -48,7 +48,7 @@ import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
-import { MOCK_COURSES, ARTICLES } from './constants';
+import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
 import StudentUploadTest from './views/StudentUploadTest';
@@ -126,6 +126,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
             dataFromDb = [...MOCK_COURSES, ...additionalDbCourses];
         }
+        
+        if (collectionName === 'projects') {
+            const mockProjectIds = new Set(MOCK_PROJECTS.map(c => c.id));
+            const additionalDbProjects = dataFromDb.filter(dbProject => !mockProjectIds.has((dbProject as Project).id));
+            dataFromDb = [...MOCK_PROJECTS, ...additionalDbProjects];
+        }
 
         setData(dataFromDb);
       } catch (error) {
@@ -135,6 +141,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setData(MOCK_COURSES); // Fallback to mock courses on error
         } else if (collectionName === 'articles') {
             setData(ARTICLES.map(article => ({ ...article, readingTime: calculateReadingTime(article.content) }))); // Fallback to mock articles on error
+        } else if (collectionName === 'projects') {
+            setData(MOCK_PROJECTS); // Fallback to mock projects on error
         }
         else {
             setData([]);

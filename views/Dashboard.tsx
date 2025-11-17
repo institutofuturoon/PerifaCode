@@ -483,6 +483,14 @@ const StudentDashboard: React.FC = () => {
     const [showAllCourses, setShowAllCourses] = useState(false);
 
     if (!user) return null;
+    
+    const handleCourseNavigation = (course: Course) => {
+        if (course.heroContent) {
+            navigate(`/course-landing/${course.id}`);
+        } else {
+            navigate(`/course/${course.id}`);
+        }
+    };
 
     const handleStartCourse = (course: Course) => {
         const firstLesson = course.modules?.[0]?.lessons?.[0];
@@ -490,7 +498,7 @@ const StudentDashboard: React.FC = () => {
             navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
         } else {
             // Fallback for courses with no lessons yet
-            navigate(`/course/${course.id}`);
+            handleCourseNavigation(course);
             if (showToast) {
                 showToast('🚀 Começando o curso! A primeira aula será adicionada em breve.');
             }
@@ -682,13 +690,17 @@ const StudentDashboard: React.FC = () => {
                             <h2 className="text-xl font-bold text-white mb-4">Meus Cursos em Andamento</h2>
                             <div className="space-y-6">
                                 {inProgressCourses.map(({ course, progress }) => (
-                                    <div key={course.id} className="bg-white/5 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    <button
+                                        key={course.id}
+                                        onClick={() => handleCourseNavigation(course)}
+                                        className="w-full text-left bg-white/5 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-white/10 transition-colors"
+                                    >
                                         <img src={course.imageUrl} alt={course.title} className="w-full sm:w-32 h-20 object-cover rounded-md flex-shrink-0" />
                                         <div className="flex-grow w-full">
                                             <p className="font-bold text-white">{course.title}</p>
                                             <ProgressBar progress={progress} className="mt-2" />
                                         </div>
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         </div>
@@ -710,9 +722,11 @@ const StudentDashboard: React.FC = () => {
                              <h2 className="text-xl font-bold text-white mb-4">Cursos Concluídos</h2>
                              <div className="grid sm:grid-cols-2 gap-6">
                                  {completedCourses.slice(0, showAllCourses ? undefined : 2).map(course => (
-                                      <div key={course.id} className="bg-white/5 p-4 rounded-lg text-center">
-                                        <img src={course.imageUrl} alt={course.title} className="w-full h-24 object-cover rounded-md" />
-                                        <p className="font-semibold text-white mt-3 text-sm">{course.title}</p>
+                                      <div key={course.id} className="bg-white/5 p-4 rounded-lg text-center group">
+                                        <button onClick={() => handleCourseNavigation(course)} className="w-full">
+                                            <img src={course.imageUrl} alt={course.title} className="w-full h-24 object-cover rounded-md group-hover:opacity-80 transition-opacity" />
+                                            <p className="font-semibold text-white mt-3 text-sm group-hover:text-[#c4b5fd] transition-colors">{course.title}</p>
+                                        </button>
                                         <button onClick={() => navigate(`/course/${course.id}/certificate`)} className="mt-3 w-full text-center bg-green-500/10 text-green-300 font-semibold py-2 rounded-lg text-xs hover:bg-green-500/20 transition-colors">
                                             Ver Certificado
                                         </button>

@@ -463,101 +463,6 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
         description: "Não espere mais para investir no seu futuro. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!"
     }
   },
-  {
-    id: 'ld1',
-    title: 'Letramento Digital para Melhor Idade',
-    description: 'Perca o medo da tecnologia! Aprenda a usar o celular e a internet com segurança e confiança.',
-    longDescription: 'Este curso presencial foi desenhado para quem quer dar os primeiros passos no mundo digital. Com aulas pacientes e em turmas reduzidas, você aprenderá a se comunicar com a família, usar aplicativos do dia a dia e navegar na internet com segurança.',
-    track: 'Digital',
-    imageUrl: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    duration: '20 horas',
-    skillLevel: 'Iniciante',
-    instructorId: 'user_marlon_souza',
-    format: 'presencial',
-    enrollmentStatus: 'closed',
-    category: 'INCLUSÃO',
-    lessonsCount: 12,
-    projectTitle: "Meu Diário de Conquistas Digitais",
-    projectDescription: "Ao final do curso, você criará um diário simples, registrando as novas habilidades que aprendeu, como fazer uma videochamada com a família, pesquisar uma receita na internet ou enviar uma foto pelo WhatsApp. Será um registro da sua jornada de empoderamento digital!",
-    projectCriteria: "- Registrar pelo menos 5 novas habilidades digitais.\n- Escrever um pequeno texto sobre como a tecnologia facilitou seu dia a dia.\n- Se possível, incluir uma foto tirada ou recebida durante as aulas.",
-    modules: [
-      {
-        id: 'ld1-m1',
-        title: 'Conhecendo o Celular (Smartphone)',
-        lessons: [
-          { id: 'ld1-m1-l1', title: 'Os Botões Principais: Ligando e Desligando', duration: '15 min', type: 'text', xp: 10, objective: "Identificar os botões físicos do celular e suas funções básicas.", mainContent: "Vamos começar pelo básico! Todo celular tem alguns botões importantes. O maior, na lateral, geralmente serve para ligar e desligar a tela. Apertar e segurar desliga o aparelho. Vamos praticar juntos para perder o medo!" },
-          { id: 'ld1-m1-l2', title: 'A Tela de Toque: Tocar, Arrastar e Dar Zoom', duration: '20 min', type: 'text', xp: 10, objective: "Aprender os gestos básicos para interagir com a tela.", mainContent: "A tela do seu celular é mágica! Você pode tocar nos 'desenhos' (ícones) para abrir aplicativos, arrastar o dedo para cima e para baixo para ver mais coisas e fazer o movimento de pinça com dois dedos para aumentar ou diminuir o tamanho das fotos e textos." },
-          { id: 'ld1-m1-l3', title: 'Conectando ao Wi-Fi: A Chave para a Internet', duration: '20 min', type: 'text', xp: 15, objective: "Aprender a conectar o celular na rede Wi-Fi de casa.", mainContent: "Para usar a internet sem gastar os créditos do celular, usamos o Wi-Fi. É como uma rádio que transmite a internet. Vamos aprender a encontrar a lista de redes, selecionar a rede da sua casa e digitar a senha para se conectar." }
-        ]
-      },
-      {
-        id: 'ld1-m2',
-        title: 'Comunicação sem Fronteiras com WhatsApp',
-        lessons: [
-          { id: 'ld1-m2-l1', title: 'O que é o WhatsApp e Adicionando Contatos', duration: '25 min', type: 'text', xp: 15, objective: "Entender o aplicativo e salvar o número de amigos e familiares.", mainContent: "O WhatsApp é um aplicativo que nos deixa conversar com pessoas queridas de graça, usando a internet. O primeiro passo é ter o número da pessoa salvo na sua lista de contatos do celular. Vamos aprender a fazer isso!" },
-          { id: 'ld1-m2-l2', title: 'Enviando Mensagens de Texto e Áudio', duration: '30 min', type: 'text', xp: 20, objective: "Aprender a digitar mensagens e a gravar mensagens de voz.", mainContent: "Conversar pelo WhatsApp é fácil! Vamos aprender a encontrar um contato, tocar no campo de texto para o teclado aparecer e digitar uma mensagem. Se não quiser digitar, é só segurar o botão do microfone para gravar uma mensagem de voz!" },
-          { id: 'ld1-m2-l3', title: 'Enviando Fotos e Fazendo Chamadas de Vídeo', duration: '30 min', type: 'text', xp: 20, objective: "Compartilhar momentos com fotos e ver a pessoa com quem está falando.", mainContent: "Uma imagem vale mais que mil palavras! Vamos aprender a tocar no clipe de papel ou na câmera para escolher uma foto da sua galeria e enviar. E para matar a saudade, vamos aprender a fazer uma chamada de vídeo e ver o rosto da pessoa em tempo real." }
-        ]
-      },
-      {
-        id: 'ld1-m3',
-        title: 'Explorando o Mundo com a Internet Segura',
-        lessons: [
-          { id: 'ld1-m3-l1', title: 'Usando o Google para Pesquisar', duration: '25 min', type: 'text', xp: 15, objective: "Aprender a fazer buscas por receitas, notícias e informações.", mainContent: "O Google é como uma enciclopédia gigante. Quer saber a receita de um bolo de fubá? Ou a previsão do tempo? Vamos aprender a abrir o navegador (Google Chrome), digitar o que procuramos na barra de busca e ver os resultados." },
-          { id: 'ld1-m3-l2', title: 'O que são Links? Clicando com Cuidado', duration: '20 min', type: 'text', xp: 15, objective: "Identificar textos e imagens clicáveis e navegar entre páginas.", mainContent: "Na internet, os textos que geralmente ficam azuis e sublinhados são 'links'. Eles nos levam para outras páginas. Vamos aprender a identificá-los e a ter cuidado para clicar apenas em links de sites confiáveis." },
-          { id: 'ld1-m3-l3', title: 'Dicas de Segurança: Cuidado com Golpes', duration: '30 min', type: 'text', xp: 25, objective: "Aprender a identificar mensagens suspeitas e proteger suas informações.", mainContent: "A internet é ótima, mas precisamos ter cuidado. Nunca compartilhe senhas! Desconfie de mensagens que pedem dinheiro ou que prometem prêmios fáceis demais. Na dúvida, não clique e pergunte a alguém de confiança." }
-        ]
-      },
-      {
-        id: 'ld1-m4',
-        title: 'Aplicativos Úteis para o Dia a Dia',
-        lessons: [
-          { id: 'ld1-m4-l1', title: 'Usando a Câmera para Tirar Fotos', duration: '20 min', type: 'text', xp: 15, objective: "Aprender a abrir o aplicativo de câmera e registrar momentos.", mainContent: "Seu celular é uma máquina fotográfica! Vamos aprender a abrir o aplicativo da câmera, a focar no que queremos fotografar e a apertar o botão para registrar aquele momento especial com a família ou uma paisagem bonita." },
-          { id: 'ld1-m4-l2', title: 'Acessando o YouTube para Ver Vídeos', duration: '25 min', type: 'text', xp: 15, objective: "Encontrar e assistir a vídeos de música, receitas ou programas.", mainContent: "O YouTube é uma TV online gigante! Você pode encontrar vídeos de músicas antigas, receitas, novelas, e muito mais. Vamos aprender a pesquisar pelo que você quer assistir e a controlar o vídeo (pausar, aumentar o volume)." },
-          { id: 'ld1-m4-l3', title: 'Projeto Final: Criando seu Diário de Conquistas', duration: '30 min', type: 'text', xp: 30, objective: "Registrar tudo o que foi aprendido para celebrar o progresso.", mainContent: "Parabéns por chegar até aqui! Agora, vamos juntos criar um pequeno diário para anotar tudo de novo que você aprendeu a fazer com o celular. Será uma lembrança da sua evolução e coragem para desbravar o mundo digital!" }
-        ]
-      }
-    ],
-    heroContent: {
-        titleLine1: "Conecte-se ao Mundo Digital,",
-        titleAccent: "Sem Medo.",
-        description: "Nosso curso de Letramento Digital foi criado especialmente para a melhor idade. Aprenda a usar o celular e a internet com segurança e confiança, em um ambiente acolhedor e com instrutores pacientes."
-    },
-    benefitsSection: {
-        title: "Mais Independência e Conexão no seu Dia a Dia",
-        subtitle: "A tecnologia pode ser sua grande aliada para se conectar com quem você ama e facilitar tarefas diárias.",
-        benefits: [
-            { title: "Fale com a Família", description: "Faça videochamadas com filhos e netos, receba fotos e participe dos grupos da família sem dificuldade." },
-            { title: "Autonomia e Praticidade", description: "Aprenda a usar aplicativos de banco e transporte para resolver suas coisas com mais independência." },
-            { title: "Informação e Lazer", description: "Assista a vídeos, leia notícias e pesquise suas receitas ou hobbies favoritos na internet." },
-            { title: "Segurança em Primeiro Lugar", description: "Navegue com confiança, aprendendo a identificar golpes e a proteger suas informações pessoais." }
-        ]
-    },
-    curriculumSection: {
-      title: "Uma Jornada Paciente e Passo a Passo",
-      subtitle: "Nosso conteúdo foi pensado para quem nunca teve contato com a tecnologia, indo do básico ao essencial.",
-      items: [
-          { title: "Dominando o Smartphone", description: "Entenda os botões, os gestos na tela e como se conectar à internet via Wi-Fi." },
-          { title: "O Poder do WhatsApp", description: "Comunique-se com áudio, texto, fotos e videochamadas com amigos e familiares." },
-          { title: "Navegação Segura na Internet", description: "Aprenda a usar o Google para pesquisar e a identificar os perigos do mundo online." },
-          { title: "Aplicativos que Facilitam a Vida", description: "Use a câmera para registrar momentos e o YouTube para se divertir e aprender." }
-      ]
-    },
-    methodologySection: {
-        title: "Aprenda no Seu Ritmo, com Apoio e Carinho",
-        subtitle: "Nossa metodologia é focada na paciência, na prática e no respeito ao tempo de cada aluno.",
-        benefits: [
-            { title: "Aulas 100% Presenciais", description: "Ambiente tranquilo em nossa sede, com todo o suporte necessário para você aprender." },
-            { title: "Instrutores Pacientes", description: "Nossa equipe é treinada para ensinar com didática, calma e empatia." },
-            { title: "Turmas Reduzidas", description: "Garantimos atenção individual para que ninguém fique com dúvidas." },
-            { title: "Material de Apoio", description: "Leve para casa uma apostila simples para relembrar o que foi aprendido em aula." }
-        ]
-    },
-     ctaSection: {
-        title: "Pronto para Dar o Primeiro Passo no Mundo Digital?",
-        description: "A idade não é um limite para o aprendizado. As vagas são limitadas para garantirmos a qualidade. Preencha o formulário e garanta seu interesse na próxima turma!"
-    }
-  },
    {
     id: 'py1',
     title: 'Python para Análise de Dados',
@@ -845,6 +750,114 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
       title: "Ready to Level Up Your Career?",
       description: "Não deixe a barreira do idioma limitar seu potencial. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!"
     }
+  },
+  {
+    id: 'ld1',
+    title: 'Letramento Digital: Conecte-se ao Mundo Online',
+    description: 'Perca o medo do computador e da internet. Aprenda o essencial para o dia a dia, desde enviar um email até navegar com segurança.',
+    longDescription: 'Este curso é para você que quer começar do zero. Vamos te guiar nos primeiros passos no mundo digital, mostrando como usar o computador, a internet e as principais ferramentas para se comunicar, se informar e resolver problemas do cotidiano com mais autonomia e segurança.',
+    track: 'Letramento Digital',
+    imageUrl: 'https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '20 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'user_marlon_souza',
+    format: 'presencial',
+    enrollmentStatus: 'open',
+    category: 'LETRAMENTO DIGITAL',
+    lessonsCount: 10,
+    modules: [
+        { id: 'ld1-m1', title: 'Primeiros Passos com o Computador', lessons: [
+            { id: 'ld1-m1-l1', title: 'Conhecendo a Máquina', duration: '30 min', type: 'text', xp: 10, objective: "Identificar as partes principais de um computador e ligá-lo corretamente.", mainContent: "Vamos conhecer nosso novo amigo: o computador! Aprenderemos o que é o monitor (a tela), o teclado, o mouse e a CPU (a 'caixa' principal). Você vai aprender a ligar e desligar o computador com segurança." },
+            { id: 'ld1-m1-l2', title: 'O Mouse e o Teclado sem Segredos', duration: '30 min', type: 'text', xp: 10, objective: "Praticar o uso do mouse (clicar, arrastar) e do teclado (digitar, usar teclas especiais).", mainContent: "O mouse e o teclado são suas mãos no mundo digital. Vamos praticar como mover o cursor, clicar com os botões, rolar páginas e digitar textos, incluindo letras maiúsculas e acentos." },
+        ]},
+        { id: 'ld1-m2', title: 'Navegando na Internet', lessons: [
+            { id: 'ld1-m2-l1', title: 'O que é a Internet e o Navegador?', duration: '25 min', type: 'text', xp: 15, objective: "Entender o que é a internet e como usar um navegador (Google Chrome).", mainContent: "A internet é como uma cidade gigante cheia de informações. O navegador é o nosso carro para passear por essa cidade. Vamos aprender a abrir o Google Chrome, digitar um endereço de site e navegar pelas páginas." },
+            { id: 'ld1-m2-l2', title: 'Pesquisando no Google com Eficiência', duration: '30 min', type: 'text', xp: 15, objective: "Aprender a fazer pesquisas no Google para encontrar o que você precisa.", mainContent: "O Google pode responder quase tudo! Vamos aprender a fazer as perguntas certas para encontrar receitas, notícias, endereços e muito mais. Descubra como usar palavras-chave para ter resultados melhores." },
+            { id: 'ld1-m2-l3', title: 'Segurança Online: Fique Esperto!', duration: '30 min', type: 'text', xp: 20, objective: "Identificar sites seguros e reconhecer perigos como links falsos e senhas fracas.", mainContent: "Assim como na rua, na internet precisamos ter cuidado. Você vai aprender a identificar sites seguros (o cadeado verde!), a criar senhas fortes e a desconfiar de mensagens e links suspeitos para proteger suas informações." },
+        ]},
+        { id: 'ld1-m3', title: 'Comunicação Digital Essencial', lessons: [
+            { id: 'ld1-m3-l1', title: 'Criando seu Primeiro Email', duration: '35 min', type: 'text', xp: 20, objective: "Criar uma conta de email gratuita no Gmail.", mainContent: "O email é sua identidade no mundo digital. Vamos criar, passo a passo, sua primeira conta no Gmail, que servirá para você se comunicar e se cadastrar em outros serviços online." },
+            { id: 'ld1-m3-l2', title: 'Enviando e Recebendo Mensagens', duration: '30 min', type: 'text', xp: 15, objective: "Aprender a escrever, enviar, ler e responder emails.", mainContent: "Vamos praticar o básico da comunicação por email. Você vai aprender a escrever uma mensagem, anexar um arquivo (como uma foto ou documento) e responder a emails que receber." },
+            { id: 'ld1-m3-l3', title: 'WhatsApp no Computador', duration: '25 min', type: 'text', xp: 15, objective: "Conectar e usar o WhatsApp Web para conversar usando o teclado do computador.", mainContent: "Cansado de digitar no celular? Vamos aprender a usar o WhatsApp no seu computador! É mais rápido para digitar e ótimo para enviar arquivos que estão no PC." },
+        ]},
+        { id: 'ld1-m4', title: 'Ferramentas para o Dia a Dia', lessons: [
+            { id: 'ld1-m4-l1', title: 'Criando Documentos Simples', duration: '30 min', type: 'text', xp: 20, objective: "Usar o Google Docs para escrever e formatar um texto simples, como um currículo.", mainContent: "Precisa escrever um currículo ou uma carta? O Google Docs é uma ferramenta gratuita e online para isso. Vamos aprender a criar um novo documento, digitar, formatar o texto (negrito, tamanho da letra) и salvar." },
+            { id: 'ld1-m4-l2', title: 'Design Fácil com Canva', duration: '35 min', type: 'text', xp: 20, objective: "Criar um post simples para redes sociais usando o Canva.", mainContent: "Quer criar um convite de aniversário ou um post bonito para o Instagram? O Canva é a ferramenta perfeita! Vamos explorar modelos prontos e criar uma arte simples e bonita em poucos minutos." },
+        ]},
+    ],
+    heroContent: { titleLine1: "Desvende o Mundo Digital,", titleAccent: "Conquiste sua Autonomia.", description: "Perca o medo da tecnologia. Um curso prático e presencial para você dominar o computador e a internet, abrindo portas para novas oportunidades e facilitando seu dia a dia." },
+    benefitsSection: { title: "Por que a Inclusão Digital é Essencial?", subtitle: "Saber usar a tecnologia hoje é tão importante quanto saber ler e escrever. Veja como este curso pode transformar sua vida.", benefits: [
+        { title: "Segurança e Confiança", description: "Navegue na internet sem medo, aprendendo a proteger suas informações e a identificar golpes online." },
+        { title: "Ferramentas para o Dia a Dia", description: "Use ferramentas digitais para criar um currículo, agendar uma consulta ou até mesmo fazer um post para redes sociais." },
+        { title: "Comunicação Ampliada", description: "Conecte-se com o mundo através de email e WhatsApp, facilitando a comunicação com amigos, família e oportunidades." },
+        { title: "Acesso a Serviços", description: "Ganhe autonomia para acessar serviços online do governo, bancos e lojas, resolvendo pendências sem sair de casa." },
+    ]},
+    curriculumSection: { title: "Uma Trilha Completa para sua Autonomia Digital", subtitle: "Do zero à confiança, nosso curso foi desenhado para te guiar passo a passo no universo online.", items: [
+        { title: "Primeiros Passos no Computador", description: "Perca o medo do mouse e do teclado e aprenda a interagir com o sistema operacional." },
+        { title: "Navegando na Internet com Segurança", description: "Aprenda a usar navegadores, fazer pesquisas no Google e a se proteger de perigos online." },
+        { title: "Comunicação Digital Essencial", description: "Crie e gerencie seu email e aprenda a usar o WhatsApp no computador para facilitar sua comunicação." },
+        { title: "Ferramentas Práticas", description: "Descubra como criar documentos de texto, apresentações e posts para redes sociais com ferramentas gratuitas." },
+    ]},
+    methodologySection: { title: "Nossa Metodologia: Paciência e Prática", subtitle: "Acreditamos que todos podem aprender. Nossas aulas são presenciais, com acompanhamento individual e foco em superar suas dificuldades.", benefits: [
+        { title: "Aulas 100% Presenciais", description: "Aprenda em um ambiente acolhedor, com computadores disponíveis e instrutores ao seu lado para tirar dúvidas." },
+        { title: "Foco no Aluno", description: "Respeitamos o seu ritmo. Nossas aulas são pensadas para quem nunca teve contato com a tecnologia." },
+        { title: "Aprendizado na Prática", description: "Cada aula tem uma atividade prática para você aplicar o que aprendeu e ganhar confiança." },
+        { title: "Comunidade e Suporte", description: "Faça parte de uma turma onde todos estão aprendendo juntos, trocando experiências e se ajudando." },
+    ]},
+    ctaSection: { title: "Pronto para se Conectar?", description: "Dê o primeiro passo para sua inclusão digital. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!" },
+  },
+  {
+    id: 'ld2',
+    title: 'Conectados: Letramento Digital para a Melhor Idade',
+    description: 'Aprenda a usar o celular e o computador sem medo, para se conectar com a família, se informar e ter mais autonomia no dia a dia.',
+    longDescription: 'Feito com carinho e paciência, este curso é um convite para a melhor idade entrar no mundo digital. Com aulas práticas e um ritmo tranquilo, vamos te ajudar a usar o WhatsApp, fazer videochamadas, navegar na internet com segurança e aproveitar todas as facilidades que a tecnologia oferece.',
+    track: 'Letramento Digital',
+    imageUrl: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '18 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'user_marlon_souza',
+    format: 'presencial',
+    enrollmentStatus: 'open',
+    category: 'LETRAMENTO DIGITAL',
+    lessonsCount: 8,
+    modules: [
+        { id: 'ld2-m1', title: 'Dominando o Celular', lessons: [
+            { id: 'ld2-m1-l1', title: 'Conhecendo seu Smartphone', duration: '45 min', type: 'text', xp: 10, objective: "Entender os botões, a tela de toque e os ícones principais do celular.", mainContent: "Seu celular é uma janela para o mundo! Vamos aprender juntos a ligar, desbloquear a tela, entender o que cada ícone significa e como se conectar à internet (Wi-Fi)." },
+            { id: 'ld2-m1-l2', title: 'O Mundo do WhatsApp', duration: '45 min', type: 'text', xp: 15, objective: "Aprender a mandar mensagens de texto, áudio, fotos e participar de grupos.", mainContent: "O WhatsApp é a principal forma de falar com a família hoje em dia. Vamos praticar como enviar uma mensagem, mandar um áudio, compartilhar uma foto da galeria e entrar nos grupos da família." },
+        ]},
+        { id: 'ld2-m2', title: 'Conectando-se com a Família', lessons: [
+            { id: 'ld2-m2-l1', title: 'Videochamadas: Vendo Quem Está Longe', duration: '45 min', type: 'text', xp: 20, objective: "Aprender a fazer e receber chamadas de vídeo pelo WhatsApp.", mainContent: "A saudade apertou? Uma chamada de vídeo resolve! Vamos aprender o passo a passo para ligar por vídeo para seus filhos e netos, e como atender quando eles ligarem para você." },
+            { id: 'ld2-m2-l2', title: 'Explorando o Facebook', duration: '45 min', type: 'text', xp: 15, objective: "Aprender a ver fotos da família, curtir e comentar posts.", mainContent: "O Facebook é como um grande álbum de fotos da família e dos amigos. Vamos aprender a navegar, ver as novidades, curtir as publicações e deixar um comentário carinhoso." },
+        ]},
+        { id: 'ld2-m3', title: 'Navegando com Segurança e Autonomia', lessons: [
+            { id: 'ld2-m3-l1', title: 'Pesquisando na Internet com Segurança', duration: '45 min', type: 'text', xp: 20, objective: "Usar o Google para pesquisar assuntos de interesse e identificar notícias falsas.", mainContent: "Quer ver uma receita ou saber sobre um ator antigo? O Google ajuda! Vamos aprender a pesquisar e, o mais importante, a desconfiar de notícias falsas e a buscar informações em fontes seguras." },
+            { id: 'ld2-m3-l2', title: 'Cuidado com Golpes!', duration: '45 min', type: 'text', xp: 20, objective: "Reconhecer as principais tentativas de golpe por WhatsApp e email.", mainContent: "Sua segurança é prioridade. Vamos conversar sobre as mensagens de prêmios falsos, links perigosos e pedidos de dinheiro de números desconhecidos. Aprenda a se proteger e a não cair em golpes." },
+        ]},
+        { id: 'ld2-m4', title: 'Facilitando o Dia a Dia', lessons: [
+            { id: 'ld2-m4-l1', title: 'YouTube: Vídeos e Músicas', duration: '40 min', type: 'text', xp: 15, objective: "Aprender a procurar e assistir vídeos, como músicas antigas, novelas e programas.", mainContent: "O YouTube é uma TV infinita! Quer rever uma cena de novela, ouvir uma música da sua época ou aprender a fazer um artesanato? Vamos aprender a pesquisar e assistir vídeos." },
+            { id: 'ld2-m4-l2', title: 'Serviços Online: Agendando Consultas', duration: '40 min', type: 'text', xp: 20, objective: "Entender como usar a internet para agendar consultas médicas e outros serviços.", mainContent: "Muitos serviços hoje podem ser resolvidos online. Vamos simular como agendar uma consulta médica ou acessar o portal da prefeitura, mostrando como a tecnologia pode facilitar sua vida." },
+        ]},
+    ],
+    heroContent: { titleLine1: "Conecte-se com quem você ama,", titleAccent: "sem medo da tecnologia.", description: "Um curso presencial, com paciência e carinho, para a melhor idade aprender a usar o celular e o computador, se conectar com a família e ganhar mais autonomia e segurança no mundo digital." },
+    benefitsSection: { title: "Por que se Conectar na Melhor Idade?", subtitle: "A tecnologia pode ser uma grande aliada para aproximar pessoas, facilitar tarefas e manter a mente ativa.", benefits: [
+        { title: "Fale com a Família", description: "Faça videochamadas, receba fotos dos netos e participe dos grupos da família no WhatsApp, diminuindo a saudade." },
+        { title: "Segurança e Autonomia", description: "Aprenda a identificar golpes no celular e a usar a internet com mais confiança para resolver suas coisas." },
+        { title: "Acesso a Serviços", description: "Descubra como agendar consultas, ver resultados de exames e acessar serviços públicos sem sair de casa." },
+        { title: "Exercite a Mente", description: "Mantenha-se ativo(a) aprendendo coisas novas, assistindo vídeos, lendo notícias e jogando jogos online." },
+    ]},
+    curriculumSection: { title: "Uma Jornada de Aprendizado Tranquila e Divertida", subtitle: "Nosso curso foi desenhado para ser prático, útil e respeitar o seu tempo de aprendizado.", items: [
+        { title: "Dominando seu Celular", description: "Perca o medo da tela de toque e aprenda a usar os aplicativos essenciais, como a agenda e a câmera." },
+        { title: "WhatsApp para a Família", description: "Domine o envio de mensagens, áudios, fotos e, claro, as tão esperadas chamadas de vídeo." },
+        { title: "Navegando na Internet com Segurança", description: "Aprenda a pesquisar no Google, a identificar notícias falsas e a se proteger de golpes comuns." },
+        { title: "Facilitando o Dia a Dia", description: "Descubra como usar aplicativos de transporte, assistir a vídeos no YouTube e acessar serviços online." },
+    ]},
+    methodologySection: { title: "Nossa Metodologia: Acolhimento e Paciência", subtitle: "Aqui, ninguém fica para trás. Acreditamos que aprender é para todas as idades.", benefits: [
+        { title: "Aulas 100% Presenciais", description: "Ambiente tranquilo, com instrutores dedicados a te ajudar individualmente em cada etapa." },
+        { title: "Ritmo Adequado", description: "Aulas pensadas para a melhor idade, sem pressa, com muitas pausas e repetições para fixar o conteúdo." },
+        { title: "Material Didático Simples", description: "Apostilas com letras grandes e passo a passo visual para você consultar sempre que precisar." },
+        { title: "Turmas Reduzidas", description: "Grupos pequenos para garantir que todos recebam a atenção que merecem e possam tirar suas dúvidas." },
+    ]},
+    ctaSection: { title: "Pronto(a) para se Conectar?", description: "Nunca é tarde para aprender! Dê o primeiro passo para um mundo de novas possibilidades. As vagas são limitadas. Preencha o formulário e garanta seu interesse!" },
   }
 ];
 export const MOCK_USERS: User[] = [];
