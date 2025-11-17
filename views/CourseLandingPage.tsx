@@ -107,11 +107,6 @@ const CourseLandingPage: React.FC = () => {
             {/* Benefits Section */}
             {content.benefitsSection && (
                 <Section className="bg-black/20">
-                     <div className="mb-8">
-                        <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
-                            <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para os cursos
-                        </button>
-                    </div>
                     <SectionTitle subtitle={content.benefitsSection.subtitle}>
                         {content.benefitsSection.title}
                     </SectionTitle>
@@ -205,6 +200,14 @@ const CourseLandingPage: React.FC = () => {
                     </div>
                 </Section>
             )}
+
+            <Section className="!pt-0 !pb-16">
+                <div className="text-center">
+                    <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+                        <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para os cursos
+                    </button>
+                </div>
+            </Section>
         </>
     );
 };
