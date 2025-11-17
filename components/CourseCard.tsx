@@ -1,5 +1,6 @@
 import React from 'react';
 import { Course } from '../types';
+import { useAppContext } from '../App';
 
 interface CourseCardProps {
   course: Course;
@@ -37,6 +38,8 @@ const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
 }
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
+  const { instructors } = useAppContext();
+  const instructor = instructors.find(i => i.id === course.instructorId);
 
   const formatInfo = {
     online: { icon: '🌐', text: 'Online' },
@@ -54,33 +57,20 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
         <CategoryIcon category={course.category} />
       </div>
       <div className="p-6 flex flex-col flex-grow">
-        <div className="flex flex-wrap gap-2 mb-4">
-          {course.tags?.map(tag => (
-            <span key={tag} className="px-3 py-1 text-xs font-semibold rounded-full bg-gray-700/60 text-gray-300">
-              {tag}
-            </span>
-          ))}
-        </div>
         <h3 onClick={() => onCourseSelect(course)} className="text-xl font-bold text-white mb-2 group-hover:text-[#c4b5fd] transition-colors duration-300 cursor-pointer">{course.title}</h3>
         <p className="text-sm text-gray-400 flex-grow">{course.description}</p>
         
         <div className="flex items-center gap-4 text-sm text-gray-400 border-t border-gray-700/80 pt-4 mt-4">
-          {course.lessonsCount && (
-            <div className="flex items-center gap-1.5" title={`${course.lessonsCount} aulas`}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>{course.lessonsCount} aulas</span>
-            </div>
-          )}
-           {course.duration && course.duration !== 'N/A' && (
-            <div className="flex items-center gap-1.5" title={`Duração de ${course.duration}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span>{course.duration}</span>
+          {instructor && (
+            <div className="flex items-center gap-2" title={`Instrutor: ${instructor.name}`}>
+                <img src={instructor.avatarUrl} alt={instructor.name} className="h-6 w-6 rounded-full"/>
+                <span className="text-xs font-medium">{instructor.name.split(' ')[0]}</span>
             </div>
           )}
            {course.format && (
             <div className="flex items-center gap-1.5" title={`Formato: ${formatInfo[course.format].text}`}>
                 <span>{formatInfo[course.format].icon}</span>
-                <span>{formatInfo[course.format].text}</span>
+                <span className="text-xs">{formatInfo[course.format].text}</span>
             </div>
            )}
         </div>

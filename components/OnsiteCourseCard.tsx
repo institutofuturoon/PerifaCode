@@ -1,6 +1,5 @@
 import React from 'react';
 import { Course } from '../types';
-import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 
 interface OnsiteCourseCardProps {
@@ -8,7 +7,6 @@ interface OnsiteCourseCardProps {
 }
 
 const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
-    const { openInscriptionModal } = useAppContext();
     const navigate = useNavigate();
 
     const navigateToCourse = (course: Course) => {
@@ -24,15 +22,25 @@ const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
         presencial: { icon: '📍', text: 'Presencial' },
         hibrido: { icon: '📹', text: 'Híbrido' }
     };
+    
+    const statusConfig = {
+        open: { text: 'Inscrições Abertas', classes: 'bg-green-500/10 text-green-300 border-green-500/20' },
+        closed: { text: 'Turma Lotada', classes: 'bg-red-500/10 text-red-400 border-red-500/20' },
+        soon: { text: 'Em Breve', classes: 'bg-sky-500/10 text-sky-300 border-sky-500/20' }
+    };
+
+    const status = course.enrollmentStatus ? statusConfig[course.enrollmentStatus] : null;
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row gap-6 transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row gap-6 transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10 group">
             <div className="flex-1">
-                <div className="flex items-center gap-4 mb-2">
+                <div className="flex items-center gap-4 mb-2 flex-wrap">
                     <span className="font-bold text-lg text-white group-hover:text-[#c4b5fd] transition-colors duration-300 cursor-pointer" onClick={() => navigateToCourse(course)}>{course.title}</span>
-                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-500/10 text-yellow-300 border border-yellow-500/20">
-                        {course.skillLevel}
-                    </span>
+                    {status && (
+                        <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${status.classes}`}>
+                            {status.text}
+                        </span>
+                    )}
                 </div>
                 <p className="text-sm text-gray-400 mb-4 line-clamp-2">{course.description}</p>
                 
@@ -51,16 +59,10 @@ const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
             </div>
             <div className="flex-shrink-0 flex flex-col items-center justify-center gap-2 w-full md:w-auto">
                  <button
-                    onClick={() => openInscriptionModal(course)}
+                    onClick={() => navigateToCourse(course)}
                     className="w-full md:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300"
                 >
-                    Inscrever-se
-                </button>
-                 <button 
-                    onClick={() => navigateToCourse(course)}
-                    className="w-full md:w-auto text-xs text-gray-400 hover:text-white hover:underline"
-                >
-                    Ver mais detalhes
+                    Ver Detalhes do Curso
                 </button>
             </div>
         </div>

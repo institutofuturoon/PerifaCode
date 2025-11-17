@@ -132,7 +132,7 @@ E aí, pronto para começar a construir o futuro?`,
     author: 'Marlon Souza',
     date: '02/08/2024',
     summary: 'Pense no Git como uma máquina do tempo para o seu código. Aprenda os comandos essenciais para versionar seus projetos, colaborar com outros devs e construir um portfólio incrível no GitHub.',
-    imageUrl: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imageUrl: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
     category: 'Tutoriais',
     content: `Se você está começando no mundo da programação, já deve ter ouvido falar de Git e GitHub. Parecem complicados, né? Mas relaxa! A real é que eles são seus melhores amigos na jornada de dev.
@@ -246,7 +246,7 @@ A chave é praticar. Crie um projeto, faça pequenas alterações e vá fazendo 
     author: 'Marlon Souza',
     date: '10/08/2024',
     summary: 'Você já mexe com JavaScript no frontend? Imagine usar essa mesma linguagem para construir o "cérebro" das aplicações. Isso é Node.js! Descubra como ele funciona, por que é tão popular e crie seu primeiro servidor em minutos.',
-    imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
     category: 'Tutoriais',
     content: `Se você está começando no mundo do desenvolvimento web, provavelmente já ouviu falar de HTML, CSS e JavaScript. Eles são o trio parada dura do **frontend** – a parte que o usuário vê e interage no navegador.
@@ -346,11 +346,12 @@ export const MOCK_COURSES: Course[] = [
     description: 'Aprenda os fundamentos da programação e construa uma base sólida para pensar como um desenvolvedor, usando a linguagem C#.',
     longDescription: 'Este curso é a porta de entrada para o mundo do desenvolvimento de software. Você aprenderá os conceitos essenciais de lógica de programação, como variáveis, condicionais e laços de repetição, aplicando tudo na prática com a linguagem C#, uma das mais requisitadas pelo mercado de trabalho em grandes empresas.',
     track: 'Backend',
-    imageUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    imageUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     duration: '40 horas',
     skillLevel: 'Iniciante',
     instructorId: 'user_marlon_souza',
     format: 'hibrido',
+    enrollmentStatus: 'open',
     category: 'BACKEND',
     tags: ["c#", ".net", "backend", "iniciante"],
     lessonsCount: 12,
@@ -420,6 +421,46 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
             ]
         }
     ]
+  },
+  {
+    id: 'ld1',
+    title: 'Letramento Digital para Melhor Idade',
+    description: 'Perca o medo da tecnologia! Aprenda a usar o computador, celular e a internet com segurança e confiança.',
+    longDescription: 'Este curso presencial foi desenhado para quem quer dar os primeiros passos no mundo digital. Com aulas pacientes e em turmas reduzidas, você aprenderá a se comunicar com a família, usar aplicativos do dia a dia e navegar na internet com segurança.',
+    track: 'Digital',
+    imageUrl: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '20 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'user_marlon_souza',
+    format: 'presencial',
+    enrollmentStatus: 'closed',
+    category: 'INCLUSÃO',
+    modules: [],
+    heroContent: {
+        titleLine1: "Conecte-se ao Mundo Digital,",
+        titleAccent: "Sem Medo.",
+        description: "Nosso curso de Letramento Digital foi criado especialmente para a melhor idade. Aprenda a usar o computador, celular e a internet com segurança e confiança, em um ambiente acolhedor e com instrutores pacientes."
+    },
+  },
+   {
+    id: 'py1',
+    title: 'Python para Análise de Dados',
+    description: 'Aprenda a linguagem Python do zero e utilize bibliotecas como Pandas e Matplotlib para analisar e visualizar dados.',
+    longDescription: 'Python é a principal ferramenta para cientistas e analistas de dados. Neste curso, você sairá do zero, aprenderá a lógica de programação com Python e mergulhará no universo da análise de dados, preparando-se para uma das carreiras mais promissoras da atualidade.',
+    track: 'IA',
+    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '50 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'user_marlon_souza',
+    format: 'hibrido',
+    enrollmentStatus: 'soon',
+    category: 'IA',
+    modules: [],
+     heroContent: {
+        titleLine1: "Do Zero ao Código,",
+        titleAccent: "com Python.",
+        description: "Aprenda a programar com uma das linguagens mais populares do mercado. Desenvolve sua lógica, crie seus primeiros projetos e abra portas para uma nova carreira em tecnologia."
+    },
   }
 ];
 export const MOCK_USERS: User[] = [];

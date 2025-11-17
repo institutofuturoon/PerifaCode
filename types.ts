@@ -130,6 +130,7 @@ export interface Course {
   projectCriteria?: string;
   format: 'online' | 'presencial' | 'hibrido';
   lessonRelease?: 'sequencial' | 'manual';
+  enrollmentStatus?: 'open' | 'closed' | 'soon';
 
   // Fields for dynamic landing pages
   heroContent?: {

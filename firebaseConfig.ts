@@ -1,5 +1,5 @@
-// FIX: Corrected Firebase initialization by using named imports for `getApps`, `initializeApp`, and `getApp` from "firebase/app". The previous namespace import (`import * as firebase`) was incorrect for the Firebase v9+ modular SDK and caused the "property does not exist" errors.
-import { initializeApp, getApps, getApp } from "firebase/app";
+// FIX: Updated Firebase initialization to use the modular (v9) API. This resolves type errors by providing the correct service instances for v9 functions used throughout the application.
+import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -14,10 +14,9 @@ const firebaseConfig = {
   measurementId: "G-TV2MTZTZ8C"
 };
 
-// Inicializa o Firebase usando a API modular, evitando reinicializações.
-// FIX: Use direct function calls as per Firebase v9+ modular SDK.
+// Initialize Firebase, preventing re-initialization in HMR environments.
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Exporta instâncias dos serviços modulares.
+// Export v9 modular service instances.
 export const auth = getAuth(app);
 export const db = getFirestore(app);

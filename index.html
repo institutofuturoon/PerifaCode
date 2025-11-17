@@ -118,6 +118,7 @@
         transform: translate(-50%, -50%);
         animation: aurora-spin 20s linear infinite;
         z-index: 0;
+        pointer-events: none; /* Allows clicks to pass through to content below */
       }
 
       @keyframes aurora-spin {
