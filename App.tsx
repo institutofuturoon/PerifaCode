@@ -6,7 +6,7 @@ import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from '@firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress } from './types';
+import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -48,10 +48,12 @@ import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
-import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES } from './constants';
+import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
 import StudentUploadTest from './views/StudentUploadTest';
+import ForumPostDetailView from './views/ForumPostDetailView';
+import ForumPostEditor from './views/ForumPostEditor';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -83,6 +85,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [articles, setArticles] = useState<Article[]>([]);
   
   const [projects, setProjects] = useState<Project[]>([]);
+
+  const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
   
   const [partners, setPartners] = useState<Partner[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -106,6 +110,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const fetchAndPopulateCollection = async (collectionName: string, setData: React.Dispatch<React.SetStateAction<any[]>>) => {
+      // Impede o carregamento de cursos para efetivamente "excluí-los" da plataforma.
+      if (collectionName === 'courses') {
+        setData([]);
+        return;
+      }
+    
       try {
         const collRef = collection(db, collectionName);
         const snapshot = await getDocs(collRef);
@@ -120,17 +130,17 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             const additionalDbArticles = dataFromDb.filter(dbArticle => !mockArticleIds.has((dbArticle as Article).id));
             dataFromDb = [...ARTICLES, ...additionalDbArticles];
         }
-
-        if (collectionName === 'courses') {
-            const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
-            const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
-            dataFromDb = [...MOCK_COURSES, ...additionalDbCourses];
-        }
         
         if (collectionName === 'projects') {
             const mockProjectIds = new Set(MOCK_PROJECTS.map(c => c.id));
             const additionalDbProjects = dataFromDb.filter(dbProject => !mockProjectIds.has((dbProject as Project).id));
             dataFromDb = [...MOCK_PROJECTS, ...additionalDbProjects];
+        }
+
+        if (collectionName === 'communityPosts') {
+            const mockPostIds = new Set(MOCK_COMMUNITY_POSTS.map(p => p.id));
+            const additionalDbPosts = dataFromDb.filter(dbPost => !mockPostIds.has((dbPost as CommunityPost).id));
+            dataFromDb = [...MOCK_COMMUNITY_POSTS, ...additionalDbPosts];
         }
 
         setData(dataFromDb);
@@ -143,6 +153,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setData(ARTICLES.map(article => ({ ...article, readingTime: calculateReadingTime(article.content) }))); // Fallback to mock articles on error
         } else if (collectionName === 'projects') {
             setData(MOCK_PROJECTS); // Fallback to mock projects on error
+        } else if (collectionName === 'communityPosts') {
+            setData(MOCK_COMMUNITY_POSTS); // Fallback to mock posts on error
         }
         else {
             setData([]);
@@ -159,6 +171,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           fetchAndPopulateCollection('courses', setCourses),
           fetchAndPopulateCollection('articles', setArticles),
           fetchAndPopulateCollection('projects', setProjects),
+          fetchAndPopulateCollection('communityPosts', setCommunityPosts),
           fetchAndPopulateCollection('partners', setPartners),
           fetchAndPopulateCollection('events', setEvents),
           fetchAndPopulateCollection('mentorSessions', setMentorSessions)
@@ -275,6 +288,22 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         } catch (error) {
             console.error("Erro ao salvar curso:", error);
         }
+    };
+
+    const handleDeleteCourse = async (courseId: string): Promise<boolean> => {
+      if(window.confirm("Tem certeza que deseja excluir este curso? Esta ação é irreversível e removerá todos os módulos e aulas associados.")) {
+          setCourses(prev => prev.filter(c => c.id !== courseId));
+          showToast("🗑️ Curso excluído com sucesso.");
+          try {
+              await deleteDoc(doc(db, "courses", courseId));
+              return true;
+          } catch (error) {
+              console.error("Erro ao excluir curso:", error);
+              showToast("❌ Erro ao excluir o curso.");
+              return false;
+          }
+      }
+      return false;
     };
 
     const handleSaveArticle = async (articleToSave: Article) => {
@@ -421,6 +450,56 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handleSaveCommunityPost = async (postToSave: CommunityPost) => {
+      const isNew = !communityPosts.some(p => p.id === postToSave.id);
+      setCommunityPosts(prev => isNew ? [...prev, postToSave] : prev.map(p => p.id === postToSave.id ? postToSave : p));
+      showToast(isNew ? "✅ Post criado com sucesso!" : "✅ Post atualizado com sucesso!");
+      try {
+          await setDoc(doc(db, "communityPosts", postToSave.id), postToSave);
+      } catch (error) {
+          console.error("Erro ao salvar post:", error);
+      }
+    };
+
+    const handleDeleteCommunityPost = async (postId: string) => {
+      if (window.confirm("Tem certeza que deseja excluir este post?")) {
+          setCommunityPosts(prev => prev.filter(p => p.id !== postId));
+          showToast("🗑️ Post excluído com sucesso.");
+          try {
+              await deleteDoc(doc(db, "communityPosts", postId));
+          } catch (error) {
+              console.error("Erro ao excluir post:", error);
+          }
+      }
+    };
+
+    const handleAddCommunityPostClap = async (postId: string) => {
+        const post = communityPosts.find(p => p.id === postId);
+        if (!post) return;
+        const newClaps = (post.claps || 0) + 1;
+        setCommunityPosts(prev => prev.map(p => p.id === postId ? { ...p, claps: newClaps } : p));
+        try {
+            await updateDoc(doc(db, "communityPosts", postId), { claps: newClaps });
+        } catch (error) {
+            console.error("Erro ao adicionar clap ao post:", error);
+        }
+    };
+
+    const handleAddCommunityReply = async (postId: string, text: string) => {
+        if (!user) return;
+        const newReply: CommunityReply = { id: `reply_${Date.now()}`, authorId: user.id, content: text, createdAt: new Date().toISOString() };
+        const post = communityPosts.find(p => p.id === postId);
+        if (!post) return;
+        const newReplies = [...(post.replies || []), newReply];
+        setCommunityPosts(prev => prev.map(p => p.id === postId ? { ...p, replies: newReplies } : p));
+        try {
+            await updateDoc(doc(db, "communityPosts", postId), { replies: newReplies });
+        } catch (error) {
+            console.error("Erro ao adicionar resposta:", error);
+        }
+    };
+
+
     const handleSaveEvent = async (eventToSave: Event) => {
         const isNew = !events.some(e => e.id === eventToSave.id);
         setEvents(prev => isNew ? [...prev, eventToSave] : prev.map(e => e.id === eventToSave.id ? eventToSave : e));
@@ -556,17 +635,19 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const value = {
     user, users, courses, articles, team, projects, partners, events, mentorSessions, toast,
+    communityPosts,
     courseProgress, isProfileModalOpen, selectedProfile,
     isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading,
     setUser,
     handleLogout, openProfileModal, closeProfileModal,
     openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
-    completeLesson, handleSaveNote, handleSaveCourse, handleSaveArticle,
+    completeLesson, handleSaveNote, handleSaveCourse, handleDeleteCourse, handleSaveArticle,
     handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap, handleSaveUser, 
     handleDeleteUser, handleSaveProject, handleAddClap, handleAddComment, handleSaveEvent, 
     handleDeleteEvent, handleSaveTeamOrder, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession,
     showToast, handleUpdateUserProfile, handleCompleteOnboarding,
+    handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
@@ -703,6 +784,7 @@ const AppRoutes: React.FC = () => {
                         <Route path="/article/:articleId" element={<ArticleView />} />
                         <Route path="/project/:projectId" element={<ProjectDetailView />} />
                         <Route path="/event/:eventId" element={<EventDetailView />} />
+                        <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
 
                         <Route element={<ProtectedRoute />}>
                             <Route path="/dashboard" element={<Dashboard />} />
@@ -710,6 +792,8 @@ const AppRoutes: React.FC = () => {
                             <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
                             <Route path="/project/edit" element={<ProjectEditor />} />
                             <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
+                            <Route path="/community/post/new" element={<ForumPostEditor />} />
+                            <Route path="/community/post/edit/:postId" element={<ForumPostEditor />} />
 
                             <Route element={<AdminRoute />}>
                                 <Route path="/admin" element={<Dashboard />} />

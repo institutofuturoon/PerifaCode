@@ -139,7 +139,7 @@ const AdminDashboard: React.FC = () => {
       user, users, courses, articles, team, mentorSessions,
       handleSaveCourse, handleDeleteArticle, handleToggleArticleStatus,
       handleSaveUser, handleDeleteUser, handleSaveTeamOrder,
-      handleAddSessionSlot, handleRemoveSessionSlot,
+      handleAddSessionSlot, handleRemoveSessionSlot, handleDeleteCourse,
     } = useAppContext();
     const navigate = useNavigate();
 
@@ -190,6 +190,7 @@ const AdminDashboard: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
                       <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-green-400 hover:text-green-300">Ver Progresso</button>
                       <button onClick={() => handleEditCourse(course.id)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                      <button onClick={() => handleDeleteCourse(course.id)} className="text-red-400 hover:text-red-300">Excluir</button>
                     </td>
                   </tr>
                 ))

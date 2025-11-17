@@ -116,7 +116,7 @@ export interface Course {
   title: string;
   description: string;
   longDescription: string;
-  track: 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Idiomas' | 'Negócios' | 'Letramento Digital' | 'Game Dev';
+  track: 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Idiomas' | 'Negócios' | 'Letramento Digital';
   imageUrl?: string;
   duration: string;
   skillLevel: 'Iniciante' | 'Intermediário' | 'Avançado';
@@ -266,6 +266,25 @@ export interface ForumPost {
     replies: Reply[];
 }
 
+export interface CommunityReply {
+  id: string;
+  authorId: string;
+  content: string;
+  createdAt: string; // ISO String
+}
+
+export interface CommunityPost {
+  id: string;
+  authorId: string;
+  title: string;
+  content: string;
+  tags: string[];
+  claps: number;
+  views: number;
+  createdAt: string; // ISO String
+  replies: CommunityReply[];
+}
+
 export interface Notification {
     id: string;
     text: string;
@@ -377,6 +396,7 @@ export interface AppContextType {
   articles: Article[];
   team: User[];
   projects: Project[];
+  communityPosts: CommunityPost[];
   partners: Partner[];
   events: Event[];
   mentorSessions: MentorSession[];
@@ -408,6 +428,7 @@ export interface AppContextType {
   
   // Data Management
   handleSaveCourse: (courseToSave: Course) => void;
+  handleDeleteCourse: (courseId: string) => Promise<boolean>;
   handleSaveArticle: (articleToSave: Article) => void;
   handleDeleteArticle: (articleId: string) => Promise<boolean>;
   handleToggleArticleStatus: (articleId: string) => Promise<void>;
@@ -421,6 +442,10 @@ export interface AppContextType {
   handleSaveEvent: (eventToSave: Event) => void;
   handleDeleteEvent: (eventId: string) => void;
   handleSaveTeamOrder: (orderedTeam: User[]) => Promise<void>;
+  handleSaveCommunityPost: (postToSave: CommunityPost) => void;
+  handleDeleteCommunityPost: (postId: string) => void;
+  handleAddCommunityPostClap: (postId: string) => void;
+  handleAddCommunityReply: (postId: string, text: string) => void;
   handleAddSessionSlot: (mentorId: string, date: string, time: string) => void;
   handleRemoveSessionSlot: (mentorId: string, date: string, time: string) => void;
   handleBookSession: (sessionId: string) => void;
