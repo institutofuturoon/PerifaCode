@@ -130,7 +130,10 @@ const ArticleView: React.FC = () => {
               <img src={article.authorAvatarUrl} alt={article.author} className="h-12 w-12 rounded-full border-2 border-[#8a4add]/50" />
               <div>
                 <p className="font-semibold text-white">{article.author}</p>
-                <p className="text-sm text-gray-400">{article.date} &bull; {article.readingTime} min de leitura</p>
+                <p className="text-sm text-gray-400">
+                    {article.date}
+                    {article.readingTime && article.readingTime > 0 && ` • ${article.readingTime} min de leitura`}
+                </p>
               </div>
             </div>
           </div>

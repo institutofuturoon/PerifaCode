@@ -37,7 +37,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleSelect, lay
                     <img className="h-8 w-8 rounded-full" src={article.authorAvatarUrl} alt={article.author} />
                     <div>
                         <p className="font-semibold text-white text-sm">{article.author}</p>
-                        <p className="text-gray-500 text-xs">{article.date}</p>
+                        <p className="text-gray-500 text-xs">
+                          {article.date}
+                          {article.readingTime && article.readingTime > 0 && ` • ${article.readingTime} min de leitura`}
+                        </p>
                     </div>
                 </div>
               </div>
@@ -66,7 +69,10 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleSelect, lay
           </div>
           <div className="ml-3">
             <p className="text-sm font-medium text-white">{article.author}</p>
-            <p className="text-xs text-gray-500">{article.date}</p>
+            <p className="text-xs text-gray-500">
+              {article.date}
+              {article.readingTime && article.readingTime > 0 && ` • ${article.readingTime} min de leitura`}
+            </p>
           </div>
         </div>
       </div>

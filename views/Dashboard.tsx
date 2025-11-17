@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Achievement, Lesson, MentorSession, User } from '../types';
+import { Achievement, Course, Lesson, MentorSession, User } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
 import { useAppContext } from '../App';
@@ -476,13 +476,26 @@ const StudentsTable = () => (
 const StudentDashboard: React.FC = () => {
     const { 
       user, users, courses, articles,
-      courseProgress, openInscriptionModal, mentors, 
-      projects, events, mentorSessions,
+      courseProgress, mentors, 
+      projects, events, mentorSessions, showToast
     } = useAppContext();
     const navigate = useNavigate();
     const [showAllCourses, setShowAllCourses] = useState(false);
 
     if (!user) return null;
+
+    const handleStartCourse = (course: Course) => {
+        const firstLesson = course.modules?.[0]?.lessons?.[0];
+        if (firstLesson) {
+            navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
+        } else {
+            // Fallback for courses with no lessons yet
+            navigate(`/course/${course.id}`);
+            if (showToast) {
+                showToast('🚀 Começando o curso! A primeira aula será adicionada em breve.');
+            }
+        }
+    };
 
     const { inProgressCourses, completedCourses } = courseProgress;
     
@@ -643,18 +656,20 @@ const StudentDashboard: React.FC = () => {
                 </button>
               </div>
             ) : firstCourseToStart && (
-                <div className="mb-12 p-8 rounded-2xl bg-gradient-to-br from-[#6d28d9]/80 to-[#8a4add]/80 border border-white/10 shadow-2xl shadow-[#8a4add]/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                    <div>
-                        <p className="text-sm font-semibold text-white/80">Pronto para o próximo desafio?</p>
-                        <h2 className="text-2xl font-bold text-white mt-1">{firstCourseToStart.title}</h2>
-                        <p className="text-lg text-white/90 mt-1">{firstCourseToStart.description}</p>
+                <div className="mb-12 p-8 rounded-2xl bg-[#6d28d9] flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="flex-grow">
+                        <p className="text-sm font-semibold text-purple-200">Pronto para o próximo desafio?</p>
+                        <h2 className="text-3xl font-bold text-white mt-1">{firstCourseToStart.title}</h2>
+                        <p className="text-base text-purple-200 mt-2">{firstCourseToStart.description}</p>
                     </div>
-                     <button 
-                        onClick={() => openInscriptionModal(firstCourseToStart)}
-                        className="w-full md:w-auto bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-gray-200 transition-colors shadow-lg"
-                    >
-                        Começar Agora
-                    </button>
+                    <div className="flex-shrink-0">
+                        <button 
+                            onClick={() => firstCourseToStart && handleStartCourse(firstCourseToStart)}
+                            className="w-full md:w-auto bg-slate-100 text-[#6d28d9] font-bold py-3 px-8 rounded-lg hover:bg-white transition-colors shadow-lg"
+                        >
+                            Começar Agora
+                        </button>
+                    </div>
                 </div>
             )}
 

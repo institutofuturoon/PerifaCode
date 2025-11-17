@@ -535,7 +535,7 @@ Retorne APENAS no formato JSON especificado.`;
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start relative z-10">
             <div>
                 <h1 className="text-4xl font-black text-white">{initialCourse.title ? 'Editor de Curso' : 'Criador de Curso'}</h1>
                 <p className="text-gray-400 mt-1">Construa experiências de aprendizado incríveis.</p>
