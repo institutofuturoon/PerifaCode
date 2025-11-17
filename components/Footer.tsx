@@ -53,8 +53,8 @@ const Footer: React.FC = () => {
             <ul className="mt-4 space-y-3">
               <li><FooterLink onClick={() => navigate('/courses')}>Cursos</FooterLink></li>
               <li><FooterLink onClick={() => navigate('/community')}>Comunidade</FooterLink></li>
-              <li><FooterLink onClick={() => navigate('/connect')}>Mentorias & Eventos</FooterLink></li>
               <li><FooterLink onClick={() => navigate('/blog')}>Blog</FooterLink></li>
+              <li><FooterLink onClick={() => navigate('/connect')}>Mentorias & Eventos</FooterLink></li>
             </ul>
           </div>
 

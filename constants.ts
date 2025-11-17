@@ -466,7 +466,7 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
   {
     id: 'ld1',
     title: 'Letramento Digital para Melhor Idade',
-    description: 'Perca o medo da tecnologia! Aprenda a usar o computador, celular e a internet com segurança e confiança.',
+    description: 'Perca o medo da tecnologia! Aprenda a usar o celular e a internet com segurança e confiança.',
     longDescription: 'Este curso presencial foi desenhado para quem quer dar os primeiros passos no mundo digital. Com aulas pacientes e em turmas reduzidas, você aprenderá a se comunicar com a família, usar aplicativos do dia a dia e navegar na internet com segurança.',
     track: 'Digital',
     imageUrl: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
@@ -476,12 +476,87 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
     format: 'presencial',
     enrollmentStatus: 'closed',
     category: 'INCLUSÃO',
-    modules: [],
+    lessonsCount: 12,
+    projectTitle: "Meu Diário de Conquistas Digitais",
+    projectDescription: "Ao final do curso, você criará um diário simples, registrando as novas habilidades que aprendeu, como fazer uma videochamada com a família, pesquisar uma receita na internet ou enviar uma foto pelo WhatsApp. Será um registro da sua jornada de empoderamento digital!",
+    projectCriteria: "- Registrar pelo menos 5 novas habilidades digitais.\n- Escrever um pequeno texto sobre como a tecnologia facilitou seu dia a dia.\n- Se possível, incluir uma foto tirada ou recebida durante as aulas.",
+    modules: [
+      {
+        id: 'ld1-m1',
+        title: 'Conhecendo o Celular (Smartphone)',
+        lessons: [
+          { id: 'ld1-m1-l1', title: 'Os Botões Principais: Ligando e Desligando', duration: '15 min', type: 'text', xp: 10, objective: "Identificar os botões físicos do celular e suas funções básicas.", mainContent: "Vamos começar pelo básico! Todo celular tem alguns botões importantes. O maior, na lateral, geralmente serve para ligar e desligar a tela. Apertar e segurar desliga o aparelho. Vamos praticar juntos para perder o medo!" },
+          { id: 'ld1-m1-l2', title: 'A Tela de Toque: Tocar, Arrastar e Dar Zoom', duration: '20 min', type: 'text', xp: 10, objective: "Aprender os gestos básicos para interagir com a tela.", mainContent: "A tela do seu celular é mágica! Você pode tocar nos 'desenhos' (ícones) para abrir aplicativos, arrastar o dedo para cima e para baixo para ver mais coisas e fazer o movimento de pinça com dois dedos para aumentar ou diminuir o tamanho das fotos e textos." },
+          { id: 'ld1-m1-l3', title: 'Conectando ao Wi-Fi: A Chave para a Internet', duration: '20 min', type: 'text', xp: 15, objective: "Aprender a conectar o celular na rede Wi-Fi de casa.", mainContent: "Para usar a internet sem gastar os créditos do celular, usamos o Wi-Fi. É como uma rádio que transmite a internet. Vamos aprender a encontrar a lista de redes, selecionar a rede da sua casa e digitar a senha para se conectar." }
+        ]
+      },
+      {
+        id: 'ld1-m2',
+        title: 'Comunicação sem Fronteiras com WhatsApp',
+        lessons: [
+          { id: 'ld1-m2-l1', title: 'O que é o WhatsApp e Adicionando Contatos', duration: '25 min', type: 'text', xp: 15, objective: "Entender o aplicativo e salvar o número de amigos e familiares.", mainContent: "O WhatsApp é um aplicativo que nos deixa conversar com pessoas queridas de graça, usando a internet. O primeiro passo é ter o número da pessoa salvo na sua lista de contatos do celular. Vamos aprender a fazer isso!" },
+          { id: 'ld1-m2-l2', title: 'Enviando Mensagens de Texto e Áudio', duration: '30 min', type: 'text', xp: 20, objective: "Aprender a digitar mensagens e a gravar mensagens de voz.", mainContent: "Conversar pelo WhatsApp é fácil! Vamos aprender a encontrar um contato, tocar no campo de texto para o teclado aparecer e digitar uma mensagem. Se não quiser digitar, é só segurar o botão do microfone para gravar uma mensagem de voz!" },
+          { id: 'ld1-m2-l3', title: 'Enviando Fotos e Fazendo Chamadas de Vídeo', duration: '30 min', type: 'text', xp: 20, objective: "Compartilhar momentos com fotos e ver a pessoa com quem está falando.", mainContent: "Uma imagem vale mais que mil palavras! Vamos aprender a tocar no clipe de papel ou na câmera para escolher uma foto da sua galeria e enviar. E para matar a saudade, vamos aprender a fazer uma chamada de vídeo e ver o rosto da pessoa em tempo real." }
+        ]
+      },
+      {
+        id: 'ld1-m3',
+        title: 'Explorando o Mundo com a Internet Segura',
+        lessons: [
+          { id: 'ld1-m3-l1', title: 'Usando o Google para Pesquisar', duration: '25 min', type: 'text', xp: 15, objective: "Aprender a fazer buscas por receitas, notícias e informações.", mainContent: "O Google é como uma enciclopédia gigante. Quer saber a receita de um bolo de fubá? Ou a previsão do tempo? Vamos aprender a abrir o navegador (Google Chrome), digitar o que procuramos na barra de busca e ver os resultados." },
+          { id: 'ld1-m3-l2', title: 'O que são Links? Clicando com Cuidado', duration: '20 min', type: 'text', xp: 15, objective: "Identificar textos e imagens clicáveis e navegar entre páginas.", mainContent: "Na internet, os textos que geralmente ficam azuis e sublinhados são 'links'. Eles nos levam para outras páginas. Vamos aprender a identificá-los e a ter cuidado para clicar apenas em links de sites confiáveis." },
+          { id: 'ld1-m3-l3', title: 'Dicas de Segurança: Cuidado com Golpes', duration: '30 min', type: 'text', xp: 25, objective: "Aprender a identificar mensagens suspeitas e proteger suas informações.", mainContent: "A internet é ótima, mas precisamos ter cuidado. Nunca compartilhe senhas! Desconfie de mensagens que pedem dinheiro ou que prometem prêmios fáceis demais. Na dúvida, não clique e pergunte a alguém de confiança." }
+        ]
+      },
+      {
+        id: 'ld1-m4',
+        title: 'Aplicativos Úteis para o Dia a Dia',
+        lessons: [
+          { id: 'ld1-m4-l1', title: 'Usando a Câmera para Tirar Fotos', duration: '20 min', type: 'text', xp: 15, objective: "Aprender a abrir o aplicativo de câmera e registrar momentos.", mainContent: "Seu celular é uma máquina fotográfica! Vamos aprender a abrir o aplicativo da câmera, a focar no que queremos fotografar e a apertar o botão para registrar aquele momento especial com a família ou uma paisagem bonita." },
+          { id: 'ld1-m4-l2', title: 'Acessando o YouTube para Ver Vídeos', duration: '25 min', type: 'text', xp: 15, objective: "Encontrar e assistir a vídeos de música, receitas ou programas.", mainContent: "O YouTube é uma TV online gigante! Você pode encontrar vídeos de músicas antigas, receitas, novelas, e muito mais. Vamos aprender a pesquisar pelo que você quer assistir e a controlar o vídeo (pausar, aumentar o volume)." },
+          { id: 'ld1-m4-l3', title: 'Projeto Final: Criando seu Diário de Conquistas', duration: '30 min', type: 'text', xp: 30, objective: "Registrar tudo o que foi aprendido para celebrar o progresso.", mainContent: "Parabéns por chegar até aqui! Agora, vamos juntos criar um pequeno diário para anotar tudo de novo que você aprendeu a fazer com o celular. Será uma lembrança da sua evolução e coragem para desbravar o mundo digital!" }
+        ]
+      }
+    ],
     heroContent: {
         titleLine1: "Conecte-se ao Mundo Digital,",
         titleAccent: "Sem Medo.",
-        description: "Nosso curso de Letramento Digital foi criado especialmente para a melhor idade. Aprenda a usar o computador, celular e a internet com segurança e confiança, em um ambiente acolhedor e com instrutores pacientes."
+        description: "Nosso curso de Letramento Digital foi criado especialmente para a melhor idade. Aprenda a usar o celular e a internet com segurança e confiança, em um ambiente acolhedor e com instrutores pacientes."
     },
+    benefitsSection: {
+        title: "Mais Independência e Conexão no seu Dia a Dia",
+        subtitle: "A tecnologia pode ser sua grande aliada para se conectar com quem você ama e facilitar tarefas diárias.",
+        benefits: [
+            { title: "Fale com a Família", description: "Faça videochamadas com filhos e netos, receba fotos e participe dos grupos da família sem dificuldade." },
+            { title: "Autonomia e Praticidade", description: "Aprenda a usar aplicativos de banco e transporte para resolver suas coisas com mais independência." },
+            { title: "Informação e Lazer", description: "Assista a vídeos, leia notícias e pesquise suas receitas ou hobbies favoritos na internet." },
+            { title: "Segurança em Primeiro Lugar", description: "Navegue com confiança, aprendendo a identificar golpes e a proteger suas informações pessoais." }
+        ]
+    },
+    curriculumSection: {
+      title: "Uma Jornada Paciente e Passo a Passo",
+      subtitle: "Nosso conteúdo foi pensado para quem nunca teve contato com a tecnologia, indo do básico ao essencial.",
+      items: [
+          { title: "Dominando o Smartphone", description: "Entenda os botões, os gestos na tela e como se conectar à internet via Wi-Fi." },
+          { title: "O Poder do WhatsApp", description: "Comunique-se com áudio, texto, fotos e videochamadas com amigos e familiares." },
+          { title: "Navegação Segura na Internet", description: "Aprenda a usar o Google para pesquisar e a identificar os perigos do mundo online." },
+          { title: "Aplicativos que Facilitam a Vida", description: "Use a câmera para registrar momentos e o YouTube para se divertir e aprender." }
+      ]
+    },
+    methodologySection: {
+        title: "Aprenda no Seu Ritmo, com Apoio e Carinho",
+        subtitle: "Nossa metodologia é focada na paciência, na prática e no respeito ao tempo de cada aluno.",
+        benefits: [
+            { title: "Aulas 100% Presenciais", description: "Ambiente tranquilo em nossa sede, com todo o suporte necessário para você aprender." },
+            { title: "Instrutores Pacientes", description: "Nossa equipe é treinada para ensinar com didática, calma e empatia." },
+            { title: "Turmas Reduzidas", description: "Garantimos atenção individual para que ninguém fique com dúvidas." },
+            { title: "Material de Apoio", description: "Leve para casa uma apostila simples para relembrar o que foi aprendido em aula." }
+        ]
+    },
+     ctaSection: {
+        title: "Pronto para Dar o Primeiro Passo no Mundo Digital?",
+        description: "A idade não é um limite para o aprendizado. As vagas são limitadas para garantirmos a qualidade. Preencha o formulário e garanta seu interesse na próxima turma!"
+    }
   },
    {
     id: 'py1',
@@ -496,12 +571,280 @@ Tente descrever como um algoritmo os passos que você faz para escovar os dentes
     format: 'hibrido',
     enrollmentStatus: 'soon',
     category: 'IA',
-    modules: [],
+    lessonsCount: 14,
+    projectTitle: "Análise de Dados de Vendas de E-commerce",
+    projectDescription: "Neste projeto, você receberá um conjunto de dados real (e anônimo) de vendas. Sua missão será limpar, analisar e extrair insights, respondendo a perguntas como: Qual o produto mais vendido? Qual o mês de maior faturamento? E, por fim, criar visualizações de dados para apresentar suas descobertas.",
+    projectCriteria: "- Carregar os dados de um arquivo CSV usando Pandas.\n- Limpar dados ausentes e remover duplicatas.\n- Calcular métricas como faturamento total e média de vendas.\n- Usar `groupby` para analisar vendas por categoria.\n- Gerar pelo menos 3 visualizações diferentes com Matplotlib/Seaborn (gráfico de barras, linha e pizza).",
+    modules: [
+        {
+            id: 'py1-m1',
+            title: 'Introdução ao Python e Análise de Dados',
+            lessons: [
+                { id: 'py1-m1-l1', title: 'Por que Python para Dados?', duration: '20 min', type: 'text', xp: 10, objective: "Entender o papel do Python no mundo dos dados e suas vantagens.", mainContent: "Python é como o canivete suíço da programação: fácil de aprender, poderoso e com uma comunidade gigante. Para análise de dados, ele se destaca por bibliotecas incríveis que fazem o trabalho pesado por nós. Empresas como Netflix, Spotify e Instagram usam Python para entender seus usuários. Você está prestes a aprender a mesma ferramenta!" },
+                { id: 'py1-m1-l2', title: 'Configurando o Ambiente com Jupyter', duration: '30 min', type: 'text', xp: 15, objective: "Instalar o Anaconda e se familiarizar com o Jupyter Notebook.", mainContent: "O Jupyter Notebook é o nosso laboratório. É um ambiente interativo onde podemos escrever código, ver os resultados e criar visualizações, tudo no mesmo lugar. Vamos instalar o Anaconda, que já vem com Python, Jupyter e todas as ferramentas que precisamos." },
+                { id: 'py1-m1-l3', title: 'Olá, Mundo da Análise!', duration: '25 min', type: 'text', xp: 15, objective: "Escrever seu primeiro script para ler um arquivo de dados simples.", mainContent: "Vamos dar nosso primeiro passo prático! Usando a biblioteca Pandas, vamos aprender a ler um arquivo de dados (CSV) e usar o comando `.head()` para espiar as primeiras linhas. É a primeira vez que você fará o computador 'ler' e entender uma planilha!" }
+            ]
+        },
+        {
+            id: 'py1-m2',
+            title: 'Fundamentos de Python para Dados',
+            lessons: [
+                { id: 'py1-m2-l1', title: 'Variáveis e Estruturas de Dados', duration: '35 min', type: 'text', xp: 20, objective: "Dominar listas e dicionários para organizar informações.", mainContent: "Para trabalhar com dados, precisamos saber como guardá-los. Vamos focar em duas estruturas essenciais: **Listas**, que são como colunas de uma planilha, e **Dicionários**, que nos permitem guardar dados com rótulos, como as informações de um cliente (nome, idade, cidade)." },
+                { id: 'py1-m2-l2', title: 'Estruturas de Controle', duration: '30 min', type: 'text', xp: 20, objective: "Usar `if/else` e `for` para tomar decisões e repetir tarefas.", mainContent: "A análise de dados é sobre fazer perguntas e automatizar tarefas. Com o laço `for`, podemos percorrer milhares de linhas de dados para calcular uma soma. Com `if/else`, podemos criar categorias, como 'cliente novo' ou 'cliente antigo', baseados em uma condição." },
+                { id: 'py1-m2-l3', title: 'Funções: Criando Nossas Ferramentas', duration: '30 min', type: 'text', xp: 20, objective: "Aprender a criar funções para reutilizar lógica de análise.", mainContent: "Se você precisa calcular a mesma métrica várias vezes, por que não criar sua própria ferramenta? Funções nos permitem 'empacotar' uma lógica (como calcular a idade média de uma lista de clientes) e reutilizá-la com um simples chamado." }
+            ]
+        },
+        {
+            id: 'py1-m3',
+            title: 'Manipulação de Dados com Pandas',
+            lessons: [
+                { id: 'py1-m3-l1', title: 'O Poder dos DataFrames', duration: '35 min', type: 'text', xp: 25, objective: "Entender o que são Series e DataFrames, as estruturas centrais do Pandas.", mainContent: "Pandas é a biblioteca mais importante para análise de dados em Python. Sua principal estrutura é o **DataFrame**, que é basicamente uma tabela ou planilha superpoderosa dentro do nosso código. Vamos aprender a criar e a entender a anatomia de um DataFrame." },
+                { id: 'py1-m3-l2', title: 'Seleção e Filtragem de Dados', duration: '40 min', type: 'text', xp: 30, objective: "Aprender a selecionar colunas, linhas e a filtrar dados com base em condições.", mainContent: "Seus dados têm milhares de linhas, mas você só quer ver os clientes do Rio de Janeiro que compraram nos últimos 30 dias. Como fazer isso? Vamos aprender os comandos `loc`, `iloc` e a filtragem booleana para 'fatiar' nossos dados e encontrar exatamente a informação que precisamos." },
+                { id: 'py1-m3-l3', title: 'Limpando o Terreno: Tratando Dados Ausentes', duration: '35 min', type: 'text', xp: 25, objective: "Identificar e tratar valores nulos ou dados faltantes.", mainContent: "Dados do mundo real são bagunçados. Muitas vezes, teremos informações faltando. Vamos aprender a usar funções como `.isnull()`, `.dropna()` e `.fillna()` para lidar com esses buracos, garantindo que nossa análise seja precisa e confiável." },
+                { id: 'py1-m3-l4', title: 'Agrupando e Agregando Dados', duration: '40 min', type: 'text', xp: 30, objective: "Usar o `groupby` para sumarizar informações por categoria.", mainContent: "O `.groupby()` é uma das ferramentas mais poderosas do Pandas. Quer saber a média de vendas por cidade? Ou o total de produtos vendidos por categoria? Com o `groupby`, podemos agrupar nossos dados e aplicar cálculos (soma, média, contagem) a cada grupo, revelando insights incríveis." }
+            ]
+        },
+        {
+            id: 'py1-m4',
+            title: 'Contando Histórias com Dados: Visualização',
+            lessons: [
+                { id: 'py1-m4-l1', title: 'Seus Primeiros Gráficos com Matplotlib', duration: '40 min', type: 'text', xp: 30, objective: "Criar gráficos de barras e de linhas básicos para exibir resultados.", mainContent: "Números são importantes, mas gráficos contam histórias. Matplotlib é a base para a criação de gráficos em Python. Vamos aprender a criar nossas primeiras visualizações, como um gráfico de barras para comparar vendas entre produtos e um gráfico de linhas para ver a evolução do faturamento ao longo do tempo." },
+                { id: 'py1-m4-l2', title: 'Deixando Tudo Mais Bonito com Seaborn', duration: '40 min', type: 'text', xp: 30, objective: "Usar a biblioteca Seaborn para criar gráficos estatísticos mais atraentes.", mainContent: "Seaborn é uma biblioteca construída sobre o Matplotlib que nos permite criar gráficos mais complexos e bonitos com menos código. Vamos explorar histogramas para entender a distribuição de idades dos clientes e gráficos de dispersão para ver a relação entre preço e quantidade vendida." },
+                { id: 'py1-m4-l3', title: 'Exportando e Apresentando seus Resultados', duration: '25 min', type: 'text', xp: 20, objective: "Salvar seus gráficos e DataFrames para compartilhar suas análises.", mainContent: "Análise feita, é hora de mostrar para o mundo! Vamos aprender a salvar nossos gráficos como imagens (PNG, JPG) e nossos DataFrames tratados como novos arquivos CSV, prontos para serem usados em um relatório ou apresentação." },
+                { id: 'py1-m4-l4', title: 'Projeto Final: Análise de E-commerce', duration: '60 min', type: 'text', xp: 60, objective: "Aplicar todo o conhecimento para analisar um conjunto de dados do início ao fim.", mainContent: "Chegou a hora de ser o detetive de dados! Você receberá um conjunto de dados e uma lista de perguntas de negócio. Sua missão é usar todo o poder do Pandas e do Matplotlib/Seaborn para limpar, analisar, visualizar e responder a essas perguntas, contando a história escondida nos dados." }
+            ]
+        }
+    ],
      heroContent: {
-        titleLine1: "Do Zero ao Código,",
-        titleAccent: "com Python.",
-        description: "Aprenda a programar com uma das linguagens mais populares do mercado. Desenvolve sua lógica, crie seus primeiros projetos e abra portas para uma nova carreira em tecnologia."
+        titleLine1: "Decifre o Mundo",
+        titleAccent: "com Dados e Python.",
+        description: "Aprenda a programar com uma das linguagens mais poderosas do mercado e transforme dados brutos em insights que geram impacto e abrem portas para uma nova carreira em tecnologia."
     },
+    benefitsSection: {
+      title: "Por que Análise de Dados é a Carreira do Futuro?",
+      subtitle: "Em um mundo movido por dados, saber analisá-los e interpretá-los é um superpoder. Descubra por que essa habilidade é tão requisitada.",
+      benefits: [
+          { title: "Alta Demanda no Mercado", description: "Empresas de todos os setores precisam de profissionais que saibam transformar dados em decisões estratégicas." },
+          { title: "Tomada de Decisão Inteligente", description: "Aprenda a basear suas conclusões em fatos e evidências, uma habilidade valiosa em qualquer área." },
+          { title: "Versatilidade do Python", description: "Com Python, você não só analisa dados, mas também pode criar automações, desenvolver IAs e construir sistemas web." },
+          { title: "Conte Histórias com Dados", description: "Crie visualizações e dashboards impactantes que comunicam suas descobertas de forma clara e convincente." }
+      ]
+    },
+     curriculumSection: {
+      title: "Sua Trilha para se Tornar um Analista de Dados",
+      subtitle: "Do básico do Python à criação de visualizações complexas, nosso currículo é um passo a passo para o mundo dos dados.",
+      items: [
+          { title: "Fundamentos do Python", description: "Construa uma base sólida em programação com a sintaxe simples e poderosa do Python." },
+          { title: "Manipulação com Pandas", description: "Domine a principal ferramenta para limpar, transformar, filtrar e agrupar dados de forma eficiente." },
+          { title: "Análise Exploratória", description: "Aprenda a 'conversar' com os dados, descobrindo padrões, tendências e anomalias." },
+          { title: "Visualização de Dados", description: "Use Matplotlib e Seaborn para criar gráficos que contam histórias e revelam insights." },
+          { title: "Projeto Prático de Análise", description: "Aplique tudo em um projeto do mundo real, analisando um dataset de e-commerce." }
+      ]
+    },
+    methodologySection: {
+        title: "Nossa Metodologia: Mão na Massa e Foco no Mercado",
+        subtitle: "Acreditamos que se aprende a programar, programando. Nossas aulas são práticas, com desafios reais e suporte contínuo.",
+        benefits: [
+            { title: "Aulas Presenciais e Online", description: "Escolha o formato que funciona para você: a energia da sala de aula ou a flexibilidade do online." },
+            { title: "Instrutores do Mercado", description: "Aprenda com quem trabalha na área, trazendo experiências e desafios reais para a aula." },
+            { title: "Projetos para Portfólio", description: "Finalize o curso com um projeto prático para mostrar suas habilidades aos recrutadores." },
+            { title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa no Discord para tirar dúvidas e fazer networking." }
+        ]
+    },
+     ctaSection: {
+        title: "Pronto para Transformar Dados em Decisões?",
+        description: "Não espere mais para investir no seu futuro. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!"
+    }
+  },
+  {
+    id: 'ed1',
+    title: 'Empreendedorismo Digital: Da Ideia ao Negócio',
+    description: 'Transforme sua paixão em um negócio digital. Aprenda a validar ideias, criar um MVP, atrair clientes e gerenciar seu projeto.',
+    longDescription: 'Este curso é o seu guia prático para tirar uma ideia do papel e transformá-la em um negócio digital de verdade. Você aprenderá desde a mentalidade empreendedora até as ferramentas essenciais para construir sua marca, fazer suas primeiras vendas e gerenciar seu projeto com eficiência.',
+    track: 'Negócios',
+    imageUrl: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '30 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'user_marlon_souza',
+    format: 'hibrido',
+    enrollmentStatus: 'open',
+    category: 'NEGÓCIOS',
+    lessonsCount: 12,
+    projectTitle: "Plano de Negócio Digital Simplificado (Pitch Deck)",
+    projectDescription: "Como projeto final, você irá criar uma apresentação de 5 slides (um 'pitch deck') resumindo sua ideia de negócio. Você vai definir seu público, sua solução, como irá ganhar dinheiro e quais serão seus próximos passos, consolidando todo o aprendizado do curso.",
+    projectCriteria: "- Slide 1: Apresentação da ideia e o problema que ela resolve.\n- Slide 2: Quem é o seu público-alvo.\n- Slide 3: Como seu produto/serviço funciona (o MVP).\n- Slide 4: Como você vai divulgar e vender.\n- Slide 5: Metas para os próximos 3 meses.",
+    modules: [
+        {
+            id: 'ed1-m1',
+            title: 'A Mentalidade Empreendedora',
+            lessons: [
+                { id: 'ed1-m1-l1', title: 'O que é Empreender na Era Digital?', duration: '20 min', type: 'text', xp: 10, objective: "Compreender as oportunidades do empreendedorismo digital e desenvolver uma mentalidade de resolução de problemas.", mainContent: "Empreender não é só sobre ter um CNPJ. É sobre encontrar um problema que você se importa e criar uma solução para ele. No mundo digital, as ferramentas para fazer isso estão na palma da sua mão. Vamos descobrir como transformar sua paixão ou habilidade em um negócio que pode alcançar o mundo todo, direto da sua casa." },
+                { id: 'ed1-m1-l2', title: 'Validando sua Ideia de Negócio', duration: '30 min', type: 'text', xp: 15, objective: "Aprender a pesquisar e conversar com potenciais clientes para saber se sua ideia tem futuro.", mainContent: "Uma ideia genial só vale alguma coisa se as pessoas quiserem pagar por ela. Antes de construir qualquer coisa, vamos aprender a 'validar' nossa ideia. Isso significa conversar com o público, fazer pesquisas simples e usar ferramentas gratuitas para descobrir se existe uma demanda real para o que você quer oferecer." },
+                { id: 'ed1-m1-l3', title: 'O Poder do MVP: Mínimo Produto Viável', duration: '25 min', type: 'text', xp: 15, objective: "Entender como criar uma versão simples e funcional do seu produto para testar o mercado rapidamente.", mainContent: "Não espere o produto perfeito para começar! O MVP (Mínimo Produto Viável) é a versão mais simples da sua ideia que já resolve o problema do cliente. Pode ser um perfil no Instagram, um grupo no WhatsApp ou uma página de vendas simples. Vamos aprender a lançar rápido para aprender mais rápido ainda." },
+            ]
+        },
+        {
+            id: 'ed1-m2',
+            title: 'Construindo sua Presença Online',
+            lessons: [
+                { id: 'ed1-m2-l1', title: 'Sua Marca no Mundo: Nome e Identidade', duration: '30 min', type: 'text', xp: 20, objective: "Aprender a criar um nome e uma identidade visual básica para seu negócio usando ferramentas gratuitas.", mainContent: "Sua marca é a cara do seu negócio. Vamos aprender a escolher um nome que conecte com seu público e a usar ferramentas como o Canva para criar uma logo e uma paleta de cores que transmitam a personalidade do seu projeto. Uma boa identidade visual gera confiança e profissionalismo." },
+                { id: 'ed1-m2-l2', title: 'Instagram para Negócios: O Básico que Vende', duration: '35 min', type: 'text', xp: 20, objective: "Configurar um perfil comercial no Instagram e criar os primeiros conteúdos.", mainContent: "O Instagram é uma das maiores vitrines do mundo. Vamos transformar seu perfil pessoal em uma máquina de negócios. Aprenda a escrever uma bio que atrai, a criar posts que engajam e a usar os Stories para se conectar com seus seguidores e futuros clientes." },
+                { id: 'ed1-m2-l3', title: 'Introdução ao Tráfego Pago (Anúncios)', duration: '30 min', type: 'text', xp: 20, objective: "Entender o que são anúncios online e como impulsionar uma publicação para alcançar mais pessoas.", mainContent: "Quer chegar em mais gente? O tráfego pago é o caminho. Vamos desmistificar o botão 'Turbinar Publicação' do Instagram. Entenda como definir um público, um orçamento e criar seu primeiro anúncio para que mais pessoas conheçam seu trabalho." },
+            ]
+        },
+        {
+            id: 'ed1-m3',
+            title: 'Vendas e Relacionamento com o Cliente',
+            lessons: [
+                { id: 'ed1-m3-l1', title: 'Como Fazer as Primeiras Vendas', duration: '30 min', type: 'text', xp: 25, objective: "Aprender estratégias para conseguir os primeiros clientes sem gastar dinheiro.", mainContent: "As primeiras vendas são as mais difíceis e as mais importantes. Vamos explorar técnicas para vender para sua rede de contatos (amigos, família), em grupos e para os primeiros seguidores, construindo confiança e conseguindo os primeiros depoimentos." },
+                { id: 'ed1-m3-l2', title: 'WhatsApp Business: Sua Máquina de Atendimento', duration: '35 min', type: 'text', xp: 25, objective: "Configurar o WhatsApp Business com catálogo de produtos e mensagens automáticas.", mainContent: "O WhatsApp é uma ferramenta poderosa de vendas e atendimento. Vamos aprender a configurar a versão Business, cadastrar seus produtos ou serviços no catálogo e criar mensagens rápidas e de saudação para atender seus clientes de forma profissional e ágil." },
+                { id: 'ed1-m3-l3', title: 'Entendendo o Funil de Vendas', duration: '30 min', type: 'text', xp: 25, objective: "Conhecer as etapas da jornada do cliente, desde o primeiro contato até a compra.", mainContent: "Ninguém compra na primeira visita. O funil de vendas é o caminho que um cliente percorre: ele te descobre, se interessa, confia em você e, finalmente, compra. Entender essas etapas (Topo, Meio e Fundo de Funil) vai te ajudar a criar o conteúdo certo para cada momento." },
+            ]
+        },
+        {
+            id: 'ed1-m4',
+            title: 'Gestão para o Corre Valer a Pena',
+            lessons: [
+                { id: 'ed1-m4-l1', title: 'Finanças para Iniciantes: Preço, Custo e Lucro', duration: '35 min', type: 'text', xp: 30, objective: "Aprender a calcular o preço do seu produto/serviço e a entender o que é lucro.", mainContent: "Seu corre precisa pagar as contas! Vamos aprender o básico de finanças: como listar seus custos, como colocar um preço justo no seu trabalho e, o mais importante, como saber se você está tendo lucro. Usaremos planilhas simples para organizar tudo." },
+                { id: 'ed1-m4-l2', title: 'Ferramentas Digitais para Organizar o Negócio', duration: '30 min', type: 'text', xp: 30, objective: "Conhecer ferramentas gratuitas para organizar tarefas, finanças e ideias.", mainContent: "A organização é a chave para crescer. Vamos conhecer ferramentas gratuitas como Trello (para organizar tarefas), Notion (para organizar ideias) e planilhas do Google (para finanças) que vão te ajudar a não se perder na correria do dia a dia." },
+                { id: 'ed1-m4-l3', title: 'Projeto Final: Montando seu Pitch Deck', duration: '45 min', type: 'text', xp: 50, objective: "Aplicar todo o conhecimento para criar uma apresentação simples e clara da sua ideia de negócio.", mainContent: "Hora de juntar tudo que aprendemos! Você vai criar uma apresentação curta e direta (pitch deck) da sua ideia de negócio. Esse será o seu 'cartão de visitas', pronto para ser apresentado para um possível sócio, cliente ou até mesmo para organizar suas próprias ideias." },
+            ]
+        }
+    ],
+    heroContent: {
+        titleLine1: "Tire sua Ideia do Papel,",
+        titleAccent: "Crie seu Corre Digital.",
+        description: "Aprenda o passo a passo para transformar sua paixão em um negócio online. Valide sua ideia, construa sua marca, conquiste clientes e comece a empreender na era digital."
+    },
+    benefitsSection: {
+        title: "Por que Empreender no Mundo Digital?",
+        subtitle: "A internet abriu portas que antes não existiam. Descubra como você pode criar suas próprias oportunidades.",
+        benefits: [
+            { title: "Baixo Custo Inicial", description: "Comece seu negócio com as ferramentas que você já tem: seu celular, sua criatividade e a internet." },
+            { title: "Alcance Global", description: "Venda seus produtos ou serviços para qualquer pessoa, em qualquer lugar do mundo, direto da sua quebrada." },
+            { title: "Flexibilidade e Autonomia", description: "Crie sua própria rotina, trabalhe de onde quiser e seja o dono do seu próprio tempo e futuro." },
+            { title: "Monetize sua Paixão", description: "Transforme aquilo que você ama fazer em sua principal fonte de renda e construa uma vida com mais propósito." }
+        ]
+    },
+    curriculumSection: {
+        title: "Uma Trilha Completa para Lançar seu Negócio",
+        subtitle: "Do zero à primeira venda, nosso currículo é um guia prático para sua jornada empreendedora.",
+        items: [
+            { title: "Validação da Ideia e MVP", description: "Aprenda a testar sua ideia no mercado antes de gastar tempo e dinheiro com ela." },
+            { title: "Marca e Presença Online", description: "Crie uma marca forte e use as redes sociais para construir sua vitrine digital." },
+            { title: "Estratégias de Venda", description: "Descubra como atrair e converter seus primeiros clientes usando ferramentas como WhatsApp e Instagram." },
+            { title: "Gestão do Negócio", description: "Organize suas finanças e tarefas com ferramentas digitais para garantir que seu corre seja sustentável." }
+        ]
+    },
+    methodologySection: {
+        title: "Nossa Metodologia: Mão na Massa e Foco no Mercado",
+        subtitle: "Acreditamos que se aprende a empreender, empreendendo. Nossas aulas são práticas, com desafios reais e suporte contínuo.",
+        benefits: [
+            { title: "Aulas Presenciais e Online", description: "Escolha o formato que funciona para você: a energia da sala de aula ou a flexibilidade do online." },
+            { title: "Instrutores do Mercado", description: "Aprenda com quem trabalha na área, trazendo experiências e desafios reais para a aula." },
+            { title: "Projetos para Portfólio", description: "Finalize o curso com um projeto prático para mostrar suas habilidades aos recrutadores." },
+            { title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa no Discord para tirar dúvidas e fazer networking." }
+        ]
+    },
+    ctaSection: {
+        title: "Pronto para Ser Dono(a) do seu Futuro?",
+        description: "Não espere mais para investir no seu sonho. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!"
+    }
+  },
+  {
+    id: 'en1',
+    title: 'Inglês para Devs: Acelerando sua Carreira Global',
+    description: 'Domine o vocabulário técnico, a comunicação em equipes globais e prepare-se para entrevistas em inglês.',
+    longDescription: 'Este curso vai além do "the book is on the table". Focado 100% no universo da programação, você aprenderá o inglês que realmente importa para ler documentações, participar de reuniões, entender tutoriais e se destacar em processos seletivos de empresas internacionais.',
+    track: 'Idiomas',
+    imageUrl: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=2128&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    duration: '35 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'user_marlon_souza',
+    format: 'online',
+    enrollmentStatus: 'open',
+    category: 'IDIOMAS',
+    lessonsCount: 12,
+    projectTitle: "Meu Perfil Profissional em Inglês (GitHub & LinkedIn)",
+    projectDescription: "Como projeto final, você irá criar e revisar a seção 'About' do seu perfil no LinkedIn e o `README.md` do seu perfil no GitHub, tudo em inglês. Você aplicará o vocabulário técnico e as estruturas aprendidas para se apresentar de forma profissional para o mercado global.",
+    projectCriteria: "- Perfil do LinkedIn com a seção 'About' em inglês, descrevendo suas habilidades e objetivos.\n- `README.md` do perfil do GitHub em inglês, com uma breve introdução, lista de tecnologias e projetos.\n- Usar pelo menos 10 termos técnicos aprendidos no curso.\n- Texto claro, conciso e sem erros gramaticais graves.",
+    modules: [
+      {
+        id: 'en1-m1',
+        title: 'Foundation for Tech English',
+        lessons: [
+          { id: 'en1-m1-l1', title: 'Why English is the "Programming Language" of Your Career', duration: '20 min', type: 'text', xp: 10, objective: "Understand the importance of English in the global tech market.", mainContent: "Welcome! In the tech world, English isn't just another language; it's the language. Most programming languages, documentations, and the most relevant tech communities communicate in English. Mastering it is like getting a VIP pass to the global tech scene. Let's start this journey!" },
+          { id: 'en1-m1-l2', title: 'Core Vocabulary: Variables, Functions, and Loops', duration: '25 min', type: 'text', xp: 15, objective: "Learn the essential vocabulary for programming concepts.", mainContent: "Let's talk code. We'll cover the fundamental terms you'll use every day: `variable`, `constant`, `function`, `method`, `loop`, `conditional`, `statement`, `bug`, `debug` and more. We will practice pronunciation and usage in context." },
+          { id: 'en1-m1-l3', title: 'Pronunciation Hacks: Common Tech Acronyms', duration: '20 min', type: 'text', xp: 15, objective: "Learn to pronounce common acronyms like API, GUI, SQL, etc.", mainContent: "Do you say 'A-P-I' or 'appy'? How about 'sequel' for SQL? We'll demystify the pronunciation of the most common acronyms in tech so you can speak with confidence in any meeting." },
+        ]
+      },
+      {
+        id: 'en1-m2',
+        title: 'Reading & Understanding',
+        lessons: [
+          { id: 'en1-m2-l1', title: 'Decoding Stack Overflow: Finding Solutions Faster', duration: '30 min', type: 'text', xp: 20, objective: "Learn strategies to quickly find and understand solutions on Stack Overflow.", mainContent: "Stack Overflow is every developer's best friend. We will learn how to identify the accepted answer, understand code snippets, and spot key phrases like 'deprecated', 'workaround', and 'best practice'." },
+          { id: 'en1-m2-l2', title: 'Reading Official Documentations (MDN, React Docs)', duration: '30 min', type: 'text', xp: 20, objective: "Navigate and understand official technical documentation.", mainContent: "Docs are your source of truth. We'll break down the structure of a documentation page, from the API reference to the getting started guide, focusing on how to extract the information you need efficiently." },
+          { id: 'en1-m2-l3', title: 'Understanding Error Messages', duration: '25 min', type: 'text', xp: 20, objective: "Learn to read and interpret common error messages.", mainContent: "`Undefined is not a function`... what does that really mean? We'll analyze common error messages to help you debug your code faster and without fear." },
+        ]
+      },
+      {
+        id: 'en1-m3',
+        title: 'Writing & Communicating',
+        lessons: [
+          { id: 'en1-m3-l1', title: 'Writing Clear Commit Messages', duration: '25 min', type: 'text', xp: 25, objective: "Learn the convention for writing effective Git commit messages.", mainContent: "A good commit message is a gift to your future self and your team. We'll learn the 'Conventional Commits' standard: `feat: add user login component` or `fix: correct validation on email input`." },
+          { id: 'en1-m3-l2', title: 'Asking Good Questions in Forums and Chats', duration: '30 min', type: 'text', xp: 25, objective: "Formulate questions in English to get better and faster help.", mainContent: "How you ask is as important as what you ask. We'll learn how to provide context, describe the problem, show what you've tried, and write a clear, concise question." },
+          { id: 'en1-m3-l3', title: 'Describing a Bug: How to Write a Bug Report', duration: '30 min', type: 'text', xp: 25, objective: "Learn to write a clear and effective bug report.", mainContent: "A good bug report helps fix problems faster. We'll learn the key components: title, steps to reproduce, expected behavior, and actual behavior." },
+        ]
+      },
+      {
+        id: 'en1-m4',
+        title: 'Speaking & Listening',
+        lessons: [
+          { id: 'en1-m4-l1', title: 'Daily Stand-up Meetings: Reporting Your Progress', duration: '30 min', type: 'text', xp: 30, objective: "Practice phrases for daily agile meetings.", mainContent: "What did you do yesterday? What will you do today? Are there any blockers? We'll practice key phrases to report your progress clearly and concisely in a daily stand-up meeting." },
+          { id: 'en1-m4-l2', title: 'Explaining Your Code: A Walkthrough of a Function', duration: '35 min', type: 'text', xp: 35, objective: "Practice explaining a piece of code to a colleague.", mainContent: "Let's practice a code review. You will learn how to say things like: 'This function takes two parameters...', 'First, I validate the input...', 'Then, it returns an object with...'" },
+          { id: 'en1-m4-l3', title: 'Job Interview Simulation: "Tell me about a project you\'re proud of."', duration: '45 min', type: 'text', xp: 50, objective: "Prepare for one of the most common questions in a tech job interview.", mainContent: "This is your moment to shine! We will structure an answer using the STAR method (Situation, Task, Action, Result) to talk about your projects in a compelling way." },
+        ]
+      }
+    ],
+    heroContent: {
+      titleLine1: "Fale a Língua do Código,",
+      titleAccent: "Conquiste o Mundo.",
+      description: "Domine o inglês técnico essencial para ler documentações, colaborar em equipes globais e acelerar sua carreira como desenvolvedor(a)."
+    },
+    benefitsSection: {
+      title: "Por que Inglês é sua Skill Mais Importante Depois de Programar?",
+      subtitle: "O código é universal, e a comunicação também precisa ser. Veja como o inglês abre portas que a programação sozinha não consegue.",
+      benefits: [
+        { title: "Acesso Ilimitado", description: "Aprenda com as melhores documentações, tutoriais e fóruns do mundo, que estão primariamente em inglês." },
+        { title: "Carreira Global", description: "Trabalhe para empresas estrangeiras, mesmo do Brasil, e ganhe em dólar. O inglês é a ponte para essas oportunidades." },
+        { title: "Comunidade Open Source", description: "Contribua com projetos open source, interaja com desenvolvedores do mundo todo e construa um nome na comunidade global." },
+        { title: "Salários Maiores", description: "Profissionais de tecnologia que dominam o inglês têm, em média, salários significativamente mais altos." }
+      ]
+    },
+    curriculumSection: {
+      title: "Do 'Hello World' ao 'Code Review': Uma Jornada Prática",
+      subtitle: "Nosso currículo é focado no inglês que você vai usar no dia a dia como dev.",
+      items: [
+        { title: "Fundamentos do Inglês Técnico", description: "Domine o vocabulário de variáveis, funções, loops e os principais acrônimos da área." },
+        { title: "Leitura de Documentações e Fóruns", description: "Aprenda a decifrar Stack Overflow, documentações oficiais e mensagens de erro." },
+        { title: "Comunicação Escrita Profissional", description: "Escreva commit messages claras, relate bugs de forma eficiente e participe de discussões técnicas." },
+        { title: "Simulação de Reuniões e Entrevistas", description: "Pratique a comunicação oral para daily meetings, code reviews e entrevistas de emprego." }
+      ]
+    },
+    methodologySection: {
+      title: "Nossa Metodologia: Foco na Prática e no Contexto Dev",
+      subtitle: "Acreditamos que se aprende uma língua, usando-a. Nossas aulas simulam o ambiente de trabalho de um programador.",
+      benefits: [
+        { title: "Aulas 100% Online", description: "Aprenda de onde estiver, no seu ritmo, com aulas gravadas e encontros ao vivo para praticar." },
+        { title: "Instrutores Bilíngues da Área Tech", description: "Aprenda com quem vive o dia a dia do desenvolvimento em equipes globais." },
+        { title: "Projetos para Portfólio Global", description: "Finalize o curso com seus perfis profissionais (GitHub/LinkedIn) em inglês, prontos para recrutadores." },
+        { title: "Comunidade e Suporte", description: "Faça parte de uma comunidade ativa no Discord para tirar dúvidas e praticar com outros alunos." }
+      ]
+    },
+    ctaSection: {
+      title: "Ready to Level Up Your Career?",
+      description: "Não deixe a barreira do idioma limitar seu potencial. As vagas são limitadas. Preencha o formulário e garanta seu interesse na próxima turma!"
+    }
   }
 ];
 export const MOCK_USERS: User[] = [];

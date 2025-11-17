@@ -78,9 +78,9 @@ const Header: React.FC = () => {
             </button>
             <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
               <NavLink onClick={() => navigate('/courses')}>Cursos</NavLink>
-              <NavLink onClick={() => navigate('/community')}>Comunidade</NavLink>
               <NavLink onClick={() => navigate('/about')}>Sobre Nós</NavLink>
               <NavLink onClick={() => navigate('/team')}>Nossa Equipe</NavLink>
+              <NavLink onClick={() => navigate('/community')}>Comunidade</NavLink>
               <NavLink onClick={() => navigate('/blog')}>Blog</NavLink>
               {user && <NavLink onClick={() => navigate('/dashboard')}>Meu Painel</NavLink>}
             </nav>
@@ -170,34 +170,25 @@ const Header: React.FC = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {user && <button onClick={() => handleMobileNav('/dashboard')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Painel</button>}
             <button onClick={() => handleMobileNav('/courses')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
-            <button onClick={() => handleMobileNav('/community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
             <button onClick={() => handleMobileNav('/about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
             <button onClick={() => handleMobileNav('/team')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossa Equipe</button>
+            <button onClick={() => handleMobileNav('/community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
             <button onClick={() => handleMobileNav('/blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
-          </div>
-          <div className="pt-4 pb-3 border-t border-white/10">
-            {user ? (
-              <>
-                <div className="flex items-center px-5">
-                  <div className="flex-shrink-0">
-                    <img className="h-10 w-10 rounded-full" src={user.avatarUrl} alt="" />
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-white">{user.name}</div>
-                    <div className="text-sm font-medium text-gray-400">{user.email}</div>
-                  </div>
+            {!user ? (
+                <div className="border-t border-white/10 pt-4 mt-4 flex items-center justify-center gap-2">
+                    <button onClick={() => handleMobileNav('/login')} className="flex-1 border border-[#8a4add]/80 bg-transparent text-gray-300 hover:bg-[#8a4add]/20 font-semibold py-2 px-4 rounded-lg transition-all duration-300 text-sm">
+                        Entrar
+                    </button>
+                    <button onClick={() => handleMobileNav('/register')} className="flex-1 border border-[#8a4add] bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-4 rounded-lg hover:opacity-90 transition-all duration-300 text-sm">
+                        Cadastre-se
+                    </button>
                 </div>
-                <div className="mt-3 px-2 space-y-1">
-                  <button onClick={() => handleMobileNav('/profile')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Perfil</button>
-                  <button onClick={handleLogoutClick} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sair</button>
-                </div>
-              </>
             ) : (
-              <div className="px-5 space-y-3">
-                <button onClick={() => handleMobileNav('/donate')} className="w-full text-center border border-[#c4b5fd]/50 text-[#c4b5fd] font-bold py-2 rounded-lg hover:bg-[#8a4add]/20 transition-colors">Faça uma Doação</button>
-                <button onClick={() => handleMobileNav('/login')} className="w-full text-center bg-white/10 text-white font-bold py-2 rounded-lg hover:bg-white/20 transition-colors">Entrar</button>
-                <button onClick={() => handleMobileNav('/register')} className="w-full text-center bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 rounded-lg hover:opacity-90 transition-colors">Cadastre-se Grátis</button>
-              </div>
+                <div className="border-t border-white/10 pt-4 mt-4">
+                     <button onClick={() => { handleLogoutClick(); setIsMenuOpen(false); }} className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-white/10">
+                         Sair
+                    </button>
+                </div>
             )}
           </div>
         </div>
@@ -206,4 +197,5 @@ const Header: React.FC = () => {
   );
 };
 
+// FIX: Added default export to resolve import error in App.tsx.
 export default Header;
