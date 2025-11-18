@@ -54,25 +54,25 @@ const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ fi
 
 const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string; text: string; }> = ({ icon, stat, title, text }) => {
     return (
-        <div className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 text-center transform transition-transform duration-300 hover:-translate-y-2 h-full flex flex-col items-center">
-            <div className="flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] text-white mb-6 shadow-lg shadow-[#8a4add]/20">
+        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 text-center transform transition-transform duration-300 hover:-translate-y-2 h-full flex flex-col items-center">
+            <div className="flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] text-white mb-4 shadow-lg shadow-[#8a4add]/20">
                 {icon}
             </div>
-            <p className="text-5xl font-black text-white">
+            <p className="text-4xl font-black text-white">
                 <AnimatedNumber finalStat={stat} />
             </p>
-            <p className="mt-2 text-lg font-semibold text-white uppercase tracking-wider">{title}</p>
-            <p className="mt-1 text-sm text-gray-400">{text}</p>
+            <p className="mt-2 text-sm font-semibold text-white uppercase tracking-wider">{title}</p>
+            <p className="mt-1 text-xs text-gray-400">{text}</p>
         </div>
     );
 };
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="flex-shrink-0 w-48 flex items-center justify-center p-6 bg-black/20 rounded-lg border border-white/10 group transition-all duration-300 transform hover:bg-white/5 hover:shadow-lg hover:shadow-[#8a4add]/10 hover:scale-105 hover:border-white/20">
+    <div className="flex-shrink-0 w-40 flex items-center justify-center p-4 bg-black/20 rounded-lg border border-white/10 group transition-all duration-300 transform hover:bg-white/5 hover:shadow-lg hover:shadow-[#8a4add]/10 hover:scale-105 hover:border-white/20">
         <img 
             src={logoUrl} 
             alt={name} 
-            className="h-16 max-w-full object-contain transition-all duration-300"
+            className="h-12 max-w-full object-contain transition-all duration-300"
         />
     </div>
 );
@@ -105,25 +105,25 @@ const Home: React.FC = () => {
   return (
     <>
         {/* Hero Section */}
-        <section className="py-32 md:py-48 text-center relative z-10 bg-grid-pattern">
+        <section className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-tight">
               Seu futuro na tecnologia<br />
               começa <span className="text-[#c4b5fd]">na quebrada.</span>
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
+            <p className="mt-6 max-w-2xl mx-auto text-base md:text-lg text-gray-300 leading-relaxed">
               Acreditamos no seu potencial. Nossa missão é abrir as portas do mercado de tecnologia para talentos da periferia, com educação de ponta, comunidade e oportunidades reais.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
+                className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-sm md:text-base"
               >
                 Inscreva-se Grátis
               </button>
               <button
                 onClick={() => navigate('/donate')}
-                className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300"
+                className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-all duration-300 text-sm md:text-base"
               >
                 Faça uma Doação
               </button>
@@ -132,15 +132,15 @@ const Home: React.FC = () => {
         </section>
         
         {/* Quem Somos Section */}
-        <section className="py-24 relative z-10">
+        <section className="py-16 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Quem Somos</h2>
-                <div className="w-24 h-1 bg-[#8a4add] mx-auto mt-4 mb-6"></div>
-                <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Quem Somos</h2>
+                <div className="w-16 h-1 bg-[#8a4add] mx-auto mt-4 mb-6"></div>
+                <p className="text-base md:text-lg text-gray-300 leading-relaxed">
                   O Instituto FuturoON é um projeto social, no Complexo da Coruja, em São Gonçalo, que leva <strong className="text-[#c4b5fd]">educação e tecnologia</strong> para jovens e adultos da periferia.
                 </p>
-                <div className="mt-8">
-                    <button onClick={() => navigate('/about')} className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-8 rounded-lg hover:bg-white/20 transition-all duration-300">
+                <div className="mt-6">
+                    <button onClick={() => navigate('/about')} className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-2 px-6 rounded-lg hover:bg-white/20 transition-all duration-300 text-sm">
                         Conheça nossa história
                     </button>
                 </div>
@@ -148,12 +148,12 @@ const Home: React.FC = () => {
         </section>
 
         {/* Social Impact Section */}
-        <section className="py-24 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
+        <section className="py-16 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Nosso Impacto Social em Números</h2>
-                <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                <p className="max-w-3xl mx-auto text-lg text-gray-300">Não estamos apenas ensinando código. Estamos mudando vidas e reescrevendo o futuro, um jovem de cada vez.</p>
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Nosso Impacto Social em Números</h2>
+                <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
+                <p className="max-w-2xl mx-auto text-base text-gray-300">Não estamos apenas ensinando código. Estamos mudando vidas e reescrevendo o futuro, um jovem de cada vez.</p>
+                <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {impactData.map((item, index) => (
                         <ImpactCard 
                             key={index}
@@ -168,61 +168,62 @@ const Home: React.FC = () => {
         </section>
 
         {/* Simplified Timeline Section */}
-        <section className="py-24 relative z-10">
+        <section className="py-16 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Nossa Jornada de Conquistas</h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Alguns dos marcos mais importantes da nossa história, que nos trouxeram até aqui.</p>
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Nossa Jornada de Conquistas</h2>
+                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
+                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">Alguns dos marcos mais importantes da nossa história, que nos trouxeram até aqui.</p>
                 </div>
-                <SimplifiedTimeline />
-                 <div className="text-center mt-12 max-w-sm mx-auto">
-                    <button onClick={() => navigate('/about')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-md font-semibold text-white">Veja a história completa</span>
+                <div className="mt-12">
+                  <SimplifiedTimeline />
+                </div>
+                 <div className="text-center mt-10 max-w-xs mx-auto">
+                    <button onClick={() => navigate('/about')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-sm font-semibold text-white">Veja a história completa</span>
                     </button>
                 </div>
             </div>
         </section>
 
         {/* Team Preview Section */}
-        <section className="py-24 bg-black/20 relative z-10">
+        <section className="py-16 bg-black/20 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Conheça Nossa Tropa</h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">Os rostos e corações por trás da nossa missão. Profissionais e voluntários dedicados a transformar vidas.</p>
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Conheça Nossa Tropa</h2>
+                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
+                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">Os rostos e corações por trás da nossa missão. Profissionais e voluntários dedicados a transformar vidas.</p>
                 </div>
-                <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {teamPreview.map(member => (
                         <TeamMemberPreviewCard key={member.id} member={member} />
                     ))}
                 </div>
-                <div className="text-center mt-12 max-w-sm mx-auto">
-                     <button onClick={() => navigate('/team')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-md font-semibold text-white">Ver equipe completa</span>
+                <div className="text-center mt-10 max-w-xs mx-auto">
+                     <button onClick={() => navigate('/team')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-sm font-semibold text-white">Ver equipe completa</span>
                     </button>
                 </div>
             </div>
         </section>
 
         {/* Nossos Parceiros Section */}
-        <section className="py-24 relative z-10">
+        <section className="py-16 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Nossos Parceiros</h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Nossos Parceiros</h2>
+                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
+                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">
                         Empresas e organizações que acreditam na nossa missão e investem no futuro da periferia.
                     </p>
                 </div>
 
-                <div className="mt-16 relative">
+                <div className="mt-12 relative">
                     <div className="marquee">
                         <div className="marquee-content">
                             {partners.map(partner => (
                                 <PartnerLogo key={partner.id} name={partner.name} logoUrl={partner.logoUrl} />
                             ))}
-                            {/* Duplicate for seamless loop */}
                             {partners.map(partner => (
                                 <PartnerLogo key={`${partner.id}-clone`} name={partner.name} logoUrl={partner.logoUrl} />
                             ))}
@@ -233,23 +234,23 @@ const Home: React.FC = () => {
         </section>
 
         {/* CTA Donate Section */}
-        <section className="py-24 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
+        <section className="py-16 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">
                     Apoie essa causa e transforme
                     <br />
                     <span className="relative inline-block mt-2">
                         vidas
-                        <span className="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983]"></span>
+                        <span className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983]"></span>
                     </span>
                 </h2>
-                <p className="mt-10 max-w-3xl mx-auto text-lg text-gray-300 leading-relaxed">
-                    Invista no futuro. Ajude a impulsionar a juventude e a transformação social por meio da educação digital. Cada contribuição é uma semente que transforma vidas e constrói um amanhã mais justo, inclusivo e tecnológico para todos.
+                <p className="mt-6 max-w-2xl mx-auto text-base text-gray-300 leading-relaxed">
+                    Invista no futuro. Ajude a impulsionar a juventude e a transformação social por meio da educação digital. Cada contribuição é uma semente que transforma vidas.
                 </p>
-                <div className="mt-10">
+                <div className="mt-8">
                     <button
                         onClick={() => navigate('/donate')}
-                        className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30"
+                        className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-sm"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
@@ -261,22 +262,22 @@ const Home: React.FC = () => {
         </section>
 
         {/* Transparency Section */}
-        <section className="py-24 bg-black/20 relative z-10">
+        <section className="py-16 bg-black/20 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Transparência Total</h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Transparência Total</h2>
+                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
+                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">
                         A confiança é construída com clareza. Acompanhe de perto como cada contribuição se transforma em oportunidade.
                     </p>
                 </div>
 
-                <div className="mt-12 max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
-                    <button onClick={() => navigate('/annual-report')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-md font-semibold text-white">Relatório Anual 2024</span>
+                <div className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
+                    <button onClick={() => navigate('/annual-report')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-sm font-semibold text-white">Relatório Anual 2024</span>
                     </button>
-                    <button onClick={() => navigate('/financial-statement')} className="w-full group flex items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-md font-semibold text-white">Prestação de Contas</span>
+                    <button onClick={() => navigate('/financial-statement')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
+                        <span className="text-sm font-semibold text-white">Prestação de Contas</span>
                     </button>
                 </div>
             </div>

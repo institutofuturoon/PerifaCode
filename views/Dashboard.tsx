@@ -10,14 +10,14 @@ import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import PageLayout from '../components/PageLayout';
 
 const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode }> = ({ title, value, icon }) => (
-  <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
-    <div className="flex items-center gap-4">
-      <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex items-center justify-center shadow-lg shadow-[#8a4add]/20">
+  <div className="bg-black/20 backdrop-blur-xl p-5 rounded-xl border border-white/10">
+    <div className="flex items-center gap-3">
+      <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex items-center justify-center shadow-lg shadow-[#8a4add]/20">
         {icon}
       </div>
       <div>
-        <p className="text-sm text-gray-400 font-semibold">{title}</p>
-        <p className="text-3xl font-black text-white">{value}</p>
+        <p className="text-xs text-gray-400 font-semibold">{title}</p>
+        <p className="text-2xl font-black text-white">{value}</p>
       </div>
     </div>
   </div>
@@ -36,24 +36,24 @@ const MyAgendaPanel: React.FC<{
 
   return (
       <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Gerenciar meus horários de mentoria</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+          <h3 className="text-lg font-bold text-white mb-4">Gerenciar meus horários de mentoria</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
               {next7Days.map(day => {
                   const dateKey = day.toISOString().split('T')[0];
                   return (
                       <div key={dateKey}>
-                          <div className="p-2 rounded-t-md bg-white/10 text-center"><p className="font-bold text-white">{day.toLocaleDateString('pt-BR', { weekday: 'short' })}</p><p className="text-xs text-gray-300">{day.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p></div>
+                          <div className="p-2 rounded-t-md bg-white/10 text-center"><p className="font-bold text-white text-sm">{day.toLocaleDateString('pt-BR', { weekday: 'short' })}</p><p className="text-[10px] text-gray-300">{day.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</p></div>
                           <div className="p-2 space-y-2 bg-white/5 rounded-b-md">
                               {timeSlots.map(time => {
                                   const session = sessionsByDateTime.get(`${dateKey}-${time}`);
                                   const student = session?.studentId ? users.find(u => u.id === session.studentId) : null;
                                   if (session?.isBooked && student) {
-                                      return (<div key={time} className="w-full text-xs p-2 rounded bg-red-500/20 text-red-300 text-center"><p className="font-bold">Agendado</p><p>{student.name.split(' ')[0]}</p>{session.googleMeetUrl && <a href={session.googleMeetUrl} target="_blank" rel="noopener noreferrer" className="text-[#c4b5fd] hover:underline text-[10px]">Link da Sala</a>}</div>);
+                                      return (<div key={time} className="w-full text-xs p-1.5 rounded bg-red-500/20 text-red-300 text-center"><p className="font-bold">Agendado</p><p>{student.name.split(' ')[0]}</p>{session.googleMeetUrl && <a href={session.googleMeetUrl} target="_blank" rel="noopener noreferrer" className="text-[#c4b5fd] hover:underline text-[10px]">Link da Sala</a>}</div>);
                                   }
                                   if (session && !session.isBooked) {
-                                      return (<button key={time} onClick={() => handleRemoveSessionSlot(user.id, dateKey, time)} className="w-full text-xs font-semibold p-2 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors">Disponível<br/><span className="font-normal text-gray-400">Bloquear?</span></button>);
+                                      return (<button key={time} onClick={() => handleRemoveSessionSlot(user.id, dateKey, time)} className="w-full text-[10px] font-semibold p-1.5 rounded bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-colors">Disponível<br/><span className="font-normal text-gray-400">Bloquear?</span></button>);
                                   }
-                                  return (<button key={time} onClick={() => handleAddSessionSlot(user.id, dateKey, time)} className="w-full text-xs font-semibold p-2 rounded bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 transition-colors">{time}<br/><span className="font-normal text-gray-500">Disponibilizar</span></button>);
+                                  return (<button key={time} onClick={() => handleAddSessionSlot(user.id, dateKey, time)} className="w-full text-[10px] font-semibold p-1.5 rounded bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 transition-colors">{time}<br/><span className="font-normal text-gray-500">Disponibilizar</span></button>);
                               })}
                           </div>
                       </div>
@@ -105,7 +105,7 @@ const TeamOrderingPanel: React.FC<{
 
   return (
       <div className="bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Ordenar Membros da Equipe</h3>
+          <h3 className="text-lg font-bold text-white mb-4">Ordenar Membros da Equipe</h3>
           <p className="text-sm text-gray-400 mb-6">Arraste e solte os cards para reordenar como eles aparecerão na página "Nossa Equipe".</p>
           <div className="space-y-3">
               {orderedMembers.map((member, index) => (
@@ -119,17 +119,17 @@ const TeamOrderingPanel: React.FC<{
                       onDragOver={(e) => e.preventDefault()}
                   >
                       <span className="text-gray-500 font-mono text-lg w-6 text-center">{index + 1}</span>
-                      <img src={member.avatarUrl} alt={member.name} className="h-10 w-10 rounded-full object-cover" />
+                      <img src={member.avatarUrl} alt={member.name} className="h-8 w-8 rounded-full object-cover" />
                       <div>
-                          <p className="font-semibold text-white">{member.name}</p>
+                          <p className="font-semibold text-white text-sm">{member.name}</p>
                           <p className="text-xs text-gray-400">{member.title}</p>
                       </div>
                   </div>
               ))}
           </div>
           <div className="flex justify-end gap-4 mt-6">
-              <button type="button" onClick={() => setIsTeamOrdering(false)} className="bg-white/10 text-white font-semibold py-2 px-5 rounded-lg hover:bg-white/20">Cancelar</button>
-              <button type="button" onClick={handleSave} className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90">Salvar Ordem</button>
+              <button type="button" onClick={() => setIsTeamOrdering(false)} className="bg-white/10 text-white font-semibold py-2 px-5 rounded-lg hover:bg-white/20 text-sm">Cancelar</button>
+              <button type="button" onClick={handleSave} className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 text-sm">Salvar Ordem</button>
           </div>
       </div>
   );
@@ -177,53 +177,53 @@ const TracksManagementPanel: React.FC = () => {
     return (
         <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 p-6 space-y-6">
             <div>
-                <h3 className="text-xl font-bold text-white mb-4">Adicionar Nova Trilha</h3>
+                <h3 className="text-lg font-bold text-white mb-4">Adicionar Nova Trilha</h3>
                 <div className="flex gap-4">
                     <input
                         type="text"
                         value={newTrackName}
                         onChange={(e) => setNewTrackName(e.target.value)}
                         placeholder="Nome da nova trilha"
-                        className="flex-grow p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
+                        className="flex-grow p-2 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none text-sm"
                     />
-                    <button onClick={handleCreate} className="font-semibold py-3 px-6 rounded-lg bg-[#8a4add] text-white hover:bg-[#6d28d9]">
+                    <button onClick={handleCreate} className="font-semibold py-2 px-4 rounded-lg bg-[#8a4add] text-white hover:bg-[#6d28d9] text-sm">
                         Adicionar
                     </button>
                 </div>
             </div>
 
             <div>
-                 <h3 className="text-xl font-bold text-white mb-4">Trilhas Existentes</h3>
-                 <div className="space-y-3">
+                 <h3 className="text-lg font-bold text-white mb-4">Trilhas Existentes</h3>
+                 <div className="space-y-2">
                     {tracks.length === 0 ? (
-                        <p className="text-gray-400">Nenhuma trilha cadastrada.</p>
+                        <p className="text-gray-400 text-sm">Nenhuma trilha cadastrada.</p>
                     ) : (
                         tracks.map(track => (
-                            <div key={track.id} className="bg-white/5 p-4 rounded-lg flex justify-between items-center">
+                            <div key={track.id} className="bg-white/5 p-3 rounded-lg flex justify-between items-center">
                                 {editingTrack?.id === track.id ? (
                                     <input 
                                         type="text"
                                         value={editingName}
                                         onChange={(e) => setEditingName(e.target.value)}
-                                        className="p-1 bg-white/10 rounded border border-[#8a4add] focus:outline-none"
+                                        className="p-1 bg-white/10 rounded border border-[#8a4add] focus:outline-none text-sm"
                                         autoFocus
                                     />
                                 ) : (
                                     <div>
-                                        <p className="font-semibold text-white">{track.name}</p>
-                                        <p className="text-xs text-gray-400">{getCoursesCountInTrack(track.name)} curso(s) nesta trilha</p>
+                                        <p className="font-semibold text-white text-sm">{track.name}</p>
+                                        <p className="text-[10px] text-gray-400">{getCoursesCountInTrack(track.name)} curso(s)</p>
                                     </div>
                                 )}
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
                                     {editingTrack?.id === track.id ? (
                                         <>
-                                            <button onClick={handleUpdate} className="text-sm text-green-400 hover:text-green-300">Salvar</button>
-                                            <button onClick={cancelEditing} className="text-sm text-gray-400 hover:text-gray-300">Cancelar</button>
+                                            <button onClick={handleUpdate} className="text-xs text-green-400 hover:text-green-300">Salvar</button>
+                                            <button onClick={cancelEditing} className="text-xs text-gray-400 hover:text-gray-300">Cancelar</button>
                                         </>
                                     ) : (
                                         <>
-                                            <button onClick={() => startEditing(track)} className="text-sm text-[#c4b5fd] hover:text-white">Editar</button>
-                                            <button onClick={() => handleDeleteTrack(track.id)} className="text-sm text-red-400 hover:text-red-300">Excluir</button>
+                                            <button onClick={() => startEditing(track)} className="text-xs text-[#c4b5fd] hover:text-white">Editar</button>
+                                            <button onClick={() => handleDeleteTrack(track.id)} className="text-xs text-red-400 hover:text-red-300">Excluir</button>
                                         </>
                                     )}
                                 </div>
@@ -237,7 +237,7 @@ const TracksManagementPanel: React.FC = () => {
 };
 
 const ModerationPanel: React.FC = () => {
-    const { projects, users, handleApproveProject, handleRejectProject, handleSaveProject } = useAppContext();
+    const { projects, users, handleApproveProject, handleRejectProject } = useAppContext();
     const navigate = useNavigate();
 
     const pendingProjects = useMemo(() => projects.filter(p => p.status === 'pending'), [projects]);
@@ -246,54 +246,51 @@ const ModerationPanel: React.FC = () => {
         <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 p-6">
              <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h3 className="text-xl font-bold text-white">Projetos Pendentes</h3>
-                    <p className="text-sm text-gray-400">Revise os projetos enviados pelos alunos antes de serem publicados no Showcase.</p>
+                    <h3 className="text-lg font-bold text-white">Projetos Pendentes</h3>
+                    <p className="text-xs text-gray-400">Revise os projetos enviados pelos alunos.</p>
                 </div>
-                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-semibold border border-yellow-500/30">
+                <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-semibold border border-yellow-500/30">
                     {pendingProjects.length} Pendentes
                 </span>
              </div>
 
              <div className="space-y-4">
                 {pendingProjects.length === 0 ? (
-                    <div className="text-center py-12 bg-white/5 rounded-lg border border-white/10">
-                         <p className="text-gray-400">Nenhum projeto aguardando aprovação.</p>
+                    <div className="text-center py-8 bg-white/5 rounded-lg border border-white/10">
+                         <p className="text-gray-400 text-sm">Nenhum projeto aguardando aprovação.</p>
                     </div>
                 ) : (
                     pendingProjects.map(project => {
                         const author = users.find(u => u.id === project.authorId);
                         return (
-                            <div key={project.id} className="bg-white/5 p-6 rounded-lg border border-white/10 flex flex-col md:flex-row gap-6">
-                                <div className="w-full md:w-1/4 flex-shrink-0">
-                                    <img src={project.imageUrl} alt={project.title} className="w-full h-32 object-cover rounded-lg border border-white/10" />
+                            <div key={project.id} className="bg-white/5 p-4 rounded-lg border border-white/10 flex flex-col md:flex-row gap-4">
+                                <div className="w-full md:w-32 flex-shrink-0">
+                                    <img src={project.imageUrl} alt={project.title} className="w-full h-24 object-cover rounded-lg border border-white/10" />
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
-                                        <h4 className="text-lg font-bold text-white">{project.title}</h4>
-                                        <span className="text-xs text-gray-400">{project.createdAt}</span>
+                                        <h4 className="text-md font-bold text-white">{project.title}</h4>
+                                        <span className="text-[10px] text-gray-400">{project.createdAt}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 mt-1 mb-3">
-                                        <img src={author?.avatarUrl} className="w-5 h-5 rounded-full" alt="" />
-                                        <span className="text-sm text-[#c4b5fd]">{author?.name}</span>
+                                    <div className="flex items-center gap-2 mt-1 mb-2">
+                                        <img src={author?.avatarUrl} className="w-4 h-4 rounded-full" alt="" />
+                                        <span className="text-xs text-[#c4b5fd]">{author?.name}</span>
                                     </div>
-                                    <p className="text-gray-300 text-sm mb-3 line-clamp-3">{project.description}</p>
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {project.technologies.map(tech => <span key={tech} className="px-2 py-0.5 bg-white/10 rounded text-xs text-gray-400">{tech}</span>)}
-                                    </div>
-                                    <div className="flex gap-3 text-sm">
+                                    <p className="text-gray-300 text-xs mb-2 line-clamp-2">{project.description}</p>
+                                    <div className="flex gap-3 text-xs">
                                         <a href={project.repoUrl} target="_blank" rel="noopener" className="text-blue-400 hover:underline">Repositório</a>
                                         <span className="text-gray-600">|</span>
                                         <a href={project.liveUrl} target="_blank" rel="noopener" className="text-blue-400 hover:underline">Live Demo</a>
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-2 justify-center border-l border-white/10 pl-6">
-                                    <button onClick={() => handleApproveProject(project.id)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors">
+                                <div className="flex flex-col gap-2 justify-center border-l border-white/10 pl-4">
+                                    <button onClick={() => handleApproveProject(project.id)} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">
                                         Aprovar
                                     </button>
-                                    <button onClick={() => navigate(`/project/edit/${project.id}`)} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors">
+                                    <button onClick={() => navigate(`/project/edit/${project.id}`)} className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">
                                         Editar
                                     </button>
-                                    <button onClick={() => handleRejectProject(project.id)} className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-md text-sm font-semibold transition-colors">
+                                    <button onClick={() => handleRejectProject(project.id)} className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors">
                                         Rejeitar
                                     </button>
                                 </div>
@@ -309,8 +306,8 @@ const ModerationPanel: React.FC = () => {
 const AdminDashboard: React.FC = () => {
     const { 
       user, users, courses, articles, team, events, mentorSessions, financialStatements, annualReports,
-      handleSaveCourse, handleDeleteArticle, handleToggleArticleStatus,
-      handleSaveUser, handleDeleteUser, handleSaveTeamOrder,
+      handleDeleteArticle, handleToggleArticleStatus,
+      handleDeleteUser, handleSaveTeamOrder,
       handleAddSessionSlot, handleRemoveSessionSlot, handleDeleteCourse, handleDeleteEvent, handleDeleteFinancialStatement, handleDeleteAnnualReport
     } = useAppContext();
     const navigate = useNavigate();
@@ -322,7 +319,7 @@ const AdminDashboard: React.FC = () => {
     if (!user) return null;
 
     // Data and Memoized values
-    const { newStudentsLast30d, avgCompletionRate, coursePerformance, studentEngagement } = MOCK_ANALYTICS_DATA_V2;
+    const { newStudentsLast30d, coursePerformance, studentEngagement } = MOCK_ANALYTICS_DATA_V2;
 
     const coursesForUser = useMemo(() => user.role === 'admin' ? courses : courses.filter(c => c.instructorId === user.id), [user, courses]);
     const articlesForUser = useMemo(() => user.role === 'admin' ? articles : articles.filter(a => a.author === user.name), [user, articles]);
@@ -345,25 +342,23 @@ const AdminDashboard: React.FC = () => {
           <table className="min-w-full divide-y divide-white/10">
             <thead className="bg-white/5">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Título do Curso</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Trilha</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Módulos</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Aulas</th>
-                <th scope="col" className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Curso</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Trilha</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Aulas</th>
+                <th scope="col" className="relative px-4 py-3"><span className="sr-only">Ações</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
               {coursesForUser.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-10 text-gray-400">{user.role === 'instructor' ? 'Você ainda não criou nenhum curso.' : 'Nenhum curso cadastrado.'}</td></tr>
+                <tr><td colSpan={5} className="text-center py-8 text-gray-400 text-sm">{user.role === 'instructor' ? 'Você ainda não criou nenhum curso.' : 'Nenhum curso cadastrado.'}</td></tr>
               ) : (
                 coursesForUser.map((course) => (
                   <tr key={course.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm font-medium text-white">{course.title}</div><div className="text-xs text-gray-400">{course.skillLevel}</div></td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#8a4add]/20 text-[#c4b5fd]`}>{course.track}</span></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{course.modules.length}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{course.modules.reduce((acc, module) => acc + module.lessons.length, 0)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
-                      <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-green-400 hover:text-green-300">Ver Progresso</button>
+                    <td className="px-4 py-3 whitespace-nowrap"><div className="text-sm font-medium text-white truncate max-w-[200px]">{course.title}</div><div className="text-[10px] text-gray-400">{course.skillLevel}</div></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><span className={`px-2 inline-flex text-[10px] leading-4 font-semibold rounded-full bg-[#8a4add]/20 text-[#c4b5fd]`}>{course.track}</span></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-300">{course.modules.reduce((acc, module) => acc + module.lessons.length, 0)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-right text-xs font-medium space-x-3">
+                      <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-green-400 hover:text-green-300">Progresso</button>
                       <button onClick={() => handleEditCourse(course.id)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                       <button onClick={() => handleDeleteCourse(course.id)} className="text-red-400 hover:text-red-300">Excluir</button>
                     </td>
@@ -380,26 +375,22 @@ const AdminDashboard: React.FC = () => {
           <table className="min-w-full divide-y divide-white/10">
             <thead className="bg-white/5">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Título do Artigo</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Autor</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Categoria</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Data</th>
-                <th scope="col" className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Artigo</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Data</th>
+                <th scope="col" className="relative px-4 py-3"><span className="sr-only">Ações</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
               {articlesForUser.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-10 text-gray-400">Nenhum artigo publicado.</td></tr>
+                  <tr><td colSpan={6} className="text-center py-8 text-gray-400 text-sm">Nenhum artigo publicado.</td></tr>
               ) : (
                 articlesForUser.map((article) => (
                   <tr key={article.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm font-medium text-white">{article.title}</div><div className="text-xs text-gray-400">{article.subtitle}</div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{article.author}</td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#8a4add]/20 text-[#c4b5fd]">{article.category}</span></td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${article.status === 'published' ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'}`}>{article.status === 'published' ? 'Publicado' : 'Rascunho'}</span></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{article.date}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                    <td className="px-4 py-3 whitespace-nowrap"><div className="text-sm font-medium text-white truncate max-w-[200px]">{article.title}</div><div className="text-[10px] text-gray-400">{article.author}</div></td>
+                    <td className="px-4 py-3 whitespace-nowrap"><span className={`px-2 inline-flex text-[10px] leading-4 font-semibold rounded-full ${article.status === 'published' ? 'bg-green-500/20 text-green-300' : 'bg-gray-500/20 text-gray-300'}`}>{article.status === 'published' ? 'Publicado' : 'Rascunho'}</span></td>
+                    <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">{article.date}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-right text-xs font-medium space-x-3">
                       <button onClick={() => handleToggleArticleStatus(article.id)} className={article.status === 'published' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'}>{article.status === 'published' ? 'Desativar' : 'Publicar'}</button>
                       <button onClick={() => handleEditArticle(article.id)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                       <button onClick={() => handleDeleteArticle(article.id)} className="text-red-400 hover:text-red-300">Excluir</button>
@@ -417,29 +408,25 @@ const AdminDashboard: React.FC = () => {
           <table className="min-w-full divide-y divide-white/10">
           <thead className="bg-white/5">
               <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Nome</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Título</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Papel</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Mentor</th>
-              <th scope="col" className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Membro</th>
+              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Papel</th>
+              <th scope="col" className="relative px-4 py-3"><span className="sr-only">Ações</span></th>
               </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
               {team.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-10 text-gray-400">Nenhum membro na equipe.</td></tr>
+                  <tr><td colSpan={5} className="text-center py-8 text-gray-400 text-sm">Nenhum membro na equipe.</td></tr>
               ) : (
                   team.map((member) => (
                   <tr key={member.id} className="hover:bg-white/5 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center">
-                              <div className="flex-shrink-0 h-10 w-10"><img className="h-10 w-10 rounded-full" src={member.avatarUrl} alt={member.name} /></div>
-                              <div className="ml-4"><div className="text-sm font-medium text-white">{member.name}</div></div>
+                              <div className="flex-shrink-0 h-8 w-8"><img className="h-8 w-8 rounded-full" src={member.avatarUrl} alt={member.name} /></div>
+                              <div className="ml-3"><div className="text-sm font-medium text-white">{member.name}</div><div className="text-[10px] text-gray-400">{member.title}</div></div>
                           </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{member.title}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 capitalize">{member.role}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">{member.isMentor ? '✅' : '❌'}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                      <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300 capitalize">{member.role}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-right text-xs font-medium space-x-3">
                       <button onClick={() => handleEditUser(member.id, member.role)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                       {user?.id !== member.id && (<button onClick={() => handleDeleteUser(member.id)} className="text-red-400 hover:text-red-300">Desativar</button>)}
                       </td>
@@ -456,34 +443,26 @@ const AdminDashboard: React.FC = () => {
         <table className="min-w-full divide-y divide-white/10">
           <thead className="bg-white/5">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Título</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Data/Hora</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Tipo</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Anfitrião</th>
-              <th scope="col" className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Evento</th>
+              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Data/Hora</th>
+              <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Tipo</th>
+              <th scope="col" className="relative px-4 py-3"><span className="sr-only">Ações</span></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
             {events.length === 0 ? (
-                <tr><td colSpan={5} className="text-center py-10 text-gray-400">Nenhum evento agendado.</td></tr>
+                <tr><td colSpan={5} className="text-center py-8 text-gray-400 text-sm">Nenhum evento agendado.</td></tr>
             ) : (
                 events.map((event) => {
                     const host = users.find(u => u.id === event.hostId);
                     return (
                         <tr key={event.id} className="hover:bg-white/5 transition-colors">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm font-medium text-white">{event.title}</div>
-                                {event.location && <div className="text-xs text-gray-500 truncate max-w-[200px]">{event.location}</div>}
+                            <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="text-sm font-medium text-white truncate max-w-[200px]">{event.title}</div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{event.date} {event.time && `• ${event.time}`}</td>
-                            <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#8a4add]/20 text-[#c4b5fd]">{event.eventType}</span></td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                    {host && <img className="h-6 w-6 rounded-full mr-2" src={host.avatarUrl} alt={host.name} />}
-                                    <span className="text-sm text-gray-300">{host ? host.name : 'Desconhecido'}</span>
-                                </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                            <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">{event.date} {event.time}</td>
+                            <td className="px-4 py-3 whitespace-nowrap"><span className="px-2 inline-flex text-[10px] leading-4 font-semibold rounded-full bg-[#8a4add]/20 text-[#c4b5fd]">{event.eventType}</span></td>
+                            <td className="px-4 py-3 whitespace-nowrap text-right text-xs font-medium space-x-3">
                                 <button onClick={() => handleEditEvent(event.id)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                                 <button onClick={() => handleDeleteEvent(event.id)} className="text-red-400 hover:text-red-300">Excluir</button>
                             </td>
@@ -501,27 +480,27 @@ const StudentsTable = () => (
       <table className="min-w-full divide-y divide-white/10">
         <thead className="bg-white/5">
           <tr>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Nome</th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
-             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">XP</th>
-            <th scope="col" className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Aluno</th>
+            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
+             <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">XP</th>
+            <th scope="col" className="relative px-4 py-3"><span className="sr-only">Ações</span></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-white/10">
           {students.length === 0 ? (
-              <tr><td colSpan={4} className="text-center py-10 text-gray-400">Nenhum aluno cadastrado.</td></tr>
+              <tr><td colSpan={4} className="text-center py-8 text-gray-400 text-sm">Nenhum aluno cadastrado.</td></tr>
           ) : (
               students.map((student) => (
               <tr key={student.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                       <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10"><img className="h-10 w-10 rounded-full" src={student.avatarUrl} alt={student.name} /></div>
-                          <div className="ml-4"><div className="text-sm font-medium text-white">{student.name}</div></div>
+                          <div className="flex-shrink-0 h-8 w-8"><img className="h-8 w-8 rounded-full" src={student.avatarUrl} alt={student.name} /></div>
+                          <div className="ml-3"><div className="text-sm font-medium text-white">{student.name}</div></div>
                       </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm text-gray-300">{student.email}</div></td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.xp}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                  <td className="px-4 py-3 whitespace-nowrap"><div className="text-xs text-gray-300">{student.email}</div></td>
+                  <td className="px-4 py-3 whitespace-nowrap text-xs text-gray-300">{student.xp}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-right text-xs font-medium space-x-3">
                     <button onClick={() => handleEditUser(student.id, student.role)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                     {user?.id !== student.id && (<button onClick={() => handleDeleteUser(student.id)} className="text-red-400 hover:text-red-300">Desativar</button>)}
                   </td>
@@ -536,24 +515,24 @@ const StudentsTable = () => (
     const TransparencyTable = () => (
         <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 overflow-hidden">
             <div className="p-4 bg-white/5">
-                <h3 className="text-lg font-bold text-white mb-2">Relatórios Financeiros</h3>
-                <table className="min-w-full divide-y divide-white/10 mb-8">
+                <h3 className="text-sm font-bold text-white mb-2">Relatórios Financeiros</h3>
+                <table className="min-w-full divide-y divide-white/10 mb-6">
                     <thead className="bg-white/5">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Ano</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Receita Total</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Despesas</th>
-                            <th className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Ano</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Receita</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Despesas</th>
+                            <th className="relative px-4 py-2"><span className="sr-only">Ações</span></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/10">
-                        {financialStatements.length === 0 ? <tr><td colSpan={4} className="text-center py-4 text-gray-400">Nenhum relatório financeiro.</td></tr> : 
+                        {financialStatements.length === 0 ? <tr><td colSpan={4} className="text-center py-4 text-gray-400 text-xs">Nenhum relatório financeiro.</td></tr> : 
                         financialStatements.sort((a,b) => b.year - a.year).map(fs => (
                             <tr key={fs.id} className="hover:bg-white/5">
-                                <td className="px-6 py-4 text-sm text-white font-bold">{fs.year}</td>
-                                <td className="px-6 py-4 text-sm text-green-400">{fs.totalRevenue}</td>
-                                <td className="px-6 py-4 text-sm text-red-400">{fs.totalExpenses}</td>
-                                <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
+                                <td className="px-4 py-2 text-xs text-white font-bold">{fs.year}</td>
+                                <td className="px-4 py-2 text-xs text-green-400">{fs.totalRevenue}</td>
+                                <td className="px-4 py-2 text-xs text-red-400">{fs.totalExpenses}</td>
+                                <td className="px-4 py-2 text-right text-xs font-medium space-x-3">
                                     <button onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                                     <button onClick={() => handleDeleteFinancialStatement(fs.id)} className="text-red-400 hover:text-red-300">Excluir</button>
                                 </td>
@@ -562,22 +541,22 @@ const StudentsTable = () => (
                     </tbody>
                 </table>
 
-                <h3 className="text-lg font-bold text-white mb-2">Relatórios Anuais (Impacto)</h3>
+                <h3 className="text-sm font-bold text-white mb-2">Relatórios Anuais (Impacto)</h3>
                 <table className="min-w-full divide-y divide-white/10">
                     <thead className="bg-white/5">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Ano</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Coordenação</th>
-                            <th className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Ano</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-300 uppercase">Coordenação</th>
+                            <th className="relative px-4 py-2"><span className="sr-only">Ações</span></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/10">
-                         {annualReports.length === 0 ? <tr><td colSpan={3} className="text-center py-4 text-gray-400">Nenhum relatório anual.</td></tr> : 
+                         {annualReports.length === 0 ? <tr><td colSpan={3} className="text-center py-4 text-gray-400 text-xs">Nenhum relatório anual.</td></tr> : 
                         annualReports.sort((a,b) => b.year - a.year).map(ar => (
                             <tr key={ar.id} className="hover:bg-white/5">
-                                <td className="px-6 py-4 text-sm text-white font-bold">{ar.year}</td>
-                                <td className="px-6 py-4 text-sm text-gray-300">{ar.coordinationLetter.authorName}</td>
-                                <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
+                                <td className="px-4 py-2 text-xs text-white font-bold">{ar.year}</td>
+                                <td className="px-4 py-2 text-xs text-gray-300">{ar.coordinationLetter.authorName}</td>
+                                <td className="px-4 py-2 text-right text-xs font-medium space-x-3">
                                     <button onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)} className="text-[#c4b5fd] hover:text-white">Editar</button>
                                     <button onClick={() => handleDeleteAnnualReport(ar.id)} className="text-red-400 hover:text-red-300">Excluir</button>
                                 </td>
@@ -627,47 +606,47 @@ const StudentsTable = () => (
 
     return (
     <PageLayout>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
             <div>
-            <h1 className="text-4xl font-black text-white">Bem-vindo, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">{user.name.split(' ')[0]}</span>!</h1>
-            <p className="mt-2 text-lg text-gray-400">
+            <h1 className="text-3xl font-black text-white">Bem-vindo, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">{user.name.split(' ')[0]}</span>!</h1>
+            <p className="mt-1 text-sm text-gray-400">
                 Acompanhe a saúde da plataforma e o progresso dos seus alunos.
             </p>
             </div>
         </div>
         
         {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <StatCard title="Total de Alunos" value={students.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
-            <StatCard title="Novos Alunos (30d)" value={`+${newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
-            <StatCard title="Taxa de Conclusão Média" value={`${MOCK_ANALYTICS_DATA_V2.avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
-            <StatCard title="Posts no Blog" value={articles.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <StatCard title="Total de Alunos" value={students.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
+            <StatCard title="Novos (30d)" value={`+${newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
+            <StatCard title="Taxa Conclusão" value={`${MOCK_ANALYTICS_DATA_V2.avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
+            <StatCard title="Posts Blog" value={articles.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>} />
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid lg:grid-cols-3 gap-6 mb-8">
             {/* Course Performance */}
-            <div className="lg:col-span-2 bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                <h2 className="text-xl font-bold text-white mb-4">Desempenho dos Cursos</h2>
-                <div className="space-y-4">
+            <div className="lg:col-span-2 bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                <h2 className="text-lg font-bold text-white mb-4">Desempenho dos Cursos</h2>
+                <div className="space-y-3">
                     {coursePerformance.map(perf => {
                         const course = courses.find(c => c.id === perf.courseId);
                         if (!course) return null;
                         return (
-                            <div key={perf.courseId} className="bg-white/5 p-4 rounded-lg">
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div key={perf.courseId} className="bg-white/5 p-3 rounded-lg">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                                     <div className="flex-1">
-                                        <p className="font-bold text-white">{course.title}</p>
-                                        <div className="flex items-center gap-4 text-xs text-gray-400 mt-1">
+                                        <p className="font-bold text-white text-sm">{course.title}</p>
+                                        <div className="flex items-center gap-4 text-[10px] text-gray-400 mt-0.5">
                                             <span>👥 {perf.enrolled} Alunos</span>
                                             <span>🏆 {perf.completionRate}% Conclusão</span>
                                         </div>
                                     </div>
-                                    <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-xs font-semibold text-white bg-white/10 px-4 py-2 rounded-full hover:bg-white/20 transition-colors">
-                                        Ver Detalhes
+                                    <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-[10px] font-semibold text-white bg-white/10 px-3 py-1.5 rounded-full hover:bg-white/20 transition-colors">
+                                        Detalhes
                                     </button>
                                 </div>
-                                <ProgressBar progress={perf.completionRate} className="mt-3"/>
+                                <ProgressBar progress={perf.completionRate} className="mt-2"/>
                             </div>
                         )
                     })}
@@ -675,31 +654,31 @@ const StudentsTable = () => (
             </div>
 
             {/* Student Engagement */}
-            <div className="space-y-8">
-                <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                    <h2 className="text-xl font-bold text-white mb-4">🏆 Top Alunos (Mais XP)</h2>
-                    <ul className="space-y-3">
+            <div className="space-y-6">
+                <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                    <h2 className="text-lg font-bold text-white mb-4">🏆 Top Alunos</h2>
+                    <ul className="space-y-2">
                         {studentEngagement.topStudents.map(student => (
-                            <li key={student.id} className="flex items-center justify-between bg-black/20 p-3 rounded-md">
-                                <div className="flex items-center gap-3">
-                                    <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full" />
-                                    <span className="text-sm font-medium text-white">{student.name}</span>
+                            <li key={student.id} className="flex items-center justify-between bg-black/20 p-2 rounded-md">
+                                <div className="flex items-center gap-2">
+                                    <img src={student.avatarUrl} alt={student.name} className="h-6 w-6 rounded-full" />
+                                    <span className="text-xs font-medium text-white">{student.name}</span>
                                 </div>
-                                <span className="text-sm font-bold text-[#c4b5fd]">{student.xp.toLocaleString('pt-BR')} XP</span>
+                                <span className="text-xs font-bold text-[#c4b5fd]">{student.xp.toLocaleString('pt-BR')} XP</span>
                             </li>
                         ))}
                     </ul>
                 </div>
-                 <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                    <h2 className="text-xl font-bold text-white mb-4">🚨 Alunos que Precisam de Atenção</h2>
-                    <ul className="space-y-3">
+                 <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                    <h2 className="text-lg font-bold text-white mb-4">🚨 Atenção Necessária</h2>
+                    <ul className="space-y-2">
                         {studentEngagement.atRiskStudents.map(student => (
-                             <li key={student.id} className="flex items-center justify-between bg-black/20 p-3 rounded-md">
-                                <div className="flex items-center gap-3">
-                                    <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full opacity-60" />
-                                    <span className="text-sm font-medium text-gray-300">{student.name}</span>
+                             <li key={student.id} className="flex items-center justify-between bg-black/20 p-2 rounded-md">
+                                <div className="flex items-center gap-2">
+                                    <img src={student.avatarUrl} alt={student.name} className="h-6 w-6 rounded-full opacity-60" />
+                                    <span className="text-xs font-medium text-gray-300">{student.name}</span>
                                 </div>
-                                <span className="text-sm text-red-400">Visto há {student.lastLoginDaysAgo} dias</span>
+                                <span className="text-[10px] text-red-400">-{student.lastLoginDaysAgo} dias</span>
                             </li>
                         ))}
                     </ul>
@@ -709,37 +688,37 @@ const StudentsTable = () => (
 
         {/* Management Tables Section */}
          <div>
-            <div className="flex justify-between items-center border-b border-white/10 overflow-x-auto">
-                <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+            <div className="flex justify-between items-center border-b border-white/10 overflow-x-auto no-scrollbar">
+                <nav className="-mb-px flex space-x-6" aria-label="Tabs">
                     {(user.role === 'admin' || user.role === 'instructor') && (
-                        <button onClick={() => setActiveTab('myAgenda')} className={`${activeTab === 'myAgenda' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Minha Agenda</button>
+                        <button onClick={() => setActiveTab('myAgenda')} className={`${activeTab === 'myAgenda' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Minha Agenda</button>
                     )}
-                    <button onClick={() => setActiveTab('courses')} className={`${activeTab === 'courses' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Cursos</button>
-                    <button onClick={() => setActiveTab('blog')} className={`${activeTab === 'blog' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Blog</button>
-                    <button onClick={() => setActiveTab('events')} className={`${activeTab === 'events' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Eventos</button>
+                    <button onClick={() => setActiveTab('courses')} className={`${activeTab === 'courses' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Cursos</button>
+                    <button onClick={() => setActiveTab('blog')} className={`${activeTab === 'blog' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Blog</button>
+                    <button onClick={() => setActiveTab('events')} className={`${activeTab === 'events' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Eventos</button>
                     {user.role === 'admin' && (
                     <>
-                         <button onClick={() => setActiveTab('moderation')} className={`${activeTab === 'moderation' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Moderação</button>
-                        <button onClick={() => setActiveTab('teamMembers')} className={`${activeTab === 'teamMembers' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Equipe</button>
-                        <button onClick={() => setActiveTab('students')} className={`${activeTab === 'students' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Alunos</button>
-                        <button onClick={() => setActiveTab('tracks')} className={`${activeTab === 'tracks' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Trilhas</button>
-                        <button onClick={() => setActiveTab('transparency')} className={`${activeTab === 'transparency' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Transparência</button>
+                         <button onClick={() => setActiveTab('moderation')} className={`${activeTab === 'moderation' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Moderação</button>
+                        <button onClick={() => setActiveTab('teamMembers')} className={`${activeTab === 'teamMembers' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Equipe</button>
+                        <button onClick={() => setActiveTab('students')} className={`${activeTab === 'students' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Alunos</button>
+                        <button onClick={() => setActiveTab('tracks')} className={`${activeTab === 'tracks' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Trilhas</button>
+                        <button onClick={() => setActiveTab('transparency')} className={`${activeTab === 'transparency' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors`}>Transparência</button>
                     </>
                     )}
                 </nav>
-                <div className="flex items-center gap-4 pl-4">
+                <div className="flex items-center gap-3 pl-4">
                     {activeTab === 'teamMembers' && user.role === 'admin' && (
                     <button
                         onClick={() => setIsTeamOrdering(prev => !prev)}
-                        className="bg-white/10 text-white font-semibold py-2 px-5 rounded-lg hover:bg-white/20 transition-all duration-300 text-sm mb-2"
+                        className="bg-white/10 text-white font-semibold py-1.5 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 text-xs mb-2"
                     >
-                        {isTeamOrdering ? 'Ver Tabela' : 'Ordenar Posições'}
+                        {isTeamOrdering ? 'Ver Tabela' : 'Ordenar'}
                     </button>
                     )}
                     {showCreateButton && createButton && (
                         <button
                         onClick={createButton.action}
-                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300 text-sm mb-2 whitespace-nowrap"
+                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-1.5 px-4 rounded-lg hover:opacity-90 transition-all duration-300 text-xs mb-2 whitespace-nowrap"
                         >
                         {createButton.text}
                         </button>
@@ -929,39 +908,39 @@ const StudentDashboard: React.FC = () => {
 
     return (
         <PageLayout>
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <div className="mb-12">
-              <h1 className="text-4xl font-black text-white">Bem-vindo de volta, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">{user.name.split(' ')[0]}</span>!</h1>
-              <p className="mt-2 text-lg text-gray-400">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="mb-8">
+              <h1 className="text-3xl font-black text-white">Bem-vindo de volta, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">{user.name.split(' ')[0]}</span>!</h1>
+              <p className="mt-1 text-sm text-gray-400">
                 Sua jornada de aprendizado continua. Vamos pra cima!
               </p>
             </div>
             
             {latestInProgress && nextLesson ? (
-              <div className="mb-12 p-8 rounded-2xl bg-gradient-to-br from-[#6d28d9]/80 to-[#8a4add]/80 border border-white/10 shadow-2xl shadow-[#8a4add]/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="mb-8 p-6 rounded-xl bg-gradient-to-br from-[#6d28d9]/80 to-[#8a4add]/80 border border-white/10 shadow-2xl shadow-[#8a4add]/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold text-white/80">Continue de onde parou:</p>
-                  <h2 className="text-2xl font-bold text-white mt-1">{latestInProgress.course.title}</h2>
-                  <p className="text-lg text-white/90 mt-1">Próxima aula: {nextLesson.title}</p>
+                  <p className="text-xs font-semibold text-white/80 uppercase tracking-wider">Continue de onde parou:</p>
+                  <h2 className="text-xl font-bold text-white mt-1">{latestInProgress.course.title}</h2>
+                  <p className="text-sm text-white/90 mt-1">Próxima aula: {nextLesson.title}</p>
                 </div>
                 <button 
                   onClick={() => navigate(`/course/${latestInProgress.course.id}/lesson/${nextLesson.id}`)}
-                  className="w-full md:w-auto bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-gray-200 transition-colors shadow-lg"
+                  className="w-full md:w-auto bg-white text-black font-bold py-2 px-6 rounded-lg hover:bg-gray-200 transition-colors shadow-lg text-sm"
                 >
                   Continuar Aprendendo
                 </button>
               </div>
             ) : firstCourseToStart && (
-                <div className="mb-12 p-8 rounded-2xl bg-[#6d28d9] flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="mb-8 p-6 rounded-xl bg-[#6d28d9] flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="flex-grow">
-                        <p className="text-sm font-semibold text-purple-200">Pronto para o próximo desafio?</p>
-                        <h2 className="text-3xl font-bold text-white mt-1">{firstCourseToStart.title}</h2>
-                        <p className="text-base text-purple-200 mt-2">{firstCourseToStart.description}</p>
+                        <p className="text-xs font-semibold text-purple-200 uppercase tracking-wider">Pronto para o próximo desafio?</p>
+                        <h2 className="text-xl font-bold text-white mt-1">{firstCourseToStart.title}</h2>
+                        <p className="text-sm text-purple-200 mt-1">{firstCourseToStart.description}</p>
                     </div>
                     <div className="flex-shrink-0">
                         <button 
                             onClick={() => firstCourseToStart && handleStartCourse(firstCourseToStart)}
-                            className="w-full md:w-auto bg-slate-100 text-[#6d28d9] font-bold py-3 px-8 rounded-lg hover:bg-white transition-colors shadow-lg"
+                            className="w-full md:w-auto bg-slate-100 text-[#6d28d9] font-bold py-2 px-6 rounded-lg hover:bg-white transition-colors shadow-lg text-sm"
                         >
                             Começar Agora
                         </button>
@@ -969,23 +948,23 @@ const StudentDashboard: React.FC = () => {
                 </div>
             )}
 
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid lg:grid-cols-3 gap-6">
                 {/* Main Column */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-6">
                     {/* Cursos em Andamento */}
                     {inProgressCourses.length > 0 && (
-                        <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                            <h2 className="text-xl font-bold text-white mb-4">Meus Cursos em Andamento</h2>
-                            <div className="space-y-6">
+                        <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                            <h2 className="text-lg font-bold text-white mb-4">Meus Cursos em Andamento</h2>
+                            <div className="space-y-4">
                                 {inProgressCourses.map(({ course, progress }) => (
                                     <button
                                         key={course.id}
                                         onClick={() => handleCourseNavigation(course)}
-                                        className="w-full text-left bg-white/5 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-white/10 transition-colors"
+                                        className="w-full text-left bg-white/5 p-3 rounded-lg flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-white/10 transition-colors"
                                     >
-                                        <img src={course.imageUrl} alt={course.title} className="w-full sm:w-32 h-20 object-cover rounded-md flex-shrink-0" />
+                                        <img src={course.imageUrl} alt={course.title} className="w-full sm:w-24 h-16 object-cover rounded-md flex-shrink-0" />
                                         <div className="flex-grow w-full">
-                                            <p className="font-bold text-white">{course.title}</p>
+                                            <p className="font-bold text-white text-sm">{course.title}</p>
                                             <ProgressBar progress={progress} className="mt-2" />
                                         </div>
                                     </button>
@@ -995,8 +974,8 @@ const StudentDashboard: React.FC = () => {
                     )}
                     
                      {/* Cursos Presenciais */}
-                    <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                        <h2 className="text-xl font-bold text-white mb-4">Próximas Turmas Presenciais</h2>
+                    <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                        <h2 className="text-lg font-bold text-white mb-4">Próximas Turmas Presenciais</h2>
                          <div className="space-y-4">
                            {courses.filter(c => c.format === 'presencial' || c.format === 'hibrido').slice(0, 2).map(course => (
                                <OnsiteCourseCard key={course.id} course={course} />
@@ -1006,24 +985,24 @@ const StudentDashboard: React.FC = () => {
                     
                     {/* Cursos Concluídos */}
                     {completedCourses.length > 0 && (
-                         <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                             <h2 className="text-xl font-bold text-white mb-4">Cursos Concluídos</h2>
-                             <div className="grid sm:grid-cols-2 gap-6">
+                         <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                             <h2 className="text-lg font-bold text-white mb-4">Cursos Concluídos</h2>
+                             <div className="grid sm:grid-cols-2 gap-4">
                                  {completedCourses.slice(0, showAllCourses ? undefined : 2).map(course => (
-                                      <div key={course.id} className="bg-white/5 p-4 rounded-lg text-center group">
+                                      <div key={course.id} className="bg-white/5 p-3 rounded-lg text-center group">
                                         <button onClick={() => handleCourseNavigation(course)} className="w-full">
-                                            <img src={course.imageUrl} alt={course.title} className="w-full h-24 object-cover rounded-md group-hover:opacity-80 transition-opacity" />
-                                            <p className="font-semibold text-white mt-3 text-sm group-hover:text-[#c4b5fd] transition-colors">{course.title}</p>
+                                            <img src={course.imageUrl} alt={course.title} className="w-full h-20 object-cover rounded-md group-hover:opacity-80 transition-opacity" />
+                                            <p className="font-semibold text-white mt-2 text-xs group-hover:text-[#c4b5fd] transition-colors truncate">{course.title}</p>
                                         </button>
-                                        <button onClick={() => navigate(`/course/${course.id}/certificate`)} className="mt-3 w-full text-center bg-green-500/10 text-green-300 font-semibold py-2 rounded-lg text-xs hover:bg-green-500/20 transition-colors">
+                                        <button onClick={() => navigate(`/course/${course.id}/certificate`)} className="mt-2 w-full text-center bg-green-500/10 text-green-300 font-semibold py-1.5 rounded-lg text-[10px] hover:bg-green-500/20 transition-colors">
                                             Ver Certificado
                                         </button>
                                     </div>
                                  ))}
                              </div>
                              {completedCourses.length > 2 && (
-                                <div className="text-center mt-6">
-                                    <button onClick={() => setShowAllCourses(!showAllCourses)} className="text-sm font-semibold text-[#c4b5fd] hover:text-white">
+                                <div className="text-center mt-4">
+                                    <button onClick={() => setShowAllCourses(!showAllCourses)} className="text-xs font-semibold text-[#c4b5fd] hover:text-white">
                                         {showAllCourses ? 'Mostrar menos' : `Mostrar todos (${completedCourses.length})`}
                                     </button>
                                 </div>
@@ -1034,26 +1013,26 @@ const StudentDashboard: React.FC = () => {
                 </div>
 
                 {/* Sidebar */}
-                <aside className="space-y-8">
+                <aside className="space-y-6">
                     {/* Perfil */}
-                    <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6 text-center">
-                        <img src={user.avatarUrl} alt={user.name} className="h-24 w-24 rounded-full mx-auto border-4 border-[#8a4add]/50" />
-                        <h3 className="mt-4 text-xl font-bold text-white">{user.name}</h3>
-                        <p className="text-sm text-gray-400">Nível {userLevel}</p>
-                        <ProgressBar progress={xpInCurrentLevel / xpForNextLevel * 100} className="mt-3" />
-                        <p className="text-xs text-gray-400 mt-1">{xpInCurrentLevel}/{xpForNextLevel} XP para o próximo nível</p>
+                    <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5 text-center">
+                        <img src={user.avatarUrl} alt={user.name} className="h-20 w-20 rounded-full mx-auto border-4 border-[#8a4add]/50" />
+                        <h3 className="mt-3 text-lg font-bold text-white">{user.name}</h3>
+                        <p className="text-xs text-gray-400">Nível {userLevel}</p>
+                        <ProgressBar progress={xpInCurrentLevel / xpForNextLevel * 100} className="mt-2" />
+                        <p className="text-[10px] text-gray-400 mt-1">{xpInCurrentLevel}/{xpForNextLevel} XP para o próximo nível</p>
                     </div>
 
                      {/* Feed da Comunidade */}
-                    <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                        <h3 className="text-xl font-bold text-white mb-4">Feed da Comunidade</h3>
-                        <div className="space-y-4">
+                    <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                        <h3 className="text-lg font-bold text-white mb-4">Feed da Comunidade</h3>
+                        <div className="space-y-3">
                             {feedItems.map((item, index) => (
-                                <button key={index} onClick={item.action} className="w-full text-left bg-white/5 hover:bg-white/10 p-3 rounded-lg flex items-start gap-3 transition-colors">
-                                    <span className="text-xl mt-1">{item.icon}</span>
+                                <button key={index} onClick={item.action} className="w-full text-left bg-white/5 hover:bg-white/10 p-2 rounded-lg flex items-start gap-3 transition-colors">
+                                    <span className="text-lg mt-0.5">{item.icon}</span>
                                     <div>
-                                        <p className="text-xs text-gray-400">{item.title}</p>
-                                        <p className="font-semibold text-white text-sm line-clamp-2">{item.subtitle}</p>
+                                        <p className="text-[10px] text-gray-400">{item.title}</p>
+                                        <p className="font-semibold text-white text-xs line-clamp-2">{item.subtitle}</p>
                                     </div>
                                 </button>
                             ))}
@@ -1061,24 +1040,24 @@ const StudentDashboard: React.FC = () => {
                     </div>
                     
                     {/* Agenda */}
-                    <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
-                        <h3 className="text-xl font-bold text-white mb-4">Minha Agenda</h3>
-                        <div className="space-y-3">
+                    <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5">
+                        <h3 className="text-lg font-bold text-white mb-4">Minha Agenda</h3>
+                        <div className="space-y-2">
                             {upcomingAppointments.length > 0 ? upcomingAppointments.map((app, index) => (
-                                 <div key={index} className="bg-white/5 p-3 rounded-lg flex items-center gap-3">
-                                    <div className="text-center w-12 flex-shrink-0">
-                                        <p className="font-bold text-white text-lg">{app.date.toLocaleDateString('pt-BR', { day: '2-digit' })}</p>
-                                        <p className="text-xs text-gray-400">{app.date.toLocaleDateString('pt-BR', { month: 'short' })}</p>
+                                 <div key={index} className="bg-white/5 p-2 rounded-lg flex items-center gap-3">
+                                    <div className="text-center w-10 flex-shrink-0">
+                                        <p className="font-bold text-white text-sm">{app.date.toLocaleDateString('pt-BR', { day: '2-digit' })}</p>
+                                        <p className="text-[10px] text-gray-400 uppercase">{app.date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')}</p>
                                     </div>
                                     <div>
-                                        <p className="font-semibold text-white text-sm">{app.title}</p>
-                                        <p className="text-xs text-gray-400">{app.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                                        <p className="font-semibold text-white text-xs">{app.title}</p>
+                                        <p className="text-[10px] text-gray-400">{app.date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
                                     </div>
                                  </div>
                             )) : (
-                                 <p className="text-sm text-gray-400 text-center py-4">Nenhum agendamento próximo.</p>
+                                 <p className="text-xs text-gray-400 text-center py-2">Nenhum agendamento próximo.</p>
                             )}
-                            <button onClick={() => navigate('/connect')} className="w-full mt-4 text-center bg-white/10 text-white font-semibold py-2 rounded-lg text-sm hover:bg-white/20 transition-colors">
+                            <button onClick={() => navigate('/connect')} className="w-full mt-2 text-center bg-white/10 text-white font-semibold py-1.5 rounded-lg text-xs hover:bg-white/20 transition-colors">
                                 Ver mentorias e eventos
                             </button>
                         </div>
