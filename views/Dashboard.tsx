@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Achievement, Course, Lesson, MentorSession, User } from '../types';
+import { Achievement, Course, Lesson, MentorSession, User, Track } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
 import { useAppContext } from '../App';
@@ -134,6 +134,107 @@ const TeamOrderingPanel: React.FC<{
   );
 };
 
+const TracksManagementPanel: React.FC = () => {
+    const { tracks, courses, handleCreateTrack, handleUpdateTrack, handleDeleteTrack, showToast } = useAppContext();
+    const [newTrackName, setNewTrackName] = useState('');
+    const [editingTrack, setEditingTrack] = useState<Track | null>(null);
+    const [editingName, setEditingName] = useState('');
+
+    const handleCreate = () => {
+        if (!newTrackName.trim()) {
+            showToast("❌ O nome da trilha não pode ser vazio.");
+            return;
+        }
+        handleCreateTrack(newTrackName.trim());
+        setNewTrackName('');
+    };
+    
+    const startEditing = (track: Track) => {
+        setEditingTrack(track);
+        setEditingName(track.name);
+    };
+
+    const cancelEditing = () => {
+        setEditingTrack(null);
+        setEditingName('');
+    };
+
+    const handleUpdate = () => {
+        if (!editingTrack || !editingName.trim()) return;
+        if (editingTrack.name === editingName.trim()) {
+            cancelEditing();
+            return;
+        }
+        handleUpdateTrack(editingTrack.id, editingTrack.name, editingName.trim());
+        cancelEditing();
+    };
+
+    const getCoursesCountInTrack = (trackName: string) => {
+        return courses.filter(c => c.track === trackName).length;
+    };
+    
+    return (
+        <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 p-6 space-y-6">
+            <div>
+                <h3 className="text-xl font-bold text-white mb-4">Adicionar Nova Trilha</h3>
+                <div className="flex gap-4">
+                    <input
+                        type="text"
+                        value={newTrackName}
+                        onChange={(e) => setNewTrackName(e.target.value)}
+                        placeholder="Nome da nova trilha"
+                        className="flex-grow p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
+                    />
+                    <button onClick={handleCreate} className="font-semibold py-3 px-6 rounded-lg bg-[#8a4add] text-white hover:bg-[#6d28d9]">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                 <h3 className="text-xl font-bold text-white mb-4">Trilhas Existentes</h3>
+                 <div className="space-y-3">
+                    {tracks.length === 0 ? (
+                        <p className="text-gray-400">Nenhuma trilha cadastrada.</p>
+                    ) : (
+                        tracks.map(track => (
+                            <div key={track.id} className="bg-white/5 p-4 rounded-lg flex justify-between items-center">
+                                {editingTrack?.id === track.id ? (
+                                    <input 
+                                        type="text"
+                                        value={editingName}
+                                        onChange={(e) => setEditingName(e.target.value)}
+                                        className="p-1 bg-white/10 rounded border border-[#8a4add] focus:outline-none"
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <div>
+                                        <p className="font-semibold text-white">{track.name}</p>
+                                        <p className="text-xs text-gray-400">{getCoursesCountInTrack(track.name)} curso(s) nesta trilha</p>
+                                    </div>
+                                )}
+                                <div className="flex gap-4">
+                                    {editingTrack?.id === track.id ? (
+                                        <>
+                                            <button onClick={handleUpdate} className="text-sm text-green-400 hover:text-green-300">Salvar</button>
+                                            <button onClick={cancelEditing} className="text-sm text-gray-400 hover:text-gray-300">Cancelar</button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button onClick={() => startEditing(track)} className="text-sm text-[#c4b5fd] hover:text-white">Editar</button>
+                                            <button onClick={() => handleDeleteTrack(track.id)} className="text-sm text-red-400 hover:text-red-300">Excluir</button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                 </div>
+            </div>
+        </div>
+    );
+};
+
 const AdminDashboard: React.FC = () => {
     const { 
       user, users, courses, articles, team, mentorSessions,
@@ -184,7 +285,7 @@ const AdminDashboard: React.FC = () => {
                 coursesForUser.map((course) => (
                   <tr key={course.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap"><div className="text-sm font-medium text-white">{course.title}</div><div className="text-xs text-gray-400">{course.skillLevel}</div></td>
-                    <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${course.track === 'Frontend' ? 'bg-[#8a4add]/20 text-[#c4b5fd]' : 'bg-green-500/20 text-green-300'}`}>{course.track}</span></td>
+                    <td className="px-6 py-4 whitespace-nowrap"><span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#8a4add]/20 text-[#c4b5fd]`}>{course.track}</span></td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{course.modules.length}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{course.modules.reduce((acc, module) => acc + module.lessons.length, 0)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
@@ -319,6 +420,7 @@ const StudentsTable = () => (
           case 'blog': return <BlogTable />;
           case 'teamMembers': return <TeamMembersTable />;
           case 'students': return <StudentsTable />;
+          case 'tracks': return <TracksManagementPanel />;
           case 'myAgenda': return <MyAgendaPanel 
             user={user}
             mentorSessions={mentorSessions}
@@ -341,7 +443,7 @@ const StudentsTable = () => (
     }
     
     const createButton = getCreateButtonAction();
-    const showCreateButton = (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog'))) && !isTeamOrdering;
+    const showCreateButton = (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog'))) && !isTeamOrdering && activeTab !== 'tracks';
 
     return (
     <PageLayout>
@@ -438,6 +540,7 @@ const StudentsTable = () => (
                     <>
                         <button onClick={() => setActiveTab('teamMembers')} className={`${activeTab === 'teamMembers' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Equipe</button>
                         <button onClick={() => setActiveTab('students')} className={`${activeTab === 'students' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Alunos</button>
+                        <button onClick={() => setActiveTab('tracks')} className={`${activeTab === 'tracks' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Trilhas</button>
                     </>
                     )}
                 </nav>

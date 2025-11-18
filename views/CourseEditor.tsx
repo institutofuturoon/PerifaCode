@@ -15,24 +15,26 @@ type AiAction = 'create' | 'improve' | 'summarize' | 'create_code';
 
 
 const CourseEditor: React.FC = () => {
-  const { user, instructors, courses, handleSaveCourse, showToast } = useAppContext();
+  const { user, instructors, courses, tracks, handleSaveCourse, showToast } = useAppContext();
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
 
   const getNewCourseTemplate = useMemo(() => ({
     id: `course_${Date.now()}`,
     title: '', description: '', longDescription: '',
-    track: 'Frontend' as Course['track'], imageUrl: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
+    track: tracks[0]?.name || '', imageUrl: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
     duration: '',
     skillLevel: 'Iniciante' as Course['skillLevel'], instructorId: user?.id || '',
-    modules: [], format: 'online' as Course['format'],
+    modules: [],
+    format: 'online' as Course['format'],
+    enrollmentStatus: 'soon' as Course['enrollmentStatus'],
     // Initialize landing page sections
     heroContent: { subtitle: '', titleLine1: '', titleAccent: '', description: '' },
     benefitsSection: { title: '', subtitle: '', benefits: [] },
     curriculumSection: { title: '', subtitle: '', items: [] },
     methodologySection: { title: '', subtitle: '', benefits: [] },
     ctaSection: { title: '', description: '' }
-  }), [user]);
+  }), [user, tracks]);
 
   const existingCourse = useMemo(() => {
     if (courseId && courseId !== 'new') {
@@ -283,8 +285,10 @@ const CourseEditor: React.FC = () => {
                 <div><label htmlFor="description" className={labelClasses}>Descrição Curta (para cards)</label><input type="text" name="description" id="description" value={course.description} onChange={handleChange} required className={inputClasses} /></div>
                 <div><label htmlFor="longDescription" className={labelClasses}>Descrição Longa (para página do curso)</label><textarea name="longDescription" id="longDescription" value={course.longDescription} onChange={handleChange} required className={inputClasses} rows={4} /></div>
                 <div className="grid grid-cols-2 gap-6">
-                    <div><label htmlFor="track" className={labelClasses}>Trilha</label><select name="track" id="track" value={course.track} onChange={handleChange} className={inputClasses}><option>Frontend</option><option>Backend</option><option>IA</option><option>UX/UI</option><option>Idiomas</option><option>Negócios</option><option>Letramento Digital</option></select></div>
+                    <div><label htmlFor="track" className={labelClasses}>Trilha</label><select name="track" id="track" value={course.track} onChange={handleChange} className={inputClasses}>{tracks.map(track => (<option key={track.id} value={track.name}>{track.name}</option>))}</select></div>
                     <div><label htmlFor="skillLevel" className={labelClasses}>Nível</label><select name="skillLevel" id="skillLevel" value={course.skillLevel} onChange={handleChange} className={inputClasses}><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div>
+                    <div><label htmlFor="format" className={labelClasses}>Formato</label><select name="format" id="format" value={course.format} onChange={handleChange} className={inputClasses}><option value="online">Online</option><option value="presencial">Presencial</option><option value="hibrido">Híbrido</option></select></div>
+                    <div><label htmlFor="enrollmentStatus" className={labelClasses}>Status da Inscrição</label><select name="enrollmentStatus" id="enrollmentStatus" value={course.enrollmentStatus || 'soon'} onChange={handleChange} className={inputClasses}><option value="soon">Em Breve</option><option value="open">Abertas</option><option value="closed">Fechadas</option></select></div>
                     <div><label htmlFor="duration" className={labelClasses}>Duração</label><input type="text" name="duration" id="duration" value={course.duration} onChange={handleChange} placeholder="Ex: 8 horas" className={inputClasses} /></div>
                     <div><label htmlFor="instructorId" className={labelClasses}>Instrutor</label><select name="instructorId" id="instructorId" value={course.instructorId} onChange={handleChange} className={inputClasses}>{instructors.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select></div>
                 </div>

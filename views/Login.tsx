@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// FIX: Changed firebase import to use scoped package for consistency.
-import { signInWithEmailAndPassword } from '@firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import { Logo } from '../assets/Logo';
 

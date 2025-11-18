@@ -111,12 +111,17 @@ export interface CurriculumItem {
   description: string;
 }
 
+export interface Track {
+  id: string;
+  name: string;
+}
+
 export interface Course {
   id: string;
   title: string;
   description: string;
   longDescription: string;
-  track: 'Frontend' | 'Backend' | 'IA' | 'UX/UI' | 'Idiomas' | 'Negócios' | 'Letramento Digital' | 'Desenvolvimento de Games';
+  track: string;
   imageUrl?: string;
   duration: string;
   skillLevel: 'Iniciante' | 'Intermediário' | 'Avançado';
@@ -400,6 +405,7 @@ export interface AppContextType {
   partners: Partner[];
   events: Event[];
   mentorSessions: MentorSession[];
+  tracks: Track[];
   toast: string | null;
   courseProgress: CourseProgress;
   isProfileModalOpen: boolean;
@@ -450,4 +456,7 @@ export interface AppContextType {
   handleRemoveSessionSlot: (mentorId: string, date: string, time: string) => void;
   handleBookSession: (sessionId: string) => void;
   handleCancelSession: (sessionId: string) => void;
+  handleCreateTrack: (trackName: string) => Promise<void>;
+  handleUpdateTrack: (trackId: string, oldName: string, newName: string) => Promise<void>;
+  handleDeleteTrack: (trackId: string) => Promise<void>;
 }

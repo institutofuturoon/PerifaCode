@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// FIX: Changed firebase imports to use scoped packages for consistency.
-import { createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
-import { doc, setDoc } from '@firebase/firestore';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import { Logo } from '../assets/Logo';
 import { User } from '../types';

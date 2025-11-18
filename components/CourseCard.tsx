@@ -28,6 +28,13 @@ const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
 };
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
+  const statusConfig = {
+    open: { text: 'Abertas', classes: 'bg-green-500/80' },
+    closed: { text: 'Fechadas', classes: 'bg-red-500/80' },
+    soon: { text: 'Em Breve', classes: 'bg-sky-500/80' }
+  };
+  const status = course.enrollmentStatus ? statusConfig[course.enrollmentStatus] : null;
+
   return (
     <button
       onClick={() => onCourseSelect(course)}
@@ -35,6 +42,11 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
     >
       <div className="overflow-hidden aspect-video relative">
         <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl} alt={course.title} />
+        {status && (
+            <div className={`absolute top-2 left-2 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-white ${status.classes}`}>
+              {status.text}
+            </div>
+        )}
         <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-semibold text-white">
           {course.skillLevel}
         </div>

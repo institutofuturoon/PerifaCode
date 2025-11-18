@@ -1,7 +1,7 @@
-// FIX: Changed firebase imports to use scoped packages to resolve module resolution errors.
-import { initializeApp, getApp, getApps } from '@firebase/app';
-import { getAuth } from '@firebase/auth';
-import { getFirestore } from '@firebase/firestore';
+// FIX: Switched from named imports to a namespace import to resolve module resolution issues.
+import * as firebaseApp from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // Configuração do seu projeto Firebase.
 const firebaseConfig = {
@@ -15,7 +15,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase, preventing re-initialization.
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// FIX: Use the imported namespace to call Firebase app functions.
+const app = firebaseApp.getApps().length === 0 ? firebaseApp.initializeApp(firebaseConfig) : firebaseApp.getApp();
 
 // Export modular services.
 export const auth = getAuth(app);

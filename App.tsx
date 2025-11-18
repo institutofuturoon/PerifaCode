@@ -1,12 +1,10 @@
 import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
-// FIX: Changed firebase imports to use scoped packages for consistency.
-import { onAuthStateChanged, signOut, User as FirebaseUser } from '@firebase/auth';
+import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
-// FIX: Changed firebase imports to use scoped packages for consistency.
-import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from '@firebase/firestore';
+import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply } from './types';
+import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -92,6 +90,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [events, setEvents] = useState<Event[]>([]);
   
   const [mentorSessions, setMentorSessions] = useState<MentorSession[]>([]);
+
+  const [tracks, setTracks] = useState<Track[]>([]);
   
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
@@ -174,7 +174,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           fetchAndPopulateCollection('communityPosts', setCommunityPosts),
           fetchAndPopulateCollection('partners', setPartners),
           fetchAndPopulateCollection('events', setEvents),
-          fetchAndPopulateCollection('mentorSessions', setMentorSessions)
+          fetchAndPopulateCollection('mentorSessions', setMentorSessions),
+          fetchAndPopulateCollection('tracks', setTracks)
       ]);
       setLoading(false);
     };
@@ -589,6 +590,72 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handleCreateTrack = async (trackName: string) => {
+        if (tracks.some(t => t.name.toLowerCase() === trackName.toLowerCase())) {
+            showToast("❌ Essa trilha já existe.");
+            return;
+        }
+        const newTrack: Track = { id: `track_${Date.now()}`, name: trackName };
+        setTracks(prev => [...prev, newTrack]);
+        showToast("✅ Trilha criada com sucesso!");
+        try {
+            await setDoc(doc(db, "tracks", newTrack.id), newTrack);
+        } catch (error) {
+            console.error("Erro ao criar trilha:", error);
+            showToast("❌ Erro ao salvar a trilha.");
+        }
+    };
+
+    const handleUpdateTrack = async (trackId: string, oldName: string, newName: string) => {
+        if (tracks.some(t => t.name.toLowerCase() === newName.toLowerCase() && t.id !== trackId)) {
+            showToast("❌ Já existe uma trilha com esse nome.");
+            return;
+        }
+
+        const batch = writeBatch(db);
+        const trackDocRef = doc(db, "tracks", trackId);
+        batch.update(trackDocRef, { name: newName });
+        
+        const coursesToUpdate = courses.filter(c => c.track === oldName);
+        coursesToUpdate.forEach(course => {
+            const courseDocRef = doc(db, "courses", course.id);
+            batch.update(courseDocRef, { track: newName });
+        });
+
+        try {
+            await batch.commit();
+            setTracks(prev => prev.map(t => t.id === trackId ? { ...t, name: newName } : t));
+            setCourses(prev => prev.map(c => c.track === oldName ? { ...c, track: newName } : c));
+            showToast("✅ Trilha e cursos associados atualizados!");
+        } catch (error) {
+            console.error("Erro ao atualizar trilha e cursos:", error);
+            showToast("❌ Erro ao atualizar a trilha.");
+        }
+    };
+
+    const handleDeleteTrack = async (trackId: string) => {
+        const trackToDelete = tracks.find(t => t.id === trackId);
+        if (!trackToDelete) return;
+
+        const isTrackInUse = courses.some(c => c.track === trackToDelete.name);
+        if (isTrackInUse) {
+            showToast("❌ Não é possível excluir. A trilha está sendo usada por um ou mais cursos.");
+            return;
+        }
+
+        if (window.confirm(`Tem certeza que deseja excluir a trilha "${trackToDelete.name}"?`)) {
+            setTracks(prev => prev.filter(t => t.id !== trackId));
+            showToast("🗑️ Trilha excluída com sucesso.");
+            try {
+                await deleteDoc(doc(db, "tracks", trackId));
+            } catch (error)
+            {
+                console.error("Erro ao excluir trilha:", error);
+                showToast("❌ Erro ao excluir a trilha do banco de dados.");
+            }
+        }
+    };
+
     const handleCompleteOnboarding = async () => {
         if (!user) return;
         const updatedUser = { ...user, hasCompletedOnboardingTour: true };
@@ -636,6 +703,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const value = {
     user, users, courses, articles, team, projects, partners, events, mentorSessions, toast,
     communityPosts,
+    tracks,
     courseProgress, isProfileModalOpen, selectedProfile,
     isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading,
@@ -648,6 +716,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     handleDeleteEvent, handleSaveTeamOrder, handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession,
     showToast, handleUpdateUserProfile, handleCompleteOnboarding,
     handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
+    handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
