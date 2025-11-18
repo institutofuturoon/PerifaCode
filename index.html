@@ -15,20 +15,21 @@
       }
       /* Estilos para o conteúdo renderizado pelo Markdown */
       .prose p {
-        margin-top: 1.25em;
-        margin-bottom: 1.25em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        font-size: 0.95rem;
       }
       .prose h2 {
-        font-size: 1.875rem; /* text-3xl */
+        font-size: 1.5rem; /* text-2xl reduced */
         font-weight: 800; /* font-extrabold */
-        margin-top: 2.5em;
-        margin-bottom: 1em;
-      }
-      .prose h3 {
-        font-size: 1.5rem; /* text-2xl */
-        font-weight: 700; /* font-bold */
         margin-top: 2em;
         margin-bottom: 0.8em;
+      }
+      .prose h3 {
+        font-size: 1.25rem; /* text-xl reduced */
+        font-weight: 700; /* font-bold */
+        margin-top: 1.5em;
+        margin-bottom: 0.6em;
       }
       .prose a {
         color: #c4b5fd;
@@ -43,21 +44,23 @@
         border-left-color: #8a4add;
         color: #d1d5db;
         font-weight: 500;
+        font-size: 0.95rem;
       }
       /* Estilos para blocos de código */
       .prose pre {
         background-color: #111827; /* Fundo escuro para o bloco de código */
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 0.5rem;
         overflow-x: auto;
         border: 1px solid #374151; /* Borda sutil */
         color: #d1d5db; /* Texto claro */
+        font-size: 0.85rem;
       }
       .prose code {
         font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
         background-color: rgba(138, 74, 221, 0.2); /* Fundo roxo sutil */
         color: #c4b5fd; /* Texto roxo claro */
-        padding: 0.2em 0.4em;
+        padding: 0.1em 0.3em;
         border-radius: 3px;
         font-size: 85%;
       }
@@ -230,8 +233,8 @@
         bottom: 1.5rem;
         right: 1.5rem;
         z-index: 49;
-        width: 56px;
-        height: 56px;
+        width: 48px;
+        height: 48px;
         background-color: rgba(138, 74, 221, 0.3);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);

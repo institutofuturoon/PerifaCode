@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
@@ -54,25 +55,25 @@ const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ fi
 
 const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string; text: string; }> = ({ icon, stat, title, text }) => {
     return (
-        <div className="bg-white/5 backdrop-blur-sm p-6 rounded-xl border border-white/10 text-center transform transition-transform duration-300 hover:-translate-y-2 h-full flex flex-col items-center">
-            <div className="flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] text-white mb-4 shadow-lg shadow-[#8a4add]/20">
+        <div className="bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/10 text-center transform transition-transform duration-300 hover:-translate-y-1 h-full flex flex-col items-center">
+            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] text-white mb-3 shadow-lg shadow-[#8a4add]/20">
                 {icon}
             </div>
-            <p className="text-4xl font-black text-white">
+            <p className="text-3xl font-black text-white">
                 <AnimatedNumber finalStat={stat} />
             </p>
-            <p className="mt-2 text-sm font-semibold text-white uppercase tracking-wider">{title}</p>
-            <p className="mt-1 text-xs text-gray-400">{text}</p>
+            <p className="mt-1 text-xs font-semibold text-white uppercase tracking-wider">{title}</p>
+            <p className="mt-1 text-[10px] text-gray-400">{text}</p>
         </div>
     );
 };
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="flex-shrink-0 w-40 flex items-center justify-center p-4 bg-black/20 rounded-lg border border-white/10 group transition-all duration-300 transform hover:bg-white/5 hover:shadow-lg hover:shadow-[#8a4add]/10 hover:scale-105 hover:border-white/20">
+    <div className="flex-shrink-0 w-32 flex items-center justify-center p-3 bg-black/20 rounded-lg border border-white/10 group transition-all duration-300 transform hover:bg-white/5 hover:shadow-lg hover:shadow-[#8a4add]/10 hover:scale-105 hover:border-white/20">
         <img 
             src={logoUrl} 
             alt={name} 
-            className="h-12 max-w-full object-contain transition-all duration-300"
+            className="h-8 max-w-full object-contain transition-all duration-300 opacity-70 group-hover:opacity-100"
         />
     </div>
 );
@@ -83,10 +84,10 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   
   const impactData = [
-    { stat: "+300", title: "Jovens Formados", text: "Capacitados em tecnologia e prontos para o mercado", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
-    { stat: "+50", title: "Turmas Concluídas", text: "Cursos finalizados com sucesso, do online ao presencial", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-    { stat: "+14", title: "Voluntários Ativos", text: "Profissionais que dedicam tempo e talento para ensinar", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
-    { stat: `+${partners.length}`, title: "Parceiros Estratégicos", text: "Empresas que apoiam e acreditam na nossa missão", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg> },
+    { stat: "+300", title: "Jovens Formados", text: "Capacitados em tecnologia", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
+    { stat: "+50", title: "Turmas", text: "Do online ao presencial", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+    { stat: "+14", title: "Voluntários", text: "Profissionais dedicados", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
+    { stat: `+${partners.length}`, title: "Parceiros", text: "Empresas que apoiam", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 01 1v5m-4 0h4" /></svg> },
   ];
   
   const teamPreview = useMemo(() => {
@@ -105,25 +106,25 @@ const Home: React.FC = () => {
   return (
     <>
         {/* Hero Section */}
-        <section className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
+        <section className="py-12 md:py-20 text-center relative z-10 bg-grid-pattern">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-tight">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight">
               Seu futuro na tecnologia<br />
               começa <span className="text-[#c4b5fd]">na quebrada.</span>
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-base md:text-lg text-gray-300 leading-relaxed">
-              Acreditamos no seu potencial. Nossa missão é abrir as portas do mercado de tecnologia para talentos da periferia, com educação de ponta, comunidade e oportunidades reais.
+            <p className="mt-4 max-w-xl mx-auto text-sm md:text-base text-gray-300 leading-relaxed">
+              Acreditamos no seu potencial. Nossa missão é abrir as portas do mercado de tecnologia para talentos da periferia.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-sm md:text-base"
+                className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-sm"
               >
                 Inscreva-se Grátis
               </button>
               <button
                 onClick={() => navigate('/donate')}
-                className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-all duration-300 text-sm md:text-base"
+                className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-2 px-5 rounded-lg hover:bg-white/20 transition-all duration-300 text-sm"
               >
                 Faça uma Doação
               </button>
@@ -132,15 +133,15 @@ const Home: React.FC = () => {
         </section>
         
         {/* Quem Somos Section */}
-        <section className="py-16 relative z-10">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Quem Somos</h2>
-                <div className="w-16 h-1 bg-[#8a4add] mx-auto mt-4 mb-6"></div>
-                <p className="text-base md:text-lg text-gray-300 leading-relaxed">
+        <section className="py-10 relative z-10 border-b border-white/5">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl text-center">
+                <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">Quem Somos</h2>
+                <div className="w-12 h-1 bg-[#8a4add] mx-auto mt-3 mb-4"></div>
+                <p className="text-sm md:text-base text-gray-300 leading-relaxed">
                   O Instituto FuturoON é um projeto social, no Complexo da Coruja, em São Gonçalo, que leva <strong className="text-[#c4b5fd]">educação e tecnologia</strong> para jovens e adultos da periferia.
                 </p>
-                <div className="mt-6">
-                    <button onClick={() => navigate('/about')} className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-2 px-6 rounded-lg hover:bg-white/20 transition-all duration-300 text-sm">
+                <div className="mt-4">
+                    <button onClick={() => navigate('/about')} className="bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-1.5 px-4 rounded-lg hover:bg-white/20 transition-all duration-300 text-xs">
                         Conheça nossa história
                     </button>
                 </div>
@@ -148,12 +149,11 @@ const Home: React.FC = () => {
         </section>
 
         {/* Social Impact Section */}
-        <section className="py-16 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
+        <section className="py-10 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Nosso Impacto Social em Números</h2>
-                <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                <p className="max-w-2xl mx-auto text-base text-gray-300">Não estamos apenas ensinando código. Estamos mudando vidas e reescrevendo o futuro, um jovem de cada vez.</p>
-                <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">Nosso Impacto</h2>
+                <p className="max-w-xl mx-auto text-sm text-gray-300 mt-2">Mudando vidas e reescrevendo o futuro.</p>
+                <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
                     {impactData.map((item, index) => (
                         <ImpactCard 
                             key={index}
@@ -168,59 +168,46 @@ const Home: React.FC = () => {
         </section>
 
         {/* Simplified Timeline Section */}
-        <section className="py-16 relative z-10">
+        <section className="py-10 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Nossa Jornada de Conquistas</h2>
-                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">Alguns dos marcos mais importantes da nossa história, que nos trouxeram até aqui.</p>
+                    <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">Nossa Jornada</h2>
                 </div>
-                <div className="mt-12">
+                <div className="mt-8">
                   <SimplifiedTimeline />
-                </div>
-                 <div className="text-center mt-10 max-w-xs mx-auto">
-                    <button onClick={() => navigate('/about')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-sm font-semibold text-white">Veja a história completa</span>
-                    </button>
                 </div>
             </div>
         </section>
 
         {/* Team Preview Section */}
-        <section className="py-16 bg-black/20 relative z-10">
+        <section className="py-10 bg-black/20 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Conheça Nossa Tropa</h2>
-                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">Os rostos e corações por trás da nossa missão. Profissionais e voluntários dedicados a transformar vidas.</p>
+                    <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">Nossa Tropa</h2>
+                    <p className="mt-2 text-sm text-gray-300">Os rostos por trás da missão.</p>
                 </div>
-                <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="mt-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {teamPreview.map(member => (
                         <TeamMemberPreviewCard key={member.id} member={member} />
                     ))}
                 </div>
-                <div className="text-center mt-10 max-w-xs mx-auto">
-                     <button onClick={() => navigate('/team')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-sm font-semibold text-white">Ver equipe completa</span>
+                 <div className="text-center mt-6">
+                     <button onClick={() => navigate('/team')} className="text-xs font-semibold text-[#c4b5fd] hover:text-white">
+                        Ver equipe completa &rarr;
                     </button>
                 </div>
             </div>
         </section>
 
         {/* Nossos Parceiros Section */}
-        <section className="py-16 relative z-10">
+        <section className="py-10 relative z-10 border-t border-white/5">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center">
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Nossos Parceiros</h2>
-                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">
-                        Empresas e organizações que acreditam na nossa missão e investem no futuro da periferia.
-                    </p>
+                <div className="text-center mb-6">
+                    <h2 className="text-xl md:text-2xl font-bold text-white">Apoiadores</h2>
                 </div>
-
-                <div className="mt-12 relative">
+                <div className="relative opacity-80">
                     <div className="marquee">
-                        <div className="marquee-content">
+                        <div className="marquee-content gap-8">
                             {partners.map(partner => (
                                 <PartnerLogo key={partner.id} name={partner.name} logoUrl={partner.logoUrl} />
                             ))}
@@ -234,50 +221,20 @@ const Home: React.FC = () => {
         </section>
 
         {/* CTA Donate Section */}
-        <section className="py-16 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
+        <section className="py-12 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">
-                    Apoie essa causa e transforme
-                    <br />
-                    <span className="relative inline-block mt-2">
-                        vidas
-                        <span className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983]"></span>
-                    </span>
+                <h2 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+                    Apoie essa causa
                 </h2>
-                <p className="mt-6 max-w-2xl mx-auto text-base text-gray-300 leading-relaxed">
-                    Invista no futuro. Ajude a impulsionar a juventude e a transformação social por meio da educação digital. Cada contribuição é uma semente que transforma vidas.
+                <p className="mt-3 max-w-xl mx-auto text-sm text-gray-300 leading-relaxed">
+                    Invista no futuro. Ajude a impulsionar a juventude por meio da educação digital.
                 </p>
-                <div className="mt-8">
+                <div className="mt-6">
                     <button
                         onClick={() => navigate('/donate')}
-                        className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-sm"
+                        className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-sm"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                        </svg>
                         <span>Faça sua doação</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        {/* Transparency Section */}
-        <section className="py-16 bg-black/20 relative z-10">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center">
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">Transparência Total</h2>
-                    <div className="w-16 h-1 bg-gradient-to-r from-[#8a4add] to-[#a78bfa] mx-auto mt-4 mb-6"></div>
-                    <p className="mt-4 max-w-2xl mx-auto text-base text-gray-300">
-                        A confiança é construída com clareza. Acompanhe de perto como cada contribuição se transforma em oportunidade.
-                    </p>
-                </div>
-
-                <div className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
-                    <button onClick={() => navigate('/annual-report')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-sm font-semibold text-white">Relatório Anual 2024</span>
-                    </button>
-                    <button onClick={() => navigate('/financial-statement')} className="w-full group flex items-center justify-center p-3 bg-white/5 rounded-lg border border-white/10 hover:border-[#8a4add]/50 hover:bg-white/10 transition-all duration-300">
-                        <span className="text-sm font-semibold text-white">Prestação de Contas</span>
                     </button>
                 </div>
             </div>

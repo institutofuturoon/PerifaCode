@@ -6,7 +6,7 @@ import { Logo } from '../assets/Logo';
 import { useAppContext } from '../App';
 
 const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({ onClick, children }) => (
-  <button onClick={onClick} className="text-gray-300 hover:text-white transition-colors duration-300 text-sm font-medium">
+  <button onClick={onClick} className="text-gray-300 hover:text-white transition-colors duration-300 text-xs font-medium uppercase tracking-wide">
     {children}
   </button>
 );
@@ -70,31 +70,31 @@ const Header: React.FC = () => {
 };
 
   return (
-    <header className="bg-[#09090B]/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/10">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header className="bg-[#09090B]/80 backdrop-blur-md sticky top-0 z-50 border-b border-white/10 h-14">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex items-center justify-between h-full">
           <div className="flex items-center">
-            <button onClick={() => navigate('/')} className="flex-shrink-0">
+            <button onClick={() => navigate('/')} className="flex-shrink-0 transform scale-90 origin-left">
               <Logo />
             </button>
-            <nav className="hidden md:flex md:ml-10 md:space-x-8 items-center">
+            <nav className="hidden md:flex md:ml-8 md:space-x-6 items-center">
               <NavLink onClick={() => navigate('/courses')}>Cursos</NavLink>
               <NavLink onClick={() => navigate('/about')}>Sobre Nós</NavLink>
               <NavLink onClick={() => navigate('/community')}>Comunidade</NavLink>
-              <NavLink onClick={() => navigate('/connect')}>Mentorias & Eventos</NavLink>
+              <NavLink onClick={() => navigate('/connect')}>Mentorias</NavLink>
               <NavLink onClick={() => navigate('/blog')}>Blog</NavLink>
-              {user && <NavLink onClick={() => navigate('/dashboard')}>Meu Painel</NavLink>}
+              {user && <NavLink onClick={() => navigate('/dashboard')}>Painel</NavLink>}
             </nav>
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-             <div className="flex items-center gap-2 border-r border-white/10 pr-4 mr-2">
-                <label htmlFor="user-switcher" className="text-xs text-yellow-400 font-mono">TEST:</label>
+          <div className="hidden md:flex items-center gap-3">
+             <div className="flex items-center gap-2 border-r border-white/10 pr-3 mr-1">
+                <label htmlFor="user-switcher" className="text-[10px] text-yellow-400 font-mono">TEST:</label>
                 <select
                     id="user-switcher"
                     value={user?.id || 'logout'}
                     onChange={handleUserSwitch}
-                    className="bg-transparent text-white text-sm border-none focus:ring-0 p-1 rounded"
+                    className="bg-transparent text-white text-xs border-none focus:ring-0 p-0.5 rounded"
                     style={{ backgroundColor: '#1a202c', border: '1px solid #4a5568' }}
                 >
                     <option value="logout" style={{ backgroundColor: '#1a202c' }}>Log Out</option>
@@ -105,25 +105,25 @@ const Header: React.FC = () => {
                     ))}
                 </select>
             </div>
-             <button onClick={() => navigate('/donate')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-4 py-1.5 rounded-md text-sm font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
-                Faça uma Doação
+             <button onClick={() => navigate('/donate')} className="border border-[#8a4add]/50 text-[#c4b5fd] px-3 py-1 rounded-md text-xs font-medium hover:bg-[#8a4add]/20 hover:text-white transition-all duration-300">
+                Doar
             </button>
             {user ? (
               <>
                 {/* Notifications */}
                 <div ref={notificationsRef} className="relative">
-                  <button onClick={toggleNotifications} className="relative text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-                    {hasUnread && <span className="absolute top-2 right-2 block h-2 w-2 rounded-full bg-[#8a4add] ring-2 ring-black"></span>}
+                  <button onClick={toggleNotifications} className="relative text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                    {hasUnread && <span className="absolute top-1.5 right-1.5 block h-1.5 w-1.5 rounded-full bg-[#8a4add] ring-2 ring-black"></span>}
                   </button>
                   {isNotificationsOpen && (
-                    <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-[#1a202c] ring-1 ring-white/10">
-                      <div className="p-4 border-b border-white/10"><h3 className="font-semibold text-white">Notificações</h3></div>
+                    <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-[#1a202c] ring-1 ring-white/10">
+                      <div className="p-3 border-b border-white/10"><h3 className="font-semibold text-white text-xs">Notificações</h3></div>
                       <div className="py-1 max-h-64 overflow-y-auto">
-                        {notifications.length === 0 ? <p className="px-4 py-2 text-sm text-gray-400">Nenhuma notificação nova.</p> : notifications.map(n => (
-                          <a key={n.id} href="#" className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5">
+                        {notifications.length === 0 ? <p className="px-4 py-2 text-xs text-gray-400">Nenhuma notificação.</p> : notifications.map(n => (
+                          <a key={n.id} href="#" className="block px-4 py-2 text-xs text-gray-300 hover:bg-white/5">
                             <p className={!n.isRead ? 'font-bold' : ''}>{n.text}</p>
-                            <p className="text-xs text-gray-500">{n.createdAt}</p>
+                            <p className="text-[10px] text-gray-500">{n.createdAt}</p>
                           </a>
                         ))}
                       </div>
@@ -134,24 +134,24 @@ const Header: React.FC = () => {
                 {/* Profile Dropdown */}
                 <div ref={profileMenuRef} className="relative">
                   <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-[#8a4add]">
-                    <img className="h-8 w-8 rounded-full" src={user.avatarUrl} alt={user.name} />
+                    <img className="h-7 w-7 rounded-full object-cover" src={user.avatarUrl} alt={user.name} />
                   </button>
                   {isProfileMenuOpen && (
-                    <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-[#1a202c] ring-1 ring-white/10">
-                      <button onClick={() => { navigate('/profile'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Meu Perfil</button>
-                      {(user.role === 'admin' || user.role === 'instructor') && <button onClick={() => { navigate('/admin'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5">Painel de Admin</button>}
-                      <button onClick={() => { handleLogoutClick(); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5">Sair</button>
+                    <div className="origin-top-right absolute right-0 mt-2 w-40 rounded-md shadow-lg py-1 bg-[#1a202c] ring-1 ring-white/10">
+                      <button onClick={() => { navigate('/profile'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5">Meu Perfil</button>
+                      {(user.role === 'admin' || user.role === 'instructor') && <button onClick={() => { navigate('/admin'); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5">Painel Admin</button>}
+                      <button onClick={() => { handleLogoutClick(); setIsProfileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-xs text-red-400 hover:bg-white/5">Sair</button>
                     </div>
                   )}
                 </div>
               </>
             ) : (
-              <div className="flex items-center">
-                <button onClick={() => navigate('/login')} className="border border-[#8a4add]/80 bg-transparent text-gray-300 hover:bg-[#8a4add]/20 font-semibold py-2 px-4 rounded-l-lg transition-all duration-300 text-sm">
+              <div className="flex items-center gap-2">
+                <button onClick={() => navigate('/login')} className="text-gray-300 hover:text-white font-medium text-xs px-2 py-1 transition-colors">
                     Entrar
                 </button>
-                <button onClick={() => navigate('/register')} className="border border-[#8a4add] bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-4 rounded-r-lg hover:opacity-90 transition-all duration-300 text-sm -ml-px">
-                    Cadastre-se Grátis
+                <button onClick={() => navigate('/register')} className="bg-[#8a4add] text-white font-semibold py-1.5 px-3 rounded-md hover:bg-[#7c3aed] transition-all text-xs">
+                    Cadastre-se
                 </button>
               </div>
             )}
@@ -167,15 +167,12 @@ const Header: React.FC = () => {
       
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-black border-t border-white/10">
+        <div className="md:hidden bg-black border-t border-white/10 absolute w-full z-50">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {user && <button onClick={() => handleMobileNav('/dashboard')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Painel</button>}
             <button onClick={() => handleMobileNav('/courses')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
             <button onClick={() => handleMobileNav('/about')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
-            <button onClick={() => handleMobileNav('/team')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Nossa Equipe</button>
             <button onClick={() => handleMobileNav('/community')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
-            <button onClick={() => handleMobileNav('/connect')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Mentorias & Eventos</button>
-            <button onClick={() => handleMobileNav('/blog')} className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Blog</button>
             {!user ? (
                 <div className="border-t border-white/10 pt-4 mt-4 flex items-center justify-center gap-2">
                     <button onClick={() => handleMobileNav('/login')} className="flex-1 border border-[#8a4add]/80 bg-transparent text-gray-300 hover:bg-[#8a4add]/20 font-semibold py-2 px-4 rounded-lg transition-all duration-300 text-sm">
