@@ -335,6 +335,8 @@ export interface Project {
   claps: number;
   comments: ProjectComment[];
   createdAt: string;
+  // New fields for moderation
+  status: 'approved' | 'pending' | 'rejected';
   
   // New Collaboration Field
   lookingForCollab?: boolean;
@@ -500,6 +502,8 @@ export interface AppContextType {
   handleUpdateUserProfile: (userToUpdate: User) => Promise<void>;
   handleDeleteUser: (userId: string) => Promise<void>;
   handleSaveProject: (projectToSave: Project) => void;
+  handleApproveProject: (projectId: string) => void;
+  handleRejectProject: (projectId: string) => void;
   handleAddClap: (projectId: string) => void;
   handleAddComment: (projectId: string, text: string) => void;
   handleSaveEvent: (eventToSave: Event) => void;

@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport } from '../types';
+import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport, Project } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
 import { useAppContext } from '../App';
@@ -232,6 +232,76 @@ const TracksManagementPanel: React.FC = () => {
                     )}
                  </div>
             </div>
+        </div>
+    );
+};
+
+const ModerationPanel: React.FC = () => {
+    const { projects, users, handleApproveProject, handleRejectProject, handleSaveProject } = useAppContext();
+    const navigate = useNavigate();
+
+    const pendingProjects = useMemo(() => projects.filter(p => p.status === 'pending'), [projects]);
+
+    return (
+        <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 p-6">
+             <div className="flex justify-between items-center mb-6">
+                <div>
+                    <h3 className="text-xl font-bold text-white">Projetos Pendentes</h3>
+                    <p className="text-sm text-gray-400">Revise os projetos enviados pelos alunos antes de serem publicados no Showcase.</p>
+                </div>
+                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm font-semibold border border-yellow-500/30">
+                    {pendingProjects.length} Pendentes
+                </span>
+             </div>
+
+             <div className="space-y-4">
+                {pendingProjects.length === 0 ? (
+                    <div className="text-center py-12 bg-white/5 rounded-lg border border-white/10">
+                         <p className="text-gray-400">Nenhum projeto aguardando aprovação.</p>
+                    </div>
+                ) : (
+                    pendingProjects.map(project => {
+                        const author = users.find(u => u.id === project.authorId);
+                        return (
+                            <div key={project.id} className="bg-white/5 p-6 rounded-lg border border-white/10 flex flex-col md:flex-row gap-6">
+                                <div className="w-full md:w-1/4 flex-shrink-0">
+                                    <img src={project.imageUrl} alt={project.title} className="w-full h-32 object-cover rounded-lg border border-white/10" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <h4 className="text-lg font-bold text-white">{project.title}</h4>
+                                        <span className="text-xs text-gray-400">{project.createdAt}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-1 mb-3">
+                                        <img src={author?.avatarUrl} className="w-5 h-5 rounded-full" alt="" />
+                                        <span className="text-sm text-[#c4b5fd]">{author?.name}</span>
+                                    </div>
+                                    <p className="text-gray-300 text-sm mb-3 line-clamp-3">{project.description}</p>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {project.technologies.map(tech => <span key={tech} className="px-2 py-0.5 bg-white/10 rounded text-xs text-gray-400">{tech}</span>)}
+                                    </div>
+                                    <div className="flex gap-3 text-sm">
+                                        <a href={project.repoUrl} target="_blank" rel="noopener" className="text-blue-400 hover:underline">Repositório</a>
+                                        <span className="text-gray-600">|</span>
+                                        <a href={project.liveUrl} target="_blank" rel="noopener" className="text-blue-400 hover:underline">Live Demo</a>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-2 justify-center border-l border-white/10 pl-6">
+                                    <button onClick={() => handleApproveProject(project.id)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors">
+                                        Aprovar
+                                    </button>
+                                    <button onClick={() => navigate(`/project/edit/${project.id}`)} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors">
+                                        Editar
+                                    </button>
+                                    <button onClick={() => handleRejectProject(project.id)} className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-md text-sm font-semibold transition-colors">
+                                        Rejeitar
+                                    </button>
+                                </div>
+                            </div>
+                        )
+                    })
+                )}
+             </div>
         </div>
     );
 };
@@ -528,6 +598,7 @@ const StudentsTable = () => (
           case 'events': return <EventsTable />;
           case 'tracks': return <TracksManagementPanel />;
           case 'transparency': return <TransparencyTable />;
+          case 'moderation': return <ModerationPanel />;
           case 'myAgenda': return <MyAgendaPanel 
             user={user}
             mentorSessions={mentorSessions}
@@ -552,7 +623,7 @@ const StudentsTable = () => (
     }
     
     const createButton = getCreateButtonAction();
-    const showCreateButton = !!createButton && (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog' || activeTab === 'events'))) && !isTeamOrdering && activeTab !== 'tracks';
+    const showCreateButton = !!createButton && (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog' || activeTab === 'events'))) && !isTeamOrdering && activeTab !== 'tracks' && activeTab !== 'moderation';
 
     return (
     <PageLayout>
@@ -570,7 +641,7 @@ const StudentsTable = () => (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             <StatCard title="Total de Alunos" value={students.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
             <StatCard title="Novos Alunos (30d)" value={`+${newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
-            <StatCard title="Taxa de Conclusão Média" value={`${avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
+            <StatCard title="Taxa de Conclusão Média" value={`${MOCK_ANALYTICS_DATA_V2.avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
             <StatCard title="Posts no Blog" value={articles.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>} />
         </div>
 
@@ -648,6 +719,7 @@ const StudentsTable = () => (
                     <button onClick={() => setActiveTab('events')} className={`${activeTab === 'events' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Eventos</button>
                     {user.role === 'admin' && (
                     <>
+                         <button onClick={() => setActiveTab('moderation')} className={`${activeTab === 'moderation' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Moderação</button>
                         <button onClick={() => setActiveTab('teamMembers')} className={`${activeTab === 'teamMembers' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Equipe</button>
                         <button onClick={() => setActiveTab('students')} className={`${activeTab === 'students' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Alunos</button>
                         <button onClick={() => setActiveTab('tracks')} className={`${activeTab === 'tracks' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Trilhas</button>
@@ -756,9 +828,10 @@ const StudentDashboard: React.FC = () => {
     const feedItems = useMemo(() => {
       const items = [];
   
-      // Latest Project
-      if (projects.length > 0) {
-          const sortedProjects = [...projects].sort((a, b) => {
+      // Latest Project (Approved only)
+      const approvedProjects = projects.filter(p => p.status === 'approved');
+      if (approvedProjects.length > 0) {
+          const sortedProjects = [...approvedProjects].sort((a, b) => {
               const dateA = new Date(a.createdAt);
               const dateB = new Date(b.createdAt);
               const isAValid = !isNaN(dateA.getTime());

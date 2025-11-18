@@ -1,3 +1,4 @@
+
 import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession, AnalyticsData, CommunityPost } from './types';
 
 // Todos os arrays de dados mockados foram esvaziados.
@@ -333,7 +334,7 @@ Aprender Node.js não é apenas aprender uma nova ferramenta. É entender como a
 
 Se você já gosta de JavaScript no frontend, dar o próximo passo para o Node.js é um caminho natural e poderoso para se tornar um desenvolvedor mais completo e preparado para o futuro.
 
-Foguete não tem ré! Bora codar!`,
+Foguete não tem ré, mas seu código agora tem! Pra cima!`,
     status: 'published',
     claps: 78,
     tags: ['node.js', 'javascript', 'backend', 'iniciante', 'api']

@@ -74,7 +74,9 @@ const CommunityView: React.FC = () => {
     const allProjectTechs = useMemo(() => {
         const techSet = new Set<string>();
         projects.forEach(project => {
-            project.technologies.forEach(tech => techSet.add(tech));
+            if (project.status === 'approved') {
+                project.technologies.forEach(tech => techSet.add(tech));
+            }
         });
         return ['Todos', ...Array.from(techSet).sort()];
     }, [projects]);
@@ -90,6 +92,13 @@ const CommunityView: React.FC = () => {
     const filteredProjects = useMemo(() => {
         let result = projects;
         
+        // Filter by status: Approved OR (Pending/Rejected AND Owner)
+        result = result.filter(p => {
+            const isApproved = p.status === 'approved';
+            const isOwner = user && p.authorId === user.id;
+            return isApproved || isOwner;
+        });
+
         // Filter by Tech
         if (activeFilter !== 'Todos') {
             result = result.filter(project => project.technologies.includes(activeFilter));
@@ -105,7 +114,7 @@ const CommunityView: React.FC = () => {
         }
         
         return result;
-    }, [projects, activeFilter, searchTerm]);
+    }, [projects, activeFilter, searchTerm, user]);
 
     const filteredPosts = useMemo(() => {
         let result = communityPosts;
@@ -154,7 +163,9 @@ const CommunityView: React.FC = () => {
     }, [communityPosts]);
 
     const handleProjectSelect = (project: Project) => {
-        navigate(`/project/${project.id}`);
+        if (project.status === 'approved' || (user && project.authorId === user.id)) {
+             navigate(`/project/${project.id}`);
+        }
     };
 
     const handlePostSelect = (post: CommunityPost) => {
@@ -226,7 +237,7 @@ const CommunityView: React.FC = () => {
                     <div className="sticky top-16 z-30 bg-[#09090B]/95 backdrop-blur-xl border-b border-white/10 -mx-4 px-4 sm:mx-0 sm:px-0 sm:rounded-t-xl mb-8 pt-2">
                         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                             <div className="flex w-full sm:w-auto overflow-x-auto no-scrollbar">
-                                <TabButton tab="projects" label="Showcase" count={projects.length} />
+                                <TabButton tab="projects" label="Showcase" count={projects.filter(p => p.status === 'approved').length} />
                                 <TabButton tab="forum" label="Fórum" count={communityPosts.length} />
                             </div>
                             <div className="relative w-full sm:w-64 mb-2 sm:mb-0 sm:mr-2">

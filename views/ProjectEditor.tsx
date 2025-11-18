@@ -19,6 +19,7 @@ const ProjectEditor: React.FC = () => {
             title: '', description: '', imageUrl: '',
             technologies: [], repoUrl: '', liveUrl: '',
             claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR'),
+            status: 'pending' as Project['status'],
             lookingForCollab: false
         };
     }, [projectId, projects, user]);
@@ -27,10 +28,11 @@ const ProjectEditor: React.FC = () => {
         id: `proj_${Date.now()}`, authorId: user?.id || '', title: '',
         description: '', imageUrl: '', technologies: [], repoUrl: '',
         liveUrl: '', claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR'),
+        status: 'pending',
         lookingForCollab: false
     });
 
-    if (!initialProject) {
+    if (!initialProject && projectId) {
         return <div className="text-center py-20">Projeto não encontrado.</div>;
     }
 
@@ -62,7 +64,7 @@ const ProjectEditor: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h1 className="text-4xl font-black text-white">{initialProject.title ? 'Editar Projeto' : 'Submeter Projeto'}</h1>
+                        <h1 className="text-4xl font-black text-white">{initialProject?.title ? 'Editar Projeto' : 'Submeter Projeto'}</h1>
                         <p className="text-gray-400 mt-1">Mostre à comunidade o que você construiu!</p>
                     </div>
                     <div className="flex gap-4">

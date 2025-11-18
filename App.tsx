@@ -142,6 +142,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             const mockProjectIds = new Set(MOCK_PROJECTS.map(c => c.id));
             const additionalDbProjects = dataFromDb.filter(dbProject => !mockProjectIds.has((dbProject as Project).id));
             dataFromDb = [...MOCK_PROJECTS, ...additionalDbProjects];
+            
+            // Ensure existing mocks have status
+            dataFromDb = dataFromDb.map(p => ({...p, status: (p as Project).status || 'approved'}));
         }
 
         if (collectionName === 'communityPosts') {
@@ -169,7 +172,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         } else if (collectionName === 'articles') {
             setData(ARTICLES.map(article => ({ ...article, readingTime: calculateReadingTime(article.content) })));
         } else if (collectionName === 'projects') {
-            setData(MOCK_PROJECTS);
+            setData(MOCK_PROJECTS.map(p => ({...p, status: 'approved'})));
         } else if (collectionName === 'communityPosts') {
             setData(MOCK_COMMUNITY_POSTS);
         } else if (collectionName === 'events') {
@@ -427,14 +430,55 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
     
     const handleSaveProject = async (projectToSave: Project) => {
-         const isNew = !projects.some(p => p.id === projectToSave.id);
-         setProjects(prev => isNew ? [...prev, projectToSave] : prev.map(p => p.id === projectToSave.id ? projectToSave : p));
-         showToast("✅ Projeto salvo!");
+        const isNew = !projects.some(p => p.id === projectToSave.id);
+        
+        // If it's a new project by a student, status is pending.
+        // Admins can auto-approve or status is preserved on edit.
+        let status: Project['status'] = projectToSave.status || 'pending';
+        
+        if (isNew && user?.role === 'student') {
+            status = 'pending';
+        } else if (isNew && (user?.role === 'admin' || user?.role === 'instructor')) {
+            status = 'approved';
+        }
+
+        const projectWithStatus = { ...projectToSave, status };
+
+        setProjects(prev => isNew ? [...prev, projectWithStatus] : prev.map(p => p.id === projectToSave.id ? projectWithStatus : p));
+        
+        if (status === 'pending') {
+            showToast("✅ Projeto enviado para aprovação!");
+        } else {
+            showToast("✅ Projeto salvo!");
+        }
+
          try {
-             await setDoc(doc(db, "projects", projectToSave.id), projectToSave);
+             await setDoc(doc(db, "projects", projectWithStatus.id), projectWithStatus);
          } catch(error) {
               console.error("Erro ao salvar projeto:", error);
          }
+    };
+
+    const handleApproveProject = async (projectId: string) => {
+        setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: 'approved' } : p));
+        showToast("✅ Projeto aprovado!");
+        try {
+            await updateDoc(doc(db, "projects", projectId), { status: 'approved' });
+        } catch(error) {
+            console.error("Erro ao aprovar projeto:", error);
+        }
+    };
+
+    const handleRejectProject = async (projectId: string) => {
+        if(window.confirm("Tem certeza que deseja rejeitar este projeto?")) {
+             setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: 'rejected' } : p));
+             showToast("🚫 Projeto rejeitado.");
+             try {
+                 await updateDoc(doc(db, "projects", projectId), { status: 'rejected' });
+             } catch(error) {
+                 console.error("Erro ao rejeitar projeto:", error);
+             }
+        }
     };
 
     const handleAddClap = async (projectId: string) => {
@@ -787,7 +831,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
     completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
-    handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleAddClap, handleAddComment,
+    handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
     handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
     handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
     handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport
