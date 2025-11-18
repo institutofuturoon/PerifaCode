@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Project } from '../types';
@@ -17,14 +18,16 @@ const ProjectEditor: React.FC = () => {
             authorId: user?.id || '',
             title: '', description: '', imageUrl: '',
             technologies: [], repoUrl: '', liveUrl: '',
-            claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR')
+            claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR'),
+            lookingForCollab: false
         };
     }, [projectId, projects, user]);
     
     const [project, setProject] = useState<Project>(initialProject || {
         id: `proj_${Date.now()}`, authorId: user?.id || '', title: '',
         description: '', imageUrl: '', technologies: [], repoUrl: '',
-        liveUrl: '', claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR')
+        liveUrl: '', claps: 0, comments: [], createdAt: new Date().toLocaleDateString('pt-BR'),
+        lookingForCollab: false
     });
 
     if (!initialProject) {
@@ -34,9 +37,12 @@ const ProjectEditor: React.FC = () => {
     const onCancel = () => navigate('/community');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
         if (name === 'technologies') {
             setProject(prev => ({ ...prev, technologies: value.split(',').map(t => t.trim()) }));
+        } else if (type === 'checkbox') {
+             // @ts-ignore
+             setProject(prev => ({ ...prev, [name]: e.target.checked }));
         } else {
             setProject(prev => ({ ...prev, [name]: value }));
         }
@@ -96,6 +102,22 @@ const ProjectEditor: React.FC = () => {
                             <label htmlFor="liveUrl" className={labelClasses}>Link do Projeto no Ar</label>
                             <input id="liveUrl" name="liveUrl" type="url" value={project.liveUrl} onChange={handleChange} required className={inputClasses} placeholder="https://seu-projeto.vercel.app" />
                         </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-white/10">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                            <input 
+                                type="checkbox" 
+                                name="lookingForCollab" 
+                                checked={project.lookingForCollab || false} 
+                                onChange={handleChange} 
+                                className="h-5 w-5 rounded border-gray-300 bg-white/5 text-[#8a4add] focus:ring-[#8a4add]"
+                            />
+                            <div>
+                                <span className="font-medium text-white block">Estou buscando time/colaboradores</span>
+                                <span className="text-xs text-gray-400 block">Se marcado, um selo "Buscando Time" aparecerá no card do projeto.</span>
+                            </div>
+                        </label>
                     </div>
                 </div>
             </form>

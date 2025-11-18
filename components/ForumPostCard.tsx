@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { CommunityPost } from '../types';
 import { useAppContext } from '../App';
@@ -28,25 +29,50 @@ const ForumPostCard: React.FC<ForumPostCardProps> = ({ post, onPostSelect }) => 
         return "agora mesmo";
     };
     
+    const isQuestion = post.type === 'question';
+    const borderClass = post.isPinned 
+        ? 'border-[#8a4add]/50 shadow-[0_0_15px_rgba(138,74,221,0.15)]' 
+        : 'border-white/10 hover:border-white/20';
+    const bgClass = post.isPinned ? 'bg-gradient-to-br from-white/5 to-[#8a4add]/5' : 'bg-white/5 hover:bg-white/10';
+    
     return (
         <button 
             onClick={() => onPostSelect(post)}
-            className="w-full text-left bg-white/5 border border-white/10 rounded-lg p-6 flex flex-col sm:flex-row gap-6 hover:bg-white/10 hover:border-white/20 transition-all"
+            className={`w-full text-left ${bgClass} border ${borderClass} rounded-lg p-6 flex flex-col sm:flex-row gap-6 transition-all relative overflow-hidden`}
         >
+            {post.isPinned && (
+                <div className="absolute top-0 right-0 bg-[#8a4add] text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">
+                    FIXADO
+                </div>
+            )}
+
             <div className="flex-shrink-0 flex items-center gap-4 sm:flex-col sm:items-center sm:gap-2 sm:w-24">
-                <img src={author?.avatarUrl} alt={author?.name} className="w-12 h-12 rounded-full" />
-                <p className="font-semibold text-sm text-white sm:text-center truncate">{author?.name}</p>
+                <img src={author?.avatarUrl} alt={author?.name} className="w-12 h-12 rounded-full object-cover" />
+                <p className="font-semibold text-sm text-white sm:text-center truncate max-w-[90px]">{author?.name}</p>
             </div>
 
             <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">{post.title}</h3>
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    {isQuestion ? (
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border ${post.isSolved ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
+                            {post.isSolved ? '✓ Resolvido' : '? Dúvida'}
+                        </span>
+                    ) : (
+                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                            Discussão
+                        </span>
+                    )}
+                    <h3 className="text-xl font-bold text-white line-clamp-1">{post.title}</h3>
+                </div>
+                
                 <div className="flex flex-wrap gap-2 mb-4">
                     {post.tags.map(tag => (
-                        <span key={tag} className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                        <span key={tag} className="px-2 py-1 text-xs font-semibold rounded-full bg-white/5 text-gray-400 border border-white/10">
                             # {tag}
                         </span>
                     ))}
                 </div>
+                
                 <div className="flex items-center gap-6 text-sm text-gray-400">
                     <div className="flex items-center gap-1.5" title="Aplausos">
                         <span>👏</span>

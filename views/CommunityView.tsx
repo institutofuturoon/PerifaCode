@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
@@ -123,7 +124,13 @@ const CommunityView: React.FC = () => {
             );
         }
 
-        return result;
+        // Prioritize pinned posts, then chronological
+        return result.sort((a, b) => {
+            if (a.isPinned && !b.isPinned) return -1;
+            if (!a.isPinned && b.isPinned) return 1;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+
     }, [communityPosts, activeFilter, searchTerm]);
     
     const topContributors = useMemo(() => {
@@ -196,7 +203,7 @@ const CommunityView: React.FC = () => {
                         Nossa <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">Comunidade</span>
                     </h1>
                     <p className="text-lg text-gray-300 leading-relaxed">
-                        O coração da FuturoOn. Exiba seus projetos, tire dúvidas técnicas, compartilhe conquistas e conecte-se com outros devs da quebrada.
+                        O coração da FuturoOn. Colabore, tire dúvidas e mostre para o mundo o que você está construindo.
                     </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
@@ -312,16 +319,16 @@ const CommunityView: React.FC = () => {
                         <div className="p-6 bg-gradient-to-br from-[#18181b] to-[#09090b] rounded-2xl border border-white/10 text-center relative overflow-hidden group">
                             <div className="absolute inset-0 bg-gradient-to-r from-[#8a4add]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             <div className="relative z-10">
-                                <span className="text-3xl mb-3 block">🚀</span>
-                                <h3 className="text-lg font-bold text-white mb-2">Quer destacar seu projeto?</h3>
+                                <span className="text-3xl mb-3 block">🤝</span>
+                                <h3 className="text-lg font-bold text-white mb-2">Quer colaborar?</h3>
                                 <p className="text-sm text-gray-400 mb-4">
-                                    Compartilhe o que você está construindo e receba feedback valioso da comunidade!
+                                    Muitos projetos estão buscando parceiros. Procure pelo badge "Buscando Time" no Showcase!
                                 </p>
                                 <button 
-                                    onClick={handleNavigateToProjectEditor}
+                                    onClick={() => { setActiveTab('projects'); clearFilters(); }}
                                     className="w-full py-2.5 bg-white/10 border border-white/20 text-white font-bold rounded-lg hover:bg-white/20 hover:border-white/30 transition-all duration-300 text-sm"
                                 >
-                                    Submeter Projeto
+                                    Explorar Projetos
                                 </button>
                             </div>
                         </div>

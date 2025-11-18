@@ -1,3 +1,4 @@
+
 // FIX: Add React import to resolve 'Cannot find namespace' error.
 import type * as React from 'react';
 
@@ -288,6 +289,11 @@ export interface CommunityPost {
   views: number;
   createdAt: string; // ISO String
   replies: CommunityReply[];
+  
+  // New Engagement Fields
+  type: 'question' | 'discussion'; // Define visual treatment
+  isSolved?: boolean; // For questions
+  isPinned?: boolean; // For admin announcements
 }
 
 export interface Notification {
@@ -329,6 +335,9 @@ export interface Project {
   claps: number;
   comments: ProjectComment[];
   createdAt: string;
+  
+  // New Collaboration Field
+  lookingForCollab?: boolean;
 }
 
 export interface Partner {

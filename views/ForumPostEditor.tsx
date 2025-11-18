@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CommunityPost } from '../types';
@@ -23,14 +24,17 @@ const ForumPostEditor: React.FC = () => {
             claps: 0,
             views: 0,
             createdAt: new Date().toISOString(),
-            replies: []
+            replies: [],
+            type: 'discussion' as 'discussion' | 'question',
+            isSolved: false
         };
     }, [postId, communityPosts, user]);
     
     const [post, setPost] = useState<CommunityPost>(initialPost || {
         id: `post_${Date.now()}`, authorId: user?.id || '', title: '',
         content: '', tags: [], claps: 0, views: 0, 
-        createdAt: new Date().toISOString(), replies: []
+        createdAt: new Date().toISOString(), replies: [],
+        type: 'discussion', isSolved: false
     });
 
     if (!initialPost || (postId !== 'new' && post.authorId !== user?.id && user?.role !== 'admin')) {
@@ -39,7 +43,7 @@ const ForumPostEditor: React.FC = () => {
 
     const onCancel = () => navigate('/community');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setPost(prev => ({ ...prev, [name]: value }));
     };
@@ -81,14 +85,23 @@ const ForumPostEditor: React.FC = () => {
                 </div>
 
                 <div className="p-8 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 space-y-6">
-                    <div>
-                        <label htmlFor="title" className={labelClasses}>Título da Discussão</label>
-                        <input id="title" name="title" value={post.title} onChange={handleChange} placeholder="Ex: Como centralizar uma div?" required className={inputClasses} />
+                     <div className="grid md:grid-cols-3 gap-6">
+                        <div className="md:col-span-2">
+                            <label htmlFor="title" className={labelClasses}>Título</label>
+                            <input id="title" name="title" value={post.title} onChange={handleChange} placeholder="Ex: Como centralizar uma div?" required className={inputClasses} />
+                        </div>
+                        <div>
+                            <label htmlFor="type" className={labelClasses}>Tipo de Post</label>
+                            <select id="type" name="type" value={post.type || 'discussion'} onChange={handleChange} className={inputClasses}>
+                                <option value="discussion">Discussão</option>
+                                <option value="question">Dúvida</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
                         <label htmlFor="tags" className={labelClasses}>Tags</label>
                         <input id="tags" name="tags" value={post.tags.join(', ')} onChange={handleTagsChange} placeholder="css, javascript, carreira" className={inputClasses} />
-                        <p className="text-xs text-gray-500 mt-1">Separe as tags por vírgula. Use tags para ajudar outros a encontrarem seu post.</p>
+                        <p className="text-xs text-gray-500 mt-1">Separe as tags por vírgula.</p>
                     </div>
                     <div>
                          <label className={labelClasses}>Conteúdo</label>

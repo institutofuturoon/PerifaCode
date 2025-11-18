@@ -363,6 +363,8 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
           createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(), // 30 mins later
         },
       ],
+      type: 'question',
+      isSolved: false
     },
     {
       id: 'post_2',
@@ -374,6 +376,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
       views: 450,
       createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
       replies: [],
+      type: 'discussion',
     },
 ];
 export const MOCK_PARTNERS: Partner[] = [];
