@@ -385,8 +385,54 @@ export interface AnalyticsData {
     };
 }
 
+// --- Transparency System Types ---
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'changePassword' | 'courseLanding';
+export interface FinancialItem {
+  label: string;
+  value: string;
+  percentage: number;
+  color: string; // e.g., 'bg-sky-500'
+}
+
+export interface FinancialStatement {
+  id: string;
+  year: number;
+  totalRevenue: string;
+  totalExpenses: string;
+  reinvested: string;
+  revenueBreakdown: FinancialItem[];
+  expensesBreakdown: FinancialItem[];
+  documentsUrl?: string; // URL to download ZIP/PDF
+}
+
+export interface ReportStat {
+  value: string;
+  label: string;
+  color: string; // e.g., 'text-sky-400'
+}
+
+export interface Testimonial {
+  name: string;
+  quote: string;
+  role: string;
+  avatarUrl: string;
+}
+
+export interface AnnualReport {
+  id: string;
+  year: number;
+  stats: ReportStat[];
+  coordinationLetter: {
+    text: string;
+    authorName: string;
+    authorRole: string;
+    authorAvatarUrl: string;
+  };
+  testimonials: Testimonial[];
+}
+
+
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'changePassword' | 'courseLanding' | 'transparencyEditor';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
@@ -406,6 +452,8 @@ export interface AppContextType {
   events: Event[];
   mentorSessions: MentorSession[];
   tracks: Track[];
+  financialStatements: FinancialStatement[];
+  annualReports: AnnualReport[];
   toast: string | null;
   courseProgress: CourseProgress;
   isProfileModalOpen: boolean;
@@ -459,4 +507,8 @@ export interface AppContextType {
   handleCreateTrack: (trackName: string) => Promise<void>;
   handleUpdateTrack: (trackId: string, oldName: string, newName: string) => Promise<void>;
   handleDeleteTrack: (trackId: string) => Promise<void>;
+  handleSaveFinancialStatement: (statement: FinancialStatement) => Promise<void>;
+  handleDeleteFinancialStatement: (id: string) => Promise<void>;
+  handleSaveAnnualReport: (report: AnnualReport) => Promise<void>;
+  handleDeleteAnnualReport: (id: string) => Promise<void>;
 }

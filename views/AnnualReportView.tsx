@@ -1,5 +1,7 @@
-import React from 'react';
+
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../App';
 
 // Reusable components for this view
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
@@ -19,7 +21,7 @@ const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> =
 );
 
 const StatCard: React.FC<{ value: string, label: string, color: string }> = ({ value, label, color }) => (
-    <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-center">
+    <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-center transform hover:-translate-y-1 transition-transform">
         <p className={`text-5xl font-black ${color}`}>{value}</p>
         <p className="mt-2 text-gray-300">{label}</p>
     </div>
@@ -40,6 +42,23 @@ const TestimonialCard: React.FC<{ quote: string, name: string, course: string, a
 
 const AnnualReportView: React.FC = () => {
     const navigate = useNavigate();
+    const { annualReports } = useAppContext();
+    
+    // Logic to get the latest report
+    const latestReport = useMemo(() => {
+        if (annualReports.length === 0) return null;
+        return [...annualReports].sort((a, b) => b.year - a.year)[0];
+    }, [annualReports]);
+
+    if (!latestReport) {
+         return (
+             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+                 <h1 className="text-3xl font-bold text-white">Relatório Anual</h1>
+                 <p className="text-gray-400 mt-4">O relatório deste ano será publicado em breve.</p>
+                 <button onClick={() => navigate('/')} className="mt-8 text-[#c4b5fd] hover:underline">Voltar para Home</button>
+             </div>
+         );
+    }
 
     return (
         <>
@@ -48,7 +67,7 @@ const AnnualReportView: React.FC = () => {
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                      <p className="font-semibold text-[#c4b5fd] uppercase tracking-widest">FuturoOn</p>
                     <h1 className="mt-4 text-5xl md:text-7xl font-black tracking-tighter leading-tight">
-                        Relatório Anual 2024
+                        Relatório Anual {latestReport.year}
                     </h1>
                     <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
                         Um ano de coragem, comunidade e código. Veja como, juntos, estamos reescrevendo o futuro da tecnologia na periferia.
@@ -61,19 +80,14 @@ const AnnualReportView: React.FC = () => {
                 <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 items-center">
                     <div className="md:col-span-2">
                         <h2 className="text-3xl font-bold text-white mb-4">Carta da Coordenação</h2>
-                        <div className="prose prose-invert text-gray-300 leading-relaxed space-y-4">
-                            <p>
-                                2024 foi um ano que testou nossos limites e reafirmou nosso propósito. Em meio a tantos desafios, a comunidade da FuturoOn provou que talento não tem CEP. Vimos sonhos se transformarem em linhas de código, e linhas de código se transformarem em oportunidades reais.
-                            </p>
-                            <p>
-                                Este relatório é mais do que números; é um mosaico de histórias de superação, colaboração e sucesso. Cada aluno formado, cada voluntário dedicado e cada parceiro que acreditou em nós, foi uma peça fundamental nesta construção. Agradecemos por fazerem parte desta jornada. O futuro é agora, e ele está sendo construído aqui.
-                            </p>
-                            <p className="font-bold text-white">Marlon Souza</p>
-                            <p className="text-sm text-gray-400 -mt-3">Coordenador Institucional, FuturoOn</p>
+                        <div className="prose prose-invert text-gray-300 leading-relaxed space-y-4 whitespace-pre-wrap">
+                            <p>{latestReport.coordinationLetter.text}</p>
+                            <p className="font-bold text-white mt-4">{latestReport.coordinationLetter.authorName}</p>
+                            <p className="text-sm text-gray-400 -mt-3">{latestReport.coordinationLetter.authorRole}, FuturoOn</p>
                         </div>
                     </div>
                      <div className="flex justify-center">
-                        <img src="https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png" alt="Marlon Souza" className="w-48 h-48 rounded-full object-cover border-4 border-[#8a4add]" />
+                        <img src={latestReport.coordinationLetter.authorAvatarUrl} alt={latestReport.coordinationLetter.authorName} className="w-48 h-48 rounded-full object-cover border-4 border-[#8a4add]" />
                     </div>
                 </div>
             </Section>
@@ -84,33 +98,31 @@ const AnnualReportView: React.FC = () => {
                     Nosso Impacto em Números
                 </SectionTitle>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <StatCard value="+100" label="Jovens e Adultos Impactados" color="text-sky-400" />
-                    <StatCard value="95%" label="Taxa de Retenção" color="text-green-400" />
-                    <StatCard value="+1.2k" label="Horas de Conteúdo" color="text-pink-400" />
-                    <StatCard value="7" label="Parcerias Firmadas" color="text-amber-400" />
+                    {latestReport.stats.map((stat, i) => (
+                        <StatCard key={i} value={stat.value} label={stat.label} color={stat.color} />
+                    ))}
                 </div>
             </Section>
 
             {/* Testimonials */}
-            <Section className="bg-black/20">
-                <SectionTitle subtitle="Nada fala mais alto do que as vozes da nossa comunidade.">
-                    Histórias que Inspiram
-                </SectionTitle>
-                <div className="grid md:grid-cols-2 gap-8">
-                    <TestimonialCard 
-                        quote="A oportunidade de aprender de graça, e com qualidade coisas que eu teria que pagar muito dinheiro aqui fora. O ambiente amigável, as pessoas, os professores, a troca de informações, todos aprendendo juntos."
-                        name="Elias Daniel"
-                        course="Aluno Programação"
-                        avatar="https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/avatar-elias-daniel-S49E7iPjC2jTqZ6jOZyY9lS8Ld9C3P.jpg"
-                    />
-                     <TestimonialCard 
-                        quote="Com incentivo da minha filha pra entrar no Futuroon, tô conseguindo ter noção de informática. Futuroon me mostrou que nunca é tarde pra aprender!"
-                        name="Kelly Maciel"
-                        course="Aluna de Letramento Digital"
-                        avatar="https://randomuser.me/api/portraits/women/49.jpg"
-                    />
-                </div>
-            </Section>
+            {latestReport.testimonials.length > 0 && (
+                <Section className="bg-black/20">
+                    <SectionTitle subtitle="Nada fala mais alto do que as vozes da nossa comunidade.">
+                        Histórias que Inspiram
+                    </SectionTitle>
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {latestReport.testimonials.map((t, i) => (
+                            <TestimonialCard 
+                                key={i}
+                                quote={t.quote}
+                                name={t.name}
+                                course={t.role}
+                                avatar={t.avatarUrl}
+                            />
+                        ))}
+                    </div>
+                </Section>
+            )}
 
             {/* Call to Action */}
             <Section className="bg-black/20">

@@ -5,7 +5,7 @@ import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track } from './types';
+import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -54,6 +54,8 @@ import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
 import ApiTest from './views/ApiTest';
+import ScrollToTop from './components/ScrollToTop';
+import TransparencyEditor from './views/TransparencyEditor';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -95,6 +97,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const [tracks, setTracks] = useState<Track[]>([]);
   
+  const [financialStatements, setFinancialStatements] = useState<FinancialStatement[]>([]);
+  const [annualReports, setAnnualReports] = useState<AnnualReport[]>([]);
+
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
   
@@ -154,7 +159,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         setData(dataFromDb);
       } catch (error) {
         console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
-        showToast(`❌ Erro ao carregar ${collectionName}.`);
+        // Allow fetching empty collections for new features without fallback mocks
+        if (collectionName !== 'financialStatements' && collectionName !== 'annualReports') {
+           showToast(`❌ Erro ao carregar ${collectionName}.`);
+        }
+
         if (collectionName === 'courses') {
             setData(MOCK_COURSES);
         } else if (collectionName === 'articles') {
@@ -185,7 +194,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           fetchAndPopulateCollection('partners', setPartners),
           fetchAndPopulateCollection('events', setEvents),
           fetchAndPopulateCollection('mentorSessions', setMentorSessions),
-          fetchAndPopulateCollection('tracks', setTracks)
+          fetchAndPopulateCollection('tracks', setTracks),
+          fetchAndPopulateCollection('financialStatements', setFinancialStatements),
+          fetchAndPopulateCollection('annualReports', setAnnualReports)
       ]);
       setLoading(false);
     };
@@ -668,6 +679,56 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    // --- Transparency Handlers ---
+
+    const handleSaveFinancialStatement = async (statement: FinancialStatement) => {
+        const isNew = !financialStatements.some(s => s.id === statement.id);
+        setFinancialStatements(prev => isNew ? [statement, ...prev] : prev.map(s => s.id === statement.id ? statement : s));
+        showToast("✅ Relatório Financeiro salvo!");
+        try {
+            await setDoc(doc(db, "financialStatements", statement.id), statement);
+        } catch (error) {
+            console.error("Erro ao salvar relatório financeiro:", error);
+            showToast("❌ Erro ao salvar no banco de dados.");
+        }
+    };
+
+    const handleDeleteFinancialStatement = async (id: string) => {
+        if(window.confirm("Tem certeza que deseja excluir este relatório financeiro?")) {
+             setFinancialStatements(prev => prev.filter(s => s.id !== id));
+             showToast("🗑️ Relatório excluído.");
+             try {
+                 await deleteDoc(doc(db, "financialStatements", id));
+             } catch (error) {
+                 console.error("Erro ao excluir relatório financeiro:", error);
+             }
+        }
+    };
+
+    const handleSaveAnnualReport = async (report: AnnualReport) => {
+        const isNew = !annualReports.some(r => r.id === report.id);
+        setAnnualReports(prev => isNew ? [report, ...prev] : prev.map(r => r.id === report.id ? report : r));
+        showToast("✅ Relatório Anual salvo!");
+        try {
+            await setDoc(doc(db, "annualReports", report.id), report);
+        } catch (error) {
+            console.error("Erro ao salvar relatório anual:", error);
+            showToast("❌ Erro ao salvar no banco de dados.");
+        }
+    };
+
+    const handleDeleteAnnualReport = async (id: string) => {
+         if(window.confirm("Tem certeza que deseja excluir este relatório anual?")) {
+             setAnnualReports(prev => prev.filter(r => r.id !== id));
+             showToast("🗑️ Relatório excluído.");
+             try {
+                 await deleteDoc(doc(db, "annualReports", id));
+             } catch (error) {
+                 console.error("Erro ao excluir relatório anual:", error);
+             }
+        }
+    };
+
     const handleCompleteOnboarding = async () => {
         if (user) {
             const updatedUser = { ...user, hasCompletedOnboardingTour: true };
@@ -720,7 +781,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
   const value = {
-    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, events, mentorSessions, tracks, toast,
+    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, events, mentorSessions, tracks, financialStatements, annualReports, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
@@ -728,7 +789,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
     handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleAddClap, handleAddComment,
     handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
-    handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack
+    handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
+    handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport
   };
 
   return (
@@ -743,6 +805,7 @@ const AppContent: React.FC = () => {
     
     return (
         <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
+            <ScrollToTop />
             <Header />
             <main className="flex-grow relative">
                 <ScrollSpaceship />
@@ -772,6 +835,8 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/teammember-editor/new" element={<TeamMemberEditor />} />
                     <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
                     <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                    <Route path="/admin/transparency-editor" element={<TransparencyEditor />} />
+                    <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/community" element={<CommunityView />} />
                     <Route path="/project/:projectId" element={<ProjectDetailView />} />

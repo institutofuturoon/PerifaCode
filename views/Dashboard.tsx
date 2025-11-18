@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Achievement, Course, Lesson, MentorSession, User, Track } from '../types';
+import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
 import { useAppContext } from '../App';
@@ -238,10 +238,10 @@ const TracksManagementPanel: React.FC = () => {
 
 const AdminDashboard: React.FC = () => {
     const { 
-      user, users, courses, articles, team, events, mentorSessions,
+      user, users, courses, articles, team, events, mentorSessions, financialStatements, annualReports,
       handleSaveCourse, handleDeleteArticle, handleToggleArticleStatus,
       handleSaveUser, handleDeleteUser, handleSaveTeamOrder,
-      handleAddSessionSlot, handleRemoveSessionSlot, handleDeleteCourse, handleDeleteEvent
+      handleAddSessionSlot, handleRemoveSessionSlot, handleDeleteCourse, handleDeleteEvent, handleDeleteFinancialStatement, handleDeleteAnnualReport
     } = useAppContext();
     const navigate = useNavigate();
 
@@ -267,6 +267,7 @@ const AdminDashboard: React.FC = () => {
     const handleEditUser = (userId: string, role: User['role']) => navigate(role === 'student' ? `/admin/user-editor/${userId}` : `/admin/teammember-editor/${userId}`);
     const handleCreateEvent = () => navigate('/event/new');
     const handleEditEvent = (eventId: string) => navigate(`/event/edit/${eventId}`);
+    const handleCreateTransparency = () => navigate('/admin/transparency-editor');
 
 
     const CoursesTable = () => (
@@ -462,6 +463,62 @@ const StudentsTable = () => (
     </div>
 );
 
+    const TransparencyTable = () => (
+        <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 overflow-hidden">
+            <div className="p-4 bg-white/5">
+                <h3 className="text-lg font-bold text-white mb-2">Relatórios Financeiros</h3>
+                <table className="min-w-full divide-y divide-white/10 mb-8">
+                    <thead className="bg-white/5">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Ano</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Receita Total</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Despesas</th>
+                            <th className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/10">
+                        {financialStatements.length === 0 ? <tr><td colSpan={4} className="text-center py-4 text-gray-400">Nenhum relatório financeiro.</td></tr> : 
+                        financialStatements.sort((a,b) => b.year - a.year).map(fs => (
+                            <tr key={fs.id} className="hover:bg-white/5">
+                                <td className="px-6 py-4 text-sm text-white font-bold">{fs.year}</td>
+                                <td className="px-6 py-4 text-sm text-green-400">{fs.totalRevenue}</td>
+                                <td className="px-6 py-4 text-sm text-red-400">{fs.totalExpenses}</td>
+                                <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
+                                    <button onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                                    <button onClick={() => handleDeleteFinancialStatement(fs.id)} className="text-red-400 hover:text-red-300">Excluir</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                <h3 className="text-lg font-bold text-white mb-2">Relatórios Anuais (Impacto)</h3>
+                <table className="min-w-full divide-y divide-white/10">
+                    <thead className="bg-white/5">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Ano</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase">Coordenação</th>
+                            <th className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/10">
+                         {annualReports.length === 0 ? <tr><td colSpan={3} className="text-center py-4 text-gray-400">Nenhum relatório anual.</td></tr> : 
+                        annualReports.sort((a,b) => b.year - a.year).map(ar => (
+                            <tr key={ar.id} className="hover:bg-white/5">
+                                <td className="px-6 py-4 text-sm text-white font-bold">{ar.year}</td>
+                                <td className="px-6 py-4 text-sm text-gray-300">{ar.coordinationLetter.authorName}</td>
+                                <td className="px-6 py-4 text-right text-sm font-medium space-x-4">
+                                    <button onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                                    <button onClick={() => handleDeleteAnnualReport(ar.id)} className="text-red-400 hover:text-red-300">Excluir</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+
     const renderActiveTab = () => {
       switch (activeTab) {
           case 'courses': return <CoursesTable />;
@@ -470,6 +527,7 @@ const StudentsTable = () => (
           case 'students': return <StudentsTable />;
           case 'events': return <EventsTable />;
           case 'tracks': return <TracksManagementPanel />;
+          case 'transparency': return <TransparencyTable />;
           case 'myAgenda': return <MyAgendaPanel 
             user={user}
             mentorSessions={mentorSessions}
@@ -488,6 +546,7 @@ const StudentsTable = () => (
           case 'teamMembers': return { text: 'Adicionar Membro', action: () => handleCreateUser('instructor') };
           case 'students': return { text: 'Criar Novo Aluno', action: () => handleCreateUser('student') };
           case 'events': return { text: 'Criar Novo Evento', action: handleCreateEvent };
+          case 'transparency': return { text: 'Novo Relatório', action: handleCreateTransparency };
           default: return null;
       }
     }
@@ -592,6 +651,7 @@ const StudentsTable = () => (
                         <button onClick={() => setActiveTab('teamMembers')} className={`${activeTab === 'teamMembers' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Equipe</button>
                         <button onClick={() => setActiveTab('students')} className={`${activeTab === 'students' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Alunos</button>
                         <button onClick={() => setActiveTab('tracks')} className={`${activeTab === 'tracks' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Trilhas</button>
+                        <button onClick={() => setActiveTab('transparency')} className={`${activeTab === 'transparency' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Transparência</button>
                     </>
                     )}
                 </nav>
