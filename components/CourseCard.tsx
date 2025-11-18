@@ -35,29 +35,29 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
   return (
     <button
       onClick={() => onCourseSelect(course)}
-      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8a4add]/20 h-full"
+      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-[#8a4add]/10 h-full"
     >
       <div className="overflow-hidden aspect-video relative">
         <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl} alt={course.title} />
         {status && (
-            <div className={`absolute top-2 left-2 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] font-semibold text-white ${status.classes}`}>
+            <div className={`absolute top-1.5 left-1.5 backdrop-blur-sm px-1 py-0.5 rounded text-[8px] font-semibold text-white ${status.classes}`}>
               {status.text}
             </div>
         )}
-        <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm px-1.5 py-0.5 rounded text-[9px] font-semibold text-white">
+        <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm px-1 py-0.5 rounded text-[8px] font-semibold text-white">
           {course.skillLevel}
         </div>
       </div>
-      <div className="p-3 flex flex-col flex-grow">
-        <div className="flex items-center justify-between text-[9px] font-semibold text-gray-400">
+      <div className="p-2.5 flex flex-col flex-grow">
+        <div className="flex items-center justify-between text-[8px] font-semibold text-gray-400">
           <div className="flex items-center gap-1">
             <CategoryIcon category={course.category} />
             <span className="uppercase tracking-wider">{course.track}</span>
           </div>
           <span>{course.duration}</span>
         </div>
-        <h3 className="mt-1.5 text-sm font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-2 flex-grow">{course.title}</h3>
-        <p className="mt-1 text-[10px] text-gray-400 line-clamp-2">{course.description}</p>
+        <h3 className="mt-1 text-xs font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-2 flex-grow">{course.title}</h3>
+        <p className="mt-0.5 text-[9px] text-gray-400 line-clamp-2">{course.description}</p>
       </div>
     </button>
   );

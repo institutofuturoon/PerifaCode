@@ -17,16 +17,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) =
 
   return (
     <div
-      className={`bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border ${isRejected ? 'border-red-500/30' : 'border-white/10'} group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#8a4add]/20 h-full relative`}
+      className={`bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border ${isRejected ? 'border-red-500/30' : 'border-white/10'} group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-[#8a4add]/10 h-full relative`}
     >
       {/* Status Badges */}
       {isPending && (
-        <div className="absolute top-2 left-2 z-20 bg-yellow-500 text-black text-[9px] font-bold px-1.5 py-0.5 rounded shadow-md">
+        <div className="absolute top-1.5 left-1.5 z-20 bg-yellow-500 text-black text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
             ⏳ ANÁLISE
         </div>
       )}
        {isRejected && (
-        <div className="absolute top-2 left-2 z-20 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-md">
+        <div className="absolute top-1.5 left-1.5 z-20 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
             🚫 REJEITADO
         </div>
       )}
@@ -36,31 +36,31 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) =
           <img className={`h-full w-full object-cover transition-transform duration-500 ${isPending || isRejected ? 'grayscale opacity-50' : 'group-hover:scale-105'}`} src={project.imageUrl} alt={project.title} />
         </div>
         {project.lookingForCollab && !isPending && !isRejected && (
-            <div className="absolute top-2 right-2 bg-[#8a4add] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-md flex items-center gap-1">
+            <div className="absolute top-1.5 right-1.5 bg-[#8a4add] text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-md flex items-center gap-1">
                 <span>🤝</span> Time
             </div>
         )}
       </button>
-      <div className="p-3 flex flex-col flex-grow">
+      <div className="p-2.5 flex flex-col flex-grow">
         <button onClick={() => onProjectSelect(project)} className="block w-full text-left" disabled={isPending || isRejected}>
-            <h3 className="text-xs font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-1">{project.title}</h3>
-            <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-2">{project.description}</p>
+            <h3 className="text-[11px] font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-1">{project.title}</h3>
+            <p className="text-[9px] text-gray-400 mt-0.5 line-clamp-2">{project.description}</p>
         </button>
         
-        <div className="mt-2 flex flex-wrap gap-1">
+        <div className="mt-1.5 flex flex-wrap gap-1">
           {project.technologies.slice(0, 3).map(tech => (
-            <span key={tech} className="px-1.5 py-0.5 text-[9px] font-semibold rounded-full bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20">
+            <span key={tech} className="px-1 py-0.5 text-[8px] font-semibold rounded-full bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20">
               {tech}
             </span>
           ))}
           {project.technologies.length > 3 && (
-             <span className="px-1.5 py-0.5 text-[9px] font-semibold rounded-full bg-gray-500/10 text-gray-300 border border-gray-500/20">
+             <span className="px-1 py-0.5 text-[8px] font-semibold rounded-full bg-gray-500/10 text-gray-300 border border-gray-500/20">
               +{project.technologies.length - 3}
             </span>
           )}
         </div>
 
-        <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px]">
+        <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[9px]">
             <button
               type="button"
               onClick={(e) => {
@@ -71,12 +71,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) =
               title={`Ver perfil de ${author?.name}`}
               disabled={isPending || isRejected}
             >
-                <img src={author?.avatarUrl} alt={author?.name} className="h-4 w-4 rounded-full flex-shrink-0 border border-white/10"/>
+                <img src={author?.avatarUrl} alt={author?.name} className="h-3.5 w-3.5 rounded-full flex-shrink-0 border border-white/10"/>
                 <span className="text-gray-300 truncate hover:text-white max-w-[80px]">{author?.name.split(' ')[0]}</span>
             </button>
             <div className="flex items-center gap-2 text-gray-400 flex-shrink-0">
-                <span className="text-[10px]">👏 {project.claps}</span>
-                <span className="text-[10px]">💬 {project.comments.length}</span>
+                <span className="text-[9px]">👏 {project.claps}</span>
+                <span className="text-[9px]">💬 {project.comments.length}</span>
             </div>
         </div>
       </div>
