@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Achievement, Course, Lesson, MentorSession, User, Track } from '../types';
@@ -492,7 +493,7 @@ const StudentsTable = () => (
     }
     
     const createButton = getCreateButtonAction();
-    const showCreateButton = (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog' || activeTab === 'events'))) && !isTeamOrdering && activeTab !== 'tracks';
+    const showCreateButton = !!createButton && (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog' || activeTab === 'events'))) && !isTeamOrdering && activeTab !== 'tracks';
 
     return (
     <PageLayout>

@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { User, Event } from '../types';
@@ -31,7 +32,7 @@ const EventCard: React.FC<{ event: Event, host?: User }> = ({ event, host }) => 
     const navigate = useNavigate();
     
     const renderDate = () => {
-        if (event.date === 'EM BREVE') {
+        if (event.date.toUpperCase().includes('BREVE')) {
             return (
                 <p className="text-3xl font-black text-white leading-none tracking-tight">EM BREVE</p>
             );
@@ -77,6 +78,48 @@ const EventCard: React.FC<{ event: Event, host?: User }> = ({ event, host }) => 
 const ConnectView: React.FC = () => {
     const { events, instructors, mentors } = useAppContext();
 
+    const sortedEvents = useMemo(() => {
+        const monthMap: { [key: string]: number } = {
+            'JAN': 0, 'FEV': 1, 'MAR': 2, 'ABR': 3, 'MAI': 4, 'JUN': 5,
+            'JUL': 6, 'AGO': 7, 'SET': 8, 'OUT': 9, 'NOV': 10, 'DEZ': 11
+        };
+
+        // Função auxiliar para converter data string em timestamp para ordenação
+        const getEventSortValue = (dateStr: string): number => {
+            // Prioridade máxima (valor baixo) para "EM BREVE"
+            if (dateStr.toUpperCase().includes('BREVE')) {
+                return -1; 
+            }
+
+            // Tenta parsear formatos como "AGO 25"
+            const parts = dateStr.split(' ');
+            if (parts.length >= 2) {
+                const monthCode = parts[0].toUpperCase().substring(0, 3);
+                const day = parseInt(parts[1]);
+
+                if (monthMap[monthCode] !== undefined && !isNaN(day)) {
+                    const now = new Date();
+                    let year = now.getFullYear();
+                    const eventDate = new Date(year, monthMap[monthCode], day);
+                    
+                    // Lógica simples: se a data for muito no passado, assume ano que vem (opcional)
+                    // Aqui vamos apenas usar o valor do timestamp do ano corrente para ordenação
+                    return eventDate.getTime();
+                }
+            }
+
+            // Fallback para datas ISO ou datas inválidas (coloca no final)
+            const timestamp = new Date(dateStr).getTime();
+            return isNaN(timestamp) ? 9999999999999 : timestamp;
+        };
+
+        return [...events].sort((a, b) => {
+            const valA = getEventSortValue(a.date);
+            const valB = getEventSortValue(b.date);
+            return valA - valB;
+        });
+    }, [events]);
+
     return (
         <PageLayout>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
@@ -101,7 +144,7 @@ const ConnectView: React.FC = () => {
                 <section className="mt-20 md:mt-24">
                     <h2 className="text-3xl font-bold text-white mb-8">Agenda de Eventos Ao Vivo</h2>
                     <div className="space-y-6">
-                        {events.map(event => {
+                        {sortedEvents.map(event => {
                             const host = instructors.find(i => i.id === event.hostId);
                             return <EventCard key={event.id} event={event} host={host} />
                         })}
