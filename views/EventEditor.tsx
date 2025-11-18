@@ -1,10 +1,12 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Event } from '../types';
 import { useAppContext } from '../App';
+import Uploader from '../components/Uploader';
 
 const EventEditor: React.FC = () => {
-  const { events, handleSaveEvent, instructors } = useAppContext();
+  const { events, handleSaveEvent, instructors, showToast } = useAppContext();
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
 
@@ -15,7 +17,8 @@ const EventEditor: React.FC = () => {
     return {
         id: `event_${Date.now()}`, title: '', date: '', time: '',
         hostId: instructors[0]?.id || '', description: '',
-        imageUrl: '', eventType: 'Live' as Event['eventType']
+        imageUrl: '', eventType: 'Live' as Event['eventType'],
+        registrationUrl: '', location: ''
     };
   }, [eventId, events, instructors]);
 
@@ -23,7 +26,8 @@ const EventEditor: React.FC = () => {
     id: `event_${Date.now()}`, title: '', date: '', time: '',
     hostId: instructors[0]?.id || '', description: '',
     // FIX: Explicitly cast 'eventType' to match the 'Event' type to resolve type error.
-    imageUrl: '', eventType: 'Live' as Event['eventType']
+    imageUrl: '', eventType: 'Live' as Event['eventType'],
+    registrationUrl: '', location: ''
   });
 
   if (!initialEvent) {
@@ -36,6 +40,11 @@ const EventEditor: React.FC = () => {
     const { name, value } = e.target;
     setEvent(prev => ({ ...prev, [name]: value }));
   };
+  
+  const handleImageUploadComplete = (url: string) => {
+    setEvent(prev => ({...prev, imageUrl: url}));
+    showToast('✅ Imagem do evento salva!');
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,12 +76,12 @@ const EventEditor: React.FC = () => {
         <div className="p-8 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 space-y-6">
           <div>
             <label htmlFor="title" className={labelClasses}>Título do Evento</label>
-            <input id="title" name="title" value={event.title} onChange={handleChange} required className={inputClasses} />
+            <input id="title" name="title" value={event.title} onChange={handleChange} required className={inputClasses} placeholder="Ex: Hackathon das Favelas 2024" />
           </div>
 
           <div>
             <label htmlFor="description" className={labelClasses}>Descrição</label>
-            <textarea id="description" name="description" value={event.description} onChange={handleChange} required className={inputClasses} rows={4} placeholder="Descreva o evento, o que será abordado, etc." />
+            <textarea id="description" name="description" value={event.description} onChange={handleChange} required className={inputClasses} rows={4} placeholder="Descreva o evento, o que será abordado, pré-requisitos, etc." />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -90,6 +99,7 @@ const EventEditor: React.FC = () => {
             <div>
               <label htmlFor="hostId" className={labelClasses}>Anfitrião</label>
               <select id="hostId" name="hostId" value={event.hostId} onChange={handleChange} required className={inputClasses}>
+                <option value="">Selecione um instrutor...</option>
                 {instructors.map(inst => (
                   <option key={inst.id} value={inst.id}>{inst.name}</option>
                 ))}
@@ -104,10 +114,29 @@ const EventEditor: React.FC = () => {
               </select>
             </div>
           </div>
-          
+
           <div>
-            <label htmlFor="imageUrl" className={labelClasses}>URL da Imagem de Capa</label>
-            <input id="imageUrl" name="imageUrl" value={event.imageUrl} onChange={handleChange} required className={inputClasses} placeholder="https://..." />
+             <label htmlFor="location" className={labelClasses}>Localização (Opcional)</label>
+             <input id="location" name="location" value={event.location || ''} onChange={handleChange} className={inputClasses} placeholder="Ex: Online - Youtube ou Presencial - Sala 3" />
+          </div>
+
+          <div>
+             <label htmlFor="registrationUrl" className={labelClasses}>Link de Inscrição/Externo (Opcional)</label>
+             <input id="registrationUrl" name="registrationUrl" value={event.registrationUrl || ''} onChange={handleChange} className={inputClasses} placeholder="https://forms.gle/..." />
+          </div>
+          
+          <div className="flex items-end gap-4">
+            <div className="flex-grow">
+                <label htmlFor="imageUrl" className={labelClasses}>URL da Imagem de Capa</label>
+                <input id="imageUrl" name="imageUrl" value={event.imageUrl} onChange={handleChange} required className={inputClasses} placeholder="https://..." />
+            </div>
+            <Uploader pathnamePrefix={`events/${event.id}`} onUploadComplete={handleImageUploadComplete}>
+                {(trigger, loading) => (
+                    <button type="button" onClick={trigger} disabled={loading} className="py-3 px-4 bg-white/10 rounded-md hover:bg-white/20 transition-colors border border-white/10 h-[46px]">
+                        {loading ? 'Enviando...' : 'Upload'}
+                    </button>
+                )}
+            </Uploader>
           </div>
         </div>
       </form>

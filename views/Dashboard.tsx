@@ -237,10 +237,10 @@ const TracksManagementPanel: React.FC = () => {
 
 const AdminDashboard: React.FC = () => {
     const { 
-      user, users, courses, articles, team, mentorSessions,
+      user, users, courses, articles, team, events, mentorSessions,
       handleSaveCourse, handleDeleteArticle, handleToggleArticleStatus,
       handleSaveUser, handleDeleteUser, handleSaveTeamOrder,
-      handleAddSessionSlot, handleRemoveSessionSlot, handleDeleteCourse,
+      handleAddSessionSlot, handleRemoveSessionSlot, handleDeleteCourse, handleDeleteEvent
     } = useAppContext();
     const navigate = useNavigate();
 
@@ -256,7 +256,7 @@ const AdminDashboard: React.FC = () => {
     const coursesForUser = useMemo(() => user.role === 'admin' ? courses : courses.filter(c => c.instructorId === user.id), [user, courses]);
     const articlesForUser = useMemo(() => user.role === 'admin' ? articles : articles.filter(a => a.author === user.name), [user, articles]);
     const students = useMemo(() => users.filter(u => u.role === 'student' && u.accountStatus !== 'inactive'), [users]);
-
+    
     // Handlers
     const handleCreateCourse = () => navigate('/admin/course-editor');
     const handleEditCourse = (courseId: string) => navigate(`/admin/course-editor/${courseId}`);
@@ -264,6 +264,8 @@ const AdminDashboard: React.FC = () => {
     const handleEditArticle = (articleId: string) => navigate(`/admin/article-editor/${articleId}`);
     const handleCreateUser = (role: 'student' | 'instructor') => navigate(role === 'student' ? '/admin/user-editor/new' : '/admin/teammember-editor/new');
     const handleEditUser = (userId: string, role: User['role']) => navigate(role === 'student' ? `/admin/user-editor/${userId}` : `/admin/teammember-editor/${userId}`);
+    const handleCreateEvent = () => navigate('/event/new');
+    const handleEditEvent = (eventId: string) => navigate(`/event/edit/${eventId}`);
 
 
     const CoursesTable = () => (
@@ -377,6 +379,51 @@ const AdminDashboard: React.FC = () => {
       </div>
   );
 
+  const EventsTable = () => (
+    <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 overflow-hidden">
+        <table className="min-w-full divide-y divide-white/10">
+          <thead className="bg-white/5">
+            <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Título</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Data/Hora</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Tipo</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Anfitrião</th>
+              <th scope="col" className="relative px-6 py-3"><span className="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/10">
+            {events.length === 0 ? (
+                <tr><td colSpan={5} className="text-center py-10 text-gray-400">Nenhum evento agendado.</td></tr>
+            ) : (
+                events.map((event) => {
+                    const host = users.find(u => u.id === event.hostId);
+                    return (
+                        <tr key={event.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm font-medium text-white">{event.title}</div>
+                                {event.location && <div className="text-xs text-gray-500 truncate max-w-[200px]">{event.location}</div>}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{event.date} {event.time && `• ${event.time}`}</td>
+                            <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[#8a4add]/20 text-[#c4b5fd]">{event.eventType}</span></td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="flex items-center">
+                                    {host && <img className="h-6 w-6 rounded-full mr-2" src={host.avatarUrl} alt={host.name} />}
+                                    <span className="text-sm text-gray-300">{host ? host.name : 'Desconhecido'}</span>
+                                </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                                <button onClick={() => handleEditEvent(event.id)} className="text-[#c4b5fd] hover:text-white">Editar</button>
+                                <button onClick={() => handleDeleteEvent(event.id)} className="text-red-400 hover:text-red-300">Excluir</button>
+                            </td>
+                        </tr>
+                    );
+                })
+            )}
+          </tbody>
+        </table>
+    </div>
+  );
+
 const StudentsTable = () => (
   <div className="bg-black/20 backdrop-blur-xl rounded-b-lg border border-t-0 border-white/10 overflow-hidden">
       <table className="min-w-full divide-y divide-white/10">
@@ -420,6 +467,7 @@ const StudentsTable = () => (
           case 'blog': return <BlogTable />;
           case 'teamMembers': return <TeamMembersTable />;
           case 'students': return <StudentsTable />;
+          case 'events': return <EventsTable />;
           case 'tracks': return <TracksManagementPanel />;
           case 'myAgenda': return <MyAgendaPanel 
             user={user}
@@ -438,12 +486,13 @@ const StudentsTable = () => (
           case 'blog': return { text: 'Criar Novo Post', action: handleCreateArticle };
           case 'teamMembers': return { text: 'Adicionar Membro', action: () => handleCreateUser('instructor') };
           case 'students': return { text: 'Criar Novo Aluno', action: () => handleCreateUser('student') };
+          case 'events': return { text: 'Criar Novo Evento', action: handleCreateEvent };
           default: return null;
       }
     }
     
     const createButton = getCreateButtonAction();
-    const showCreateButton = (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog'))) && !isTeamOrdering && activeTab !== 'tracks';
+    const showCreateButton = (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog' || activeTab === 'events'))) && !isTeamOrdering && activeTab !== 'tracks';
 
     return (
     <PageLayout>
@@ -459,7 +508,7 @@ const StudentsTable = () => (
         
         {/* KPIs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <StatCard title="Total de Alunos" value={students.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
+            <StatCard title="Total de Alunos" value={students.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>} />
             <StatCard title="Novos Alunos (30d)" value={`+${newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
             <StatCard title="Taxa de Conclusão Média" value={`${avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
             <StatCard title="Posts no Blog" value={articles.length} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>} />
@@ -529,13 +578,14 @@ const StudentsTable = () => (
 
         {/* Management Tables Section */}
          <div>
-            <div className="flex justify-between items-center border-b border-white/10">
+            <div className="flex justify-between items-center border-b border-white/10 overflow-x-auto">
                 <nav className="-mb-px flex space-x-8" aria-label="Tabs">
                     {(user.role === 'admin' || user.role === 'instructor') && (
                         <button onClick={() => setActiveTab('myAgenda')} className={`${activeTab === 'myAgenda' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Minha Agenda</button>
                     )}
                     <button onClick={() => setActiveTab('courses')} className={`${activeTab === 'courses' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Cursos</button>
                     <button onClick={() => setActiveTab('blog')} className={`${activeTab === 'blog' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Blog</button>
+                    <button onClick={() => setActiveTab('events')} className={`${activeTab === 'events' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Eventos</button>
                     {user.role === 'admin' && (
                     <>
                         <button onClick={() => setActiveTab('teamMembers')} className={`${activeTab === 'teamMembers' ? 'border-[#8a4add] text-[#8a4add]' : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}>Equipe</button>
@@ -544,7 +594,7 @@ const StudentsTable = () => (
                     </>
                     )}
                 </nav>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 pl-4">
                     {activeTab === 'teamMembers' && user.role === 'admin' && (
                     <button
                         onClick={() => setIsTeamOrdering(prev => !prev)}
@@ -553,10 +603,10 @@ const StudentsTable = () => (
                         {isTeamOrdering ? 'Ver Tabela' : 'Ordenar Posições'}
                     </button>
                     )}
-                    {showCreateButton && (
+                    {showCreateButton && createButton && (
                         <button
                         onClick={createButton.action}
-                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300 text-sm mb-2"
+                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-5 rounded-lg hover:opacity-90 transition-all duration-300 text-sm mb-2 whitespace-nowrap"
                         >
                         {createButton.text}
                         </button>
