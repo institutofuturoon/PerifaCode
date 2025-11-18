@@ -110,16 +110,16 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   const fetchAndPopulateCollection = async (collectionName: string, setData: React.Dispatch<React.SetStateAction<any[]>>) => {
-      // Impede o carregamento de cursos para efetivamente "excluí-los" da plataforma.
-      if (collectionName === 'courses') {
-        setData([]);
-        return;
-      }
-    
       try {
         const collRef = collection(db, collectionName);
         const snapshot = await getDocs(collRef);
         let dataFromDb = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        
+        if (collectionName === 'courses') {
+            const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
+            const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
+            dataFromDb = [...MOCK_COURSES, ...additionalDbCourses];
+        }
         
         if (collectionName === 'articles') {
             dataFromDb = dataFromDb.map(article => ({
@@ -686,6 +686,56 @@ const ScrollToTop = () => {
   return null;
 };
 
+// FIX: Defined missing container components to handle UI elements like toasts and modals.
+const ToastContainer: React.FC = () => {
+  const { toast } = useAppContext();
+  if (!toast) return null;
+  return (
+    <div className="fixed bottom-5 right-5 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white py-3 px-6 rounded-lg shadow-lg z-[100]">
+      {toast}
+    </div>
+  );
+};
+
+const ProfileModalContainer: React.FC = () => {
+  const { isProfileModalOpen, selectedProfile, closeProfileModal } = useAppContext();
+  if (!isProfileModalOpen || !selectedProfile) return null;
+  return <ProfileModal member={selectedProfile} onClose={closeProfileModal} />;
+};
+
+const OnboardingTourContainer: React.FC = () => {
+  const { user, handleCompleteOnboarding } = useAppContext();
+  if (!user || user.hasCompletedOnboardingTour || user.profileStatus !== 'complete') {
+    return null;
+  }
+  return <OnboardingTour onComplete={handleCompleteOnboarding} />;
+};
+
+const BottleneckModalContainer: React.FC = () => {
+  const { isBottleneckModalOpen, selectedBottleneck, closeBottleneckModal } = useAppContext();
+  if (!isBottleneckModalOpen || !selectedBottleneck) return null;
+  return (
+    <BottleneckAnalysisModal
+      isOpen={isBottleneckModalOpen}
+      onClose={closeBottleneckModal}
+      lesson={selectedBottleneck.lesson}
+      students={selectedBottleneck.students}
+    />
+  );
+};
+
+const InscriptionFormModalContainer: React.FC = () => {
+  const { isInscriptionModalOpen, selectedCourseForInscription, closeInscriptionModal } = useAppContext();
+  if (!isInscriptionModalOpen || !selectedCourseForInscription) return null;
+  return (
+    <InscriptionFormModal 
+      isOpen={isInscriptionModalOpen}
+      onClose={closeInscriptionModal}
+      courseName={selectedCourseForInscription.title}
+    />
+  );
+};
+
 const AppRoutes: React.FC = () => {
     const { user, loading } = useAppContext();
     const location = useLocation();
@@ -743,132 +793,84 @@ const AppRoutes: React.FC = () => {
     }
 
     return (
-        <>
-            <ScrollToTop />
-            <DeepLinkHandler />
-            <Routes>
-                <Route element={<Layout />}>
-                    
-                    {/* Páginas de formulário com layout especial (sem barra de progresso) */}
-                    <Route element={<PublicOnlyRoute />}>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                    </Route>
-                    <Route element={<SpecialAccessRoute />}>
-                        <Route path="/complete-profile" element={<CompleteProfile />} />
-                        <Route path="/change-password" element={<ChangePassword />} />
-                    </Route>
-                     <Route element={<ProtectedRoute />}>
-                        <Route path="/course/:courseId/certificate" element={<CertificateView />} />
-                    </Route>
+        <Routes>
+            <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
 
-
-                    {/* Todas as outras páginas de conteúdo com a barra de progresso */}
-                    <Route element={<ContentPagesLayout />}>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/courses" element={<Courses />} />
-                        <Route path="/community" element={<CommunityView />} />
-                        <Route path="/blog" element={<Blog />} />
-                        <Route path="/connect" element={<ConnectView />} />
-                        <Route path="/partnerships" element={<PartnershipsView />} />
-                        <Route path="/about" element={<AboutUsView />} />
-                        <Route path="/team" element={<TeamView />} />
-                        <Route path="/donate" element={<DonateView />} />
-                        <Route path="/privacy" element={<PrivacyPolicyView />} />
-                        <Route path="/terms" element={<TermsOfUseView />} />
-                        <Route path="/annual-report" element={<AnnualReportView />} />
-                        <Route path="/financial-statement" element={<FinancialStatementView />} />
-                        
-                        <Route path="/course/:courseId" element={<CourseDetail />} />
-                        <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
-                        <Route path="/article/:articleId" element={<ArticleView />} />
-                        <Route path="/project/:projectId" element={<ProjectDetailView />} />
-                        <Route path="/event/:eventId" element={<EventDetailView />} />
-                        <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
-
-                        <Route element={<ProtectedRoute />}>
-                            <Route path="/dashboard" element={<Dashboard />} />
-                            <Route path="/profile" element={<Profile />} />
-                            <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
-                            <Route path="/project/edit" element={<ProjectEditor />} />
-                            <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
-                            <Route path="/community/post/new" element={<ForumPostEditor />} />
-                            <Route path="/community/post/edit/:postId" element={<ForumPostEditor />} />
-
-                            <Route element={<AdminRoute />}>
-                                <Route path="/admin" element={<Dashboard />} />
-                                <Route path="/admin/analytics" element={<Analytics />} />
-                                <Route path="/admin/course-editor" element={<CourseEditor />} />
-                                <Route path="/admin/course-editor/:courseId" element={<CourseEditor />} />
-                                <Route path="/admin/article-editor" element={<ArticleEditor />} />
-                                <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
-                                <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
-                                <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
-                                <Route path="/admin/event-editor" element={<EventEditor />} />
-                                <Route path="/admin/event-editor/:eventId" element={<EventEditor />} />
-                                <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
-                                <Route path="/admin/test-upload" element={<StudentUploadTest />} />
-                            </Route>
-                        </Route>
-                    </Route>
+                <Route element={<ContentPagesLayout />}>
+                    <Route path="courses" element={<Courses />} />
+                    <Route path="course/:courseId" element={<CourseDetail />} />
+                    <Route path="course-landing/:courseId" element={<CourseLandingPage />} />
+                    <Route path="blog" element={<Blog />} />
+                    <Route path="article/:articleId" element={<ArticleView />} />
+                    <Route path="community" element={<CommunityView />} />
+                    <Route path="community/post/:postId" element={<ForumPostDetailView />} />
+                    <Route path="project/:projectId" element={<ProjectDetailView />} />
+                    <Route path="connect" element={<ConnectView />} />
+                    <Route path="event/:eventId" element={<EventDetailView />} />
+                    <Route path="about" element={<AboutUsView />} />
+                    <Route path="team" element={<TeamView />} />
+                    <Route path="partnerships" element={<PartnershipsView />} />
+                    <Route path="donate" element={<DonateView />} />
+                    <Route path="privacy" element={<PrivacyPolicyView />} />
+                    <Route path="terms" element={<TermsOfUseView />} />
+                    <Route path="annual-report" element={<AnnualReportView />} />
+                    <Route path="financial-statement" element={<FinancialStatementView />} />
                 </Route>
-            </Routes>
-        </>
-    );
-};
 
+                <Route element={<PublicOnlyRoute />}>
+                    <Route path="login" element={<Login />} />
+                    <Route path="register" element={<Register />} />
+                </Route>
+
+                <Route element={<ProtectedRoute />}>
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="course/:courseId/lesson/:lessonId" element={<LessonView />} />
+                    <Route path="course/:courseId/certificate" element={<CertificateView />} />
+                    <Route path="project/edit" element={<ProjectEditor />} />
+                    <Route path="project/edit/:projectId" element={<ProjectEditor />} />
+                    <Route path="community/post/new" element={<ForumPostEditor />} />
+                    <Route path="community/post/edit/:postId" element={<ForumPostEditor />} />
+                </Route>
+                
+                <Route element={<SpecialAccessRoute />}>
+                    <Route path="complete-profile" element={<CompleteProfile />} />
+                    <Route path="change-password" element={<ChangePassword />} />
+                </Route>
+
+                <Route element={<AdminRoute />}>
+                    <Route path="admin" element={<Dashboard />} />
+                    <Route path="admin/course-editor" element={<CourseEditor />} />
+                    <Route path="admin/course-editor/:courseId" element={<CourseEditor />} />
+                    <Route path="admin/article-editor" element={<ArticleEditor />} />
+                    <Route path="admin/article-editor/:articleId" element={<ArticleEditor />} />
+                    <Route path="admin/user-editor/new" element={<StudentEditor />} />
+                    <Route path="admin/user-editor/:userId" element={<StudentEditor />} />
+                    <Route path="admin/teammember-editor/new" element={<TeamMemberEditor />} />
+                    <Route path="admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
+                    <Route path="admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                    <Route path="admin/event-editor/new" element={<EventEditor />} />
+                    <Route path="admin/event-editor/:eventId" element={<EventEditor />} />
+                    <Route path="admin/analytics" element={<Analytics />} />
+                    <Route path="admin/upload-test" element={<StudentUploadTest />} />
+                </Route>
+
+                <Route path="*" element={<Navigate to="/" />} />
+            </Route>
+        </Routes>
+    );
+}
 
 const App: React.FC = () => {
     return (
         <AppProvider>
+            <DeepLinkHandler />
+            <ScrollToTop />
             <AppRoutes />
         </AppProvider>
     );
-};
+}
 
-const ToastContainer = () => {
-    const { toast } = useAppContext();
-    if (!toast) return null;
-    return (
-        <div className="fixed bottom-5 right-5 bg-[#8a4add]/30 backdrop-blur-sm border border-[#8a4add]/50 text-[#c4b5fd] px-6 py-3 rounded-lg shadow-lg animate-fade-in-out z-50">
-            {toast}
-        </div>
-    );
-};
-
-const ProfileModalContainer = () => {
-    const { isProfileModalOpen, selectedProfile, closeProfileModal } = useAppContext();
-    if (!isProfileModalOpen || !selectedProfile) return null;
-    return <ProfileModal member={selectedProfile} onClose={closeProfileModal} />;
-};
-
-const BottleneckModalContainer = () => {
-    const { isBottleneckModalOpen, selectedBottleneck, closeBottleneckModal } = useAppContext();
-    if (!isBottleneckModalOpen || !selectedBottleneck) return null;
-    return <BottleneckAnalysisModal 
-        isOpen={isBottleneckModalOpen} 
-        onClose={closeBottleneckModal} 
-        lesson={selectedBottleneck.lesson}
-        students={selectedBottleneck.students}
-    />;
-};
-
-const InscriptionFormModalContainer = () => {
-    const { isInscriptionModalOpen, selectedCourseForInscription, closeInscriptionModal } = useAppContext();
-    if (!isInscriptionModalOpen || !selectedCourseForInscription) return null;
-    return <InscriptionFormModal 
-        isOpen={isInscriptionModalOpen} 
-        onClose={closeInscriptionModal} 
-        courseName={selectedCourseForInscription.title}
-    />;
-};
-
-const OnboardingTourContainer = () => {
-    const { user, handleCompleteOnboarding } = useAppContext();
-    if (user && user.profileStatus === 'complete' && !user.hasCompletedOnboardingTour) {
-        return <OnboardingTour onComplete={handleCompleteOnboarding} />;
-    }
-    return null;
-};
-
+// FIX: Added a default export to the App component to resolve the module import error in index.tsx.
 export default App;
