@@ -1,7 +1,8 @@
-// FIX: Switched from named imports to a namespace import to resolve module resolution issues.
-import * as firebaseApp from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+
+// @ts-ignore
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Configuração do seu projeto Firebase.
 const firebaseConfig = {
@@ -14,10 +15,9 @@ const firebaseConfig = {
   measurementId: "G-TV2MTZTZ8C"
 };
 
-// Initialize Firebase, preventing re-initialization.
-// FIX: Use the imported namespace to call Firebase app functions.
-const app = firebaseApp.getApps().length === 0 ? firebaseApp.initializeApp(firebaseConfig) : firebaseApp.getApp();
+// Initialize Firebase
+// @ts-ignore
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Export modular services.
 export const auth = getAuth(app);
 export const db = getFirestore(app);

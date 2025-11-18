@@ -377,7 +377,42 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     },
 ];
 export const MOCK_PARTNERS: Partner[] = [];
-export const MOCK_EVENTS: Event[] = [];
+export const MOCK_EVENTS: Event[] = [
+  {
+    id: 'evt_hackathon_favelas',
+    title: 'Hackathon das Favelas 2024',
+    date: 'AGO 15',
+    time: '09:00',
+    hostId: 'instructor_1', // Assuming an ID exists or generic
+    description: 'Um final de semana intenso de codificação, criatividade e impacto social. Junte-se a nós para criar soluções tecnológicas para problemas reais das nossas comunidades. 🚀\n\nPré-requisitos: Vontade de aprender e trabalhar em equipe.',
+    imageUrl: 'https://images.unsplash.com/photo-1504384308090-c54be3852f33?q=80&w=1887&auto=format&fit=crop',
+    eventType: 'Workshop',
+    location: 'Presencial - Complexo da Coruja',
+    registrationUrl: 'https://forms.gle/example'
+  },
+  {
+    id: 'evt_live_career',
+    title: 'Live: Como conseguir o primeiro emprego em Tech',
+    date: 'AGO 20',
+    time: '19:00',
+    hostId: 'instructor_2',
+    description: 'Dicas valiosas sobre currículo, LinkedIn e portfólio com recrutadores de grandes empresas de tecnologia. Não perca a chance de tirar suas dúvidas ao vivo! 💼',
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop',
+    eventType: 'Live',
+    location: 'Online - YouTube'
+  },
+  {
+    id: 'evt_workshop_ia',
+    title: 'Masterclass: IA para Devs Iniciantes',
+    date: 'SET 05',
+    time: '18:30',
+    hostId: 'instructor_3',
+    description: 'Entenda como ferramentas de Inteligência Artificial como o Gemini podem acelerar seu aprendizado e produtividade na programação. 🤖✨',
+    imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1932&auto=format&fit=crop',
+    eventType: 'Workshop',
+    location: 'Online - Discord'
+  }
+];
 export const MOCK_MENTOR_SESSIONS: MentorSession[] = [];
 export const EXERCISES: Exercise[] = [];
 

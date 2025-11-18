@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
