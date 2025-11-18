@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Course, Module, Lesson } from '../types';
+import { Course, Module, Lesson, CourseBenefit, CurriculumItem } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
@@ -25,7 +25,13 @@ const CourseEditor: React.FC = () => {
     track: 'Frontend' as Course['track'], imageUrl: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
     duration: '',
     skillLevel: 'Iniciante' as Course['skillLevel'], instructorId: user?.id || '',
-    modules: [], format: 'online' as Course['format']
+    modules: [], format: 'online' as Course['format'],
+    // Initialize landing page sections
+    heroContent: { subtitle: '', titleLine1: '', titleAccent: '', description: '' },
+    benefitsSection: { title: '', subtitle: '', benefits: [] },
+    curriculumSection: { title: '', subtitle: '', items: [] },
+    methodologySection: { title: '', subtitle: '', benefits: [] },
+    ctaSection: { title: '', description: '' }
   }), [user]);
 
   const existingCourse = useMemo(() => {
@@ -87,6 +93,71 @@ const CourseEditor: React.FC = () => {
           return { ...prev, modules: newModules };
       });
   };
+
+    const handleLandingPageChange = (section: keyof Course, field: string, value: string) => {
+        setCourse(prev => ({
+            ...prev,
+            [section]: {
+                // @ts-ignore
+                ...prev[section],
+                [field]: value
+            }
+        }));
+    };
+
+    const handleBenefitChange = (section: 'benefitsSection' | 'methodologySection', index: number, field: keyof CourseBenefit, value: string) => {
+        setCourse(prev => {
+            const newSection = { ...prev[section] };
+            // @ts-ignore
+            newSection.benefits[index][field] = value;
+            return { ...prev, [section]: newSection };
+        });
+    };
+
+    const addBenefit = (section: 'benefitsSection' | 'methodologySection') => {
+        setCourse(prev => {
+            const newSection = { ...prev[section] };
+            // @ts-ignore
+            newSection.benefits.push({ title: '', description: '' });
+            return { ...prev, [section]: newSection };
+        });
+    };
+
+    const deleteBenefit = (section: 'benefitsSection' | 'methodologySection', index: number) => {
+        setCourse(prev => {
+            const newSection = { ...prev[section] };
+            // @ts-ignore
+            newSection.benefits.splice(index, 1);
+            return { ...prev, [section]: newSection };
+        });
+    };
+    
+    const handleCurriculumItemChange = (index: number, field: keyof CurriculumItem, value: string) => {
+        setCourse(prev => {
+            const newSection = { ...prev.curriculumSection };
+            // @ts-ignore
+            newSection.items[index][field] = value;
+            return { ...prev, curriculumSection: newSection };
+        });
+    };
+
+    const addCurriculumItem = () => {
+        setCourse(prev => {
+            const newSection = { ...prev.curriculumSection };
+            // @ts-ignore
+            newSection.items.push({ title: '', description: '' });
+            return { ...prev, curriculumSection: newSection };
+        });
+    };
+
+    const deleteCurriculumItem = (index: number) => {
+        setCourse(prev => {
+            const newSection = { ...prev.curriculumSection };
+            // @ts-ignore
+            newSection.items.splice(index, 1);
+            return { ...prev, curriculumSection: newSection };
+        });
+    };
 
   const addModule = () => {
     const newModule: Module = { id: `mod_${Date.now()}`, title: 'Novo Módulo', lessons: [] };
@@ -205,16 +276,73 @@ const CourseEditor: React.FC = () => {
   
   const renderCourseForm = () => (
     <div className="space-y-6">
-        <div><label htmlFor="title" className={labelClasses}>Título do Curso</label><input type="text" name="title" id="title" value={course.title} onChange={handleChange} required className={inputClasses} /></div>
-        <div><label htmlFor="description" className={labelClasses}>Descrição Curta (para cards)</label><input type="text" name="description" id="description" value={course.description} onChange={handleChange} required className={inputClasses} /></div>
-        <div><label htmlFor="longDescription" className={labelClasses}>Descrição Longa (para página do curso)</label><textarea name="longDescription" id="longDescription" value={course.longDescription} onChange={handleChange} required className={inputClasses} rows={4} /></div>
-        <div className="grid grid-cols-2 gap-6">
-            <div><label htmlFor="track" className={labelClasses}>Trilha</label><select name="track" id="track" value={course.track} onChange={handleChange} className={inputClasses}><option>Frontend</option><option>Backend</option><option>IA</option><option>UX/UI</option><option>Idiomas</option><option>Negócios</option><option>Letramento Digital</option></select></div>
-            <div><label htmlFor="skillLevel" className={labelClasses}>Nível</label><select name="skillLevel" id="skillLevel" value={course.skillLevel} onChange={handleChange} className={inputClasses}><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div>
-            <div><label htmlFor="duration" className={labelClasses}>Duração</label><input type="text" name="duration" id="duration" value={course.duration} onChange={handleChange} placeholder="Ex: 8 horas" className={inputClasses} /></div>
-            <div><label htmlFor="instructorId" className={labelClasses}>Instrutor</label><select name="instructorId" id="instructorId" value={course.instructorId} onChange={handleChange} className={inputClasses}>{instructors.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select></div>
-        </div>
-        <div className="flex items-end gap-4"><div className="flex-grow"><label htmlFor="imageUrl" className={labelClasses}>URL da Imagem de Capa</label><input type="text" name="imageUrl" id="imageUrl" value={course.imageUrl} onChange={handleChange} className={inputClasses} /></div><Uploader pathnamePrefix={`courses/${course.id}`} onUploadComplete={handleImageUploadComplete}>{(trigger, loading) => <button type="button" onClick={trigger} disabled={loading} className="py-3 px-4 bg-white/10 rounded-md hover:bg-white/20">{loading ? 'Enviando...' : 'Upload'}</button>}</Uploader></div>
+        <details open className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <summary className="font-semibold text-white cursor-pointer">Informações Básicas</summary>
+            <div className="mt-4 space-y-6">
+                <div><label htmlFor="title" className={labelClasses}>Título do Curso</label><input type="text" name="title" id="title" value={course.title} onChange={handleChange} required className={inputClasses} /></div>
+                <div><label htmlFor="description" className={labelClasses}>Descrição Curta (para cards)</label><input type="text" name="description" id="description" value={course.description} onChange={handleChange} required className={inputClasses} /></div>
+                <div><label htmlFor="longDescription" className={labelClasses}>Descrição Longa (para página do curso)</label><textarea name="longDescription" id="longDescription" value={course.longDescription} onChange={handleChange} required className={inputClasses} rows={4} /></div>
+                <div className="grid grid-cols-2 gap-6">
+                    <div><label htmlFor="track" className={labelClasses}>Trilha</label><select name="track" id="track" value={course.track} onChange={handleChange} className={inputClasses}><option>Frontend</option><option>Backend</option><option>IA</option><option>UX/UI</option><option>Idiomas</option><option>Negócios</option><option>Letramento Digital</option></select></div>
+                    <div><label htmlFor="skillLevel" className={labelClasses}>Nível</label><select name="skillLevel" id="skillLevel" value={course.skillLevel} onChange={handleChange} className={inputClasses}><option>Iniciante</option><option>Intermediário</option><option>Avançado</option></select></div>
+                    <div><label htmlFor="duration" className={labelClasses}>Duração</label><input type="text" name="duration" id="duration" value={course.duration} onChange={handleChange} placeholder="Ex: 8 horas" className={inputClasses} /></div>
+                    <div><label htmlFor="instructorId" className={labelClasses}>Instrutor</label><select name="instructorId" id="instructorId" value={course.instructorId} onChange={handleChange} className={inputClasses}>{instructors.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select></div>
+                </div>
+                <div className="flex items-end gap-4"><div className="flex-grow"><label htmlFor="imageUrl" className={labelClasses}>URL da Imagem de Capa</label><input type="text" name="imageUrl" id="imageUrl" value={course.imageUrl} onChange={handleChange} className={inputClasses} /></div><Uploader pathnamePrefix={`courses/${course.id}`} onUploadComplete={handleImageUploadComplete}>{(trigger, loading) => <button type="button" onClick={trigger} disabled={loading} className="py-3 px-4 bg-white/10 rounded-md hover:bg-white/20">{loading ? 'Enviando...' : 'Upload'}</button>}</Uploader></div>
+            </div>
+        </details>
+        
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção Principal (Hero)</summary><div className="mt-4 space-y-4">
+            <div><label className={labelClasses}>Subtítulo</label><input value={course.heroContent?.subtitle || ''} onChange={(e) => handleLandingPageChange('heroContent', 'subtitle', e.target.value)} className={inputClasses} /></div>
+            <div><label className={labelClasses}>Linha de Título 1</label><input value={course.heroContent?.titleLine1 || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleLine1', e.target.value)} className={inputClasses} /></div>
+            <div><label className={labelClasses}>Título em Destaque</label><input value={course.heroContent?.titleAccent || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleAccent', e.target.value)} className={inputClasses} /></div>
+            <div><label className={labelClasses}>Descrição</label><textarea value={course.heroContent?.description || ''} onChange={(e) => handleLandingPageChange('heroContent', 'description', e.target.value)} className={inputClasses} rows={3}></textarea></div>
+        </div></details>
+        
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção de Benefícios</summary><div className="mt-4 space-y-4">
+            <div><label className={labelClasses}>Título da Seção</label><input value={course.benefitsSection?.title || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'title', e.target.value)} className={inputClasses} /></div>
+            <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.benefitsSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
+            <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
+                {course.benefitsSection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2">Benefício {index + 1}</h4>
+                    <button type="button" onClick={() => deleteBenefit('benefitsSection', index)} className="absolute top-2 right-2 text-red-400">&times;</button>
+                    <div><label className={labelClasses}>Título do Benefício</label><input value={benefit.title} onChange={(e) => handleBenefitChange('benefitsSection', index, 'title', e.target.value)} className={inputClasses} /></div>
+                    <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={benefit.description} onChange={(e) => handleBenefitChange('benefitsSection', index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+                </div>))}
+                <button type="button" onClick={() => addBenefit('benefitsSection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Benefício</button>
+            </div>
+        </div></details>
+
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção de Currículo</summary><div className="mt-4 space-y-4">
+            <div><label className={labelClasses}>Título da Seção</label><input value={course.curriculumSection?.title || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'title', e.target.value)} className={inputClasses} /></div>
+            <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.curriculumSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
+            <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
+                {course.curriculumSection?.items.map((item, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2">Item {index + 1}</h4>
+                    <button type="button" onClick={() => deleteCurriculumItem(index)} className="absolute top-2 right-2 text-red-400">&times;</button>
+                    <div><label className={labelClasses}>Título do Item</label><input value={item.title} onChange={(e) => handleCurriculumItemChange(index, 'title', e.target.value)} className={inputClasses} /></div>
+                    <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={item.description} onChange={(e) => handleCurriculumItemChange(index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+                </div>))}
+                <button type="button" onClick={addCurriculumItem} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Item ao Currículo</button>
+            </div>
+        </div></details>
+        
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção de Metodologia</summary><div className="mt-4 space-y-4">
+            <div><label className={labelClasses}>Título da Seção</label><input value={course.methodologySection?.title || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'title', e.target.value)} className={inputClasses} /></div>
+            <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.methodologySection?.subtitle || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'subtitle', e.target.value)} className={inputClasses} /></div>
+            <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
+                {course.methodologySection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2">Item {index + 1}</h4>
+                    <button type="button" onClick={() => deleteBenefit('methodologySection', index)} className="absolute top-2 right-2 text-red-400">&times;</button>
+                    <div><label className={labelClasses}>Título do Item</label><input value={benefit.title} onChange={(e) => handleBenefitChange('methodologySection', index, 'title', e.target.value)} className={inputClasses} /></div>
+                    <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={benefit.description} onChange={(e) => handleBenefitChange('methodologySection', index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+                </div>))}
+                <button type="button" onClick={() => addBenefit('methodologySection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Item</button>
+            </div>
+        </div></details>
+
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Chamada para Ação (CTA)</summary><div className="mt-4 space-y-4">
+            <div><label className={labelClasses}>Título</label><input value={course.ctaSection?.title || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'title', e.target.value)} className={inputClasses} /></div>
+            <div><label className={labelClasses}>Descrição</label><textarea value={course.ctaSection?.description || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+        </div></details>
+
     </div>
   );
 
