@@ -217,6 +217,11 @@ const Home: React.FC = () => {
                         </div>
                     </div>
                 </div>
+                 <div className="text-center mt-4">
+                     <button onClick={() => navigate('/supporters')} className="text-[10px] font-semibold text-[#c4b5fd] hover:text-white transition-colors">
+                        Ver todos os parceiros &rarr;
+                    </button>
+                </div>
             </div>
         </section>
 

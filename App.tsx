@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
@@ -48,6 +49,7 @@ import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import SupportersView from './views/SupportersView';
+import PartnerDetailView from './views/PartnerDetailView';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
@@ -894,6 +896,7 @@ const AppContent: React.FC = () => {
                     <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
                     <Route path="/partnerships" element={<PartnershipsView />} />
                     <Route path="/supporters" element={<SupportersView />} />
+                    <Route path="/supporter/:partnerId" element={<PartnerDetailView />} />
                     <Route path="/event/new" element={<EventEditor />} />
                     <Route path="/event/edit/:eventId" element={<EventEditor />} />
                     <Route path="/event/:eventId" element={<EventDetailView />} />

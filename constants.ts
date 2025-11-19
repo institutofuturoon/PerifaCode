@@ -380,7 +380,44 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
       type: 'discussion',
     },
 ];
-export const MOCK_PARTNERS: Partner[] = [];
+export const MOCK_PARTNERS: Partner[] = [
+    { 
+        id: 'partner_1', 
+        name: 'TechCorp', 
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/2560px-Google_2015_logo.svg.png',
+        description: 'Líder global em inovação tecnológica, a TechCorp se dedica a organizar a informação do mundo e torná-la mundialmente acessível e útil. Sua missão vai além dos produtos, focando em criar oportunidades através da tecnologia.',
+        websiteUrl: 'https://www.google.com',
+        impactDescription: 'Financiamento de 50 bolsas integrais para o curso de Python e doação de 30 laptops para alunos sem equipamento.',
+        since: '2023'
+    },
+    { 
+        id: 'partner_2', 
+        name: 'InovaSoft', 
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/2560px-IBM_logo.svg.png',
+        description: 'Pioneira em inteligência artificial e computação em nuvem, a InovaSoft tem um compromisso histórico com a educação e o desenvolvimento profissional, buscando resolver problemas complexos da sociedade.',
+        websiteUrl: 'https://www.ibm.com',
+        impactDescription: 'Programa de mentoria exclusivo onde 15 engenheiros seniores dedicam 2 horas semanais para orientar nossos alunos em projetos reais.',
+        since: '2022'
+    },
+    { 
+        id: 'partner_3', 
+        name: 'DevSolutions', 
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/2560px-Microsoft_logo_%282012%29.svg.png',
+        description: 'A DevSolutions capacita cada pessoa e cada organização no planeta a conquistar mais. Através de suas ferramentas e plataformas, impulsiona a transformação digital em diversos setores.',
+        websiteUrl: 'https://www.microsoft.com',
+        impactDescription: 'Patrocínio do Hackathon das Favelas 2024 e contratação direta de 5 desenvolvedores júnior formados na FuturoOn.',
+        since: '2024'
+    },
+    { 
+        id: 'partner_4', 
+        name: 'CloudSystems', 
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Amazon_Web_Services_Logo.svg/2560px-Amazon_Web_Services_Logo.svg.png',
+        description: 'Fornecendo a infraestrutura que alimenta a internet moderna, a CloudSystems é parceira fundamental para startups e grandes empresas que buscam escalabilidade e inovação.',
+        websiteUrl: 'https://aws.amazon.com',
+        impactDescription: 'Disponibilização de créditos de nuvem para projetos dos alunos e workshops técnicos mensais sobre arquitetura de sistemas.',
+        since: '2023'
+    },
+];
 export const MOCK_EVENTS: Event[] = [
   {
     id: 'evt_hackathon_favelas',
