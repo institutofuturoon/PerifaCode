@@ -1,12 +1,11 @@
 
-
 import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport } from './types';
+import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -50,7 +49,7 @@ import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
-import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS } from './constants';
+import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
 import StudentUploadTest from './views/StudentUploadTest';
@@ -95,6 +94,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
   
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [supporters, setSupporters] = useState<Supporter[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   
   const [mentorSessions, setMentorSessions] = useState<MentorSession[]>([]);
@@ -162,6 +162,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
              const additionalDbEvents = dataFromDb.filter(dbEvent => !mockEventIds.has((dbEvent as Event).id));
              dataFromDb = [...MOCK_EVENTS, ...additionalDbEvents];
         }
+        
+        if (collectionName === 'supporters') {
+             const mockIds = new Set(MOCK_SUPPORTERS.map(s => s.id));
+             const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as Supporter).id));
+             dataFromDb = [...MOCK_SUPPORTERS, ...additional];
+        }
 
         setData(dataFromDb);
       } catch (error) {
@@ -181,6 +187,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setData(MOCK_COMMUNITY_POSTS);
         } else if (collectionName === 'events') {
             setData(MOCK_EVENTS);
+        } else if (collectionName === 'supporters') {
+            setData(MOCK_SUPPORTERS);
         }
         else {
             setData([]);
@@ -199,6 +207,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           fetchAndPopulateCollection('projects', setProjects),
           fetchAndPopulateCollection('communityPosts', setCommunityPosts),
           fetchAndPopulateCollection('partners', setPartners),
+          fetchAndPopulateCollection('supporters', setSupporters),
           fetchAndPopulateCollection('events', setEvents),
           fetchAndPopulateCollection('mentorSessions', setMentorSessions),
           fetchAndPopulateCollection('tracks', setTracks),
@@ -829,7 +838,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
   const value = {
-    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, events, mentorSessions, tracks, financialStatements, annualReports, toast,
+    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,

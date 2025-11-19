@@ -474,6 +474,7 @@ export interface AppContextType {
   projects: Project[];
   communityPosts: CommunityPost[];
   partners: Partner[];
+  supporters: Supporter[];
   events: Event[];
   mentorSessions: MentorSession[];
   tracks: Track[];
