@@ -1,5 +1,5 @@
 
-import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession, AnalyticsData, CommunityPost } from './types';
+import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession, AnalyticsData, CommunityPost, Supporter } from './types';
 
 // Todos os arrays de dados mockados foram esvaziados.
 // A aplicação agora dependerá exclusivamente dos dados carregados do Firebase.
@@ -419,6 +419,59 @@ export const MOCK_EVENTS: Event[] = [
 ];
 export const MOCK_MENTOR_SESSIONS: MentorSession[] = [];
 export const EXERCISES: Exercise[] = [];
+export const MOCK_SUPPORTERS: Supporter[] = [
+    {
+        id: 'sup_1',
+        name: 'Roberto Almeida',
+        role: 'CTO @ TechCorp',
+        tier: 'visionary',
+        avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
+        message: 'Acredito no potencial transformador da educação. Parabéns pelo trabalho incrível!',
+        since: '2023'
+    },
+    {
+        id: 'sup_2',
+        name: 'Ana Clara',
+        role: 'Engenheira de Software',
+        tier: 'visionary',
+        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+        message: 'Investir no futuro é investir nas pessoas. Orgulho de fazer parte.',
+        since: '2024'
+    },
+    {
+        id: 'sup_3',
+        name: 'Carlos Eduardo',
+        role: 'Empreendedor',
+        tier: 'builder',
+        avatarUrl: 'https://randomuser.me/api/portraits/men/85.jpg',
+        since: '2023'
+    },
+    {
+        id: 'sup_4',
+        name: 'Fernanda Lima',
+        role: 'Designer UX',
+        tier: 'builder',
+        avatarUrl: 'https://randomuser.me/api/portraits/women/65.jpg',
+        since: '2024'
+    },
+    {
+        id: 'sup_5',
+        name: 'João Silva',
+        role: 'Dev Frontend',
+        tier: 'builder',
+        avatarUrl: 'https://randomuser.me/api/portraits/men/12.jpg',
+        since: '2024'
+    },
+    { id: 'sup_6', name: 'Maria Oliveira', tier: 'ally', since: '2024' },
+    { id: 'sup_7', name: 'Pedro Santos', tier: 'ally', since: '2024' },
+    { id: 'sup_8', name: 'Lucas Ferreira', tier: 'ally', since: '2024' },
+    { id: 'sup_9', name: 'Juliana Costa', tier: 'ally', since: '2024' },
+    { id: 'sup_10', name: 'Marcos Vinicius', tier: 'ally', since: '2024' },
+    { id: 'sup_11', name: 'Patrícia Souza', tier: 'ally', since: '2024' },
+    { id: 'sup_12', name: 'Rafael Lima', tier: 'ally', since: '2024' },
+    { id: 'sup_13', name: 'Beatriz Rocha', tier: 'ally', since: '2024' },
+];
+
 
 // Os dados de analytics foram zerados para refletir um estado inicial limpo,
 // prevenindo erros em componentes que dependem desta estrutura.

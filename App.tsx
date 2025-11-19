@@ -47,6 +47,7 @@ import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
+import SupportersView from './views/SupportersView';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
@@ -56,6 +57,7 @@ import ForumPostEditor from './views/ForumPostEditor';
 import ApiTest from './views/ApiTest';
 import ScrollToTop from './components/ScrollToTop';
 import TransparencyEditor from './views/TransparencyEditor';
+import AnalyticsTracker from './components/AnalyticsTracker';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -851,6 +853,8 @@ const AppContent: React.FC = () => {
         <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
             <ScrollToTop />
             <Header />
+            {/* Componente de Tracking do Google Analytics */}
+            <AnalyticsTracker />
             <main className="flex-grow relative">
                 <ScrollSpaceship />
                 <Routes>
@@ -889,6 +893,7 @@ const AppContent: React.FC = () => {
                     <Route path="/community/post/new" element={<ForumPostEditor />} />
                     <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
                     <Route path="/partnerships" element={<PartnershipsView />} />
+                    <Route path="/supporters" element={<SupportersView />} />
                     <Route path="/event/new" element={<EventEditor />} />
                     <Route path="/event/edit/:eventId" element={<EventEditor />} />
                     <Route path="/event/:eventId" element={<EventDetailView />} />

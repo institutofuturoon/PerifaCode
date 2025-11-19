@@ -81,6 +81,16 @@ export interface User {
   };
 }
 
+export interface Supporter {
+    id: string;
+    name: string;
+    role?: string; // Ex: "Engenheiro de Software", "Empresário"
+    tier: 'visionary' | 'builder' | 'ally';
+    avatarUrl?: string;
+    message?: string; // Mensagem curta de apoio
+    since: string; // Ano de início do apoio
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -443,7 +453,7 @@ export interface AnnualReport {
 }
 
 
-export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'changePassword' | 'courseLanding' | 'transparencyEditor';
+export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'changePassword' | 'courseLanding' | 'transparencyEditor' | 'supporters';
 
 export interface CourseProgress {
   inProgressCourses: { course: Course; progress: number }[];
