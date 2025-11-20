@@ -1,34 +1,36 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="flex-shrink-0 w-[180px] h-[80px] bg-white/5 border border-white/5 rounded-xl flex items-center justify-center p-4 grayscale hover:grayscale-0 hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer group">
+    <div className="flex-shrink-0 w-[180px] h-[80px] bg-white/5 border border-white/5 rounded-xl flex items-center justify-center p-4 grayscale hover:grayscale-0 hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer group relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
         <img 
             src={logoUrl} 
             alt={name} 
-            className="max-w-full max-h-full object-contain opacity-50 group-hover:opacity-100 transition-opacity duration-500"
+            className="max-w-full max-h-full object-contain opacity-50 group-hover:opacity-100 transition-opacity duration-500 relative z-10"
         />
     </div>
 );
 
-const StatItem: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-    <div className="text-center px-6 border-r border-white/10 last:border-0">
-        <p className="text-3xl md:text-4xl font-black text-white mb-1">{value}</p>
-        <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold">{label}</p>
+const StatItem: React.FC<{ label: string; value: string; icon: React.ReactNode }> = ({ label, value, icon }) => (
+    <div className="flex flex-col items-center justify-center text-center px-6 border-r border-white/10 last:border-0 py-4 md:py-0">
+        <div className="text-[#8a4add] mb-2 opacity-80">{icon}</div>
+        <p className="text-3xl md:text-4xl font-black text-white mb-1 tracking-tight">{value}</p>
+        <p className="text-xs text-gray-400 uppercase tracking-widest font-bold">{label}</p>
     </div>
 );
 
 const BenefitCard: React.FC<{ icon: React.ReactNode; title: string; description: string }> = ({ icon, title, description }) => (
-    <div className="bg-[#121212] p-8 rounded-3xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+    <div className="bg-[#121212] p-8 rounded-3xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-[#8a4add]/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-150 duration-500"></div>
-        <div className="w-14 h-14 bg-gradient-to-br from-[#18181b] to-[#09090b] border border-white/10 rounded-2xl flex items-center justify-center text-2xl mb-6 text-[#c4b5fd] shadow-lg group-hover:text-white group-hover:border-[#8a4add]/50 transition-colors">
+        <div className="w-14 h-14 bg-gradient-to-br from-[#18181b] to-[#09090b] border border-white/10 rounded-2xl flex items-center justify-center text-2xl mb-6 text-[#c4b5fd] shadow-lg group-hover:text-white group-hover:border-[#8a4add]/50 transition-all group-hover:shadow-[#8a4add]/20">
             {icon}
         </div>
-        <h3 className="text-xl font-bold text-white mb-3 relative z-10">{title}</h3>
+        <h3 className="text-xl font-bold text-white mb-3 relative z-10 group-hover:text-[#c4b5fd] transition-colors">{title}</h3>
         <p className="text-gray-400 text-sm leading-relaxed relative z-10">{description}</p>
     </div>
 );
@@ -41,14 +43,14 @@ const PlanCard: React.FC<{
     ctaText: string; 
     ctaLink: string; 
 }> = ({ title, price, features, isFeatured, ctaText, ctaLink }) => (
-    <div className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 h-full ${isFeatured ? 'bg-white/5 border-[#8a4add] shadow-[0_0_40px_-10px_rgba(138,74,221,0.3)] transform md:-translate-y-4 z-10' : 'bg-[#121212] border-white/10 hover:border-white/20'}`}>
+    <div className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 h-full ${isFeatured ? 'bg-white/5 border-[#8a4add] shadow-[0_0_40px_-10px_rgba(138,74,221,0.3)] transform md:-translate-y-4 z-10' : 'bg-[#121212] border-white/10 hover:border-white/20 hover:bg-white/[0.02]'}`}>
         {isFeatured && (
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white text-[10px] font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-lg">
                 Recomendado
             </div>
         )}
         
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center border-b border-white/5 pb-8">
             <h3 className={`text-xl font-bold mb-2 ${isFeatured ? 'text-white' : 'text-gray-300'}`}>{title}</h3>
             {price && <p className="text-sm text-gray-500">{price}</p>}
         </div>
@@ -56,22 +58,60 @@ const PlanCard: React.FC<{
         <ul className="space-y-4 mb-8 flex-grow">
             {features.map((feature, idx) => (
                 <li key={idx} className="flex items-start gap-3 text-sm text-gray-300">
-                    <div className={`mt-0.5 p-0.5 rounded-full ${isFeatured ? 'bg-[#8a4add] text-white' : 'bg-gray-800 text-gray-400'}`}>
+                    <div className={`mt-0.5 p-0.5 rounded-full flex-shrink-0 ${isFeatured ? 'bg-[#8a4add] text-white' : 'bg-gray-800 text-gray-400'}`}>
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
                     </div>
-                    {feature}
+                    <span className="leading-tight">{feature}</span>
                 </li>
             ))}
         </ul>
 
         <a 
             href={ctaLink}
-            className={`w-full py-4 rounded-xl text-sm font-bold text-center transition-all duration-300 ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-white/10 text-white hover:bg-white/20'}`}
+            className={`w-full py-4 rounded-xl text-sm font-bold text-center transition-all duration-300 shadow-lg ${isFeatured ? 'bg-white text-black hover:bg-gray-200 hover:shadow-white/10' : 'bg-white/10 text-white hover:bg-white/20 hover:shadow-white/5'}`}
         >
             {ctaText}
         </a>
     </div>
 );
+
+const PartnerTestimonial: React.FC<{ quote: string; author: string; role: string; initial: string }> = ({ quote, author, role, initial }) => (
+    <div className="bg-[#121212] p-8 rounded-2xl border border-white/10 flex flex-col h-full relative group hover:border-[#8a4add]/30 transition-all duration-300">
+        <div className="absolute top-6 right-8 text-6xl text-[#8a4add] opacity-10 font-serif group-hover:opacity-20 transition-opacity">"</div>
+        <p className="text-gray-300 text-base italic mb-8 relative z-10 leading-relaxed flex-grow">
+            "{quote}"
+        </p>
+        <div className="mt-auto flex items-center gap-4">
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#27272a] to-[#18181b] border border-white/10 flex items-center justify-center text-white font-bold shadow-inner">
+                {initial}
+            </div>
+            <div>
+                <p className="text-white font-bold text-sm">{author}</p>
+                <p className="text-[#c4b5fd] text-[10px] uppercase tracking-wider font-semibold">{role}</p>
+            </div>
+        </div>
+    </div>
+);
+
+const FAQItem: React.FC<{ question: string; answer: string }> = ({ question, answer }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className="border-b border-white/5 last:border-0">
+            <button 
+                onClick={() => setIsOpen(!isOpen)} 
+                className="w-full py-6 flex justify-between items-center text-left hover:bg-white/[0.02] px-4 rounded-lg transition-colors group"
+            >
+                <span className="text-gray-200 font-semibold text-base group-hover:text-white transition-colors">{question}</span>
+                <span className={`text-[#8a4add] text-2xl transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>+</span>
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 pb-6 px-4' : 'max-h-0 opacity-0'}`}>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                    {answer}
+                </p>
+            </div>
+        </div>
+    );
+};
 
 const PartnershipsView: React.FC = () => {
     const { partners } = useAppContext();
@@ -88,10 +128,10 @@ const PartnershipsView: React.FC = () => {
                 keywords={['parceria corporativa', 'ESG', 'recrutamento tech', 'impacto social', 'investimento social privado', 'diversidade e inclusão', 'responsabilidade social']}
             />
             
-            {/* Hero Section Padronizada (py-20 md:py-32) */}
+            {/* Hero Section */}
             <section className="relative py-20 md:py-32 text-center relative z-10">
                 {/* Abstract Background */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#8a4add]/20 rounded-[100%] blur-[120px] -z-10 pointer-events-none mix-blend-screen"></div>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#8a4add]/10 rounded-[100%] blur-[120px] -z-10 pointer-events-none mix-blend-screen"></div>
                 <div className="absolute inset-0 bg-grid-pattern opacity-30 -z-10"></div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -124,13 +164,29 @@ const PartnershipsView: React.FC = () => {
             </section>
 
             {/* Stats Strip */}
-            <section className="border-y border-white/5 bg-white/[0.02] backdrop-blur-sm py-8">
+            <section className="border-y border-white/5 bg-white/[0.02] backdrop-blur-sm py-12">
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-wrap justify-center gap-8 md:gap-16">
-                        <StatItem value="+300" label="Talentos Formados" />
-                        <StatItem value="92%" label="Empregabilidade" />
-                        <StatItem value="+50" label="Empresas Parceiras" />
-                        <StatItem value="100%" label="Diversidade" />
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-white/5">
+                        <StatItem 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}
+                            value="+300" 
+                            label="Talentos Formados" 
+                        />
+                        <StatItem 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                            value="92%" 
+                            label="Empregabilidade" 
+                        />
+                        <StatItem 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 01 1v5m-4 0h4" /></svg>}
+                            value="+50" 
+                            label="Empresas Parceiras" 
+                        />
+                        <StatItem 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>}
+                            value="100%" 
+                            label="Diversidade" 
+                        />
                     </div>
                 </div>
             </section>
@@ -162,7 +218,7 @@ const PartnershipsView: React.FC = () => {
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-3 gap-8">
                     <BenefitCard 
                         icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
                         title="Talentos Qualificados"
@@ -212,7 +268,7 @@ const PartnershipsView: React.FC = () => {
                             ctaLink="mailto:parcerias@institutofuturoon.org?subject=Quero ser Mantenedor"
                             features={[
                                 "Adoção de Turma (Naming Rights)",
-                                "Logo em destaque no site e camisetas",
+                                "Logo em destaque no site",
                                 "Relatório de Impacto Trimestral",
                                 "Palestra exclusiva na sua empresa",
                                 "Acesso prioritário a contratações"
@@ -230,6 +286,66 @@ const PartnershipsView: React.FC = () => {
                                 "Isenção de taxas de placement"
                             ]}
                         />
+                    </div>
+                </div>
+            </section>
+
+            {/* Testimonials Section */}
+            <section className="py-24 bg-[#09090B] relative border-t border-white/5">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-16">
+                         <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Quem caminha com a gente</h2>
+                         <p className="text-gray-400 max-w-xl mx-auto">
+                            O impacto visto por quem investe no futuro.
+                        </p>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <PartnerTestimonial 
+                            quote="Apoiamos o FuturoOn porque vemos resultados reais. Não é apenas sobre números, é sobre histórias de vida transformadas."
+                            author="Fernanda Costa"
+                            role="Head de D&I, TechSolutions"
+                            initial="F"
+                        />
+                        <PartnerTestimonial 
+                            quote="Os alunos que saem dos cursos possuem uma garra e uma técnica que muitas vezes superam profissionais com anos de mercado."
+                            author="Ricardo Silva"
+                            role="CTO, DevHouse"
+                            initial="R"
+                        />
+                        <PartnerTestimonial 
+                            quote="A transparência na prestação de contas nos dá total segurança para manter nosso investimento ano após ano."
+                            author="Juliana Paes"
+                            role="Comunidade, Banco Digital X"
+                            initial="J"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-24 bg-black/20 border-y border-white/5">
+                <div className="container mx-auto px-4 max-w-3xl">
+                    <div className="text-center mb-12">
+                         <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Dúvidas Frequentes</h2>
+                         <p className="text-gray-400">Tudo o que você precisa saber sobre a parceria.</p>
+                    </div>
+                    <div className="bg-[#121212] rounded-2xl border border-white/10 p-2">
+                         <FAQItem 
+                            question="Minha empresa pode abater do Imposto de Renda?"
+                            answer="Sim! Como OSCIP, o Instituto FuturoOn emite recibos que permitem abatimento fiscal para empresas tributadas pelo Lucro Real, seguindo a legislação vigente de incentivo à cultura e educação."
+                         />
+                         <FAQItem 
+                            question="Podemos doar equipamentos usados?"
+                            answer="Com certeza. Notebooks, monitores e periféricos em bom estado são revisados por nossa equipe técnica e entregues aos alunos que não possuem computador em casa para acompanhar as aulas."
+                         />
+                         <FAQItem 
+                            question="Como funciona a contratação dos alunos?"
+                            answer="Parceiros 'Hiring Partner' e Mantenedores têm acesso exclusivo ao nosso banco de talentos e podem divulgar vagas diretamente. Além disso, realizamos a ponte entre o RH da sua empresa e os alunos mais promissores."
+                         />
+                         <FAQItem 
+                            question="Existe valor mínimo para doação pontual?"
+                            answer="Não. Qualquer contribuição é bem-vinda e ajuda a manter nossas operações. Para benefícios de marca e relatórios de impacto, sugerimos os planos de Mantenedor."
+                         />
                     </div>
                 </div>
             </section>
