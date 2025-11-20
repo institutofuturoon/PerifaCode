@@ -3,9 +3,9 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '../assets/Logo';
 
-// Links centralizados no mobile, esquerda no desktop
+// Links agora são maiores no mobile (text-base) e voltam ao normal no desktop (md:text-sm)
 const FooterLink: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({ onClick, children }) => (
-  <button onClick={onClick} className="text-gray-400 hover:text-white transition-colors duration-200 text-sm text-center md:text-left block py-1.5 w-full">
+  <button onClick={onClick} className="text-gray-400 hover:text-white transition-colors duration-200 text-base md:text-sm text-center md:text-left block py-2 md:py-1.5 w-full">
     {children}
   </button>
 );
@@ -24,11 +24,11 @@ const ContactInfo: React.FC<{ icon: React.ReactNode; children: React.ReactNode }
 )
 
 // Componente de Lista Estática
-// Centralizado no mobile, esquerda no desktop
+// Título maior no mobile
 const FooterList: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
     <div className="flex flex-col items-center md:items-start w-full">
-        <h3 className="text-base font-bold text-white mb-4 text-center md:text-left w-full">{title}</h3>
-        <ul className="space-y-2 flex flex-col items-center md:items-start w-full">
+        <h3 className="text-lg md:text-base font-bold text-white mb-4 text-center md:text-left w-full">{title}</h3>
+        <ul className="space-y-2 md:space-y-1 flex flex-col items-center md:items-start w-full">
             {children}
         </ul>
     </div>
