@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
+import Badge from '../components/Badge';
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
     <div className="flex-shrink-0 w-[180px] h-[80px] bg-white/5 border border-white/5 rounded-xl flex items-center justify-center p-4 grayscale hover:grayscale-0 hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer group">
@@ -87,20 +88,14 @@ const PartnershipsView: React.FC = () => {
                 keywords={['parceria corporativa', 'ESG', 'recrutamento tech', 'impacto social', 'investimento social privado', 'diversidade e inclusão', 'responsabilidade social']}
             />
             
-            {/* Hero Section */}
-            <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32">
+            {/* Hero Section Padronizada (py-20 md:py-32) */}
+            <section className="relative py-20 md:py-32 text-center relative z-10">
                 {/* Abstract Background */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#8a4add]/20 rounded-[100%] blur-[120px] -z-10 pointer-events-none mix-blend-screen"></div>
                 <div className="absolute inset-0 bg-grid-pattern opacity-30 -z-10"></div>
 
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 mb-8 animate-fade-in backdrop-blur-md">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8a4add] opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8a4add]"></span>
-                        </span>
-                        <span className="text-xs font-bold text-[#c4b5fd] uppercase tracking-wide">B2B & Impacto Social</span>
-                    </div>
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <Badge text="B2B & Impacto Social" />
                     
                     <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-tight mb-6 max-w-5xl mx-auto">
                         Conecte sua marca à próxima geração de <br className="hidden md:block" />

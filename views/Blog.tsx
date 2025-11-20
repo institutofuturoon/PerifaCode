@@ -6,6 +6,7 @@ import { useAppContext } from '../App';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import SEO from '../components/SEO';
+import Badge from '../components/Badge';
 
 const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
@@ -185,9 +186,10 @@ const Blog: React.FC = () => {
             title="Blog"
             description="Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia."
         />
-        {/* Hero Section */}
-        <header className="py-20 md:py-24 text-center relative z-10 bg-grid-pattern">
+        {/* Hero Section Padronizada (py-20 md:py-32) */}
+        <header className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <Badge text="Blog & Notícias" />
                 <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
                     Nosso <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">Blog</span>
                 </h1>

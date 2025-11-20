@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ActionCard from '../components/ActionCard';
 import SEO from '../components/SEO';
+import Badge from '../components/Badge';
 
 const ImpactCard: React.FC<{ value: string, label: string, color: string }> = ({ value, label, color }) => (
     <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-center transform transition-transform hover:-translate-y-1">
@@ -74,6 +75,7 @@ const AboutUsView: React.FC = () => {
             {/* Hero Section */}
             <section className="py-32 md:py-40 text-center relative z-10 bg-grid-pattern">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <Badge text="Institucional" />
                     <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
                         Somos o futuro que<br />
                         <span className="text-[#c4b5fd]">a gente cria.</span>
