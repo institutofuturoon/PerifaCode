@@ -50,12 +50,6 @@ const ShareButton: React.FC<{ platform: 'linkedin' | 'twitter' | 'copy'; url: st
     );
 };
 
-const FocusArea: React.FC<{ label: string }> = ({ label }) => (
-    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-semibold text-gray-300 uppercase tracking-wider">
-        {label}
-    </span>
-);
-
 const PartnerDetailView: React.FC = () => {
     const { partnerId } = useParams<{ partnerId: string }>();
     const { partners } = useAppContext();
@@ -80,94 +74,59 @@ const PartnerDetailView: React.FC = () => {
 
     const shareText = `Orgulho em ver o impacto da parceria entre ${partner.name} e o Instituto FuturoOn! Transformando a educação tecnológica no Brasil. 🚀 #ImpactoSocial #Educação #Tech`;
 
+    const studentTestimonial = {
+        text: `A oportunidade que a ${partner.name} proporcionou mudou minha perspectiva de vida. Hoje me sinto capaz de competir no mercado de igual para igual.`,
+        author: "Lucas M.",
+        role: "Aluno Formado 2024"
+    };
+
     return (
         <div className="min-h-screen bg-[#09090B] pb-20">
-            {/* Hero Section with Branding */}
-            <section className="relative pt-32 pb-12 overflow-hidden">
+            {/* Hero Section - Thank You Focused */}
+            <section className="relative pt-32 pb-16 overflow-hidden text-center">
                  <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none"></div>
                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[#8a4add]/10 rounded-full blur-[120px] pointer-events-none"></div>
                  
-                 <div className="container mx-auto px-4 relative z-10 text-center">
-                    <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-6">
-                        Impacto <br />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">Transformador</span>
+                 <div className="container mx-auto px-4 relative z-10">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold uppercase tracking-widest mb-6">
+                        <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse"></span> Parceria Ativa
+                    </div>
+                    <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter mb-6 leading-tight">
+                        Obrigado, <br />
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">{partner.name}</span>
                     </h1>
-                    <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-                        Como a <span className="font-bold text-white">{partner.name}</span> está ajudando a construir o futuro da tecnologia na periferia.
+                    <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
+                        Vocês não apenas financiaram projetos, vocês <span className="text-white font-bold">acreditaram em pessoas</span>. Esta página é uma homenagem ao impacto que construímos juntos.
                     </p>
                  </div>
             </section>
 
-            {/* Carta de Agradecimento & Logo */}
-            <section className="container mx-auto px-4 sm:px-6 lg:px-8 mb-20 relative z-20">
-                <div className="bg-[#121212] border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl shadow-[#8a4add]/5 relative overflow-hidden">
-                    {/* Decorative background element for the card */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#8a4add]/5 to-transparent rounded-bl-[100px] pointer-events-none"></div>
-
-                    <div className="flex flex-col md:flex-row items-center gap-12">
-                        
-                         {/* Letter Content */}
-                        <div className="flex-1 order-2 md:order-1">
-                            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                                <span className="bg-[#8a4add]/20 p-2 rounded-lg text-[#c4b5fd]">✉️</span> 
-                                Relatório à Comunidade
-                            </h2>
-                            <div className="relative pl-6 border-l-2 border-[#8a4add]/30">
-                                <div className="prose prose-invert text-gray-300 leading-relaxed space-y-4 text-lg font-light font-serif italic">
-                                    <p>
-                                        "Prezados amigos da <strong className="text-white not-italic">{partner.name}</strong>,
-                                    </p>
-                                    <p>
-                                        É com imensa gratidão que reconhecemos o papel fundamental que vocês desempenham na história do Instituto FuturoOn. Desde {partner.since}, sua parceria não tem sido apenas sobre recursos, mas sobre acreditar em sonhos que, muitas vezes, a sociedade insiste em invisibilizar.
-                                    </p>
-                                    <p>
-                                        Graças ao apoio de vocês, conseguimos ir além das aulas de código. Entregamos esperança, infraestrutura e, acima de tudo, a certeza de que o lugar de origem não define o ponto de chegada.
-                                    </p>
-                                    <p>
-                                        Obrigado por construírem essa ponte conosco. O futuro é brilhante, e estamos honrados em caminhá-lo ao seu lado."
-                                    </p>
-                                </div>
-                                <div className="pt-6 mt-6 flex items-center gap-4">
-                                     {/* Signature mockup */}
-                                    <div>
-                                        <p className="font-bold text-white text-base font-sans">Thais Santana</p>
-                                        <p className="text-xs text-[#c4b5fd] font-sans uppercase tracking-wide">Fundadora, Instituto FuturoOn</p>
-                                    </div>
-                                    <div className="h-px flex-1 bg-white/10"></div>
-                                    <div className="text-right">
-                                        <p className="text-xs text-gray-500 font-sans">{new Date().toLocaleDateString()}</p>
-                                    </div>
-                                </div>
-                            </div>
+            {/* Partner Seal / Certificate Section - NEW */}
+            <section className="container mx-auto px-4 mb-16 relative z-20">
+                <div className="max-w-4xl mx-auto bg-gradient-to-br from-[#18181B] to-[#09090B] border border-[#8a4add]/30 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden shadow-2xl shadow-[#8a4add]/10">
+                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983]"></div>
+                     <div className="relative z-10 flex flex-col items-center">
+                        <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center p-6 mb-6 border-4 border-[#8a4add] shadow-[0_0_40px_rgba(138,74,221,0.2)]">
+                             <img src={partner.logoUrl} alt="Partner Logo" className="w-full h-full object-contain" />
                         </div>
-
-                        {/* Partner Logo Badge */}
-                        <div className="flex-shrink-0 order-1 md:order-2 flex flex-col items-center">
-                            <div className="relative group">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] rounded-full blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                                <div className="w-56 h-56 bg-white rounded-full flex items-center justify-center p-8 shadow-2xl border-4 border-[#18181B] relative z-10">
-                                    <img 
-                                        src={partner.logoUrl} 
-                                        alt={`Logo da ${partner.name}`} 
-                                        className="w-full h-full object-contain filter transition-all duration-500 transform group-hover:scale-105" 
-                                    />
-                                </div>
-                                <div className="absolute bottom-2 right-2 bg-[#18181B] rounded-full p-1.5 border border-white/10 z-20 shadow-lg" title="Parceiro Verificado">
-                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#8a4add]" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                                </div>
-                            </div>
-                            <div className="mt-6 text-center space-y-3">
-                                <span className="inline-block px-4 py-1.5 rounded-full bg-white/5 text-white text-xs font-bold uppercase tracking-widest border border-white/10">
-                                    Parceiro desde {partner.since}
-                                </span>
-                                <div className="flex gap-2 justify-center flex-wrap max-w-[250px]">
-                                    <FocusArea label="Educação" />
-                                    <FocusArea label="Inclusão" />
-                                    <FocusArea label="Inovação" />
-                                </div>
-                            </div>
+                        <h2 className="text-2xl font-bold text-white mb-2">Selo de Parceiro de Impacto {new Date().getFullYear()}</h2>
+                        <p className="text-gray-400 max-w-xl mx-auto mb-8 text-sm leading-relaxed">
+                            Em reconhecimento à contribuição fundamental da {partner.name} para a democratização da tecnologia no Brasil e formação de novos talentos.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                            <button className="flex items-center justify-center gap-2 bg-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:bg-[#7c3aed] transition-all shadow-lg shadow-[#8a4add]/20 transform hover:scale-105 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                Baixar Selo Oficial
+                            </button>
+                             <button 
+                                onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`, '_blank')}
+                                className="flex items-center justify-center gap-2 bg-white/5 text-white font-semibold py-3 px-8 rounded-xl hover:bg-white/10 transition-all border border-white/10 text-sm"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                Compartilhar Conquista
+                            </button>
                         </div>
-                    </div>
+                     </div>
                 </div>
             </section>
 
@@ -176,7 +135,7 @@ const PartnerDetailView: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <MetricCard 
                         value="R$ 150k+" 
-                        label="Investimento em Educação" 
+                        label="Investimento Direto" 
                         icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>}
                         delay={0}
                     />
@@ -188,7 +147,7 @@ const PartnerDetailView: React.FC = () => {
                     />
                     <MetricCard 
                         value="30" 
-                        label="Laptops Doados" 
+                        label="Equipamentos Doados" 
                         icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
                         delay={200}
                     />
@@ -203,84 +162,107 @@ const PartnerDetailView: React.FC = () => {
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid lg:grid-cols-2 gap-12 items-start">
-                    {/* About & Impact Text */}
+                    {/* Left Column: Letter and Student Voice */}
+                    <div className="space-y-8">
+                        {/* Thank You Letter */}
+                        <div className="bg-[#121212] border border-white/10 rounded-2xl p-8 relative">
+                            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                                <span className="bg-[#8a4add]/20 p-1.5 rounded-md text-[#c4b5fd]">✉️</span> 
+                                Carta de Agradecimento
+                            </h2>
+                            <div className="prose prose-invert text-gray-300 leading-relaxed text-base font-light font-serif italic border-l-2 border-[#8a4add]/30 pl-6">
+                                <p>
+                                    "Prezados amigos da <strong className="text-white not-italic">{partner.name}</strong>,
+                                </p>
+                                <p>
+                                    É com imensa gratidão que reconhecemos o papel fundamental que vocês desempenham na história do Instituto FuturoOn. Desde {partner.since}, sua parceria não tem sido apenas sobre recursos, mas sobre acreditar em sonhos que, muitas vezes, a sociedade insiste em invisibilizar.
+                                </p>
+                                <p>
+                                    Graças ao apoio de vocês, conseguimos ir além das aulas de código. Entregamos esperança, infraestrutura e, acima de tudo, a certeza de que o lugar de origem não define o ponto de chegada.
+                                </p>
+                                <p>
+                                    Obrigado por construírem essa ponte conosco. O futuro é brilhante, e estamos honrados em caminhá-lo ao seu lado."
+                                </p>
+                            </div>
+                            <div className="mt-6 pt-6 border-t border-white/5 flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-gray-700"></div>
+                                <div>
+                                    <p className="font-bold text-white text-sm">Thais Santana</p>
+                                    <p className="text-[10px] text-[#c4b5fd] uppercase tracking-wide">Fundadora, Instituto FuturoOn</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Student Voice */}
+                        <div className="bg-gradient-to-r from-[#8a4add]/10 to-transparent rounded-2xl p-8 border border-[#8a4add]/30 relative overflow-hidden">
+                            <div className="absolute top-4 left-4 text-6xl text-[#8a4add] opacity-10 font-serif">"</div>
+                            <div className="relative z-10">
+                                <p className="text-lg md:text-xl font-medium text-gray-200 leading-relaxed font-serif italic text-center mb-6">
+                                    "{studentTestimonial.text}"
+                                </p>
+                                <div className="flex items-center justify-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center text-white font-bold text-sm">
+                                        {studentTestimonial.author.charAt(0)}
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="text-white font-bold text-sm">{studentTestimonial.author}</p>
+                                        <p className="text-[#c4b5fd] text-xs">{studentTestimonial.role}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column: About & Gallery */}
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+                            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
                                 <span className="text-[#8a4add]">🏢</span> Sobre a Parceria
                             </h2>
                             <div className="prose prose-invert text-gray-300 leading-relaxed bg-white/5 p-6 rounded-xl border border-white/10">
-                                <p className="text-lg">{partner.description}</p>
+                                <p>{partner.description}</p>
+                                <p className="mt-4 pt-4 border-t border-white/10 italic text-gray-400 text-sm">
+                                    <span className="text-[#8a4add] font-bold not-italic block mb-1">Impacto Chave:</span>
+                                    "{partner.impactDescription}"
+                                </p>
                             </div>
-                        </div>
-                        
-                        <div className="bg-gradient-to-r from-[#8a4add]/10 to-transparent rounded-xl p-8 border border-[#8a4add]/30 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-[#8a4add]/20 rounded-full blur-2xl"></div>
-                            <h3 className="text-xl font-bold text-white mb-4 relative z-10">Impacto Real</h3>
-                            <p className="text-gray-200 italic relative z-10 text-lg border-l-4 border-[#8a4add] pl-4">
-                                "{partner.impactDescription}"
-                            </p>
+                             <div className="mt-4 flex gap-4">
+                                <ShareButton platform="linkedin" url={window.location.href} text={shareText} />
+                                <ShareButton platform="copy" url={window.location.href} text={shareText} />
+                            </div>
                         </div>
 
-                         <div className="flex flex-wrap gap-4">
-                            <ShareButton platform="linkedin" url={window.location.href} text={shareText} />
-                            <ShareButton platform="twitter" url={window.location.href} text={shareText} />
-                            <ShareButton platform="copy" url={window.location.href} text={shareText} />
-                        </div>
-                    </div>
-
-                    {/* Visual Storytelling (Momentos) */}
-                    <div className="space-y-6">
-                         <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-                            <span className="text-[#8a4add]">📸</span> Momentos da Parceria
-                        </h2>
-                        <div className="grid grid-cols-2 gap-4 auto-rows-[150px]">
-                            <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden relative group border border-white/10">
-                                <img src={galleryImages[0]} alt="Evento com parceiro" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
-                                <p className="absolute bottom-4 left-4 text-white font-bold text-lg">Hackathon 2024</p>
+                        {/* Visual Storytelling (Momentos) */}
+                        <div className="space-y-4">
+                             <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                                <span className="text-[#8a4add]">📸</span> Momentos Juntos
+                            </h2>
+                            <div className="grid grid-cols-2 gap-4 auto-rows-[120px]">
+                                <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden relative group border border-white/10">
+                                    <img src={galleryImages[0]} alt="Evento com parceiro" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
+                                    <p className="absolute bottom-4 left-4 text-white font-bold text-lg">Hackathon 2024</p>
+                                </div>
+                                <div className="rounded-2xl overflow-hidden relative group border border-white/10">
+                                    <img src={galleryImages[1]} alt="Mentoria" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                </div>
+                                <div className="rounded-2xl overflow-hidden relative group border border-white/10">
+                                    <img src={galleryImages[2]} alt="Workshop" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                </div>
                             </div>
-                            <div className="rounded-2xl overflow-hidden relative group border border-white/10">
-                                <img src={galleryImages[1]} alt="Mentoria" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
-                                <p className="absolute bottom-2 left-3 text-white/90 font-semibold text-xs">Mentoria</p>
-                            </div>
-                            <div className="rounded-2xl overflow-hidden relative group border border-white/10">
-                                <img src={galleryImages[2]} alt="Workshop" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
-                                <p className="absolute bottom-2 left-3 text-white/90 font-semibold text-xs">Workshop</p>
-                            </div>
-                        </div>
-                         <div>
-                             <a href={partner.websiteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#c4b5fd] font-semibold hover:text-white transition-colors group mt-2">
-                                Visitar site da {partner.name} <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
-                            </a>
+                             {partner.websiteUrl && (
+                                 <a href={partner.websiteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#c4b5fd] text-xs font-semibold hover:text-white transition-colors group mt-2">
+                                    Visitar site da {partner.name} <span className="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>
-
-                {/* Next Steps */}
-                <div className="mt-24 border-t border-white/10 pt-12 text-center">
-                    <h3 className="text-2xl font-bold text-white mb-8">Vamos fazer mais?</h3>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <button className="flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                            Baixar Selo de Parceiro
-                        </button>
-                        <button 
-                            onClick={() => window.location.href = 'mailto:parcerias@institutofuturoon.org'}
-                            className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-colors"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            Agendar Nova Ação
-                        </button>
-                    </div>
-                    
-                    <div className="mt-12">
-                        <button onClick={() => navigate('/supporters')} className="text-gray-500 hover:text-white text-sm font-semibold transition-colors flex items-center gap-2 mx-auto">
-                            <span className="text-lg">&larr;</span> Voltar para lista de apoiadores
-                        </button>
-                    </div>
+                
+                <div className="mt-20 text-center">
+                    <button onClick={() => navigate('/supporters')} className="text-gray-500 hover:text-white text-sm font-semibold transition-colors flex items-center gap-2 mx-auto">
+                        <span className="text-lg">&larr;</span> Voltar para lista de apoiadores
+                    </button>
                 </div>
             </div>
         </div>
