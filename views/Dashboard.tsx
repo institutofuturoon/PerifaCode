@@ -8,6 +8,7 @@ import { useAppContext } from '../App';
 import CourseCard from '../components/CourseCard';
 import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import DashboardSidebar from '../components/DashboardSidebar';
+import ForumView from './ForumView';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -43,7 +44,7 @@ const DashboardHeader: React.FC<{ user: User, toggleSidebar: () => void, title: 
                         <div className="absolute right-0 mt-2 w-48 bg-[#18181B] border border-white/10 rounded-lg shadow-xl py-1 z-50">
                             <button onClick={() => navigate('/profile')} className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Meu Perfil</button>
                             <button onClick={() => navigate('/')} className="w-full text-left px-4 py-2 text-xs text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Voltar ao Site</button>
-                            <div className="border-t border-white/5 my-1"></div>
+                            <div className="border-t border-white/10 my-1"></div>
                             <button onClick={() => { handleLogout(); navigate('/'); }} className="w-full text-left px-4 py-2 text-xs text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors">Sair</button>
                         </div>
                     )}
@@ -342,6 +343,22 @@ const ModerationPanel: React.FC = () => {
              </div>
         </div>
     );
+};
+
+// TAB TITLE MAPPING
+const tabTitles: Record<string, string> = {
+    overview: 'Visão Geral',
+    myAgenda: 'Minha Agenda',
+    myCourses: 'Meus Cursos',
+    courses: 'Gestão de Cursos',
+    tracks: 'Trilhas de Aprendizado',
+    blog: 'Gerenciar Blog',
+    events: 'Eventos',
+    moderation: 'Moderação',
+    students: 'Base de Alunos',
+    teamMembers: 'Equipe',
+    transparency: 'Transparência',
+    forum: 'Fórum de Dúvidas'
 };
 
 const AdminDashboard: React.FC = () => {
@@ -659,6 +676,7 @@ const StudentsTable = () => (
           case 'tracks': return <TracksManagementPanel />;
           case 'transparency': return <TransparencyTable />;
           case 'moderation': return <ModerationPanel />;
+          case 'forum': return <ForumView embedded={true} />;
           case 'myAgenda': return <MyAgendaPanel 
             user={user}
             mentorSessions={mentorSessions}
@@ -684,21 +702,6 @@ const StudentsTable = () => (
     
     const createButton = getCreateButtonAction();
     const showCreateButton = !!createButton && (user.role === 'admin' || (user.role === 'instructor' && (activeTab === 'courses' || activeTab === 'blog' || activeTab === 'events'))) && !isTeamOrdering && activeTab !== 'tracks' && activeTab !== 'moderation';
-
-    // TAB TITLE MAPPING
-    const tabTitles: Record<string, string> = {
-        overview: 'Visão Geral',
-        myAgenda: 'Minha Agenda',
-        myCourses: 'Meus Cursos',
-        courses: 'Gestão de Cursos',
-        tracks: 'Trilhas de Aprendizado',
-        blog: 'Gerenciar Blog',
-        events: 'Eventos',
-        moderation: 'Moderação',
-        students: 'Base de Alunos',
-        teamMembers: 'Equipe',
-        transparency: 'Transparência'
-    };
 
     return (
         <div className="flex min-h-screen bg-[#09090B]">
@@ -944,6 +947,15 @@ const StudentDashboard: React.FC = () => {
              </div>
         </div>
     );
+    
+    const renderStudentContent = () => {
+        switch(activeTab) {
+            case 'overview': return <OverviewContent />;
+            case 'myCourses': return <MyCoursesContent />;
+            case 'forum': return <ForumView embedded={true} />;
+            default: return <OverviewContent />;
+        }
+    }
 
     return (
         <div className="flex min-h-screen bg-[#09090B]">
@@ -959,11 +971,11 @@ const StudentDashboard: React.FC = () => {
                  <DashboardHeader 
                     user={user} 
                     toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
-                    title={activeTab === 'overview' ? 'Meu Aprendizado' : 'Meus Cursos'}
+                    title={tabTitles[activeTab] || 'Meu Aprendizado'}
                 />
                 <div className="flex-1 p-6 md:p-8 overflow-y-auto">
                     <div className="max-w-5xl mx-auto animate-fade-in">
-                        {activeTab === 'overview' ? <OverviewContent /> : <MyCoursesContent />}
+                        {renderStudentContent()}
                     </div>
                 </div>
             </div>

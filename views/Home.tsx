@@ -1,10 +1,11 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import SimplifiedTimeline from '../components/SimplifiedTimeline';
 import TeamMemberPreviewCard from '../components/TeamMemberPreviewCard';
 import SEO from '../components/SEO';
+import { Partner } from '../types';
 
 const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ finalStat, duration = 2000 }) => {
   const [currentValue, setCurrentValue] = React.useState(0);
@@ -79,6 +80,93 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
     </div>
 );
 
+const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [isPaused, setIsPaused] = useState(false);
+    const [isUserInteracting, setIsUserInteracting] = useState(false);
+
+    // Create 4 sets for infinite effect illusion and buffer
+    const items = useMemo(() => [...partners, ...partners, ...partners, ...partners], [partners]);
+
+    // Auto-scroll Logic
+    useEffect(() => {
+        const container = scrollRef.current;
+        if (!container) return;
+        
+        let animationId: number;
+        
+        const scroll = () => {
+            if (!isPaused && !isUserInteracting) {
+                container.scrollLeft += 0.5; // Gentle speed
+                
+                // Reset if reach half of the scrollable width to simulate infinite loop
+                // This works because we duplicated content enough times
+                if (container.scrollLeft >= (container.scrollWidth / 2)) {
+                     container.scrollLeft = 0; 
+                }
+            }
+            animationId = requestAnimationFrame(scroll);
+        };
+        
+        animationId = requestAnimationFrame(scroll);
+        return () => cancelAnimationFrame(animationId);
+    }, [isPaused, isUserInteracting]);
+
+    const handleManualScroll = (direction: 'left' | 'right') => {
+        setIsUserInteracting(true);
+        if (scrollRef.current) {
+            const amount = 300; // Scroll amount for button click
+            scrollRef.current.scrollBy({ 
+                left: direction === 'left' ? -amount : amount, 
+                behavior: 'smooth' 
+            });
+        }
+        
+        // Resume auto-scroll after 3 seconds of inactivity
+        setTimeout(() => setIsUserInteracting(false), 3000);
+    };
+
+    if (partners.length === 0) return null;
+
+    return (
+        <div 
+            className="relative group px-4 md:px-12" 
+            aria-label="Galeria de Parceiros"
+            role="region"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onFocus={() => setIsPaused(true)} // Pause for accessibility/keyboard nav
+            onBlur={() => setIsPaused(false)}
+        >
+            {/* Accessible Controls */}
+            <button 
+                onClick={() => handleManualScroll('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add]"
+                aria-label="Ver parceiros anteriores"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            </button>
+
+            <div 
+                ref={scrollRef}
+                className="flex overflow-x-hidden gap-8 md:gap-16 py-4 items-center select-none"
+            >
+                {items.map((partner, i) => (
+                     <PartnerLogo key={`${partner.id}-${i}`} name={partner.name} logoUrl={partner.logoUrl} />
+                ))}
+            </div>
+
+             <button 
+                onClick={() => handleManualScroll('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add]"
+                aria-label="Ver próximos parceiros"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </button>
+        </div>
+    )
+}
+
 
 const Home: React.FC = () => {
   const { partners, team } = useAppContext();
@@ -104,12 +192,41 @@ const Home: React.FC = () => {
     return shuffled.slice(0, 4);
   }, [team]);
 
+  // JSON-LD para Organização (SEO)
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "NGO",
+    "name": "Instituto FuturoOn",
+    "url": window.location.origin,
+    "logo": "https://ui73bvafvl0llamc.public.blob.vercel-storage.com/images/varied/futuroon-logo.svg",
+    "description": "ONG dedicada ao ensino de tecnologia e desenvolvimento profissional para jovens de comunidades periféricas.",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rua Silva Jardim, 689",
+        "addressLocality": "São Gonçalo",
+        "addressRegion": "RJ",
+        "postalCode": "24440-000",
+        "addressCountry": "BR"
+    },
+    "sameAs": [
+        "https://www.instagram.com/futuro.on/",
+        "https://www.linkedin.com/company/instituto-futuroon/"
+    ],
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+55-21-97087-2194",
+        "contactType": "customer support",
+        "email": "futurooon@gmail.com"
+    }
+  };
+
   return (
     <>
         <SEO 
-            title="Escola de Tecnologia da Periferia" 
-            description="O Instituto FuturoOn leva educação de tecnologia gratuita para jovens da periferia. Cursos de programação, design e robótica."
-            keywords={['tecnologia', 'periferia', 'cursos gratuitos', 'programação', 'ong', 'inclusão digital']}
+            title="FuturoOn | Escola de Tecnologia Gratuita na Periferia" 
+            description="ONG em São Gonçalo/RJ oferecendo cursos gratuitos de programação (React, Node.js), design e robótica. Transformando vidas através da inclusão digital."
+            keywords={['tecnologia', 'periferia', 'cursos gratuitos', 'programação', 'ong', 'inclusão digital', 'São Gonçalo', 'React', 'Desenvolvimento Web']}
+            jsonLd={organizationSchema}
         />
         {/* Hero Section - Ajustado para maior impacto, com responsividade mobile */}
         <section className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
@@ -214,25 +331,18 @@ const Home: React.FC = () => {
             </div>
         </section>
 
-        {/* Nossos Parceiros Section (Responsiva: logos menores em mobile) */}
+        {/* Nossos Parceiros Section (Carrossel Interativo e Acessível) */}
         <section className="py-16 md:py-20 relative z-10 border-t border-white/5 bg-black/10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-4xl font-black text-white">Apoiadores</h2>
                     <p className="text-lg text-gray-400 mt-2">Empresas que tornam este sonho possível</p>
                 </div>
+                
                 <div className="relative opacity-90">
-                    <div className="marquee">
-                        <div className="marquee-content gap-8 md:gap-16">
-                            {partners.map(partner => (
-                                <PartnerLogo key={partner.id} name={partner.name} logoUrl={partner.logoUrl} />
-                            ))}
-                            {partners.map(partner => (
-                                <PartnerLogo key={`${partner.id}-clone`} name={partner.name} logoUrl={partner.logoUrl} />
-                            ))}
-                        </div>
-                    </div>
+                    <PartnerCarousel partners={partners} />
                 </div>
+
                  <div className="text-center mt-12">
                      <button onClick={() => navigate('/supporters')} className="px-8 py-3 border border-white/20 rounded-full text-sm font-bold text-[#c4b5fd] hover:bg-white/10 hover:text-white transition-all hover:border-white/40">
                         Ver todos os parceiros &rarr;

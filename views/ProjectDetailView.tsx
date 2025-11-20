@@ -1,6 +1,8 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
+import SEO from '../components/SEO';
 
 const ProjectDetailView: React.FC = () => {
     const { projects, users, user, handleAddClap, handleAddComment } = useAppContext();
@@ -25,6 +27,12 @@ const ProjectDetailView: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <SEO 
+                title={`${project.title} | Projeto de ${author?.name || 'Aluno FuturoOn'}`}
+                description={project.description.slice(0, 160)}
+                image={project.imageUrl}
+                keywords={[...project.technologies, 'portfolio', 'desenvolvimento web', 'projeto prático']}
+            />
             <div className="mb-8">
                 <button onClick={() => navigate('/community')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
                     <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para a comunidade

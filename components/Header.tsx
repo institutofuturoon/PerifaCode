@@ -79,9 +79,9 @@ const Header: React.FC = () => {
             </button>
             <nav className="hidden md:flex md:ml-6 md:space-x-5 items-center">
               <NavLink onClick={() => navigate('/courses')}>Cursos</NavLink>
-              <NavLink onClick={() => navigate('/about')}>Sobre Nós</NavLink>
-              <NavLink onClick={() => navigate('/community')}>Comunidade</NavLink>
+              <NavLink onClick={() => navigate('/community')}>Projetos</NavLink>
               <NavLink onClick={() => navigate('/connect')}>Mentorias & Eventos</NavLink>
+              <NavLink onClick={() => navigate('/about')}>Sobre Nós</NavLink>
               <NavLink onClick={() => navigate('/blog')}>Blog</NavLink>
               {user && <NavLink onClick={() => navigate('/dashboard')}>Painel</NavLink>}
             </nav>
@@ -171,9 +171,9 @@ const Header: React.FC = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {user && <button onClick={() => handleMobileNav('/dashboard')} className="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Meu Painel</button>}
             <button onClick={() => handleMobileNav('/courses')} className="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Cursos</button>
-            <button onClick={() => handleMobileNav('/about')} className="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
-            <button onClick={() => handleMobileNav('/community')} className="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Comunidade</button>
+            <button onClick={() => handleMobileNav('/community')} className="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Projetos</button>
             <button onClick={() => handleMobileNav('/connect')} className="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Mentorias & Eventos</button>
+             <button onClick={() => handleMobileNav('/about')} className="block px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 w-full text-left">Sobre Nós</button>
             {!user ? (
                 <div className="border-t border-white/10 pt-4 mt-4 flex items-center justify-center gap-2">
                     <button onClick={() => handleMobileNav('/login')} className="flex-1 border border-[#8a4add]/80 bg-transparent text-gray-300 hover:bg-[#8a4add]/20 font-semibold py-2 px-4 rounded-lg transition-all duration-300 text-xs">

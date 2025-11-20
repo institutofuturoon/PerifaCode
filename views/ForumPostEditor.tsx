@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CommunityPost } from '../types';
 import { useAppContext } from '../App';
@@ -10,6 +10,13 @@ const ForumPostEditor: React.FC = () => {
     const { postId } = useParams<{ postId: string }>();
     const navigate = useNavigate();
     const contentRef = useRef<HTMLTextAreaElement>(null);
+
+    // Protect Route
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
 
     const initialPost = useMemo(() => {
         if (postId && postId !== 'new') {
@@ -37,11 +44,13 @@ const ForumPostEditor: React.FC = () => {
         type: 'discussion', isSolved: false
     });
 
+    if (!user) return null; // Early return while useEffect redirects
+
     if (!initialPost || (postId !== 'new' && post.authorId !== user?.id && user?.role !== 'admin')) {
         return <div className="text-center py-20">Você não tem permissão para editar este post.</div>;
     }
 
-    const onCancel = () => navigate('/community');
+    const onCancel = () => navigate('/forum');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -60,7 +69,7 @@ const ForumPostEditor: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         handleSaveCommunityPost(post);
-        navigate('/community');
+        navigate('/forum');
     };
 
     const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";

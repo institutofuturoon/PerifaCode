@@ -5,6 +5,7 @@ import CourseCard from '../components/CourseCard';
 import { useAppContext } from '../App';
 import { Course } from '../types';
 import OnsiteCourseCard from '../components/OnsiteCourseCard';
+import SEO from '../components/SEO';
 
 const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => void }> = ({ course, onSelect }) => (
     <div 
@@ -62,6 +63,11 @@ const Courses: React.FC = () => {
 
   return (
     <div className="bg-transparent">
+        <SEO 
+            title="Cursos Gratuitos de Tecnologia | FuturoOn"
+            description="Catálogo completo de cursos gratuitos de programação, design e robótica. Aprenda Python, React, Node.js e mais. Presencial em São Gonçalo ou Online."
+            keywords={['cursos de programação', 'curso grátis tecnologia', 'python', 'react', 'são gonçalo', 'robótica', 'educação digital']}
+        />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="text-center mb-4">
                 <h1 className="text-xl md:text-3xl font-black tracking-tight text-white">

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
@@ -32,14 +33,19 @@ const ForumPostDetailView: React.FC = () => {
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="mb-8">
-                <button onClick={() => navigate('/community')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
-                    <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para a comunidade
+                <button onClick={() => navigate('/forum')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
+                    <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o fórum
                 </button>
             </div>
             
             <div className="max-w-4xl mx-auto">
                 {/* Main Post */}
-                <div className="bg-white/5 border border-white/10 rounded-lg p-8">
+                <div className="bg-white/5 border border-white/10 rounded-lg p-8 relative overflow-hidden">
+                     {post.isSolved && (
+                        <div className="absolute top-0 right-0 bg-green-500 text-black text-[10px] font-bold px-3 py-1 rounded-bl-lg">
+                            RESOLVIDO
+                        </div>
+                    )}
                     <div className="flex items-start gap-4">
                         <img src={author?.avatarUrl} alt={author?.name} className="w-12 h-12 rounded-full" />
                         <div>
@@ -92,17 +98,19 @@ const ForumPostDetailView: React.FC = () => {
                                 </div>
                             );
                         })}
+                        {post.replies.length === 0 && (
+                            <p className="text-gray-500 italic">Nenhuma resposta ainda. Seja o primeiro a ajudar!</p>
+                        )}
                     </div>
                 </div>
                 
                  {/* Add Reply Form */}
-                {user && (
-                    <div className="mt-12 pt-8 border-t border-white/10">
-                         <h2 className="text-2xl font-bold text-white mb-6">Sua Resposta</h2>
+                <div className="mt-12 pt-8 border-t border-white/10">
+                    <h2 className="text-2xl font-bold text-white mb-6">Sua Resposta</h2>
+                    {user ? (
                          <form onSubmit={handleReplySubmit} className="flex items-start gap-4">
                             <img src={user.avatarUrl} alt={user.name} className="h-10 w-10 rounded-full" />
                             <div className="flex-1">
-                                <MarkdownRenderer content={replyText} />
                                 <textarea 
                                     value={replyText}
                                     onChange={(e) => setReplyText(e.target.value)}
@@ -110,13 +118,24 @@ const ForumPostDetailView: React.FC = () => {
                                     placeholder="Escreva uma resposta construtiva..."
                                     className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors"
                                 />
+                                <div className="text-xs text-gray-500 mt-1 mb-2">Dica: Use Markdown para formatar código.</div>
                                 <button type="submit" className="mt-2 font-semibold py-2 px-5 rounded-lg bg-[#8a4add] text-white hover:bg-[#6d28d9] transition-colors shadow-lg shadow-[#8a4add]/20">
                                     Publicar Resposta
                                 </button>
                             </div>
                         </form>
-                    </div>
-                )}
+                    ) : (
+                        <div className="bg-[#121212] border border-white/10 rounded-lg p-8 text-center">
+                            <p className="text-gray-300 mb-4">Você precisa estar logado para participar desta discussão.</p>
+                            <button 
+                                onClick={() => navigate('/login')}
+                                className="bg-white text-black font-bold py-2 px-6 rounded-lg hover:bg-gray-200 transition-colors"
+                            >
+                                Fazer Login
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

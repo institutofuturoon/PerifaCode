@@ -1,5 +1,7 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const ImpactCard: React.FC<{ amount: string, description: string }> = ({ amount, description }) => (
     <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-center transform transition-transform hover:-translate-y-1">
@@ -19,6 +21,11 @@ const DonateView: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <SEO 
+                title="Faça uma Doação | Instituto FuturoOn"
+                description="Sua doação transforma vidas. Apoie a educação tecnológica gratuita para jovens da periferia em São Gonçalo. Doe via PIX."
+                keywords={['doação', 'ong', 'educação', 'tecnologia', 'filantropia', 'projeto social', 'são gonçalo', 'investimento social']}
+            />
             <header className="text-center mb-16">
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">
                     Faça parte da <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">Revolução</span>

@@ -1,13 +1,16 @@
+
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
+import SEO from '../components/SEO';
 
 const EventDetailView: React.FC = () => {
-  const { events } = useAppContext();
+  const { events, instructors } = useAppContext();
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
 
   const event = useMemo(() => events.find(e => e.id === eventId), [events, eventId]);
+  const host = useMemo(() => instructors.find(i => i.id === event?.hostId), [instructors, event]);
 
   const [copyButtonText, setCopyButtonText] = useState('Compartilhar');
 
@@ -40,8 +43,52 @@ const EventDetailView: React.FC = () => {
   
   const formattedLocation = event.location?.replace('Presencial - ', '').toUpperCase() || 'LOCAL A DEFINIR';
 
+  // Dados estruturados para Google Events
+  const eventSchema = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": event.title,
+    "description": event.description,
+    "image": event.imageUrl,
+    "startDate": "2024-08-25T19:00", // Placeholder: Em um app real, converteria event.date/time para ISO
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": event.location?.toLowerCase().includes('online') 
+        ? "https://schema.org/OnlineEventAttendanceMode" 
+        : "https://schema.org/OfflineEventAttendanceMode",
+    "location": event.location?.toLowerCase().includes('online') 
+        ? { "@type": "VirtualLocation", "url": event.registrationUrl }
+        : {
+            "@type": "Place",
+            "name": event.location || "Complexo da Coruja",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Rua Silva Jardim, 689",
+                "addressLocality": "São Gonçalo",
+                "addressRegion": "RJ",
+                "addressCountry": "BR"
+            }
+        },
+    "organizer": {
+        "@type": "Organization",
+        "name": "Instituto FuturoOn",
+        "url": window.location.origin
+    },
+    "performer": host ? {
+        "@type": "Person",
+        "name": host.name
+    } : undefined
+  };
+
   return (
     <div className="bg-[#09090B]">
+      <SEO 
+        title={`${event.title} | Eventos FuturoOn`}
+        description={event.description.slice(0, 160)}
+        image={event.imageUrl}
+        keywords={['evento tecnologia', 'workshop', 'palestra', 'são gonçalo', event.eventType]}
+        jsonLd={eventSchema}
+      />
+      
       {/* Header with Background Image */}
       <section className="relative py-20 md:py-32 bg-black/20">
         <div className="absolute inset-0">

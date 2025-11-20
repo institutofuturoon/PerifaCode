@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
     <div className="flex-shrink-0 w-[180px] h-[80px] bg-white/5 border border-white/5 rounded-xl flex items-center justify-center p-4 grayscale hover:grayscale-0 hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer group">
@@ -36,8 +37,8 @@ const PlanCard: React.FC<{
     price?: string; 
     features: string[]; 
     isFeatured?: boolean; 
-    ctaText: string;
-    ctaLink: string;
+    ctaText: string; 
+    ctaLink: string; 
 }> = ({ title, price, features, isFeatured, ctaText, ctaLink }) => (
     <div className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 h-full ${isFeatured ? 'bg-white/5 border-[#8a4add] shadow-[0_0_40px_-10px_rgba(138,74,221,0.3)] transform md:-translate-y-4 z-10' : 'bg-[#121212] border-white/10 hover:border-white/20'}`}>
         {isFeatured && (
@@ -80,6 +81,11 @@ const PartnershipsView: React.FC = () => {
 
     return (
         <div className="bg-[#09090B] min-h-screen overflow-hidden">
+            <SEO 
+                title="Seja um Parceiro | Instituto FuturoOn"
+                description="Conecte sua empresa à próxima geração de líderes em tecnologia. Descubra como apoiar a formação de talentos da periferia e impulsionar seu ESG."
+                keywords={['parceria corporativa', 'ESG', 'recrutamento tech', 'impacto social', 'investimento social privado', 'diversidade e inclusão', 'responsabilidade social']}
+            />
             
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32">

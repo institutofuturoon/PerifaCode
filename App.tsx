@@ -27,6 +27,7 @@ import ArticleEditor from './views/ArticleEditor';
 import StudentEditor from './views/StudentEditor';
 import InstructorCourseDashboard from './views/InstructorCourseDashboard';
 import CommunityView from './views/CommunityView';
+import ForumView from './views/ForumView';
 import ProjectDetailView from './views/ProjectDetailView';
 import ProjectEditor from './views/ProjectEditor';
 import PartnershipsView from './views/PartnershipsView';
@@ -903,6 +904,7 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/community" element={<CommunityView />} />
+                    <Route path="/forum" element={<ForumView />} />
                     <Route path="/project/:projectId" element={<ProjectDetailView />} />
                     <Route path="/project/edit" element={<ProjectEditor />} />
                     <Route path="/project/edit/:projectId" element={<ProjectEditor />} />

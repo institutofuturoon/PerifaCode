@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ForumPost, ChatMessage, Reply } from '../types';
@@ -92,25 +93,26 @@ Aluno: "${userMessage.text}"`;
         <button 
           onClick={toggleChat} 
           className="bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-full h-16 w-16 flex items-center justify-center text-white shadow-2xl shadow-[#8a4add]/40 transform hover:scale-110 transition-transform duration-300"
-          aria-label="Abrir Tutor IA"
+          aria-label="Abrir Tutor IA para tirar dúvidas"
+          title="Abrir Tutor IA"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
         </button>
       </div>
 
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[90vw] max-w-sm h-[60vh] max-h-[500px] flex flex-col">
+        <div className="fixed bottom-24 right-6 z-50 w-[90vw] max-w-sm h-[60vh] max-h-[500px] flex flex-col" role="dialog" aria-labelledby="ai-tutor-title">
            <div className="bg-black/50 backdrop-blur-xl border border-[#8a4add]/30 rounded-lg shadow-2xl shadow-[#8a4add]/20 flex flex-col h-full">
                 <header className="p-4 border-b border-white/10 flex justify-between items-center">
-                    <h3 className="font-bold text-white flex items-center gap-2">
-                        <span className="text-[#c4b5fd]">✨</span> Tutor IA
+                    <h3 id="ai-tutor-title" className="font-bold text-white flex items-center gap-2">
+                        <span className="text-[#c4b5fd]" aria-hidden="true">✨</span> Tutor IA
                     </h3>
-                    <button onClick={toggleChat} className="text-gray-400 hover:text-white">&times;</button>
+                    <button onClick={toggleChat} className="text-gray-400 hover:text-white" aria-label="Fechar chat do Tutor IA">&times;</button>
                 </header>
-                <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                <div className="flex-1 p-4 space-y-4 overflow-y-auto" aria-live="polite">
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            {msg.role === 'model' && <img src="https://picsum.photos/seed/aitutor/100" className="h-6 w-6 rounded-full" />}
+                            {msg.role === 'model' && <img src="https://picsum.photos/seed/aitutor/100" className="h-6 w-6 rounded-full" alt="Avatar do Tutor IA" />}
                             <div className={`max-w-[80%] p-3 rounded-lg ${msg.role === 'user' ? 'bg-[#8a4add] text-white font-semibold rounded-br-none' : 'bg-gray-800 text-gray-200 rounded-bl-none'}`}>
                                 <p className="text-sm" dangerouslySetInnerHTML={renderMessageContent(msg.text)}></p>
                             </div>
@@ -118,8 +120,8 @@ Aluno: "${userMessage.text}"`;
                     ))}
                     {isLoading && (
                          <div className="flex items-end gap-2 justify-start">
-                             <img src="https://picsum.photos/seed/aitutor/100" className="h-6 w-6 rounded-full" />
-                             <div className="max-w-[80%] p-3 rounded-lg bg-gray-800 rounded-bl-none">
+                             <img src="https://picsum.photos/seed/aitutor/100" className="h-6 w-6 rounded-full" alt="Avatar do Tutor IA" />
+                             <div className="max-w-[80%] p-3 rounded-lg bg-gray-800 rounded-bl-none" aria-label="Tutor IA digitando...">
                                 <div className="flex items-center gap-1.5">
                                     <span className="h-2 w-2 bg-[#8a4add] rounded-full animate-pulse [animation-delay:-0.3s]"></span>
                                     <span className="h-2 w-2 bg-[#8a4add] rounded-full animate-pulse [animation-delay:-0.15s]"></span>
@@ -137,8 +139,9 @@ Aluno: "${userMessage.text}"`;
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Tire sua dúvida..."
-                            className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-2 focus:ring-[#8a4add] focus:outline-none text-sm"
+                            className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-2 focus:ring-[#8a4add] focus:outline-none text-sm text-white"
                             disabled={isLoading}
+                            aria-label="Digite sua dúvida para o Tutor IA"
                         />
                         <button type="submit" disabled={isLoading || !input.trim()} className="bg-[#8a4add] text-white px-4 rounded-md font-semibold hover:bg-[#6d28d9] disabled:opacity-50 transition-colors">Enviar</button>
                     </form>
@@ -157,17 +160,47 @@ const LessonTabs: React.FC<{
   hasExercise: boolean;
 }> = ({ activeTab, setActiveTab, hasExercise }) => {
   const tabClasses = (tabName: 'content' | 'notes' | 'forum' | 'exercise') =>
-    `px-4 py-2 font-semibold text-sm rounded-t-lg border-b-2 transition-colors ${
+    `px-4 py-2 font-semibold text-sm rounded-t-lg border-b-2 transition-colors focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:ring-offset-2 focus:ring-offset-[#09090B] ${
       activeTab === tabName
         ? 'border-[#8a4add] text-white'
         : 'border-transparent text-gray-400 hover:text-white'
     }`;
   return (
-    <nav className="flex space-x-4 border-b border-white/10">
-      <button onClick={() => setActiveTab('content')} className={tabClasses('content')}>Conteúdo</button>
-      <button onClick={() => setActiveTab('notes')} className={tabClasses('notes')}>Anotações</button>
-      <button onClick={() => setActiveTab('forum')} className={tabClasses('forum')}>Fórum de Dúvidas</button>
-      {hasExercise && <button onClick={() => setActiveTab('exercise')} className={tabClasses('exercise')}>Exercício</button>}
+    <nav className="flex space-x-4 border-b border-white/10" role="tablist" aria-label="Abas da aula">
+      <button 
+        role="tab" 
+        aria-selected={activeTab === 'content'} 
+        onClick={() => setActiveTab('content')} 
+        className={tabClasses('content')}
+      >
+        Conteúdo
+      </button>
+      <button 
+        role="tab" 
+        aria-selected={activeTab === 'notes'} 
+        onClick={() => setActiveTab('notes')} 
+        className={tabClasses('notes')}
+      >
+        Anotações
+      </button>
+      <button 
+        role="tab" 
+        aria-selected={activeTab === 'forum'} 
+        onClick={() => setActiveTab('forum')} 
+        className={tabClasses('forum')}
+      >
+        Fórum de Dúvidas
+      </button>
+      {hasExercise && (
+        <button 
+            role="tab" 
+            aria-selected={activeTab === 'exercise'} 
+            onClick={() => setActiveTab('exercise')} 
+            className={tabClasses('exercise')}
+        >
+            Exercício
+        </button>
+      )}
     </nav>
   );
 };
@@ -196,7 +229,7 @@ const Forum: React.FC<{
   }
 
   return (
-      <div className="space-y-6">
+      <div className="space-y-6" role="tabpanel" aria-label="Fórum de Dúvidas">
           <h2 className="text-xl font-bold text-white">Fórum de Dúvidas</h2>
           {user && (
             <form onSubmit={handlePostSubmit} className="flex items-start gap-4">
@@ -207,7 +240,8 @@ const Forum: React.FC<{
                         onChange={(e) => setPostText(e.target.value)}
                         rows={3}
                         placeholder="Qual sua dúvida sobre esta aula?"
-                        className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors"
+                        className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors text-white"
+                        aria-label="Escreva sua dúvida"
                     />
                     <button type="submit" className="mt-2 font-semibold py-2 px-5 rounded-lg bg-[#8a4add] text-white hover:bg-[#6d28d9] transition-colors shadow-lg shadow-[#8a4add]/20">
                         Publicar Dúvida
@@ -252,7 +286,8 @@ const Forum: React.FC<{
                                     value={replyText[post.id] || ''}
                                     onChange={(e) => setReplyText(prev => ({...prev, [post.id]: e.target.value}))}
                                     placeholder="Responder..."
-                                    className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm"
+                                    className="flex-1 p-2 bg-white/10 rounded-md border border-white/20 focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white"
+                                    aria-label={`Responder ao comentário de ${post.authorName}`}
                                 />
                                 <button type="submit" className="text-xs font-semibold bg-[#8a4add]/50 text-white px-3 py-2 rounded-md hover:bg-[#8a4add]/80">
                                     Enviar
@@ -344,8 +379,8 @@ const LessonView: React.FC = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-8">
-            <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
-                <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para os cursos
+            <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group" aria-label="Voltar para a lista de cursos">
+                <span className="inline-block transform group-hover:-translate-x-1 transition-transform" aria-hidden="true">&larr;</span> Voltar para os cursos
             </button>
         </div>
       <div className="grid lg:grid-cols-3 gap-12">
@@ -360,11 +395,11 @@ const LessonView: React.FC = () => {
                 </div>
                 <div className="mt-6 min-h-[400px]">
                     {activeTab === 'content' && (
-                        <div className="space-y-8">
+                        <div className="space-y-8" role="tabpanel" aria-label="Conteúdo da aula">
                             {currentLesson.objective && (
                                 <div className="bg-white/5 border-l-4 border-[#8a4add] p-6 rounded-r-lg">
                                     <h2 className="text-xl font-bold text-white flex items-center gap-2 mb-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                         Objetivo da Aula
                                     </h2>
                                     <div className="prose prose-invert max-w-none text-gray-300">
@@ -381,7 +416,7 @@ const LessonView: React.FC = () => {
                         </div>
                     )}
                     {activeTab === 'notes' && (
-                         <div>
+                         <div role="tabpanel" aria-label="Minhas anotações">
                             <h2 className="text-xl font-bold text-white mb-4">Minhas Anotações</h2>
                             <textarea
                                 value={note}
@@ -389,7 +424,8 @@ const LessonView: React.FC = () => {
                                 onBlur={() => handleSaveNote(currentLesson.id, note)}
                                 rows={10}
                                 placeholder="Faça suas anotações aqui... Elas são salvas automaticamente."
-                                className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors"
+                                className="w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors text-white"
+                                aria-label="Campo de texto para suas anotações pessoais sobre a aula"
                             />
                         </div>
                     )}
@@ -397,7 +433,7 @@ const LessonView: React.FC = () => {
                         <Forum posts={forumPosts.filter(p => p.lessonId === currentLesson.id)} onPost={handlePostToForum} onReply={handleReplyToForum} />
                     )}
                     {activeTab === 'exercise' && exercise && (
-                        <div>
+                        <div role="tabpanel" aria-label="Exercício Prático">
                             {exercise.type === 'quiz' && (
                                 <QuizExercise exercise={exercise} onComplete={handleCompleteLesson} isCompleted={isCompleted}/>
                             )}
@@ -415,13 +451,21 @@ const LessonView: React.FC = () => {
                     <h3 className="text-lg font-bold text-white mb-4">Navegação da Aula</h3>
                     <div className="flex justify-between items-center gap-2">
                         {prevLesson ? (
-                             <button onClick={() => navigateToLesson(prevLesson)} className="flex-1 text-left bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors">
+                             <button 
+                                onClick={() => navigateToLesson(prevLesson)} 
+                                className="flex-1 text-left bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors"
+                                aria-label={`Ir para aula anterior: ${prevLesson.title}`}
+                             >
                                 <p className="text-xs text-gray-400">Anterior</p>
                                 <p className="text-sm font-semibold text-white truncate">{prevLesson.title}</p>
                             </button>
                         ) : <div className="flex-1"></div>}
                         {nextLesson && (
-                            <button onClick={() => navigateToLesson(nextLesson)} className="flex-1 text-right bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors">
+                            <button 
+                                onClick={() => navigateToLesson(nextLesson)} 
+                                className="flex-1 text-right bg-white/5 hover:bg-white/10 p-3 rounded-md transition-colors"
+                                aria-label={`Ir para próxima aula: ${nextLesson.title}`}
+                            >
                                 <p className="text-xs text-gray-400">Próxima</p>
                                 <p className="text-sm font-semibold text-white truncate">{nextLesson.title}</p>
                             </button>
@@ -433,12 +477,13 @@ const LessonView: React.FC = () => {
                     <button 
                         onClick={handleCompleteLesson}
                         className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg shadow-green-500/20"
+                        aria-label="Marcar aula como concluída"
                     >
                         Concluir Aula
                     </button>
                 )}
                  {isCompleted && (
-                    <div className="w-full bg-green-500/10 text-green-300 font-semibold py-3 px-6 rounded-lg text-center">
+                    <div className="w-full bg-green-500/10 text-green-300 font-semibold py-3 px-6 rounded-lg text-center" aria-live="polite">
                         Aula Concluída!
                     </div>
                 )}
