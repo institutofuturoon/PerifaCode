@@ -199,6 +199,7 @@ const Home: React.FC = () => {
     "name": "Instituto FuturoOn",
     "url": window.location.origin,
     "logo": "https://ui73bvafvl0llamc.public.blob.vercel-storage.com/images/varied/futuroon-logo.svg",
+    "foundingDate": "2021",
     "description": "ONG dedicada ao ensino de tecnologia e desenvolvimento profissional para jovens de comunidades periféricas.",
     "address": {
         "@type": "PostalAddress",
@@ -207,6 +208,10 @@ const Home: React.FC = () => {
         "addressRegion": "RJ",
         "postalCode": "24440-000",
         "addressCountry": "BR"
+    },
+    "areaServed": {
+        "@type": "City",
+        "name": "São Gonçalo"
     },
     "sameAs": [
         "https://www.instagram.com/futuro.on/",
