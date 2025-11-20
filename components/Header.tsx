@@ -16,7 +16,7 @@ const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode; active
 const MobileLink: React.FC<{ onClick: () => void; children: React.ReactNode; active?: boolean }> = ({ onClick, children, active }) => (
     <button 
         onClick={onClick} 
-        className={`text-2xl font-bold py-4 border-b border-white/5 w-full text-left transition-colors ${active ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+        className={`text-3xl font-black py-3 w-full text-center transition-all duration-300 transform hover:scale-105 ${active ? 'text-white' : 'text-gray-500 hover:text-white'}`}
     >
         {children}
     </button>
@@ -127,11 +127,10 @@ const Header: React.FC = () => {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="fixed inset-0 bg-[#09090B] z-40 md:hidden pt-24 px-6 flex flex-col animate-fade-in">
+        <div className="fixed inset-0 bg-[#09090B] z-40 md:hidden flex flex-col animate-fade-in pt-24 px-6">
           
-          {/* Institutional Links */}
-          <div className="flex flex-col space-y-2">
-             <p className="text-xs font-bold text-[#8a4add] uppercase tracking-widest mb-2">Menu</p>
+          {/* Institutional Links - Centered */}
+          <div className="flex flex-col items-center justify-center flex-grow space-y-4">
              <MobileLink onClick={() => handleNav('/')} active={isActive('/')}>Início</MobileLink>
              <MobileLink onClick={() => handleNav('/courses')} active={isActive('/courses')}>Cursos</MobileLink>
              <MobileLink onClick={() => handleNav('/blog')} active={isActive('/blog')}>Blog & Notícias</MobileLink>
