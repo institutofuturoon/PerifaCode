@@ -860,14 +860,19 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppContent: React.FC = () => {
     const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding } = useAppContext();
     
+    // Determine if we should hide global header/footer based on the route
+    // This logic creates the "Separate System" feel for the dashboard
+    const location = useLocation();
+    const isDashboardRoute = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin');
+    
     return (
         <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
             <ScrollToTop />
-            <Header />
+            {!isDashboardRoute && <Header />}
             {/* Componente de Tracking do Google Analytics */}
             <AnalyticsTracker />
             <main className="flex-grow relative">
-                <ScrollSpaceship />
+                {!isDashboardRoute && <ScrollSpaceship />}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />
@@ -921,7 +926,7 @@ const AppContent: React.FC = () => {
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </main>
-            <Footer />
+            {!isDashboardRoute && <Footer />}
 
             {/* Modals */}
             {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={() => { /* handled via context */ }} />}
