@@ -1,9 +1,11 @@
+
 import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
+import SEO from '../components/SEO';
 
 const SidebarWidget: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10">
@@ -179,6 +181,10 @@ const Blog: React.FC = () => {
 
   return (
     <>
+        <SEO 
+            title="Blog"
+            description="Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia."
+        />
         {/* Hero Section */}
         <header className="py-20 md:py-24 text-center relative z-10 bg-grid-pattern">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">

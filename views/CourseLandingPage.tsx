@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { Course, CourseBenefit, Module } from '../types';
+import SEO from '../components/SEO';
 
 // --- Helper Components ---
 
@@ -92,6 +94,12 @@ const CourseLandingPage: React.FC = () => {
 
     return (
         <div className="bg-transparent relative">
+             <SEO 
+                title={currentCourse.seo?.metaTitle || currentCourse.title}
+                description={currentCourse.seo?.metaDescription || currentCourse.description}
+                keywords={currentCourse.seo?.keywords}
+                image={currentCourse.imageUrl}
+            />
              <div className="absolute top-8 left-4 sm:left-6 lg:left-8 z-20">
                 <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group text-sm flex items-center gap-2 bg-black/20 backdrop-blur-sm py-2 px-4 rounded-full border border-white/10 hover:border-white/20">
                     <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span>

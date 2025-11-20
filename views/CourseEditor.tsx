@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Course, Module, Lesson, CourseBenefit, CurriculumItem } from '../types';
@@ -28,6 +29,7 @@ const CourseEditor: React.FC = () => {
     modules: [],
     format: 'online' as Course['format'],
     enrollmentStatus: 'soon' as Course['enrollmentStatus'],
+    seo: { metaTitle: '', metaDescription: '', keywords: [] },
     // Initialize landing page sections
     heroContent: { subtitle: '', titleLine1: '', titleAccent: '', description: '' },
     benefitsSection: { title: '', subtitle: '', benefits: [] },
@@ -47,7 +49,8 @@ const CourseEditor: React.FC = () => {
   
   useEffect(() => {
     if (existingCourse) {
-      setCourse(existingCourse);
+      // Ensure SEO object exists even for old records
+      setCourse({ ...existingCourse, seo: existingCourse.seo || { metaTitle: '', metaDescription: '', keywords: [] } });
     } else if (courseId === 'new') {
       setCourse(getNewCourseTemplate);
     }
@@ -57,7 +60,8 @@ const CourseEditor: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<SelectedItem>({ type: 'course' });
   const [aiTopic, setAiTopic] = useState('');
   const [isGeneratingStructure, setIsGeneratingStructure] = useState(false);
-  
+  const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
+
   // Handlers
   const onCancel = () => navigate('/admin');
 
@@ -103,6 +107,16 @@ const CourseEditor: React.FC = () => {
                 // @ts-ignore
                 ...prev[section],
                 [field]: value
+            }
+        }));
+    };
+
+    const handleSeoChange = (field: string, value: string) => {
+        setCourse(prev => ({
+            ...prev,
+            seo: {
+                ...prev.seo,
+                [field]: field === 'keywords' ? value.split(',').map(s => s.trim()) : value
             }
         }));
     };
@@ -262,6 +276,58 @@ const CourseEditor: React.FC = () => {
       }
   };
   
+  const handleGenerateSeo = async () => {
+      if (!course.title || !course.description) {
+          showToast("Preencha o título e a descrição do curso antes de gerar o SEO.");
+          return;
+      }
+      setIsGeneratingSeo(true);
+      try {
+          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const courseContext = `Título: ${course.title}\nDescrição: ${course.description}\nEmenta: ${course.modules.map(m => m.title).join(', ')}`;
+          const prompt = `Atue como um especialista em SEO. Gere meta title, meta description e keywords otimizadas para a página deste curso da FuturoOn. O público alvo são jovens da periferia buscando carreira em tecnologia.
+          
+          Conteúdo do Curso:
+          ${courseContext}
+          
+          Retorne apenas o JSON.`;
+
+          const response = await ai.models.generateContent({
+              model: "gemini-2.5-flash",
+              contents: prompt,
+              config: {
+                  responseMimeType: "application/json",
+                  responseSchema: {
+                      type: Type.OBJECT,
+                      properties: {
+                          metaTitle: { type: Type.STRING, description: "Máximo 60 caracteres, atraente" },
+                          metaDescription: { type: Type.STRING, description: "Máximo 160 caracteres, persuasivo" },
+                          keywords: { type: Type.ARRAY, items: { type: Type.STRING } }
+                      },
+                      required: ["metaTitle", "metaDescription", "keywords"]
+                  }
+              }
+          });
+
+          const result = JSON.parse(response.text);
+          setCourse(prev => ({
+              ...prev,
+              seo: {
+                  metaTitle: result.metaTitle,
+                  metaDescription: result.metaDescription,
+                  keywords: result.keywords
+              }
+          }));
+          showToast("✨ SEO gerado com sucesso!");
+
+      } catch (error) {
+          console.error("Erro ao gerar SEO:", error);
+          showToast("❌ Erro ao gerar sugestões de SEO.");
+      } finally {
+          setIsGeneratingSeo(false);
+      }
+  };
+
   const handleImageUploadComplete = (url: string) => {
     setCourse(prev => ({...prev, imageUrl: url}));
     showToast('✅ Imagem do curso salva!');
@@ -273,7 +339,7 @@ const CourseEditor: React.FC = () => {
     navigate('/admin');
   };
   
-  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm";
+  const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
   const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
   
   const renderCourseForm = () => (
@@ -296,6 +362,40 @@ const CourseEditor: React.FC = () => {
             </div>
         </details>
         
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <summary className="font-semibold text-white cursor-pointer">SEO & Metadados</summary>
+            <div className="mt-4 space-y-4">
+                <div className="flex justify-end">
+                    <button 
+                        type="button" 
+                        onClick={handleGenerateSeo}
+                        disabled={isGeneratingSeo}
+                        className="flex items-center gap-2 text-xs font-bold bg-[#8a4add]/20 text-[#c4b5fd] px-3 py-1.5 rounded-full hover:bg-[#8a4add]/30 disabled:opacity-50 transition-colors"
+                    >
+                        {isGeneratingSeo ? (
+                            <><svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Gerando...</>
+                        ) : (
+                            <>✨ Gerar Sugestões com IA</>
+                        )}
+                    </button>
+                </div>
+                <div>
+                    <label className={labelClasses}>Meta Title (Título na aba do navegador e Google)</label>
+                    <input value={course.seo?.metaTitle || ''} onChange={(e) => handleSeoChange('metaTitle', e.target.value)} className={inputClasses} placeholder="Ex: Curso de Python Completo | FuturoOn" maxLength={60} />
+                    <p className="text-xs text-gray-500 mt-1 text-right">{course.seo?.metaTitle?.length || 0}/60</p>
+                </div>
+                <div>
+                    <label className={labelClasses}>Meta Description (Resumo nos resultados de busca)</label>
+                    <textarea value={course.seo?.metaDescription || ''} onChange={(e) => handleSeoChange('metaDescription', e.target.value)} className={inputClasses} rows={2} placeholder="Ex: Aprenda Python do zero ao avançado com projetos práticos..." maxLength={160}></textarea>
+                    <p className="text-xs text-gray-500 mt-1 text-right">{course.seo?.metaDescription?.length || 0}/160</p>
+                </div>
+                <div>
+                    <label className={labelClasses}>Palavras-chave (separadas por vírgula)</label>
+                    <input value={course.seo?.keywords?.join(', ') || ''} onChange={(e) => handleSeoChange('keywords', e.target.value)} className={inputClasses} placeholder="python, programação, backend, iniciante" />
+                </div>
+            </div>
+        </details>
+
         <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção Principal (Hero)</summary><div className="mt-4 space-y-4">
             <div><label className={labelClasses}>Subtítulo</label><input value={course.heroContent?.subtitle || ''} onChange={(e) => handleLandingPageChange('heroContent', 'subtitle', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Linha de Título 1</label><input value={course.heroContent?.titleLine1 || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleLine1', e.target.value)} className={inputClasses} /></div>

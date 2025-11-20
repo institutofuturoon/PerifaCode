@@ -127,6 +127,12 @@ export interface Track {
   name: string;
 }
 
+export interface SeoConfig {
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string[];
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -147,6 +153,9 @@ export interface Course {
   format: 'online' | 'presencial' | 'hibrido';
   lessonRelease?: 'sequencial' | 'manual';
   enrollmentStatus?: 'open' | 'closed' | 'soon';
+  
+  // SEO Configuration
+  seo?: SeoConfig;
 
   // Fields for dynamic landing pages
   heroContent?: {

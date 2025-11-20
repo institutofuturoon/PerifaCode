@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ActionCard from '../components/ActionCard';
+import SEO from '../components/SEO';
 
 const ImpactCard: React.FC<{ value: string, label: string, color: string }> = ({ value, label, color }) => (
     <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-center transform transition-transform hover:-translate-y-1">
@@ -65,6 +67,10 @@ const AboutUsView: React.FC = () => {
 
     return (
         <>
+            <SEO 
+                title="Quem Somos" 
+                description="Conheça o Instituto FuturoOn: nossa história, missão e como estamos transformando a realidade de jovens da periferia através da tecnologia."
+            />
             {/* Hero Section */}
             <section className="py-32 md:py-40 text-center relative z-10 bg-grid-pattern">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">

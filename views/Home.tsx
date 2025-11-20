@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import SimplifiedTimeline from '../components/SimplifiedTimeline';
 import TeamMemberPreviewCard from '../components/TeamMemberPreviewCard';
+import SEO from '../components/SEO';
 
 const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ finalStat, duration = 2000 }) => {
   const [currentValue, setCurrentValue] = React.useState(0);
@@ -69,11 +70,11 @@ const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string;
 };
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="flex-shrink-0 w-48 md:w-60 h-28 md:h-32 flex items-center justify-center p-6 bg-black/20 rounded-2xl border border-white/10 group transition-all duration-300 transform hover:bg-white/5 hover:shadow-2xl hover:shadow-[#8a4add]/10 hover:scale-105 hover:border-white/20">
+    <div className="flex-shrink-0 w-36 h-20 md:w-60 md:h-32 flex items-center justify-center p-4 md:p-6 bg-black/20 rounded-2xl border border-white/10 group transition-all duration-300 transform hover:bg-white/5 hover:shadow-2xl hover:shadow-[#8a4add]/10 hover:scale-105 hover:border-white/20">
         <img 
             src={logoUrl} 
             alt={name} 
-            className="h-10 md:h-14 max-w-full object-contain transition-all duration-300 opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0"
+            className="h-8 md:h-14 max-w-full object-contain transition-all duration-300 opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0"
         />
     </div>
 );
@@ -105,7 +106,12 @@ const Home: React.FC = () => {
 
   return (
     <>
-        {/* Hero Section - Ajustado para maior impacto */}
+        <SEO 
+            title="Escola de Tecnologia da Periferia" 
+            description="O Instituto FuturoOn leva educação de tecnologia gratuita para jovens da periferia. Cursos de programação, design e robótica."
+            keywords={['tecnologia', 'periferia', 'cursos gratuitos', 'programação', 'ong', 'inclusão digital']}
+        />
+        {/* Hero Section - Ajustado para maior impacto, com responsividade mobile */}
         <section className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 mb-8 animate-fade-in backdrop-blur-md">
@@ -115,14 +121,14 @@ const Home: React.FC = () => {
                 </span>
                 <span className="text-xs font-bold text-[#c4b5fd] uppercase tracking-wide">Matrículas Abertas</span>
             </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight max-w-5xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight max-w-5xl mx-auto">
               Seu futuro na tecnologia<br />
               começa <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">na quebrada.</span>
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
+            <p className="mt-6 max-w-2xl mx-auto text-base md:text-xl text-gray-300 leading-relaxed px-4 md:px-0">
               Acreditamos no seu potencial. Nossa missão é abrir as portas do mercado de tecnologia para talentos da periferia, com educação de qualidade e gratuita.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 px-4">
               <button
                 onClick={() => navigate('/register')}
                 className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_30px_-5px_rgba(138,74,221,0.5)] text-base md:text-lg"
@@ -139,7 +145,7 @@ const Home: React.FC = () => {
           </div>
         </section>
         
-        {/* Quem Somos Section - Ajustado */}
+        {/* Quem Somos Section - Ajustado Padding */}
         <section className="py-16 md:py-24 relative z-10 border-b border-white/5 bg-black/20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
                 <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">Quem Somos</h2>
@@ -188,14 +194,14 @@ const Home: React.FC = () => {
             </div>
         </section>
 
-        {/* Team Preview Section - Ajustado */}
+        {/* Team Preview Section - Responsivo: 1 col mobile, 2 col tablet, 4 col desktop */}
         <section className="py-16 md:py-24 bg-black/20 relative z-10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">Nossa Tropa</h2>
                     <p className="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">Os mentores, instrutores e voluntários que fazem a mágica acontecer todos os dias.</p>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto px-4 sm:px-0">
                     {teamPreview.map(member => (
                         <TeamMemberPreviewCard key={member.id} member={member} />
                     ))}
@@ -208,8 +214,8 @@ const Home: React.FC = () => {
             </div>
         </section>
 
-        {/* Nossos Parceiros Section (Já ajustada anteriormente) */}
-        <section className="py-20 relative z-10 border-t border-white/5 bg-black/10">
+        {/* Nossos Parceiros Section (Responsiva: logos menores em mobile) */}
+        <section className="py-16 md:py-20 relative z-10 border-t border-white/5 bg-black/10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-4xl font-black text-white">Apoiadores</h2>
@@ -217,7 +223,7 @@ const Home: React.FC = () => {
                 </div>
                 <div className="relative opacity-90">
                     <div className="marquee">
-                        <div className="marquee-content gap-16">
+                        <div className="marquee-content gap-8 md:gap-16">
                             {partners.map(partner => (
                                 <PartnerLogo key={partner.id} name={partner.name} logoUrl={partner.logoUrl} />
                             ))}
@@ -235,19 +241,19 @@ const Home: React.FC = () => {
             </div>
         </section>
 
-        {/* CTA Donate Section - Ajustado */}
-        <section className="py-20 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add15, transparent 70%)'}}>
+        {/* CTA Donate Section - Ajustado Padding Mobile */}
+        <section className="py-16 md:py-20 bg-black/20 relative z-10" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add15, transparent 70%)'}}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white mb-6">
+                <h2 className="text-3xl md:text-6xl font-black tracking-tight text-white mb-6">
                     Apoie essa causa
                 </h2>
-                <p className="mb-10 max-w-2xl mx-auto text-xl text-gray-300 leading-relaxed">
+                <p className="mb-10 max-w-2xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
                     Invista no futuro. Sua contribuição ajuda a impulsionar a juventude por meio da educação digital.
                 </p>
                 <div>
                     <button
                         onClick={() => navigate('/donate')}
-                        className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-4 px-10 rounded-2xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_-10px_rgba(138,74,221,0.6)] text-lg"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-4 px-10 rounded-2xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_-10px_rgba(138,74,221,0.6)] text-lg"
                     >
                         <span>Faça sua doação agora</span>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
