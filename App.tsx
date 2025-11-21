@@ -859,7 +859,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const AppContent: React.FC = () => {
-    const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding } = useAppContext();
+    const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeBottleneckModal, closeInscriptionModal } = useAppContext();
     
     // Determine if we should hide global header/footer based on the route
     // This logic creates the "Separate System" feel for the dashboard
@@ -931,9 +931,9 @@ const AppContent: React.FC = () => {
             {!isDashboardRoute && <Footer />}
 
             {/* Modals */}
-            {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={() => { /* handled via context */ }} />}
-            {isBottleneckModalOpen && selectedBottleneck && <BottleneckAnalysisModal isOpen={isBottleneckModalOpen} onClose={() => { /* handled via context */ }} lesson={selectedBottleneck.lesson} students={selectedBottleneck.students} />}
-            {isInscriptionModalOpen && <InscriptionFormModal isOpen={isInscriptionModalOpen} onClose={() => { /* handled via context */ }} courseName={selectedCourseForInscription?.title} />}
+            {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={closeProfileModal} />}
+            {isBottleneckModalOpen && selectedBottleneck && <BottleneckAnalysisModal isOpen={isBottleneckModalOpen} onClose={closeBottleneckModal} lesson={selectedBottleneck.lesson} students={selectedBottleneck.students} />}
+            {isInscriptionModalOpen && <InscriptionFormModal isOpen={isInscriptionModalOpen} onClose={closeInscriptionModal} courseName={selectedCourseForInscription?.title} />}
             
             {/* Onboarding Tour */}
             {user && !user.hasCompletedOnboardingTour && user.profileStatus === 'complete' && (

@@ -73,10 +73,10 @@ const AboutUsView: React.FC = () => {
                 description="Conheça o Instituto FuturoOn: nossa história, missão e como estamos transformando a realidade de jovens da periferia através da tecnologia."
             />
             {/* Hero Section */}
-            <section className="py-32 md:py-40 text-center relative z-10 bg-grid-pattern">
+            <section className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <Badge text="Institucional" />
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight max-w-5xl mx-auto">
                         Somos o futuro que<br />
                         <span className="text-[#c4b5fd]">a gente cria.</span>
                     </h1>
