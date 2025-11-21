@@ -89,7 +89,7 @@ Aluno: "${userMessage.text}"`;
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 left-6 z-50">
         <button 
           onClick={toggleChat} 
           className="bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-full h-16 w-16 flex items-center justify-center text-white shadow-2xl shadow-[#8a4add]/40 transform hover:scale-110 transition-transform duration-300"
@@ -101,7 +101,7 @@ Aluno: "${userMessage.text}"`;
       </div>
 
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[90vw] max-w-sm h-[60vh] max-h-[500px] flex flex-col" role="dialog" aria-labelledby="ai-tutor-title">
+        <div className="fixed bottom-24 left-6 z-50 w-[90vw] max-w-sm h-[60vh] max-h-[500px] flex flex-col" role="dialog" aria-labelledby="ai-tutor-title">
            <div className="bg-black/50 backdrop-blur-xl border border-[#8a4add]/30 rounded-lg shadow-2xl shadow-[#8a4add]/20 flex flex-col h-full">
                 <header className="p-4 border-b border-white/10 flex justify-between items-center">
                     <h3 id="ai-tutor-title" className="font-bold text-white flex items-center gap-2">

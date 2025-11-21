@@ -116,12 +116,20 @@ const CourseDetail: React.FC = () => {
                         <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white mb-6 leading-tight">
                             {course.title}
                         </h1>
-                        <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-8">
                             {course.longDescription}
                         </p>
                         
+                        {/* Mobile/Desktop CTA in Hero */}
+                        <button 
+                            onClick={() => openInscriptionModal(course)}
+                            className="inline-flex md:hidden items-center gap-2 bg-[#8a4add] text-white font-bold py-3 px-8 rounded-full hover:bg-[#7c3aed] transition-all shadow-lg shadow-[#8a4add]/30 mb-8"
+                        >
+                            Inscrever-se Gratuitamente
+                        </button>
+                        
                         {instructor && (
-                            <div className="flex items-center justify-center gap-4 mt-10">
+                            <div className="flex items-center justify-center gap-4 mt-2">
                                 <img src={instructor.avatarUrl} alt={instructor.name} className="h-12 w-12 rounded-full border-2 border-[#8a4add]/50 object-cover" />
                                 <div className="text-left">
                                     <p className="font-bold text-white text-sm">{instructor.name}</p>
@@ -181,7 +189,7 @@ const CourseDetail: React.FC = () => {
                     </div>
 
                     {/* Right Column: Sticky Action Card */}
-                    <aside className="lg:col-span-1">
+                    <aside className="lg:col-span-1 hidden md:block">
                         <div className="sticky top-24 bg-[#121212]/90 backdrop-blur-xl p-6 rounded-2xl border border-white/10 shadow-2xl shadow-[#8a4add]/5">
                             <div className="mb-6">
                                 <div className="flex items-end gap-2 mb-1">

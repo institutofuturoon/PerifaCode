@@ -136,13 +136,15 @@ const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
             role="region"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
             onFocus={() => setIsPaused(true)} // Pause for accessibility/keyboard nav
             onBlur={() => setIsPaused(false)}
         >
             {/* Accessible Controls */}
             <button 
                 onClick={() => handleManualScroll('left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add]"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add] hidden md:block"
                 aria-label="Ver parceiros anteriores"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -150,7 +152,8 @@ const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
 
             <div 
                 ref={scrollRef}
-                className="flex overflow-x-hidden gap-8 md:gap-16 py-4 items-center select-none"
+                className="flex overflow-x-auto md:overflow-x-hidden gap-8 md:gap-16 py-4 items-center select-none scrollbar-hide"
+                style={{ scrollBehavior: 'auto' }} 
             >
                 {items.map((partner, i) => (
                      <PartnerLogo key={`${partner.id}-${i}`} name={partner.name} logoUrl={partner.logoUrl} />
@@ -159,7 +162,7 @@ const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
 
              <button 
                 onClick={() => handleManualScroll('right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add]"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add] hidden md:block"
                 aria-label="Ver próximos parceiros"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
