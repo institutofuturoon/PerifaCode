@@ -12,23 +12,21 @@ const ImpactCard: React.FC<{ value: string, label: string, color: string }> = ({
     </div>
 );
 
-
-const InfoCard: React.FC<{ icon: React.ReactNode; title: string; description: string }> = ({ icon, title, description }) => (
-    <div className="group relative rounded-2xl bg-white/10 p-px transition-all duration-300 hover:-translate-y-2 hover:bg-gradient-to-br from-[#8a4add] to-[#f27983] shadow-lg hover:shadow-[#8a4add]/20">
-        <div className="relative flex h-full flex-col items-center text-center rounded-[15px] bg-[#09090B]/90 p-8 backdrop-blur-sm">
-            <div className="mb-6 flex-shrink-0">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#8a4add] text-white shadow-lg shadow-[#8a4add]/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[#8a4add]/40">
-                    {icon}
-                </div>
+// Novo componente baseado no design da imagem (Cards Pretos com Ícones)
+const PrincipleCard: React.FC<{ icon: React.ReactNode; title: string; description: string }> = ({ icon, title, description }) => (
+    <div className="group relative flex flex-col items-center text-center h-full p-8 bg-[#121212] rounded-2xl border border-white/10 transition-all duration-300 hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10 hover:-translate-y-2">
+        <div className="mb-6 p-4 rounded-full bg-white/5 text-white group-hover:text-[#c4b5fd] group-hover:bg-[#8a4add]/10 transition-colors">
+            <div className="transform scale-125">
+                {icon}
             </div>
-            <h3 className="text-xl font-bold text-white transition-colors duration-300 group-hover:text-[#c4b5fd]">{title}</h3>
-            <p className="mt-2 flex-grow text-base text-gray-400">{description}</p>
         </div>
+        <h3 className="text-lg font-bold text-white uppercase tracking-wider mb-4 group-hover:text-[#c4b5fd] transition-colors">{title}</h3>
+        <p className="text-sm text-gray-400 leading-relaxed font-medium">{description}</p>
     </div>
 );
 
 const Section: React.FC<{ children: React.ReactNode, className?: string, style?: React.CSSProperties }> = ({ children, className = '', style }) => (
-    <section className={`py-16 md:py-20 relative z-10 ${className}`} style={style}>
+    <section className={`py-16 md:py-24 relative z-10 ${className}`} style={style}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {children}
         </div>
@@ -36,7 +34,7 @@ const Section: React.FC<{ children: React.ReactNode, className?: string, style?:
 );
 
 const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> = ({ children, subtitle }) => (
-    <div className="text-center mb-12">
+    <div className="text-center mb-16">
         <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">{children}</h2>
         {subtitle && <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">{subtitle}</p>}
         <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
@@ -86,31 +84,36 @@ const AboutUsView: React.FC = () => {
                 </div>
             </section>
             
-            {/* Quem Somos & MVV Section */}
+            {/* Nossos Princípios (Baseado na Imagem Enviada) */}
             <Section className="bg-black/20">
                 <div className="max-w-4xl mx-auto text-center mb-16">
-                    <h2 className="text-4xl font-black tracking-tight text-white">Nossa História</h2>
+                    <h2 className="text-4xl font-black tracking-tight text-white">Nosso Manifesto</h2>
                     <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4 mb-6"></div>
                     <p className="text-gray-300 leading-relaxed text-lg">
-                        Fundado por Thais Santana no Complexo da Coruja, em São Gonçalo, o FuturoON é uma organização sem fins lucrativos dedicada à inclusão digital, ao fortalecimento da cidadania e à promoção do potencial dos jovens periféricos.
+                        Não é apenas sobre código. É sobre construir pontes, quebrar barreiras e criar um ecossistema onde todos possam prosperar.
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
-                    <InfoCard
-                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
-                        title="Nossa Missão"
-                        description="Promover acesso à tecnologia e cidadania, oferecendo capacitação em tecnologia, cultura e e-sports, e construindo pontes para o mercado de trabalho."
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <PrincipleCard
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>}
+                        title="Jovens em Formação"
+                        description="Cada participante que entra no FuturoOn está dando o primeiro passo para transformar sua vida por meio da tecnologia."
                     />
-                    <InfoCard
-                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>}
-                        title="Nossos Objetivos"
-                        description="Oferecer cursos gratuitos, desenvolver habilidades profissionais e socioemocionais, e promover inclusão e equidade social para impactar nossa comunidade."
+                    <PrincipleCard
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>}
+                        title="Histórias Reais"
+                        description="Participantes estão criando sites, aplicativos e projetos bem sucedidos, demonstrando o potencial da tecnologia para mudar trajetórias profissionais."
                     />
-                    <InfoCard
-                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>}
-                        title="O Que Fazemos"
-                        description="Aplicamos metodologias ativas em oficinas de programação, robótica, design e empreendedorismo, com suporte emocional e formação cidadã."
+                    <PrincipleCard
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>}
+                        title="Rede em Crescimento"
+                        description="Voluntários e parceiros estão colaborando para criar oportunidades e apoiar os participantes em sua jornada de descoberta tecnológica."
+                    />
+                    <PrincipleCard
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>}
+                        title="Diversidade como Princípio"
+                        description="Nossas turmas refletem a diversidade e riqueza de talentos do Brasil! Acreditamos que a inovação nasce de diferentes perspectivas."
                     />
                 </div>
             </Section>
