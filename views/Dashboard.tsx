@@ -9,6 +9,7 @@ import CourseCard from '../components/CourseCard';
 import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import DashboardSidebar from '../components/DashboardSidebar';
 import ForumView from './ForumView';
+import MarketingGeneratorView from './MarketingGeneratorView';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -358,7 +359,8 @@ const tabTitles: Record<string, string> = {
     students: 'Base de Alunos',
     teamMembers: 'Equipe',
     transparency: 'Transparência',
-    forum: 'Fórum de Dúvidas'
+    forum: 'Fórum de Dúvidas',
+    marketing: 'Marketing Studio'
 };
 
 const AdminDashboard: React.FC = () => {
@@ -677,6 +679,7 @@ const StudentsTable = () => (
           case 'transparency': return <TransparencyTable />;
           case 'moderation': return <ModerationPanel />;
           case 'forum': return <ForumView embedded={true} />;
+          case 'marketing': return <MarketingGeneratorView />;
           case 'myAgenda': return <MyAgendaPanel 
             user={user}
             mentorSessions={mentorSessions}
