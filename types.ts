@@ -465,6 +465,20 @@ export interface AnnualReport {
   testimonials: Testimonial[];
 }
 
+// --- Marketing Studio Types ---
+export interface MarketingPost {
+    id: string;
+    platform: string;
+    caption: string;
+    imagePrompt: string;
+    hashtags: string[];
+    imageBase64?: string | null;
+    uploadedImage?: string | null;
+    createdAt: string; // ISO String
+    status: 'draft' | 'published';
+    authorId: string;
+}
+
 
 export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'changePassword' | 'courseLanding' | 'transparencyEditor' | 'supporters' | 'partnerDetail';
 
@@ -489,6 +503,7 @@ export interface AppContextType {
   tracks: Track[];
   financialStatements: FinancialStatement[];
   annualReports: AnnualReport[];
+  marketingPosts: MarketingPost[]; // Novo
   toast: string | null;
   courseProgress: CourseProgress;
   isProfileModalOpen: boolean;
@@ -548,4 +563,8 @@ export interface AppContextType {
   handleDeleteFinancialStatement: (id: string) => Promise<void>;
   handleSaveAnnualReport: (report: AnnualReport) => Promise<void>;
   handleDeleteAnnualReport: (id: string) => Promise<void>;
+  
+  // Marketing Actions
+  handleSaveMarketingPost: (post: MarketingPost) => Promise<void>;
+  handleDeleteMarketingPost: (postId: string) => Promise<void>;
 }

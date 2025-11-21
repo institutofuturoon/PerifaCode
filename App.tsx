@@ -5,7 +5,7 @@ import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter } from './types';
+import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -104,6 +104,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
   const [financialStatements, setFinancialStatements] = useState<FinancialStatement[]>([]);
   const [annualReports, setAnnualReports] = useState<AnnualReport[]>([]);
+  
+  const [marketingPosts, setMarketingPosts] = useState<MarketingPost[]>([]);
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
@@ -174,7 +176,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       } catch (error) {
         console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
         // Allow fetching empty collections for new features without fallback mocks
-        if (collectionName !== 'financialStatements' && collectionName !== 'annualReports') {
+        if (collectionName !== 'financialStatements' && collectionName !== 'annualReports' && collectionName !== 'marketingPosts') {
            showToast(`❌ Erro ao carregar ${collectionName}.`);
         }
 
@@ -213,7 +215,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           fetchAndPopulateCollection('mentorSessions', setMentorSessions),
           fetchAndPopulateCollection('tracks', setTracks),
           fetchAndPopulateCollection('financialStatements', setFinancialStatements),
-          fetchAndPopulateCollection('annualReports', setAnnualReports)
+          fetchAndPopulateCollection('annualReports', setAnnualReports),
+          fetchAndPopulateCollection('marketingPosts', setMarketingPosts)
       ]);
       setLoading(false);
     };
@@ -787,6 +790,33 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handleSaveMarketingPost = async (post: MarketingPost) => {
+        const isNew = !marketingPosts.some(p => p.id === post.id);
+        setMarketingPosts(prev => isNew ? [post, ...prev] : prev.map(p => p.id === post.id ? post : p));
+        
+        const message = post.status === 'published' ? "✅ Post publicado com sucesso!" : "💾 Rascunho salvo!";
+        showToast(message);
+
+        try {
+            await setDoc(doc(db, "marketingPosts", post.id), post);
+        } catch (error) {
+            console.error("Erro ao salvar post de marketing:", error);
+            showToast("❌ Erro ao salvar no banco de dados.");
+        }
+    };
+
+    const handleDeleteMarketingPost = async (postId: string) => {
+        if(window.confirm("Tem certeza que deseja excluir este post?")) {
+            setMarketingPosts(prev => prev.filter(p => p.id !== postId));
+            showToast("🗑️ Post excluído.");
+            try {
+                await deleteDoc(doc(db, "marketingPosts", postId));
+            } catch (error) {
+                console.error("Erro ao excluir post de marketing:", error);
+            }
+        }
+    };
+
     const handleCompleteOnboarding = async () => {
         if (user) {
             const updatedUser = { ...user, hasCompletedOnboardingTour: true };
@@ -839,7 +869,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
   const value = {
-    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, toast,
+    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
@@ -848,7 +878,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
     handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
     handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
-    handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport
+    handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport,
+    handleSaveMarketingPost, handleDeleteMarketingPost
   };
 
   return (

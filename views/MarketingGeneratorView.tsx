@@ -3,22 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
-
-interface GeneratedPost {
-    id: string;
-    platform: string;
-    caption: string;
-    imagePrompt: string;
-    hashtags: string[];
-    imageBase64?: string; // Imagem gerada pela IA
-    uploadedImage?: string; // Imagem enviada pelo usuário
-    createdAt: Date;
-    sources?:Array<{ title: string, uri: string }>; // Links do Google Search
-}
+import { MarketingPost } from '../types';
 
 // --- Preview Components ---
 
-const InstagramPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean }> = ({ content, loadingImage }) => (
+const InstagramPreview: React.FC<{ content: Partial<MarketingPost>, loadingImage: boolean }> = ({ content, loadingImage }) => (
     <div className="bg-white rounded-xl overflow-hidden shadow-xl border border-gray-200 max-w-[350px] mx-auto text-black">
         <div className="p-3 flex items-center gap-3 border-b border-gray-100">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#8a4add] to-[#f27983] p-[2px]">
@@ -62,13 +51,13 @@ const InstagramPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean
                 {content.caption}
             </p>
             <p className="text-[#8a4add] text-xs mt-1 font-medium">
-                {content.hashtags.join(' ')}
+                {content.hashtags?.join(' ')}
             </p>
         </div>
     </div>
 );
 
-const LinkedInPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean }> = ({ content, loadingImage }) => (
+const LinkedInPreview: React.FC<{ content: Partial<MarketingPost>, loadingImage: boolean }> = ({ content, loadingImage }) => (
     <div className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-300 max-w-[450px] mx-auto text-black font-sans">
         <div className="p-4 flex gap-3 border-b border-gray-100">
             <div className="w-10 h-10 rounded bg-black">
@@ -82,7 +71,7 @@ const LinkedInPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean 
         </div>
         <div className="px-4 py-2">
             <p className="text-sm whitespace-pre-wrap text-gray-800">{content.caption}</p>
-            <p className="text-[#8a4add] text-sm mt-2 font-bold">{content.hashtags.join(' ')}</p>
+            <p className="text-[#8a4add] text-sm mt-2 font-bold">{content.hashtags?.join(' ')}</p>
         </div>
         <div className="w-full bg-gray-100 aspect-[1.91/1] flex items-center justify-center overflow-hidden relative">
              {content.uploadedImage ? (
@@ -111,7 +100,7 @@ const LinkedInPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean 
     </div>
 );
 
-const TwitterPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean }> = ({ content, loadingImage }) => (
+const TwitterPreview: React.FC<{ content: Partial<MarketingPost>, loadingImage: boolean }> = ({ content, loadingImage }) => (
     <div className="bg-black rounded-xl overflow-hidden shadow-xl border border-gray-800 max-w-[450px] mx-auto text-white font-sans">
         <div className="p-4 flex gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-800 flex-shrink-0 overflow-hidden">
@@ -122,7 +111,7 @@ const TwitterPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean }
                     <span className="font-bold text-[15px]">FuturoOn</span>
                     <span className="text-gray-500 text-[15px]">@futuroon_org · 23m</span>
                 </div>
-                <p className="text-[15px] leading-normal whitespace-pre-wrap mb-3">{content.caption} {content.hashtags.slice(0,2).join(' ')}</p>
+                <p className="text-[15px] leading-normal whitespace-pre-wrap mb-3">{content.caption} {content.hashtags?.slice(0,2).join(' ')}</p>
                 
                 {/* Twitter Image Card */}
                 <div className="rounded-2xl border border-gray-800 overflow-hidden aspect-[16/9] bg-gray-900 flex items-center justify-center relative">
@@ -152,7 +141,7 @@ const TwitterPreview: React.FC<{ content: GeneratedPost, loadingImage: boolean }
 // --- Main View ---
 
 const MarketingGeneratorView: React.FC = () => {
-    const { showToast } = useAppContext();
+    const { showToast, handleSaveMarketingPost, marketingPosts, user, handleDeleteMarketingPost } = useAppContext();
     
     const [topic, setTopic] = useState('');
     const [platform, setPlatform] = useState('Instagram');
@@ -161,7 +150,8 @@ const MarketingGeneratorView: React.FC = () => {
     const [visualStyle, setVisualStyle] = useState('Fotorealista');
     const [targetAudience, setTargetAudience] = useState('Jovens da Periferia');
     const [useSearch, setUseSearch] = useState(false);
-    const [useBranding, setUseBranding] = useState(true); 
+    const [useBranding, setUseBranding] = useState(true);
+    const [includeCta, setIncludeCta] = useState(true); // Novo estado para CTA
     
     const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
     const [externalImageUrl, setExternalImageUrl] = useState(''); 
@@ -169,8 +159,7 @@ const MarketingGeneratorView: React.FC = () => {
     const [loadingText, setLoadingText] = useState(false);
     const [loadingImage, setLoadingImage] = useState(false);
     
-    const [generatedContent, setGeneratedContent] = useState<GeneratedPost | null>(null);
-    const [history, setHistory] = useState<GeneratedPost[]>([]);
+    const [generatedContent, setGeneratedContent] = useState<Partial<MarketingPost> | null>(null);
 
     // Determine active image source
     const activeImageUrl = uploadedImageUrl || (externalImageUrl.trim() !== '' ? externalImageUrl.trim() : null);
@@ -203,8 +192,13 @@ const MarketingGeneratorView: React.FC = () => {
             Regras para ${platform}:
             ${platform === 'Twitter' ? '- Máximo 280 caracteres no total. Direto ao ponto.' : '- Legenda envolvente com emojis moderados.'}
             ${platform === 'LinkedIn' ? '- Tom mais profissional, mas humano. Foco em impacto e dados.' : ''}
+            `;
+
+            if (includeCta) {
+                promptText += "\nREQUISITO OBRIGATÓRIO: Finalize o texto com uma Chamada para Ação (CTA) forte e clara, convidando o usuário a interagir, se inscrever ou apoiar.";
+            }
             
-            Retorne APENAS JSON com este formato:
+            promptText += `\nRetorne APENAS JSON com este formato:
             {
                 "caption": "Texto do post",
                 "imagePrompt": "Descrição VISUAL detalhada para gerar uma imagem (se nenhuma for fornecida).",
@@ -294,15 +288,13 @@ const MarketingGeneratorView: React.FC = () => {
             }
             
             
-            const newPost: GeneratedPost = {
-                id: Date.now().toString(),
+            const newPost: Partial<MarketingPost> = {
                 platform,
                 caption: textResult.caption,
                 imagePrompt: textResult.imagePrompt,
                 hashtags: textResult.hashtags || [],
-                uploadedImage: activeImageUrl || undefined,
-                createdAt: new Date(),
-                sources: groundingChunks.map((c: any) => ({ title: c.web?.title || 'Fonte Web', uri: c.web?.uri || '#' })).filter((s: any) => s.uri !== '#')
+                uploadedImage: activeImageUrl, // Will be null if not set
+                createdAt: new Date().toISOString(),
             };
 
             setGeneratedContent(newPost);
@@ -355,20 +347,16 @@ const MarketingGeneratorView: React.FC = () => {
                     if (!base64Image) throw new Error("A IA não retornou uma imagem válida.");
 
                     const finalPost = { ...newPost, imageBase64: base64Image };
-                    
                     setGeneratedContent(finalPost);
-                    setHistory(prev => [finalPost, ...prev]);
                     showToast("✨ Post completo gerado com sucesso!");
 
                 } catch (imgError) {
                     console.error("Erro ao gerar imagem:", imgError);
                     showToast("⚠️ Texto gerado, mas houve erro na imagem.");
-                    setHistory(prev => [newPost, ...prev]);
                 } finally {
                     setLoadingImage(false);
                 }
             } else {
-                setHistory(prev => [newPost, ...prev]);
                 showToast("✨ Post gerado com base na sua imagem!");
             }
 
@@ -382,6 +370,73 @@ const MarketingGeneratorView: React.FC = () => {
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
         showToast("Copiado para a área de transferência!");
+    };
+
+    const downloadImage = async () => {
+        if (!generatedContent) return;
+        
+        try {
+            let href = '';
+            if (generatedContent.imageBase64) {
+                href = `data:image/jpeg;base64,${generatedContent.imageBase64}`;
+            } else if (generatedContent.uploadedImage) {
+                // Fetch to get blob to force download instead of open in new tab
+                const response = await fetch(generatedContent.uploadedImage);
+                const blob = await response.blob();
+                href = URL.createObjectURL(blob);
+            }
+
+            if (href) {
+                const link = document.createElement('a');
+                link.href = href;
+                link.download = `futuroon-post-${Date.now()}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                if (generatedContent.uploadedImage) URL.revokeObjectURL(href);
+                showToast("⬇️ Imagem baixada!");
+            }
+        } catch (e) {
+            console.error(e);
+            showToast("❌ Erro ao baixar imagem. Tente clicar com botão direito e 'Salvar Como'.");
+        }
+    };
+
+    const downloadCaption = () => {
+        if (!generatedContent?.caption) return;
+        const element = document.createElement("a");
+        const file = new Blob([generatedContent.caption], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        element.download = `legenda-${Date.now()}.txt`;
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        showToast("⬇️ Texto baixado!");
+    };
+
+    const savePost = async (status: 'draft' | 'published') => {
+        if (!generatedContent || !user) return;
+        
+        const postToSave: MarketingPost = {
+            id: generatedContent.id || `post_${Date.now()}`,
+            platform: generatedContent.platform || platform,
+            caption: generatedContent.caption || '',
+            imagePrompt: generatedContent.imagePrompt || '',
+            hashtags: generatedContent.hashtags || [],
+            imageBase64: generatedContent.imageBase64 ?? null,
+            uploadedImage: generatedContent.uploadedImage ?? null,
+            createdAt: generatedContent.createdAt || new Date().toISOString(),
+            status,
+            authorId: user.id
+        };
+
+        await handleSaveMarketingPost(postToSave);
+    };
+
+    const handlePublish = async () => {
+        if (window.confirm("Deseja marcar este post como PUBLICADO? Ele será salvo em seu histórico com status 'Publicado'.")) {
+            await savePost('published');
+        }
     };
 
     return (
@@ -494,6 +549,18 @@ const MarketingGeneratorView: React.FC = () => {
                                         🎨 Aplicar Cores da Marca
                                     </label>
                                 </div>
+                                <div className="flex items-center gap-3">
+                                    <input 
+                                        type="checkbox" 
+                                        id="includeCta" 
+                                        checked={includeCta} 
+                                        onChange={(e) => setIncludeCta(e.target.checked)}
+                                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-[#8a4add] focus:ring-[#8a4add]"
+                                    />
+                                    <label htmlFor="includeCta" className="text-xs text-white font-semibold">
+                                        📢 Incluir CTA (Chamada para Ação)
+                                    </label>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
@@ -570,31 +637,42 @@ const MarketingGeneratorView: React.FC = () => {
                         </form>
                     </div>
 
-                    {/* History Sidebar */}
+                    {/* Saved Posts Sidebar */}
                     <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 hidden lg:block">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Histórico Recente</h3>
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Posts Salvos</h3>
                         <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                            {history.length === 0 ? (
-                                <p className="text-gray-600 text-xs text-center py-4">Seus posts aparecerão aqui.</p>
+                            {marketingPosts.length === 0 ? (
+                                <p className="text-gray-600 text-xs text-center py-4">Seus posts salvos aparecerão aqui.</p>
                             ) : (
-                                history.map(item => (
-                                    <button 
-                                        key={item.id}
-                                        onClick={() => setGeneratedContent(item)}
-                                        className="w-full text-left p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors flex gap-3 items-center group"
-                                    >
-                                        {item.uploadedImage ? (
-                                            <img src={item.uploadedImage} className="w-8 h-8 rounded object-cover bg-gray-800" alt="Ref" />
-                                        ) : item.imageBase64 ? (
-                                            <img src={`data:image/jpeg;base64,${item.imageBase64}`} className="w-8 h-8 rounded object-cover bg-gray-800" alt="" />
-                                        ) : (
-                                            <div className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-[10px]">TxT</div>
-                                        )}
-                                        <div className="overflow-hidden">
-                                            <p className="text-xs text-white font-medium truncate group-hover:text-[#c4b5fd]">{item.caption}</p>
-                                            <p className="text-[10px] text-gray-500">{item.platform} • {item.createdAt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                                        </div>
-                                    </button>
+                                marketingPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(item => (
+                                    <div key={item.id} className="group relative w-full">
+                                        <button 
+                                            onClick={() => setGeneratedContent(item)}
+                                            className="w-full text-left p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors flex gap-3 items-center border border-transparent hover:border-white/10"
+                                        >
+                                            {item.uploadedImage ? (
+                                                <img src={item.uploadedImage} className="w-8 h-8 rounded object-cover bg-gray-800 flex-shrink-0" alt="Ref" />
+                                            ) : item.imageBase64 ? (
+                                                <img src={`data:image/jpeg;base64,${item.imageBase64}`} className="w-8 h-8 rounded object-cover bg-gray-800 flex-shrink-0" alt="" />
+                                            ) : (
+                                                <div className="w-8 h-8 rounded bg-gray-800 flex-shrink-0 flex items-center justify-center text-[10px]">TxT</div>
+                                            )}
+                                            <div className="overflow-hidden flex-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-xs text-white font-medium truncate group-hover:text-[#c4b5fd]">{item.caption}</p>
+                                                    {item.status === 'published' && <span className="text-[8px] bg-green-500/20 text-green-400 px-1 rounded">PUB</span>}
+                                                </div>
+                                                <p className="text-[10px] text-gray-500">{item.platform} • {new Date(item.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </button>
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteMarketingPost(item.id); }}
+                                            className="absolute top-2 right-2 p-1.5 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity bg-[#121212] rounded-md"
+                                            title="Excluir"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </button>
+                                    </div>
                                 ))
                             )}
                         </div>
@@ -613,15 +691,29 @@ const MarketingGeneratorView: React.FC = () => {
                             </div>
                         ) : (
                             <div className="w-full max-w-xl animate-fade-in">
-                                <div className="flex justify-between items-center mb-6">
+                                <div className="flex flex-wrap justify-between items-center mb-6 gap-2">
                                     <span className="bg-[#8a4add] text-white text-xs font-bold px-3 py-1 rounded-full">Preview: {platform}</span>
                                     <div className="flex gap-2">
                                         <button 
-                                            onClick={() => generatedContent && copyToClipboard(generatedContent.caption)}
+                                            onClick={downloadCaption}
+                                            className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition-colors flex items-center gap-2"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                            Baixar Texto
+                                        </button>
+                                        <button 
+                                            onClick={() => generatedContent?.caption && copyToClipboard(generatedContent.caption)}
                                             className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition-colors flex items-center gap-2"
                                         >
                                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
-                                            Copiar Legenda
+                                            Copiar Texto
+                                        </button>
+                                        <button 
+                                            onClick={downloadImage}
+                                            className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-md transition-colors flex items-center gap-2"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                                            Baixar Imagem
                                         </button>
                                     </div>
                                 </div>
@@ -636,33 +728,29 @@ const MarketingGeneratorView: React.FC = () => {
                                 {platform === 'Twitter' && generatedContent && (
                                     <TwitterPreview content={generatedContent} loadingImage={loadingImage} />
                                 )}
+                                
+                                {/* Action Buttons */}
+                                {generatedContent && !loadingImage && (
+                                    <div className="mt-8 flex justify-center gap-4">
+                                        <button 
+                                            onClick={() => savePost('draft')}
+                                            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-semibold hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+                                            Salvar Rascunho
+                                        </button>
+                                        <button 
+                                            onClick={handlePublish}
+                                            className="px-6 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition-colors flex items-center gap-2 shadow-lg shadow-green-500/20"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                            Publicar Agora
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
-
-                    {/* Sources Section - Shows if Google Search was used */}
-                    {generatedContent?.sources && generatedContent.sources.length > 0 && (
-                        <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
-                            <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                                <span className="text-[#8a4add]">🔍</span> Fontes & Inspirações
-                            </h3>
-                            <p className="text-xs text-gray-400 mb-4">A IA consultou estes links para criar um conteúdo relevante e atualizado.</p>
-                            <div className="flex flex-wrap gap-3">
-                                {generatedContent.sources.map((source, i) => (
-                                    <a 
-                                        key={i} 
-                                        href={source.uri} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-3 py-2 rounded-lg text-xs text-gray-300 hover:text-[#c4b5fd] transition-colors border border-white/5"
-                                    >
-                                        <span className="truncate max-w-[200px]">{source.title}</span>
-                                        <svg className="w-3 h-3 flex-shrink-0 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                    </a>
-                                ))}
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
