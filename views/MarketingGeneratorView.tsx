@@ -164,6 +164,21 @@ const MarketingGeneratorView: React.FC = () => {
     // Determine active image source
     const activeImageUrl = uploadedImageUrl || (externalImageUrl.trim() !== '' ? externalImageUrl.trim() : null);
 
+    const handleLoadExample = () => {
+        setTopic('Divulgação do novo curso de Fullstack');
+        setPlatform('Instagram');
+        setTone('Inspirador');
+        setGeneratedContent({
+            platform: 'Instagram',
+            caption: "🚀 O futuro começa com uma linha de código! \n\nEstamos com matrículas abertas para a nova turma de Desenvolvimento Web Fullstack. 🖥️\n\nNa FuturoOn, você não apenas aprende tecnologia, você abre portas para um novo mundo de oportunidades. Junte-se a mais de 300 jovens que já transformaram suas vidas através da educação.\n\n💡 O curso é 100% gratuito e presencial. \n\n👇 Inscreva-se no link da bio e venha fazer parte da nossa tropa!\n\n#FuturoOn #Tech #Programação #Oportunidade #Dev",
+            imagePrompt: "Diverse group of young students celebrating with laptops in a modern classroom, futuristic lighting, purple and pink neon accents, high quality",
+            hashtags: ["#FuturoOn", "#Tech", "#Coding"],
+            createdAt: new Date().toISOString(),
+            uploadedImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2070&auto=format&fit=crop"
+        });
+        showToast("✨ Exemplo carregado!");
+    };
+
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!topic.trim() && !activeImageUrl) {
@@ -450,9 +465,18 @@ const MarketingGeneratorView: React.FC = () => {
                 {/* Left Column: Configuration (4 cols) */}
                 <div className="lg:col-span-4 space-y-6">
                     <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
-                        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                            <span className="bg-white/10 p-1 rounded-md">⚙️</span> Criar Novo Post
-                        </h2>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                <span className="bg-white/10 p-1 rounded-md">⚙️</span> Criar Novo Post
+                            </h2>
+                            <button 
+                                type="button" 
+                                onClick={handleLoadExample}
+                                className="text-xs font-semibold text-[#c4b5fd] hover:text-white border border-[#8a4add]/30 hover:bg-[#8a4add]/20 px-3 py-1.5 rounded-lg transition-all"
+                            >
+                                👁️ Ver Exemplo
+                            </button>
+                        </div>
                         
                         <form onSubmit={handleGenerate} className="space-y-5">
                             

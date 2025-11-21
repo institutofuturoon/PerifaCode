@@ -13,6 +13,19 @@ const Login: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isResetMode, setIsResetMode] = useState(false);
+  const [showDevMenu, setShowDevMenu] = useState(false);
+
+  const testAccounts = [
+    { label: 'Admin', email: 'admin@futuroon.org', pass: '123456', role: '👑 Admin' },
+    { label: 'Instrutor', email: 'instrutor@futuroon.org', pass: '123456', role: '🎓 Professor' },
+    { label: 'Aluno', email: 'aluno@teste.com', pass: '123456', role: '📚 Estudante' },
+  ];
+
+  const fillCredentials = (testEmail: string, testPass: string) => {
+      setEmail(testEmail);
+      setPassword(testPass);
+      setError(null);
+  };
 
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,10 +242,40 @@ const Login: React.FC = () => {
         
         {/* Footer Links */}
         {!isResetMode && (
-            <div className="mt-8 text-center flex justify-center gap-8 text-xs text-gray-500 font-medium tracking-wide uppercase">
-                <button onClick={() => navigate('/')} className="hover:text-gray-300 transition-colors">Voltar para Home</button>
-                <span className="text-gray-700">•</span>
-                <button onClick={toggleMode} className="hover:text-gray-300 transition-colors">Esqueceu a senha?</button>
+            <div className="mt-8 text-center flex flex-col items-center gap-4">
+                <div className="flex justify-center gap-8 text-xs text-gray-500 font-medium tracking-wide uppercase">
+                    <button onClick={() => navigate('/')} className="hover:text-gray-300 transition-colors">Voltar para Home</button>
+                    <span className="text-gray-700">•</span>
+                    <button onClick={toggleMode} className="hover:text-gray-300 transition-colors">Esqueceu a senha?</button>
+                </div>
+
+                {/* Dev Menu */}
+                <div className="mt-4 w-full">
+                    <button 
+                        onClick={() => setShowDevMenu(!showDevMenu)} 
+                        className="text-[10px] text-gray-600 hover:text-[#8a4add] transition-colors flex items-center justify-center gap-1 mx-auto mb-2 uppercase tracking-wider"
+                    >
+                        🛠️ Menu de Teste {showDevMenu ? '▼' : '▲'}
+                    </button>
+                    
+                    {showDevMenu && (
+                        <div className="bg-[#121212] border border-white/10 rounded-lg p-3 animate-fade-in max-w-xs mx-auto">
+                            <p className="text-[10px] text-gray-500 mb-2 text-center">Clique para preencher:</p>
+                            <div className="flex flex-col gap-2">
+                                {testAccounts.map((acc) => (
+                                    <button 
+                                        key={acc.label}
+                                        onClick={() => fillCredentials(acc.email, acc.pass)}
+                                        className="text-xs text-left px-3 py-2 rounded bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#8a4add]/30 text-gray-300 hover:text-white transition-all flex justify-between items-center group"
+                                    >
+                                        <span className="font-medium">{acc.role}</span>
+                                        <span className="text-[10px] text-gray-500 group-hover:text-[#8a4add]">{acc.email}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         )}
       </div>
