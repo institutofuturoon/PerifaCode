@@ -70,6 +70,21 @@ const CourseDetail: React.FC = () => {
     const course = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
     const instructor = useMemo(() => instructors.find(i => i.id === course?.instructorId), [instructors, course]);
 
+    const allLessons = useMemo(() => course?.modules.flatMap(m => m.lessons) || [], [course]);
+    const completedLessons = useMemo(() => 
+        user?.completedLessonIds.filter(id => allLessons.some(l => l.id === id)) || [], 
+        [user, allLessons]
+    );
+    const progress = allLessons.length > 0 ? Math.round((completedLessons.length / allLessons.length) * 100) : 0;
+    const isEnrolled = user?.enrolledCourseIds?.includes(course.id) || completedLessons.length > 0;
+
+    const nextLesson = useMemo(() => {
+        if (allLessons.length === 0) return null;
+        if (!isEnrolled) return allLessons[0];
+        const incompleteLesson = allLessons.find(l => !completedLessons.includes(l.id));
+        return incompleteLesson || allLessons[allLessons.length - 1];
+    }, [isEnrolled, allLessons, completedLessons]);
+
     if (!course) {
         return <div className="text-center py-20">Curso não encontrado.</div>;
     }
@@ -78,20 +93,26 @@ const CourseDetail: React.FC = () => {
         if (user) {
             const firstLesson = course.modules?.[0]?.lessons?.[0];
             if (firstLesson) {
-                // Simular inscrição se necessário (adicionar ID do curso aos cursos do usuário no backend)
-                // Por enquanto, apenas redireciona, assumindo "auto-matrícula" ao clicar.
                 showToast(`🚀 Você está acessando ${course.title}! Bons estudos.`);
                 navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
             } else {
                 showToast("⚠️ Este curso ainda não tem aulas cadastradas.");
             }
         } else {
-            // Se não logado, abre o modal de "interesse" que levará ao registro
             openInscriptionModal(course);
         }
     };
 
+    const handleContinue = () => {
+        if (nextLesson) {
+            navigate(`/course/${course.id}/lesson/${nextLesson.id}`);
+        }
+    };
+
     const getStatusBadge = () => {
+        if (isEnrolled && user) {
+            return <Badge text={`${progress}% Concluído`} variant={progress === 100 ? "success" : "default"} />;
+        }
         switch(course.enrollmentStatus) {
             case 'open': return <Badge text="Matrículas Abertas" variant="success" />;
             case 'closed': return <Badge text="Turma Lotada" variant="danger" />;
@@ -132,12 +153,21 @@ const CourseDetail: React.FC = () => {
 
                             {/* CTA for Mobile - Improves conversion */}
                             <div className="mt-8 md:hidden">
-                                 <button 
-                                    onClick={handleEnroll}
-                                    className={`w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg ${user ? 'bg-green-600 text-white shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20'}`}
-                                >
-                                    {user ? 'Acessar Conteúdo' : 'Inscrever-se Grátis'}
-                                </button>
+                                 {user && isEnrolled ? (
+                                    <button 
+                                        onClick={handleContinue}
+                                        className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/30"
+                                    >
+                                        {progress === 100 ? 'Revisar Curso' : progress === 0 ? 'Começar Agora' : 'Continuar de onde parei'}
+                                    </button>
+                                 ) : (
+                                    <button 
+                                        onClick={handleEnroll}
+                                        className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20"
+                                    >
+                                        {user ? 'Começar Agora' : 'Inscrever-se Grátis'}
+                                    </button>
+                                 )}
                             </div>
                         </div>
                     </div>
@@ -164,18 +194,57 @@ const CourseDetail: React.FC = () => {
 
                     <div className="space-y-6">
                         <div className="bg-white/5 p-6 rounded-xl border border-white/10 sticky top-24">
+                            {isEnrolled && user && (
+                                <div className="mb-6 p-4 bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/10 rounded-xl border border-[#8a4add]/20">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-xs text-gray-300 font-semibold">Seu Progresso</span>
+                                        <span className="text-lg font-black text-white">{progress}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-800 rounded-full h-2 mb-3 overflow-hidden">
+                                        <div 
+                                            className={`h-full ${progress === 100 ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gradient-to-r from-[#8a4add] to-[#f27983]'} transition-all duration-500`}
+                                            style={{ width: `${progress}%` }}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-400 text-center">
+                                        {completedLessons.length} de {allLessons.length} aulas concluídas
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="space-y-4 mb-6">
                                 <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Duração" value={course.duration} />
                                 <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>} label="Nível" value={course.skillLevel} />
                                 <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Formato" value={course.format} />
                             </div>
                             
-                            <button 
-                                onClick={handleEnroll}
-                                className={`w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg hidden md:block ${user ? 'bg-green-600 text-white shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20'}`}
-                            >
-                                {user ? 'Acessar Conteúdo' : 'Inscrever-se Grátis'}
-                            </button>
+                            {user && isEnrolled ? (
+                                <div className="space-y-3">
+                                    <button 
+                                        onClick={handleContinue}
+                                        className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/30 flex items-center justify-center gap-2 hidden md:flex"
+                                    >
+                                        {progress === 100 ? 'Revisar Curso' : progress === 0 ? 'Começar Agora' : 'Continuar de onde parei'}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </button>
+                                    {progress < 100 && nextLesson && (
+                                        <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                                            <p className="text-xs text-gray-400 mb-1">Próxima aula:</p>
+                                            <p className="text-sm font-semibold text-white">{nextLesson.title}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <button 
+                                    onClick={handleEnroll}
+                                    className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg hidden md:block bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20"
+                                >
+                                    {user ? 'Começar Agora' : 'Inscrever-se Grátis'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

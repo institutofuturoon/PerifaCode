@@ -17,6 +17,7 @@ export interface User {
   showOnTeamPage?: boolean;
   displayOrder?: number;
   completedLessonIds: string[];
+  enrolledCourseIds?: string[];
   xp: number;
   achievements: string[];
   streak: number;

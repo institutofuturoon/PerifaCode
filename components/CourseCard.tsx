@@ -43,7 +43,14 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
         <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl} alt={course.title} />
         <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent opacity-60"></div>
         
-        {status && !isEnrolled && (
+        {isEnrolled ? (
+            <div className="absolute top-2 left-2 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-bold text-white uppercase tracking-wide shadow-sm bg-[#8a4add] border border-[#c4b5fd]/30 flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Inscrito
+            </div>
+        ) : status && (
             <div className={`absolute top-2 left-2 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wide shadow-sm ${status.classes}`}>
               {status.text}
             </div>
@@ -52,7 +59,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
         {isEnrolled && (
              <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-700">
                 <div 
-                    className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-[#8a4add]'}`} 
+                    className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-[#8a4add]'} transition-all duration-300`} 
                     style={{ width: `${progress}%` }}
                 ></div>
              </div>

@@ -8,6 +8,9 @@ import CodePlayground from '../components/CodePlayground';
 import { GoogleGenAI } from "@google/genai";
 import { useAppContext } from '../App';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import LessonCompleteModal from '../components/LessonCompleteModal';
+import ModuleMilestoneModal from '../components/ModuleMilestoneModal';
+import CourseCompleteModal from '../components/CourseCompleteModal';
 
 
 const AITutor: React.FC = () => {
@@ -20,16 +23,30 @@ const AITutor: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    const hasSeenTooltip = localStorage.getItem('ai_tutor_tooltip_seen');
+    if (!hasSeenTooltip && !isOpen) {
+      const timer = setTimeout(() => {
+        setShowTooltip(true);
+        localStorage.setItem('ai_tutor_tooltip_seen', 'true');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
   if (!currentCourse || !currentLesson) return null;
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
+    setShowTooltip(false);
+    localStorage.setItem('ai_tutor_tooltip_seen', 'true');
     if (!isOpen && messages.length === 0) {
       setMessages([
         { role: 'model', text: `Olá! Eu sou seu Tutor IA. Estou aqui para te ajudar com qualquer dúvida sobre a aula "${currentLesson.title}". O que você gostaria de saber?` }
@@ -80,7 +97,6 @@ Aluno: "${userMessage.text}"`;
   };
   
   const renderMessageContent = (text: string) => {
-    // Basic markdown renderer for tutor response
     let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/`([^`].*?)`/g, '<code class="bg-[#8a4add]/10 text-[#c4b5fd] px-1 py-0.5 rounded text-sm">$1</code>');
     html = html.replace(/\n/g, '<br />');
@@ -90,6 +106,12 @@ Aluno: "${userMessage.text}"`;
   return (
     <>
       <div className="fixed bottom-6 left-6 z-50">
+        {showTooltip && (
+          <div className="absolute bottom-full mb-3 left-0 bg-[#8a4add] text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-lg whitespace-nowrap animate-fade-in-out">
+            💡 Dica: Use o Tutor IA para tirar dúvidas!
+            <div className="absolute top-full left-8 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#8a4add]"></div>
+          </div>
+        )}
         <button 
           onClick={toggleChat} 
           className="bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-full h-16 w-16 flex items-center justify-center text-white shadow-2xl shadow-[#8a4add]/40 transform hover:scale-110 transition-transform duration-300"
@@ -262,8 +284,7 @@ const Forum: React.FC<{
                             <p className="mt-2 text-gray-300">{post.text}</p>
                         </div>
                     </div>
-                    {/* Replies */}
-                     <div className="mt-4 pl-14 space-y-4">
+                    <div className="mt-4 pl-14 space-y-4">
                          {post.replies.map(reply => (
                              <div key={reply.id} className="flex items-start gap-4">
                                 <img src={reply.authorAvatarUrl} alt={reply.authorName} className="h-8 w-8 rounded-full" />
@@ -303,7 +324,7 @@ const Forum: React.FC<{
 };
 
 const LessonView: React.FC = () => {
-  const { user, courses, completeLesson, handleSaveNote } = useAppContext();
+  const { user, courses, completeLesson, handleSaveNote, showToast } = useAppContext();
   const { courseId, lessonId } = useParams<{ courseId: string, lessonId: string }>();
   const navigate = useNavigate();
 
@@ -313,6 +334,11 @@ const LessonView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'content' | 'notes' | 'forum' | 'exercise'>('content');
   const [note, setNote] = useState('');
   const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
+  const [lessonStartTime, setLessonStartTime] = useState<number>(Date.now());
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showMilestoneModal, setShowMilestoneModal] = useState(false);
+  const [showCourseCompleteModal, setShowCourseCompleteModal] = useState(false);
+  const [milestoneData, setMilestoneData] = useState<{moduleTitle: string, moduleNumber: number, totalModules: number, progressPercentage: number} | null>(null);
 
   const exercise = EXERCISES.find(ex => ex.id === currentLesson?.exerciseId);
   const isCompleted = user?.completedLessonIds.includes(currentLesson?.id || '') || false;
@@ -323,7 +349,16 @@ const LessonView: React.FC = () => {
     } else {
       setNote('');
     }
+    setLessonStartTime(Date.now());
   }, [user, currentLesson]);
+
+  const allLessons = useMemo(() => currentCourse?.modules.flatMap(m => m.lessons) || [], [currentCourse]);
+  const completedLessons = useMemo(() => 
+    user?.completedLessonIds.filter(id => allLessons.some(l => l.id === id)) || [], 
+    [user, allLessons]
+  );
+  const currentLessonIndex = allLessons.findIndex(l => l.id === currentLesson?.id);
+  const courseProgress = allLessons.length > 0 ? Math.round((completedLessons.length / allLessons.length) * 100) : 0;
 
   if (!currentCourse || !currentLesson) {
     return <div className="text-center py-20">Aula não encontrada.</div>;
@@ -331,7 +366,6 @@ const LessonView: React.FC = () => {
   
   const handleBackToCourse = () => {
     if (user) {
-        // If logged in, go back to the Student Dashboard, specifically to My Courses tab
         navigate('/dashboard');
     } else {
         navigate('/courses');
@@ -339,7 +373,42 @@ const LessonView: React.FC = () => {
   };
 
   const handleCompleteLesson = () => {
+    const timeSpent = (Date.now() - lessonStartTime) / 1000;
+    if (timeSpent < 120 && !isCompleted) {
+      showToast("⏱️ Dedique pelo menos 2 minutos à aula para marcá-la como concluída.");
+      return;
+    }
+
     completeLesson(currentLesson.id);
+    
+    const newCompletedCount = completedLessons.length + 1;
+    const newProgress = Math.round((newCompletedCount / allLessons.length) * 100);
+    
+    const currentModuleIndex = currentCourse.modules.findIndex(m => 
+      m.lessons.some(l => l.id === currentLesson.id)
+    );
+    const currentModule = currentCourse.modules[currentModuleIndex];
+    const moduleLessons = currentModule.lessons;
+    const completedInModule = moduleLessons.filter(l => 
+      user?.completedLessonIds.includes(l.id) || l.id === currentLesson.id
+    ).length;
+    
+    const justCompletedModule = completedInModule === moduleLessons.length;
+    const justCompletedCourse = newProgress === 100;
+
+    if (justCompletedCourse) {
+      setShowCourseCompleteModal(true);
+    } else if (justCompletedModule) {
+      setMilestoneData({
+        moduleTitle: currentModule.title,
+        moduleNumber: currentModuleIndex + 1,
+        totalModules: currentCourse.modules.length,
+        progressPercentage: newProgress
+      });
+      setShowMilestoneModal(true);
+    } else {
+      setShowCompleteModal(true);
+    }
   };
 
   const handlePostToForum = (text: string) => {
@@ -370,8 +439,6 @@ const LessonView: React.FC = () => {
     setForumPosts(prev => prev.map(p => p.id === postId ? {...p, replies: [...p.replies, newReply]} : p));
   };
 
-  const allLessons = currentCourse.modules.flatMap(m => m.lessons);
-  const currentLessonIndex = allLessons.findIndex(l => l.id === currentLesson.id);
   const prevLesson = currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1] : null;
   const nextLesson = currentLessonIndex < allLessons.length - 1 ? allLessons[currentLessonIndex + 1] : null;
   
@@ -381,19 +448,58 @@ const LessonView: React.FC = () => {
       }
   }
 
+  const handleContinueFromModal = () => {
+    setShowCompleteModal(false);
+    setShowMilestoneModal(false);
+    if (nextLesson) {
+      navigateToLesson(nextLesson);
+    } else {
+      handleBackToCourse();
+    }
+  };
+
+  const handleDownloadCertificate = () => {
+    navigate(`/certificate/${currentCourse.id}`);
+  };
+
+  const handleShareLinkedIn = () => {
+    const text = encodeURIComponent(`Acabei de concluir o curso "${currentCourse.title}" na FuturoOn! 🎉`);
+    const url = encodeURIComponent(window.location.origin);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, '_blank');
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="mb-8">
+        <div className="mb-8 flex items-center justify-between">
             <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group" aria-label="Voltar">
                 <span className="inline-block transform group-hover:-translate-x-1 transition-transform" aria-hidden="true">&larr;</span> {user ? 'Voltar para Meu Painel' : 'Voltar para os cursos'}
             </button>
+            
+            <div className="hidden md:flex items-center gap-3 bg-white/5 px-4 py-2 rounded-lg border border-white/10">
+                <span className="text-xs text-gray-400">Progresso do Curso:</span>
+                <div className="flex items-center gap-2">
+                    <div className="w-24 bg-gray-800 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                            className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983] transition-all duration-500"
+                            style={{ width: `${courseProgress}%` }}
+                        />
+                    </div>
+                    <span className="text-xs font-bold text-white">{courseProgress}%</span>
+                </div>
+            </div>
         </div>
-      <div className="grid lg:grid-cols-3 gap-12">
+
+        <div className="grid lg:grid-cols-3 gap-12">
         <main className="lg:col-span-2">
             <div className="bg-black/20 backdrop-blur-xl p-8 rounded-lg border border-white/10">
-                <header>
-                    <span className="font-semibold text-[#c4b5fd]">{currentCourse.title}</span>
-                    <h1 className="text-3xl font-bold text-white mt-1">{currentLesson.title}</h1>
+                <header className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="font-semibold text-[#c4b5fd] text-sm">{currentCourse.title}</span>
+                        <span className="text-xs text-gray-500 font-mono">
+                            Aula {currentLessonIndex + 1} de {allLessons.length}
+                        </span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-white">{currentLesson.title}</h1>
                 </header>
                 <div className="mt-6">
                     <LessonTabs activeTab={activeTab} setActiveTab={setActiveTab} hasExercise={!!exercise} />
@@ -454,7 +560,7 @@ const LessonView: React.FC = () => {
              <div className="sticky top-24 space-y-8">
                 <div className="bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10">
                     <h3 className="text-lg font-bold text-white mb-4">Navegação da Aula</h3>
-                    <div className="flex justify-between items-center gap-2">
+                    <div className="flex justify-between items-center gap-2 mb-6">
                         {prevLesson ? (
                              <button 
                                 onClick={() => navigateToLesson(prevLesson)} 
@@ -476,26 +582,102 @@ const LessonView: React.FC = () => {
                             </button>
                         )}
                     </div>
+
+                    {nextLesson && !isCompleted && (
+                        <div className="mb-6 p-4 bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/10 rounded-lg border border-[#8a4add]/20">
+                            <p className="text-xs text-gray-300 mb-2">Em seguida:</p>
+                            <p className="text-sm font-bold text-white mb-3">{nextLesson.title}</p>
+                            <p className="text-xs text-gray-400">Complete esta aula para continuar</p>
+                        </div>
+                    )}
                 </div>
 
                 {!isCompleted && !exercise && (
                     <button 
                         onClick={handleCompleteLesson}
-                        className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-3 px-6 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg shadow-green-500/20"
-                        aria-label="Marcar aula como concluída"
+                        className="w-full font-bold py-3 px-6 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white hover:opacity-90 transition-opacity shadow-lg shadow-green-500/30 flex items-center justify-center gap-2"
                     >
-                        Concluir Aula
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Marcar como Concluída
                     </button>
                 )}
-                 {isCompleted && (
-                    <div className="w-full bg-green-500/10 text-green-300 font-semibold py-3 px-6 rounded-lg text-center" aria-live="polite">
-                        Aula Concluída!
+
+                {isCompleted && (
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-400 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-green-400 font-bold">Aula Concluída</p>
+                        <p className="text-xs text-gray-400 mt-1">Parabéns! Continue aprendendo</p>
                     </div>
                 )}
-            </div>
+
+                <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+                    <h4 className="text-sm font-bold text-white mb-3">Checklist do Curso</h4>
+                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                        {currentCourse.modules.map((module, mIdx) => (
+                            <div key={module.id}>
+                                <p className="text-xs font-semibold text-[#c4b5fd] mb-2">Módulo {mIdx + 1}: {module.title}</p>
+                                {module.lessons.map((lesson) => {
+                                    const lessonCompleted = user?.completedLessonIds.includes(lesson.id);
+                                    const isCurrent = lesson.id === currentLesson.id;
+                                    return (
+                                        <button
+                                            key={lesson.id}
+                                            onClick={() => navigate(`/course/${currentCourse.id}/lesson/${lesson.id}`)}
+                                            className={`w-full text-left px-3 py-2 rounded-md text-xs transition-colors flex items-center gap-2 ${
+                                                isCurrent ? 'bg-[#8a4add]/20 border border-[#8a4add]/40 text-white' : 
+                                                lessonCompleted ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20' : 
+                                                'bg-white/5 text-gray-400 hover:bg-white/10'
+                                            }`}
+                                        >
+                                            {lessonCompleted ? (
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            ) : (
+                                                <div className="w-4 h-4 rounded-full border-2 border-current flex-shrink-0"></div>
+                                            )}
+                                            <span className="truncate">{lesson.title}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+             </div>
         </aside>
       </div>
+
       <AITutor />
+
+      {showCompleteModal && (
+        <LessonCompleteModal
+          lessonTitle={currentLesson.title}
+          xpGained={currentLesson.xp}
+          onContinue={handleContinueFromModal}
+          onClose={() => setShowCompleteModal(false)}
+        />
+      )}
+
+      {showMilestoneModal && milestoneData && (
+        <ModuleMilestoneModal
+          {...milestoneData}
+          onContinue={handleContinueFromModal}
+        />
+      )}
+
+      {showCourseCompleteModal && (
+        <CourseCompleteModal
+          course={currentCourse}
+          onDownloadCertificate={handleDownloadCertificate}
+          onShareLinkedIn={handleShareLinkedIn}
+          onClose={() => setShowCourseCompleteModal(false)}
+        />
+      )}
     </div>
   );
 };
