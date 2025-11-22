@@ -8,13 +8,15 @@ import Badge from '../components/Badge';
 import CourseModalityBadge from '../components/CourseModalityBadge';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
-    <div className="bg-[#1f2328] p-3 rounded-xl border border-gray-700/50 flex items-center gap-3 hover:border-[#8a4add]/30 transition-colors">
-        <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-[#8a4add]/20 flex items-center justify-center text-[#c4b5fd]">
-            <div className="transform scale-90">{icon}</div>
-        </div>
-        <div>
-            <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">{label}</p>
-            <p className="font-bold text-white capitalize text-sm">{value}</p>
+    <div className="group bg-gradient-to-br from-white/8 to-white/5 p-4 rounded-xl border border-white/15 hover:border-[#8a4add]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#8a4add]/20">
+        <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-[#8a4add]/30 to-[#f27983]/20 flex items-center justify-center text-[#c4b5fd] group-hover:scale-110 transition-transform">
+                <div className="transform scale-100">{icon}</div>
+            </div>
+            <div>
+                <p className="text-[11px] text-gray-400 uppercase tracking-wider font-semibold opacity-75">{label}</p>
+                <p className="font-bold text-white capitalize text-base">{value}</p>
+            </div>
         </div>
     </div>
 );
@@ -40,20 +42,21 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
     const [isOpen, setIsOpen] = useState(index === 0);
 
     return (
-        <div className="border border-white/10 rounded-lg overflow-hidden bg-[#121212] transition-all duration-300 hover:border-white/20">
+        <div className="border border-white/10 rounded-xl overflow-hidden bg-gradient-to-br from-white/8 to-white/5 transition-all duration-300 hover:border-white/20 hover:shadow-lg hover:shadow-white/5">
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-4 text-left bg-white/5 hover:bg-white/10 transition-colors"
+                className="w-full flex items-center justify-between p-5 text-left bg-white/5 hover:bg-white/10 transition-colors group"
             >
-                <span className="font-bold text-white text-sm flex items-center gap-2">
-                    <span className="text-[#8a4add]">Módulo {index + 1}:</span> {module.title}
+                <span className="font-bold text-white text-sm flex items-center gap-3">
+                    <span className="bg-gradient-to-r from-[#8a4add] to-[#f27983] px-2 py-1 rounded-lg text-xs text-white">M{index + 1}</span>
+                    <span className="group-hover:text-[#c4b5fd] transition-colors">{module.title}</span>
                 </span>
-                <span className={`text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                <span className={`text-gray-400 group-hover:text-[#c4b5fd] transition-all duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 </span>
             </button>
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="p-2 space-y-1">
+                <div className="p-3 space-y-1 bg-white/3 border-t border-white/10">
                     {module.lessons.map((lesson, i) => (
                         <LessonItem key={lesson.id} lesson={lesson} index={i} />
                     ))}
@@ -181,14 +184,14 @@ const CourseDetail: React.FC = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h3 className="text-xl font-bold text-white mb-4">Sobre o Curso</h3>
-                            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{course.longDescription}</p>
+                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
+                            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><span>📖</span> Sobre o Curso</h3>
+                            <p className="text-gray-300 text-base leading-relaxed whitespace-pre-wrap">{course.longDescription}</p>
                         </div>
 
                         {/* Modalidade do Curso */}
-                        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h3 className="text-xl font-bold text-white mb-4">Formato do Curso</h3>
+                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
+                            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><span>🎓</span> Formato do Curso</h3>
                             <div className="mb-4">
                                 <CourseModalityBadge format={course.format} size="lg" />
                             </div>
@@ -242,8 +245,8 @@ const CourseDetail: React.FC = () => {
                             </div>
                         </div>
 
-                        <div>
-                            <h3 className="text-xl font-bold text-white mb-4">Conteúdo do Curso</h3>
+                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
+                            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><span>📚</span> Conteúdo do Curso</h3>
                             <div className="space-y-3">
                                 {course.modules.map((module, i) => (
                                     <ModuleAccordion key={module.id} module={module} index={i} />
@@ -253,26 +256,26 @@ const CourseDetail: React.FC = () => {
                     </div>
 
                     <div className="space-y-6">
-                        <div className="bg-white/5 p-6 rounded-xl border border-white/10 sticky top-24">
+                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5 sticky top-24">
                             {isEnrolled && user && (
-                                <div className="mb-6 p-4 bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/10 rounded-xl border border-[#8a4add]/20">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className="text-xs text-gray-300 font-semibold">Seu Progresso</span>
-                                        <span className="text-lg font-black text-white">{progress}%</span>
+                                <div className="mb-8 p-6 bg-gradient-to-r from-[#8a4add]/25 to-[#f27983]/20 rounded-xl border border-[#8a4add]/40 shadow-lg shadow-[#8a4add]/15">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <span className="text-sm text-gray-100 font-bold flex items-center gap-2"><span>🎯</span> Seu Progresso</span>
+                                        <span className="text-3xl font-black bg-gradient-to-r from-[#8a4add] to-[#f27983] text-transparent bg-clip-text">{progress}%</span>
                                     </div>
-                                    <div className="w-full bg-gray-800 rounded-full h-2 mb-3 overflow-hidden">
+                                    <div className="w-full bg-gray-800/60 rounded-full h-3.5 mb-4 overflow-hidden border border-white/10">
                                         <div 
-                                            className={`h-full ${progress === 100 ? 'bg-gradient-to-r from-green-400 to-green-600' : 'bg-gradient-to-r from-[#8a4add] to-[#f27983]'} transition-all duration-500`}
+                                            className={`h-full ${progress === 100 ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-500/40' : 'bg-gradient-to-r from-[#8a4add] to-[#f27983] shadow-lg shadow-[#8a4add]/40'} transition-all duration-500`}
                                             style={{ width: `${progress}%` }}
                                         />
                                     </div>
-                                    <p className="text-xs text-gray-400 text-center">
-                                        {completedLessons.length} de {allLessons.length} aulas concluídas
+                                    <p className="text-sm text-gray-200 text-center font-semibold">
+                                        <span className="text-white">{completedLessons.length}</span> de <span className="text-white">{allLessons.length}</span> aulas <span className="text-[#c4b5fd]">concluídas</span>
                                     </p>
                                 </div>
                             )}
 
-                            <div className="space-y-4 mb-6">
+                            <div className="space-y-4 mb-8">
                                 <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Duração" value={course.duration} />
                                 <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>} label="Nível" value={course.skillLevel} />
                                 <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Formato" value={course.format} />

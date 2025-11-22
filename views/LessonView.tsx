@@ -409,12 +409,6 @@ const LessonView: React.FC = () => {
   };
 
   const handleCompleteLesson = () => {
-    const timeSpent = (Date.now() - lessonStartTime) / 1000;
-    if (timeSpent < 120 && !isCompleted) {
-      showToast("⏱️ Dedique pelo menos 2 minutos à aula para marcá-la como concluída.");
-      return;
-    }
-
     completeLesson(currentLesson.id);
     
     const newCompletedCount = completedLessons.length + 1;
