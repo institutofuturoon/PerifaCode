@@ -118,7 +118,11 @@ ${articlesForPrompt}
     );
 };
 
-const Blog: React.FC = () => {
+interface BlogProps {
+    embedded?: boolean;
+}
+
+const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
   const { articles } = useAppContext();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -180,27 +184,32 @@ const Blog: React.FC = () => {
     setActiveCategory('Todos');
   };
 
+  const containerClass = embedded ? 'w-full' : 'container mx-auto px-4 sm:px-6 lg:px-8 pb-20 -mt-16 relative z-20';
+
   return (
     <>
-        <SEO 
-            title="Blog"
-            description="Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia."
-        />
-        {/* Hero Section Padronizada (py-20 md:py-32) */}
-        <header className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <Badge text="Blog & Notícias" />
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
-                    Nosso <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">Blog</span>
-                </h1>
-                <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
-                    Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia.
-                </p>
-            </div>
-        </header>
+        {!embedded && (
+            <>
+                <SEO 
+                    title="Blog"
+                    description="Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia."
+                />
+                <header className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <Badge text="Blog & Notícias" />
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight">
+                            Nosso <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#c4b5fd]">Blog</span>
+                        </h1>
+                        <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
+                            Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia.
+                        </p>
+                    </div>
+                </header>
+            </>
+        )}
 
         {/* Main Content & Sidebar */}
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20 -mt-16 relative z-20">
+        <section className={containerClass}>
             <div className="grid lg:grid-cols-4 gap-12">
                 {/* Main Content */}
                 <div className="lg:col-span-3">
@@ -243,7 +252,7 @@ const Blog: React.FC = () => {
                 </div>
 
                 {/* Sidebar */}
-                <aside className="lg:col-span-1 space-y-8 lg:sticky top-24 h-fit">
+                <aside className={`lg:col-span-1 space-y-8 ${!embedded ? 'lg:sticky top-24' : ''} h-fit`}>
                     <SidebarWidget title="Pesquisar">
                         <div className="relative">
                             <input 

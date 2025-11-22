@@ -7,7 +7,6 @@ import SEO from '../components/SEO';
 
 // --- Helper Components ---
 
-// FIX: Added style prop to allow inline styles.
 const Section: React.FC<{ children: React.ReactNode, className?: string, style?: React.CSSProperties }> = ({ children, className = '', style }) => (
     <section className={`py-16 md:py-24 relative z-10 ${className}`} style={style}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,7 +48,7 @@ const CurriculumItemCard: React.FC<{ title: string, description: string, index: 
 
 // --- Main Component ---
 const CourseLandingPage: React.FC = () => {
-    const { courses, instructors, openInscriptionModal, openProfileModal, user } = useAppContext();
+    const { courses, instructors, openInscriptionModal, openProfileModal, user, showToast } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
 
@@ -74,8 +73,10 @@ const CourseLandingPage: React.FC = () => {
              // Se logado, vai direto para a primeira aula (Workspace)
              const firstLesson = currentCourse.modules?.[0]?.lessons?.[0];
              if (firstLesson) {
+                 showToast(`👋 Bem-vindo de volta! Acessando ${currentCourse.title}...`);
                  navigate(`/course/${currentCourse.id}/lesson/${firstLesson.id}`);
              } else {
+                 showToast("⚠️ Este curso ainda não tem aulas disponíveis.");
                  navigate(`/dashboard`);
              }
         } else {
@@ -137,7 +138,7 @@ const CourseLandingPage: React.FC = () => {
                             onClick={handleCtaClick}
                             className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-lg"
                         >
-                            {user ? 'Acessar Conteúdo Agora' : 'Garanta seu Interesse Agora'}
+                            {user ? 'Acessar Conteúdo' : 'Garanta sua Vaga Grátis'}
                         </button>
                     </div>
                 </div>

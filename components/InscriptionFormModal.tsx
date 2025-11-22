@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +10,8 @@ interface InscriptionFormModalProps {
 }
 
 const InscriptionFormModal: React.FC<InscriptionFormModalProps> = ({ isOpen, onClose, courseName = "Inscrição Geral" }) => {
-    // FIX: Use the 'useNavigate' hook from react-router-dom instead of destructuring from context.
     const navigate = useNavigate();
+    const { user, showToast } = useAppContext(); // Get user context
     const [formData, setFormData] = useState({
         nomeCompleto: '', email: '', telefone: '', dataNascimento: '', endereco: '',
         escolaridade: '', trabalhando: '', possuiComputador: '', comoConheceu: '',
@@ -55,13 +56,25 @@ const InscriptionFormModal: React.FC<InscriptionFormModalProps> = ({ isOpen, onC
         e.preventDefault();
         setIsSubmitting(true);
         console.log("Form data submitted:", formData);
-        // TODO: Enviar dados para o backend da ONG.
+        
+        // Simulating backend delay
         await new Promise(resolve => setTimeout(resolve, 1500));
+        
         setIsSubmitting(false);
         setIsSubmitted(true);
+        
+        // Logic after submission
         setTimeout(() => {
             onClose();
-        }, 3000);
+            if (!user) {
+                showToast("✨ Pré-inscrição recebida! Agora, crie sua conta para acessar o curso.");
+                navigate('/register');
+            } else {
+                showToast("✅ Inscrição confirmada! Bons estudos.");
+                // Note: Actual redirection to course lesson should ideally happen here if needed,
+                // but typically 'onClose' returns the user to the page they were on (Course Detail).
+            }
+        }, 2000);
     };
 
     if (!isOpen) return null;
@@ -91,10 +104,21 @@ const InscriptionFormModal: React.FC<InscriptionFormModalProps> = ({ isOpen, onC
                         <div className="flex flex-col items-center justify-center h-full text-center p-8">
                             <svg className="w-20 h-20 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             <h3 className="text-3xl font-bold text-white mt-6">Inscrição enviada!</h3>
-                            <p className="text-gray-300 mt-2 max-w-md">Obrigado pelo seu interesse! Entraremos em contato em breve para confirmar sua vaga e passar as próximas instruções.</p>
+                            <p className="text-gray-300 mt-2 max-w-md">
+                                {user 
+                                    ? "Sua vaga está sendo processada. Fique atento ao seu email." 
+                                    : "Redirecionando para a criação de conta... É rapidinho!"
+                                }
+                            </p>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="bg-[#8a4add]/10 border border-[#8a4add]/30 p-4 rounded-lg mb-6">
+                                <p className="text-sm text-[#c4b5fd]">
+                                    🚀 <strong>Dica:</strong> Preencha este formulário para garantir sua vaga gratuita. Após enviar, você precisará criar sua conta na plataforma.
+                                </p>
+                            </div>
+
                             <div><label htmlFor="nomeCompleto" className={labelClasses}>Nome Completo *</label><input type="text" name="nomeCompleto" id="nomeCompleto" required className={inputClasses} onChange={handleChange} /></div>
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div><label htmlFor="email" className={labelClasses}>Email *</label><input type="email" name="email" id="email" required className={inputClasses} onChange={handleChange} /></div>
@@ -110,11 +134,9 @@ const InscriptionFormModal: React.FC<InscriptionFormModalProps> = ({ isOpen, onC
                                 <fieldset><legend className={labelClasses}>Possui computador com internet? *</legend><div className="flex gap-4 mt-2"><label className="flex items-center gap-2"><input type="radio" name="possuiComputador" value="Sim" required onChange={handleChange} className={radioCheckboxBase}/> Sim</label><label className="flex items-center gap-2"><input type="radio" name="possuiComputador" value="Não" required onChange={handleChange} className={radioCheckboxBase}/> Não</label></div></fieldset>
                             </div>
                             <div><label htmlFor="comoConheceu" className={labelClasses}>Onde você nos conheceu?</label><select name="comoConheceu" id="comoConheceu" className={inputClasses} onChange={handleChange}><option value="">Selecione...</option>{comoConheceuOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}</select></div>
-                            <div><label htmlFor="objetivo" className={labelClasses}>Por que você quer fazer parte da FuturoOn? Qual o seu objetivo?</label><textarea name="objetivo" id="objetivo" rows={3} className={inputClasses} onChange={handleChange}></textarea></div>
-                            <fieldset><legend className={labelClasses}>Qual curso você tem interesse? *</legend><div className="mt-2 space-y-2">{cursoOptions.map(opt => <label key={opt} className="flex items-center gap-2"><input type="checkbox" name="cursoInteresse" value={opt} checked={formData.cursoInteresse.includes(opt)} onChange={handleChange} className={radioCheckboxBase}/>{opt}</label>)}</div></fieldset>
                             <fieldset><legend className={labelClasses}>Qual a sua disponibilidade? *</legend><div className="grid sm:grid-cols-2 gap-2 mt-2">{disponibilidadeOptions.map(opt => <label key={opt} className="flex items-center gap-2"><input type="checkbox" name="disponibilidade" value={opt} onChange={handleChange} className={radioCheckboxBase}/>{opt}</label>)}</div></fieldset>
                             <div className="space-y-4 pt-4 border-t border-white/10">
-                                <label className="flex items-start gap-3 text-sm text-gray-300"><input type="checkbox" name="autorizacaoImagem" required onChange={handleChange} className={`${radioCheckboxBase} mt-1 flex-shrink-0`} /><span>AUTORIZAÇÃO DE USO DE IMAGEM: Autorizo o uso da minha imagem em todo e qualquer material entre fotos, vídeos e documentos, para ser utilizada nas campanhas de marketing e divulgação do Instituto FuturoONG, sejam essas destinadas à divulgação ao público em geral. *</span></label>
+                                <label className="flex items-start gap-3 text-sm text-gray-300"><input type="checkbox" name="autorizacaoImagem" required onChange={handleChange} className={`${radioCheckboxBase} mt-1 flex-shrink-0`} /><span>AUTORIZAÇÃO DE USO DE IMAGEM: Autorizo o uso da minha imagem em todo e qualquer material para divulgação do Instituto FuturoONG. *</span></label>
                                 <label className="flex items-start gap-3 text-sm text-gray-300"><input type="checkbox" name="termosPrivacidade" required onChange={handleChange} className={`${radioCheckboxBase} mt-1 flex-shrink-0`} /><span>Li e concordo com os <button type="button" onClick={() => navigate('privacy')} className="text-[#8a4add] hover:underline">termos de privacidade de dados</button> da plataforma. *</span></label>
                             </div>
                             <div className="pt-4"><button type="submit" disabled={isSubmitting} className="w-full font-bold py-3 px-8 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-wait">{isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}</button></div>

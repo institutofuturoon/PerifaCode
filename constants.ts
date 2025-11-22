@@ -1,8 +1,6 @@
 
 import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession, AnalyticsData, CommunityPost, Supporter } from './types';
 
-// Todos os arrays de dados mockados foram esvaziados.
-// A aplicação agora dependerá exclusivamente dos dados carregados do Firebase.
 export const ARTICLES: Article[] = [
   {
     id: 'article_csharp_future_proof',
@@ -126,221 +124,303 @@ E aí, pronto para começar a construir o futuro?`,
     claps: 152,
     tags: ['c#', '.net', 'boas-praticas', 'arquitetura', 'solid']
   },
+  // ... outros artigos ...
+];
+
+export const MOCK_COURSES: Course[] = [
   {
-    id: 'article_git_guide',
-    title: 'Cartilha Git: Guia Prático para Iniciantes',
-    subtitle: 'Desvende o versionamento de código de forma simples e visual. Comandos essenciais para começar a usar Git e GitHub hoje mesmo.',
-    author: 'Marlon Souza',
-    date: '02/08/2024',
-    summary: 'Pense no Git como uma máquina do tempo para o seu código. Aprenda os comandos essenciais para versionar seus projetos, colaborar com outros devs e construir um portfólio incrível no GitHub.',
-    imageUrl: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
-    category: 'Tutoriais',
-    content: `Se você está começando no mundo da programação, já deve ter ouvido falar de Git e GitHub. Parecem complicados, né? Mas relaxa! A real é que eles são seus melhores amigos na jornada de dev.
+    id: 'csharp-backend-essential',
+    title: 'C# Backend: Do Zero ao Essencial',
+    description: 'Aprenda a criar sistemas robustos com C# e .NET. Do primeiro "Hello World" até APIs conectadas a banco de dados.',
+    longDescription: `O mercado de tecnologia está sedento por desenvolvedores Backend que dominem C# e .NET. Este curso foi desenhado para levar você, passo a passo, da lógica de programação básica até a construção de APIs reais.
 
-Pense no Git como uma máquina do tempo para o seu código. Sabe quando você está trabalhando num projeto, faz uma alteração... e tudo quebra? Com o Git, você pode simplesmente voltar para a versão anterior que estava funcionando. Sem estresse, sem perder horas de trabalho.
+    Usaremos uma linguagem simples, sem "tiques e taques" desnecessários, focando no que você realmente vai usar no dia a dia das empresas. Vamos construir exemplos baseados na vida real: pizzarias, sistemas bancários e gerenciadores de tarefas.`,
+    track: 'Backend',
+    imageUrl: 'https://images.unsplash.com/photo-1599507593499-a3f7d7d97663?q=80&w=2070&auto=format&fit=crop',
+    duration: '40 horas',
+    skillLevel: 'Iniciante',
+    instructorId: 'instrutor_marlon',
+    category: 'Backend',
+    format: 'online',
+    enrollmentStatus: 'open',
+    heroContent: {
+        titleLine1: 'Domine o Backend com',
+        titleAccent: 'C# e .NET',
+        subtitle: 'Formação Completa',
+        description: 'Sua porta de entrada para grandes empresas. Aprenda a linguagem utilizada por bancos, fintechs e multinacionais, com uma didática direto ao ponto.'
+    },
+    benefitsSection: {
+        title: 'Por que C#?',
+        subtitle: 'Uma das linguagens mais poderosas do mundo',
+        benefits: [
+            { title: 'Alta Demanda', description: 'Empresas consolidadas usam C# e pagam ótimos salários.' },
+            { title: 'Performance', description: 'O .NET é extremamente rápido e eficiente para web.' },
+            { title: 'Versatilidade', description: 'Crie sites, apps mobile, jogos e inteligência artificial.' },
+            { title: 'Ferramentas Incríveis', description: 'O Visual Studio é uma das melhores IDEs do mercado.' }
+        ]
+    },
+    curriculumSection: {
+        title: 'O que você vai aprender',
+        subtitle: 'Do zero ao deploy',
+        items: [
+            { title: 'Lógica de Programação', description: 'Variáveis, condicionais e loops.' },
+            { title: 'Orientação a Objetos', description: 'Classes, métodos e herança.' },
+            { title: 'Banco de Dados', description: 'SQL Server e Entity Framework.' },
+            { title: 'APIs REST', description: 'Criando serviços web modernos.' }
+        ]
+    },
+    methodologySection: {
+        title: 'Como ensinamos',
+        subtitle: 'Mão na massa de verdade',
+        benefits: [
+            { title: 'Projetos Reais', description: 'Nada de exemplos abstratos. Vamos criar sistemas úteis.' },
+            { title: 'Diagramas Visuais', description: 'Entenda a arquitetura antes de codar.' },
+            { title: 'Mentoria', description: 'Suporte para suas dúvidas no fórum.' }
+        ]
+    },
+    ctaSection: {
+        title: 'Comece sua carreira agora',
+        description: 'Junte-se à tropa de elite do Backend.'
+    },
+    modules: [
+      {
+        id: 'mod_csharp_fundamentos',
+        title: 'Módulo 1: Fundamentos da Lógica',
+        lessons: [
+          {
+            id: 'lesson_csharp_hello',
+            title: 'Hello World e Variáveis',
+            duration: '15 min',
+            type: 'text',
+            xp: 50,
+            objective: 'Entender como o computador guarda informações e escrever seu primeiro código.',
+            mainContent: `
+## O que é uma Variável?
 
-Nesta cartilha, vamos desmistificar o Git de uma vez por todas, com uma linguagem que você entende. Bora?
+Imagine que a memória do computador é um grande armário cheio de gavetas. Uma **variável** é uma etiqueta que colocamos em uma dessas gavetas para guardar algo importante.
 
-## Git vs. GitHub: Qual a diferença?
-
-Essa é a primeira dúvida de todo mundo. É simples:
-
-*   **Git:** É a ferramenta, o programa que você instala no seu computador. Ele controla as versões do seu código, registrando cada mudança.
-*   **GitHub:** É uma plataforma online (um site) onde você pode guardar seus projetos que usam Git. É como uma rede social para desenvolvedores, onde você pode hospedar seu código, colaborar com outras pessoas e criar seu portfólio.
+*   **int (Inteiro):** Gaveta para números inteiros (ex: idade, quantidade).
+*   **string (Texto):** Gaveta para palavras e frases (ex: nome, endereço).
+*   **bool (Booleano):** Gaveta para Verdadeiro ou Falso (ex: estáChovendo).
 
 [TIP]
-Pense assim: O Git é o motor do carro, e o GitHub é a garagem na nuvem onde você estaciona o carro e pode mostrá-lo para os amigos. Existem outras "garagens" como GitLab e Bitbucket, mas o GitHub é a mais popular.
+C# é uma linguagem "fortemente tipada". Isso significa que você não pode guardar um sapato na gaveta de talheres. Se a variável é \`int\`, ela só aceita números!
 [/TIP]
 
-## Os 3 Conceitos Essenciais
+### Exemplo Prático: Cadastro de Aluno
 
-Para começar, você só precisa entender três ideias principais:
+Vamos criar um mini-sistema para guardar os dados de um aluno da FuturoOn.
 
-1.  **Repository (ou Repo):** É simplesmente a pasta do seu projeto. O Git cria uma "pasta mágica" oculta chamada \`.git\` dentro dela para rastrear tudo.
-2.  **Commit:** É um "ponto de salvamento" ou uma foto do seu código em um determinado momento. Cada commit tem uma mensagem descrevendo o que foi alterado. Ex: "Adiciona botão de login na página inicial".
-3.  **Branch:** São "ramificações" ou linhas do tempo paralelas do seu projeto. A principal é chamada de \`main\` (ou \`master\`). Quando você quer criar uma nova funcionalidade sem bagunçar o que já funciona, você cria uma nova branch. Depois de terminar, você "junta" (faz um *merge*) essa branch de volta na \`main\`.
+[CODE lang="csharp"]
+// Declarando as variáveis (etiquetando as gavetas)
+string nomeDoAluno = "Carlos da Silva";
+int idade = 19;
+bool matriculaAtiva = true;
 
-## O Fluxo de Trabalho Básico: Sua Primeira Viagem no Tempo
-
-Vamos para a prática! Esse é o passo a passo que você vai usar 90% do tempo.
-
-**1. Iniciando o Git no seu projeto**
-Abra o terminal na pasta do seu projeto e rode:
-[CODE lang="bash"]
-git init
-[/CODE]
-Isso cria o repositório e começa a "observar" a pasta.
-
-**2. Verificando o status**
-A qualquer momento, você pode perguntar ao Git: "E aí, o que tá rolando?".
-[CODE lang="bash"]
-git status
-[/CODE]
-Ele vai te dizer quais arquivos foram modificados, quais são novos, etc.
-
-**3. Adicionando arquivos para o "pacote"**
-Antes de salvar (commitar), você precisa dizer ao Git QUAIS arquivos quer salvar. Isso é chamado de "staging".
-[CODE lang="bash"]
-# Para adicionar um arquivo específico
-git add nome_do_arquivo.html
-
-# Para adicionar TODOS os arquivos modificados (use com cuidado!)
-git add .
+// Mostrando na tela
+Console.WriteLine("Aluno: " + nomeDoAluno);
+Console.WriteLine("Idade: " + idade);
+Console.WriteLine("Está ativo? " + matriculaAtiva);
 [/CODE]
 
-**4. Salvando o pacote (Commit)**
-Agora que os arquivos estão no "pacote", você salva essa versão com uma mensagem clara.
-[CODE lang="bash"]
-git commit -m "O que eu fiz nesta alteração"
-[/CODE]
-Exemplo: \`git commit -m "Cria a estrutura inicial do projeto HTML e CSS"\`
+### Fluxo de Dados
 
-[ALERT type="info"]
-**Analogia:** Pense que você está se mudando. \`git add\` é colocar as coisas dentro da caixa de papelão. \`git commit\` é fechar a caixa e escrever com um canetão o que tem dentro ("livros da sala", "pratos da cozinha").
+Entenda como a informação flui:
+
+[CODE lang="text"]
+[ Código ]  --->  [ Memória RAM ]  --->  [ Tela (Console) ]
+   |                    |                        |
+   | "Carlos"           | Gaveta 'nome'          | Exibe:
+   +------------------> | Guardado: "Carlos" |-->| "Aluno: Carlos"
+[/CODE]
+            `,
+            summary: 'Variáveis são espaços na memória para guardar dados. Em C#, precisamos definir o tipo (texto, número, etc.) antes de usar.',
+            exerciseId: 'ex_csharp_vars'
+          },
+          {
+            id: 'lesson_csharp_condicionais',
+            title: 'Tomando Decisões (If/Else)',
+            duration: '20 min',
+            type: 'text',
+            xp: 60,
+            objective: 'Ensinar o programa a tomar caminhos diferentes baseados em regras.',
+            mainContent: `
+## O Poder do "SE"
+
+A vida é feita de decisões. "Se chover, levo guarda-chuva. Senão, vou de chinelo". Na programação, usamos o \`if\` (se) e o \`else\` (senão) para isso.
+
+### Exemplo Prático: Sistema de Balada
+
+Imagine que você está criando o sistema de entrada de uma festa. A regra é clara: só entra quem for maior de 18 anos.
+
+[CODE lang="csharp"]
+int idadeDoCliente = 17;
+
+if (idadeDoCliente >= 18) 
+{
+    Console.WriteLine("Pode entrar. Aproveite a festa!");
+}
+else 
+{
+    Console.WriteLine("Barrado! Volte quando fizer 18.");
+}
+[/CODE]
+
+### Diagrama de Fluxo
+
+Veja como o computador "pensa" nesse caso:
+
+[CODE lang="text"]
+       [ Início ]
+           |
+           v
+   < É maior de 18? >
+   /              \\
+SIM               NÃO
+ /                  \\
+v                    v
+[Entra]            [Barrado]
+ \\                  /
+  \\                /
+   v              v
+      [ Fim ]
+[/CODE]
+
+[ALERT type="warning"]
+Cuidado com a indentação (os espaços à esquerda). O código que está "dentro" do \`if\` deve estar um pouco para a direita para ficar organizado!
 [/ALERT]
+            `,
+            summary: 'Use `if` para verificar uma condição verdadeira e `else` para o caso contrário. É a base da inteligência de qualquer software.'
+          }
+        ]
+      },
+      {
+        id: 'mod_csharp_poo',
+        title: 'Módulo 2: Orientação a Objetos (POO)',
+        lessons: [
+          {
+            id: 'lesson_csharp_classes',
+            title: 'Classes e Objetos: A Fábrica de Pizzas',
+            duration: '25 min',
+            type: 'text',
+            xp: 100,
+            objective: 'Entender a diferença entre Classe (molde) e Objeto (produto real).',
+            mainContent: `
+## O Molde e o Produto
 
-## Conectando com o GitHub: Mostre seu Corre pro Mundo!
+POO (Programação Orientada a Objetos) é uma forma de organizar o código tentando imitar o mundo real.
 
-Agora vamos pegar nosso projeto local e colocar online no GitHub.
+*   **Classe:** É o projeto, o molde, a planta. Não existe fisicamente.
+*   **Objeto:** É a coisa concreta criada a partir do molde.
 
-**1. Crie um novo repositório no site do GitHub.**
-Vá no GitHub, clique em "New repository", dê um nome e crie (sem marcar nenhuma caixinha como README por enquanto).
+### A Analogia da Pizzaria
 
-**2. Conecte seu projeto local ao repositório do GitHub.**
-O GitHub vai te dar um link. Você vai usar o comando abaixo para "apontar" seu projeto para essa garagem na nuvem.
-[CODE lang="bash"]
-git remote add origin https://github.com/seu-usuario/seu-repo.git
+Imagine que você vai criar um sistema para uma pizzaria.
+
+1.  **Classe Pizza:** É o papel onde está escrito que toda pizza tem *Sabor*, *Tamanho* e *Preço*.
+2.  **Objeto Pizza:** É a Pizza de Calabresa quentinha que saiu do forno.
+
+[CODE lang="csharp"]
+// O Molde (Classe)
+public class Pizza 
+{
+    public string Sabor;
+    public string Tamanho;
+    public double Preco;
+
+    public void Assar() 
+    {
+        Console.WriteLine("A pizza de " + Sabor + " está no forno!");
+    }
+}
+
+// Usando o Molde (Programa Principal)
+public class Program 
+{
+    public static void Main() 
+    {
+        // Criando um objeto (Instanciando)
+        Pizza pedido1 = new Pizza();
+        pedido1.Sabor = "Calabresa";
+        pedido1.Tamanho = "Grande";
+        pedido1.Preco = 45.00;
+
+        // Usando uma ação do objeto
+        pedido1.Assar(); 
+    }
+}
 [/CODE]
 
-**3. Envie suas alterações (Push)**
-Finalmente, envie seus commits para o GitHub!
-[CODE lang="bash"]
-git push -u origin main
+### Diagrama UML Simplificado
+
+Em projetos reais, desenhamos as classes assim:
+
+[CODE lang="text"]
++------------------+
+|      Pizza       |  <-- Nome da Classe
++------------------+
+| + Sabor: text    |  <-- Propriedades (Características)
+| + Tamanho: text  |
+| + Preco: number  |
++------------------+
+| + Assar()        |  <-- Métodos (Ações)
+| + Cortar()       |
++------------------+
 [/CODE]
-O \`-u origin main\` só é necessário na primeira vez. Depois, você só precisa usar \`git push\`.
+            `,
+            summary: 'Classe é a definição. Objeto é a instância. Você cria uma classe `Carro` e fabrica vários objetos `fusca`, `ferrari`, `uno`.'
+          }
+        ]
+      },
+      {
+        id: 'mod_csharp_api',
+        title: 'Módulo 3: APIs e Conexões',
+        lessons: [
+          {
+            id: 'lesson_csharp_api_concept',
+            title: 'O que é uma API? O Garçom Digital',
+            duration: '15 min',
+            type: 'text',
+            xp: 80,
+            objective: 'Compreender como sistemas conversam entre si.',
+            mainContent: `
+## O Garçom do Restaurante
 
-## Colaborando e Pegando Atualizações
+Imagine que você está em um restaurante.
+1.  **Você (Frontend):** Quer comer, mas não pode entrar na cozinha.
+2.  **Cozinha (Backend/Banco de Dados):** Tem os ingredientes e prepara o prato.
+3.  **Garçom (API):** Leva seu pedido até a cozinha e traz a comida até você.
 
-*   **Clonar um projeto:** Para baixar um projeto que já está no GitHub para a sua máquina:
-    [CODE lang="bash"]
-    git clone https://github.com/usuario/repo.git
-    [/CODE]
-*   **Puxar atualizações:** Se alguém alterou o projeto no GitHub, para baixar essas alterações para o seu computador:
-    [CODE lang="bash"]
-    git pull
-    [/CODE]
+A **API** (Interface de Programação de Aplicações) é esse mensageiro. Ela permite que o site (ou app) converse com o servidor sem saber como ele funciona por dentro.
 
-## Conclusão
+### Diagrama de Arquitetura
 
-É isso! Com esses comandos, você já consegue começar a versionar seus projetos e construir seu portfólio no GitHub. No começo pode parecer estranho, mas quanto mais você usa, mais natural se torna.
-
-A chave é praticar. Crie um projeto, faça pequenas alterações e vá fazendo commits. Logo, o Git vai se tornar uma ferramenta indispensável no seu dia a dia. Foguete não tem ré, mas seu código agora tem! Pra cima!`,
-    status: 'published',
-    claps: 215,
-    tags: ['git', 'github', 'iniciante', 'versionamento', 'carreira']
-  },
-  {
-    id: 'article_nodejs_guide',
-    title: 'Node.js Descomplicado: Seu Guia para o Backend e Futuro Tech!',
-    subtitle: 'Entenda por que o JavaScript saiu do navegador e virou uma potência no backend. Um guia para iniciantes darem os primeiros passos com Node.js.',
-    author: 'Marlon Souza',
-    date: '10/08/2024',
-    summary: 'Você já mexe com JavaScript no frontend? Imagine usar essa mesma linguagem para construir o "cérebro" das aplicações. Isso é Node.js! Descubra como ele funciona, por que é tão popular e crie seu primeiro servidor em minutos.',
-    imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
-    category: 'Tutoriais',
-    content: `Se você está começando no mundo do desenvolvimento web, provavelmente já ouviu falar de HTML, CSS e JavaScript. Eles são o trio parada dura do **frontend** – a parte que o usuário vê e interage no navegador.
-
-Mas e a mágica que acontece por trás? O login, o salvamento de dados, as regras de negócio... Isso é o **backend**. E se eu te disser que você pode usar o mesmo JavaScript que você já conhece para construir isso?
-
-Bem-vindo ao mundo do Node.js!
-
-## O que é esse tal de Node.js?
-
-De forma simples: **Node.js é um ambiente que permite que o JavaScript rode fora do navegador.**
-
-É isso. Pegaram o motor do JavaScript que roda no Google Chrome (o V8), deram umas turbinadas e fizeram ele rodar direto no seu computador. Isso abriu um universo de possibilidades. Com Node.js, o JavaScript pode:
-
--   Acessar arquivos do seu computador.
--   Se conectar com bancos de dados.
--   Criar servidores web (APIs).
--   E muito mais!
-
-[TIP]
-Pense no JavaScript como um super-herói que antes só podia agir dentro do "prédio" do navegador. O Node.js deu a ele a chave da cidade, e agora ele pode voar por todo o sistema operacional!
-[/TIP]
-
-## Por que o Node.js é tão Popular? A Mágica do "Não-Bloqueante"
-
-A grande sacada do Node.js é seu modelo de I/O (Input/Output) **não-bloqueante**. O nome é complicado, mas a ideia é genial.
-
-Imagine um garçom em um restaurante:
-
-*   **Garçom Bloqueante (tradicional):** Ele anota seu pedido, leva para a cozinha, ESPERA o prato ficar pronto, pega o prato e só ENTÃO leva para a sua mesa. Enquanto ele espera, não atende mais ninguém. Ineficiente, né?
-*   **Garçom Node.js (Não-Bloqueante):** Ele anota seu pedido, entrega na cozinha e já vai atender outra mesa. Quando a cozinha avisa que seu prato está pronto, ele volta, pega e leva para você. Ele está sempre ocupado e atendendo várias pessoas "ao mesmo tempo".
-
-No código, isso significa que o Node.js é excelente para tarefas que envolvem espera, como uma consulta a um banco de dados ou a leitura de um arquivo. Ele não fica parado esperando; ele inicia a tarefa e parte para a próxima, sendo avisado quando a anterior termina. Isso o torna extremamente rápido e eficiente para construir APIs que precisam lidar com muitas requisições simultâneas.
-
-## Mão na Massa: Seu Primeiro Servidor "Olá, Mundo!"
-
-Bora ver como é simples criar um servidor web com Node.js.
-
-**1. Instale o Node.js:**
-Vá no site oficial [nodejs.org](https://nodejs.org/) e baixe a versão LTS (Long Term Support). É só seguir o instalador, sem segredo.
-
-**2. Crie um arquivo:**
-Crie uma pasta para o seu projeto e, dentro dela, um arquivo chamado \`servidor.js\`.
-
-**3. Escreva o código:**
-Abra o arquivo \`servidor.js\` e cole o código abaixo.
-
-[CODE lang="javascript"]
-// 1. Importa o módulo 'http' nativo do Node.js
-const http = require('http');
-
-// 2. Define a porta onde nosso servidor vai rodar
-const port = 3000;
-
-// 3. Cria o servidor
-const server = http.createServer((req, res) => {
-  // Configura o cabeçalho da resposta
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-  
-  // Envia a resposta para o navegador
-  res.end('Olá, Quebrada! Meu primeiro servidor com Node.js tá no ar! 🚀');
-});
-
-// 4. "Liga" o servidor e o faz escutar na porta definida
-server.listen(port, () => {
-  console.log(\`🚀 Servidor rodando a todo vapor em http://localhost:\${port}/\`);
-});
+[CODE lang="text"]
+[ Celular do Cliente ]        [ Servidor na Nuvem ]
+      (Frontend)                   (Backend)
+          |                            |
+          |  1. Pedido (Request)       |
+          |--------------------------> |
+          |      "Quero dados"         |
+          |                            |
+          |                            | 2. Processa
+          |                            | 3. Busca no Banco
+          |                            |
+          |  4. Resposta (Response)    |
+          |<-------------------------- |
+          |      "Toma os dados"       |
 [/CODE]
 
-**4. Rode o servidor:**
-Abra o terminal na pasta do seu projeto e execute o comando:
-[CODE lang="bash"]
-node servidor.js
-[/CODE]
-Você verá a mensagem "🚀 Servidor rodando a todo vapor..." no seu terminal.
-
-**5. Teste no navegador:**
-Abra seu navegador e acesse [http://localhost:3000](http://localhost:3000). Parabéns! Você acabou de criar e rodar seu primeiro backend com Node.js!
-
-## O Futuro é Tech, e o Backend é a Base
-
-Aprender Node.js não é apenas aprender uma nova ferramenta. É entender como a web funciona por trás das cortinas. É abrir portas para vagas de backend, uma das áreas mais bem pagas e com maior demanda no mercado de tecnologia.
-
-Se você já gosta de JavaScript no frontend, dar o próximo passo para o Node.js é um caminho natural e poderoso para se tornar um desenvolvedor mais completo e preparado para o futuro.
-
-Foguete não tem ré, mas seu código agora tem! Pra cima!`,
-    status: 'published',
-    claps: 78,
-    tags: ['node.js', 'javascript', 'backend', 'iniciante', 'api']
+No próximo passo, vamos criar esse "Garçom" usando C#!
+            `,
+            summary: 'API é a ponte que conecta o usuário (frontend) aos dados (backend), garantindo segurança e organização.'
+          }
+        ]
+      }
+    ]
   }
 ];
-export const MOCK_COURSES: Course[] = [];
+
 export const MOCK_USERS: User[] = [];
 export const MOCK_ACHIEVEMENTS: Achievement[] = [];
 export const MOCK_NOTIFICATIONS: Notification[] = [];
@@ -349,7 +429,7 @@ export const MOCK_PROJECTS: Project[] = [];
 export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     {
       id: 'post_1',
-      authorId: 'h0VK5SzekwWfHJmkwMXNJJSleIE2', // Marlon Souza
+      authorId: 'h0VK5SzekwWfHJmkwMXNJJSleIE2', 
       title: 'Qual a diferença real entre `let`, `const` e `var` em JavaScript?',
       content: `E aí, galera! Beleza?\n\nTo começando a estudar JavaScript mais a fundo e sempre vejo a galera usando \`let\` e \`const\`, mas nos exemplos mais antigos só tinha \`var\`. Fui pesquisar e entendi que tem a ver com escopo, mas ainda tá meio confuso na minha cabeça.\n\nAlguém consegue me explicar de um jeito simples, tipo "para leigos", qual a diferença prática entre eles e quando eu devo usar cada um? Valeu!`,
       tags: ['javascript', 'iniciante', 'frontend'],
@@ -359,7 +439,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
       replies: [
         {
           id: 'reply_1_1',
-          authorId: 'O1a7N0I3M6c5p8q2S9u4V1w8Y5Z7', // Outro user
+          authorId: 'O1a7N0I3M6c5p8q2S9u4V1w8Y5Z7', 
           content: 'Boa pergunta! A principal diferença é o escopo. `var` tem escopo de função, enquanto `let` e `const` têm escopo de bloco (tudo que está dentro de `{}`). Isso evita muitos bugs!',
           createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(), // 30 mins later
         },
@@ -369,7 +449,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     },
     {
       id: 'post_2',
-      authorId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6', // Aluno Teste
+      authorId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6', 
       title: 'Dica de carreira: Como montar um portfólio no GitHub que chama atenção?',
       content: `Fala, pessoal!\n\nEstou terminando o curso de Frontend e quero começar a montar meu portfólio no GitHub pra procurar meu primeiro trampo. Vocês que já tão na área, têm alguma dica do que os recrutadores olham?\n\n- Quantos projetos são bons pra ter?\n- Precisa ter projeto "grande" ou vários pequenos servem?\n- Como organizar o README de cada projeto?\n\nToda ajuda é bem-vinda!`,
       tags: ['carreira', 'github', 'portfolio', 'frontend'],
@@ -424,7 +504,7 @@ export const MOCK_EVENTS: Event[] = [
     title: 'Hackathon das Favelas 2024',
     date: 'AGO 15',
     time: '09:00',
-    hostId: 'instructor_1', // Assuming an ID exists or generic
+    hostId: 'instructor_1', 
     description: 'Um final de semana intenso de codificação, criatividade e impacto social. Junte-se a nós para criar soluções tecnológicas para problemas reais das nossas comunidades. 🚀\n\nPré-requisitos: Vontade de aprender e trabalhar em equipe.',
     imageUrl: 'https://images.unsplash.com/photo-1504384308090-c54be3852f33?q=80&w=1887&auto=format&fit=crop',
     eventType: 'Workshop',
@@ -509,10 +589,6 @@ export const MOCK_SUPPORTERS: Supporter[] = [
     { id: 'sup_13', name: 'Beatriz Rocha', tier: 'ally', since: '2024' },
 ];
 
-
-// Os dados de analytics foram zerados para refletir um estado inicial limpo,
-// prevenindo erros em componentes que dependem desta estrutura.
-// FIX: Applied the AnalyticsData type to ensure correct type inference for its properties, especially lessonPerformance.
 export const MOCK_ANALYTICS_DATA_V2: AnalyticsData = {
   totalStudents: 0,
   newStudentsLast30d: 0,

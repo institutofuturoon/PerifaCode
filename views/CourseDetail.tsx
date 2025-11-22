@@ -78,11 +78,15 @@ const CourseDetail: React.FC = () => {
         if (user) {
             const firstLesson = course.modules?.[0]?.lessons?.[0];
             if (firstLesson) {
+                // Simular inscrição se necessário (adicionar ID do curso aos cursos do usuário no backend)
+                // Por enquanto, apenas redireciona, assumindo "auto-matrícula" ao clicar.
+                showToast(`🚀 Você está acessando ${course.title}! Bons estudos.`);
                 navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
             } else {
                 showToast("⚠️ Este curso ainda não tem aulas cadastradas.");
             }
         } else {
+            // Se não logado, abre o modal de "interesse" que levará ao registro
             openInscriptionModal(course);
         }
     };
@@ -132,7 +136,7 @@ const CourseDetail: React.FC = () => {
                                     onClick={handleEnroll}
                                     className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20"
                                 >
-                                    {user ? 'Continuar Curso' : 'Inscrever-se Agora'}
+                                    {user ? 'Continuar Curso' : 'Inscrever-se Grátis'}
                                 </button>
                             </div>
                         </div>
@@ -170,7 +174,7 @@ const CourseDetail: React.FC = () => {
                                 onClick={handleEnroll}
                                 className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20 hidden md:block"
                             >
-                                {user ? 'Continuar Curso' : 'Inscrever-se Agora'}
+                                {user ? 'Continuar Curso' : 'Inscrever-se Grátis'}
                             </button>
                         </div>
                     </div>

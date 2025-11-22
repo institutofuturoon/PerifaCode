@@ -10,6 +10,7 @@ import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import DashboardSidebar from '../components/DashboardSidebar';
 import ForumView from './ForumView';
 import MarketingGeneratorView from './MarketingGeneratorView';
+import Blog from './Blog';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -441,6 +442,7 @@ const tabTitles: Record<string, string> = {
     courses: 'Gestão de Cursos',
     tracks: 'Trilhas de Aprendizado',
     blog: 'Gerenciar Blog',
+    'blog-feed': 'Notícias e Artigos',
     events: 'Eventos',
     moderation: 'Moderação',
     students: 'Base de Alunos',
@@ -759,6 +761,7 @@ const StudentsTable = () => (
           case 'overview': return <Overview />;
           case 'courses': return <CoursesTable />;
           case 'blog': return <BlogTable />;
+          case 'blog-feed': return <Blog embedded={true} />;
           case 'teamMembers': return <TeamMembersTable />;
           case 'students': return <StudentsTable />;
           case 'events': return <EventsTable />;
@@ -1001,6 +1004,7 @@ const StudentDashboard: React.FC = () => {
             case 'myCourses': return <OverviewContent />;
             case 'explore': return <ExploreCoursesPanel />;
             case 'forum': return <ForumView embedded={true} />;
+            case 'blog-feed': return <Blog embedded={true} />;
             default: return <OverviewContent />;
         }
     }
