@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Home, ChevronRight } from 'lucide-react';
 import { Lesson, Module, Course } from '../types';
 import { useAppContext } from '../App';
 import SEO from '../components/SEO';
@@ -141,6 +142,57 @@ const CourseDetail: React.FC = () => {
                 description={course.description}
                 image={course.imageUrl}
             />
+            
+            {/* HEADER DE NAVEGAÇÃO - STICKY */}
+            <div className="sticky top-0 z-40 bg-[#09090B]/95 backdrop-blur-md border-b border-white/10 shadow-lg">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+                    {/* BOTÃO VOLTAR */}
+                    <motion.button
+                        onClick={() => navigate('/dashboard')}
+                        whileHover={{ x: -4 }}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-gray-300 hover:text-white"
+                    >
+                        <Home size={18} />
+                        <span className="text-sm font-semibold hidden sm:inline">Painel</span>
+                    </motion.button>
+
+                    {/* TÍTULO DO CURSO */}
+                    <div className="flex-1 mx-4">
+                        <h2 className="text-lg font-bold text-white truncate text-center hidden md:block">
+                            {course.title}
+                        </h2>
+                    </div>
+
+                    {/* PROGRESSO + BOTÃO */}
+                    <div className="flex items-center gap-3">
+                        {isEnrolled && user && (
+                            <div className="flex items-center gap-2">
+                                <div className="hidden sm:flex items-center gap-1">
+                                    <span className="text-xs font-semibold text-gray-300">{progress}%</span>
+                                    <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983]"
+                                            style={{ width: `${progress}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* CTA BOTÃO */}
+                        {user && isEnrolled && (
+                            <motion.button
+                                onClick={handleContinue}
+                                whileHover={{ scale: 1.05 }}
+                                className="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-xs font-bold hover:shadow-lg hover:shadow-[#8a4add]/40 transition-all"
+                            >
+                                <span>Continuar</span>
+                                <ChevronRight size={16} />
+                            </motion.button>
+                        )}
+                    </div>
+                </div>
+            </div>
             
             {/* Hero */}
             <div className="relative py-16 md:py-28 bg-gradient-to-b from-black/40 to-black/20 overflow-hidden border-b border-white/10">
