@@ -284,6 +284,27 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     });
   };
   
+    const handleEnrollUser = async (courseId: string) => {
+        if (!user) return;
+        
+        const enrolledCourseIds = user.enrolledCourseIds || [];
+        if (enrolledCourseIds.includes(courseId)) return;
+        
+        const updatedEnrolledIds = [...enrolledCourseIds, courseId];
+        const updatedUser = { ...user, enrolledCourseIds: updatedEnrolledIds };
+        setUser(updatedUser);
+        showToast("🎉 Inscrição realizada com sucesso!");
+
+        try {
+            await updateDoc(doc(db, "users", user.id), {
+                enrolledCourseIds: updatedEnrolledIds
+            });
+        } catch (error) {
+            console.error("Erro ao inscrever no curso:", error);
+            showToast("❌ Erro ao inscrever. Tente novamente.");
+        }
+    };
+
     const completeLesson = async (lessonId: string) => {
         if (!user || user.completedLessonIds.includes(lessonId)) return;
         
@@ -854,7 +875,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
-    completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
+    handleEnrollUser, completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
     handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
     handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,

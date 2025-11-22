@@ -63,7 +63,7 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
 };
 
 const CourseDetail: React.FC = () => {
-    const { courses, openInscriptionModal, user, instructors, showToast } = useAppContext();
+    const { courses, openInscriptionModal, user, instructors, showToast, handleEnrollUser } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
 
@@ -89,8 +89,11 @@ const CourseDetail: React.FC = () => {
         return <div className="text-center py-20">Curso não encontrado.</div>;
     }
 
-    const handleEnroll = () => {
+    const handleEnroll = async () => {
         if (user) {
+            if (!isEnrolled) {
+                await handleEnrollUser(course.id);
+            }
             const firstLesson = course.modules?.[0]?.lessons?.[0];
             if (firstLesson) {
                 showToast(`🚀 Você está acessando ${course.title}! Bons estudos.`);

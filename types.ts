@@ -526,6 +526,7 @@ export interface AppContextType {
   closeBottleneckModal: () => void;
   openInscriptionModal: (course: Course) => void;
   closeInscriptionModal: () => void;
+  handleEnrollUser: (courseId: string) => Promise<void>;
   completeLesson: (lessonId: string) => void;
   handleCompleteOnboarding: () => Promise<void>;
   handleSaveNote: (lessonId: string, note: string) => void;

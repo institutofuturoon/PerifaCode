@@ -64,7 +64,11 @@ const AITutor: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const apiKey = process.env.REACT_APP_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+      if (!apiKey) {
+        throw new Error('GEMINI_API_KEY não configurada');
+      }
+      const ai = new GoogleGenAI({ apiKey });
       const prompt = `Você é o "Tutor IA" da FuturoOn, uma plataforma de cursos de tecnologia para jovens da periferia. Sua personalidade é amigável, encorajadora e didática, como um parceiro de estudos. Use uma linguagem acessível e evite jargões complexos. Sempre formate suas respostas com quebras de linha para melhor legibilidade e use markdown simples como **negrito** e \`código\`.
 
 O aluno está estudando o curso "${currentCourse.title}".
