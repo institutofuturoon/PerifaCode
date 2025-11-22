@@ -9,6 +9,8 @@ import SEO from '../components/SEO';
 import Badge from '../components/Badge';
 import CourseModalityBadge from '../components/CourseModalityBadge';
 import Breadcrumb from '../components/Breadcrumb';
+import ProgressCircle from '../components/ProgressCircle';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
     <div className="group bg-gradient-to-br from-white/8 to-white/5 p-5 rounded-xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8a4add]/25 hover:bg-white/10">
@@ -325,20 +327,22 @@ const CourseDetail: React.FC = () => {
                     <div className="space-y-6">
                         <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5 sticky top-24">
                             {isEnrolled && user && (
-                                <div className="mb-8 p-6 bg-gradient-to-r from-[#8a4add]/25 to-[#f27983]/20 rounded-xl border border-[#8a4add]/40 shadow-lg shadow-[#8a4add]/15">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <span className="text-sm text-gray-100 font-bold flex items-center gap-2"><span>🎯</span> Seu Progresso</span>
-                                        <span className="text-3xl font-black bg-gradient-to-r from-[#8a4add] to-[#f27983] text-transparent bg-clip-text">{progress}%</span>
-                                    </div>
-                                    <div className="w-full bg-gray-800/60 rounded-full h-3.5 mb-4 overflow-hidden border border-white/10">
-                                        <div 
-                                            className={`h-full ${progress === 100 ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-500/40' : 'bg-gradient-to-r from-[#8a4add] to-[#f27983] shadow-lg shadow-[#8a4add]/40'} transition-all duration-500`}
-                                            style={{ width: `${progress}%` }}
+                                <div className="mb-8">
+                                    {/* 🎯 RESOURCE 6: PROGRESS CIRCLE COMPONENT */}
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.2 }}
+                                        className="flex justify-center mb-8"
+                                    >
+                                        <ProgressCircle
+                                            title={course.title}
+                                            completed={completedLessons.length}
+                                            total={allLessons.length}
+                                            size="md"
+                                            showLabel={true}
                                         />
-                                    </div>
-                                    <p className="text-sm text-gray-200 text-center font-semibold">
-                                        <span className="text-white">{completedLessons.length}</span> de <span className="text-white">{allLessons.length}</span> aulas <span className="text-[#c4b5fd]">concluídas</span>
-                                    </p>
+                                    </motion.div>
                                 </div>
                             )}
 
@@ -378,7 +382,8 @@ const CourseDetail: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            {/* 🎯 RESOURCE 4: SCROLL-TO-TOP BUTTON */}
+            <ScrollToTopButton />
         </motion.div>
     );
 };

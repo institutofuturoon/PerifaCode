@@ -1,6 +1,7 @@
 
 import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport, Project } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
@@ -20,6 +21,7 @@ import BadgeUnlockCelebration from '../components/BadgeUnlockCelebration';
 import WeeklyChallengeSection from '../components/WeeklyChallengeSection';
 import StreakMilestoneModal from '../components/StreakMilestoneModal';
 import { Badge } from '../TIPOS_CURSO_ROCKETSEAT';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -77,6 +79,68 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 );
 
 // --- Internal Components ---
+
+const ContinueLearningPanel: React.FC = () => {
+    const navigate = useNavigate();
+    const { courses, user, showToast } = useAppContext();
+
+    // 🎯 RESOURCE 2: GET HISTORY FROM LOCALSTORAGE
+    const lastLesson = useMemo(() => {
+        const history = JSON.parse(localStorage.getItem('futuroon_lesson_history') || '{}');
+        if (Object.keys(history).length === 0) return null;
+
+        // Get the most recent course
+        const courseId = Object.keys(history).sort((a, b) => {
+            const timeA = new Date(history[a].timestamp).getTime();
+            const timeB = new Date(history[b].timestamp).getTime();
+            return timeB - timeA;
+        })[0];
+
+        const course = courses.find(c => c.id === courseId);
+        if (!course) return null;
+
+        const lessonData = history[courseId];
+        const lesson = course.modules
+            .flatMap(m => m.lessons)
+            .find(l => l.id === lessonData.lessonId);
+
+        if (!lesson) return null;
+
+        return { courseId, course, lessonId: lessonData.lessonId, lesson, courseName: lessonData.courseName };
+    }, [courses]);
+
+    if (!lastLesson) return null;
+
+    return (
+        <motion.div
+            className="mb-12 p-6 bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 border border-[#8a4add]/40 rounded-2xl backdrop-blur-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+        >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex-1">
+                    <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">🎓 Continuar de Onde Parei</p>
+                    <h3 className="text-xl font-bold text-white mb-1">{lastLesson.courseName}</h3>
+                    <p className="text-sm text-gray-300">
+                        Aula: <span className="font-semibold">{lastLesson.lesson.title}</span>
+                    </p>
+                </div>
+                <motion.button
+                    onClick={() => {
+                        navigate(`/course/${lastLesson.courseId}/lesson/${lastLesson.lessonId}`);
+                        showToast(`🚀 Continuando ${lastLesson.courseName}!`);
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-6 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-lg hover:shadow-lg hover:shadow-[#8a4add]/50 transition-all whitespace-nowrap"
+                >
+                    ▶️ Continuar
+                </motion.button>
+            </div>
+        </motion.div>
+    );
+};
 
 const ExploreCoursesPanel: React.FC = () => {
     const { courses, user, showToast } = useAppContext();
@@ -826,6 +890,8 @@ const StudentsTable = () => (
                 />
 
                 <div className="flex-1 p-6 md:p-8 overflow-y-auto">
+                    {/* 🎯 RESOURCE 4: SCROLL-TO-TOP BUTTON */}
+                    <ScrollToTopButton />
                     <div className="max-w-6xl mx-auto">
                         {/* Page Header Action */}
                         <div className="flex justify-between items-center mb-8">
@@ -915,6 +981,9 @@ const StudentDashboard: React.FC = () => {
 
     const OverviewContent = () => (
         <div className="space-y-8">
+             {/* 🎯 RESOURCE 2: CONTINUE LEARNING PANEL */}
+             <ContinueLearningPanel />
+
              {/* Welcome & Hero Section */}
              <div className="bg-gradient-to-r from-[#8a4add]/20 to-transparent p-8 rounded-2xl border border-[#8a4add]/20 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#8a4add]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>

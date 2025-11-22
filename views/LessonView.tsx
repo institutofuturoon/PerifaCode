@@ -1,13 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Play, CheckCircle2, Home, Keyboard } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, CheckCircle2, Home, Keyboard, ArrowLeft } from 'lucide-react';
 import { useAppContext } from '../App';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';
 import ChatBot from '../components/ChatBot';
 import Breadcrumb from '../components/Breadcrumb';
+import SidebarLessonIndex from '../components/SidebarLessonIndex';
+import ScrollToTopButton from '../components/ScrollToTopButton';
+import KeyboardHintsModal from '../components/KeyboardHintsModal';
 
 const LessonView: React.FC = () => {
   const { courses, user, completeLesson, showToast } = useAppContext();
@@ -122,11 +125,21 @@ const LessonView: React.FC = () => {
 
   return (
     <motion.div 
-      className="min-h-screen bg-[#09090B] flex flex-col"
+      className="min-h-screen bg-[#09090B] flex flex-col md:flex-row"
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
+      {/* 🎯 RESOURCE 1: SIDEBAR COM ÍNDICE */}
+      {currentCourse && (
+        <SidebarLessonIndex
+          modules={currentCourse.modules}
+          currentLessonId={currentLesson?.id || ''}
+          completedLessonIds={user?.completedLessonIds || []}
+          courseId={courseId || ''}
+          courseName={currentCourse.title}
+        />
+      )}
       {/* ============ HEADER MELHORADO ============ */}
       <div className="border-b border-white/10 bg-white/5 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -137,9 +150,21 @@ const LessonView: React.FC = () => {
               whileHover={{ x: -4 }}
               whileTap={{ scale: 0.95 }}
               className="p-2 rounded-lg hover:bg-white/10 transition-colors text-[#c4b5fd] hover:text-white group"
-              title="Voltar ao Painel"
+              title="Voltar ao Painel (ESC)"
             >
               <Home size={20} />
+            </motion.button>
+
+            {/* 🎯 RESOURCE 3: BOTÃO VOLTAR AO CURSO */}
+            <motion.button 
+              onClick={() => navigate(`/course/${courseId}`)}
+              whileHover={{ x: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-[#f27983] hover:text-white text-sm font-semibold"
+              title="Voltar à página do curso"
+            >
+              <ArrowLeft size={16} />
+              <span>Curso</span>
             </motion.button>
 
             {/* PROGRESSO CENTRAL */}
@@ -167,25 +192,35 @@ const LessonView: React.FC = () => {
       <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-4xl mx-auto">
           
-          {/* BREADCRUMB COM NAVEGAÇÃO */}
-          <Breadcrumb
-            items={[
-              { label: 'Dashboard', path: '/dashboard' },
-              { label: currentCourse.title, path: `/course/${courseId}` }
-            ]}
-            currentPage={currentLesson.title}
-          />
+          {/* 🎯 RESOURCE 7: BREADCRUMB COM MÓDULO */}
+          {(() => {
+            const currentLessonModule = currentCourse?.modules.find(m =>
+              m.lessons.some(l => l.id === lessonId)
+            );
+            return (
+              <Breadcrumb
+                items={[
+                  { label: 'Dashboard', path: '/dashboard' },
+                  { label: currentCourse?.title || 'Curso', path: `/course/${courseId}` },
+                  ...(currentLessonModule ? [{ label: currentLessonModule.title, path: `/course/${courseId}` }] : [])
+                ]}
+                currentPage={currentLesson?.title || 'Aula'}
+              />
+            );
+          })()}
 
-          {/* DICA DE ATALHOS */}
+          {/* 🎯 RESOURCE 5: KEYBOARD HINTS MELHORADOS */}
           <motion.div
-            className="mb-6 flex items-center gap-2 text-xs text-gray-500 hover:text-gray-400 transition-colors cursor-help"
+            className="mb-6 flex items-center justify-between gap-4 flex-wrap"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            title="Atalhos: ESC=Voltar, ←→=Anterior/Próxima, Enter=Completar"
           >
-            <Keyboard size={14} />
-            <span>Atalhos: <kbd className="bg-white/10 px-2 py-1 rounded">ESC</kbd> Voltar • <kbd className="bg-white/10 px-2 py-1 rounded">←→</kbd> Navegar • <kbd className="bg-white/10 px-2 py-1 rounded">Enter</kbd> Completar</span>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <Keyboard size={14} />
+              <span>Atalhos: <kbd className="bg-white/10 px-2 py-1 rounded">ESC</kbd> Voltar • <kbd className="bg-white/10 px-2 py-1 rounded">←→</kbd> Navegar • <kbd className="bg-white/10 px-2 py-1 rounded">Enter</kbd> Completar</span>
+            </div>
+            <KeyboardHintsModal />
           </motion.div>
 
           {/* BREADCRUMB + TÍTULO */}
@@ -347,6 +382,10 @@ const LessonView: React.FC = () => {
           onExploreCourses={handleExploreCourses}
         />
       )}
+
+      {/* 🎯 RESOURCE 4: SCROLL-TO-TOP BUTTON */}
+      <ScrollToTopButton />
+      
       <ChatBot />
     </motion.div>
   );
