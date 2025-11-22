@@ -232,6 +232,49 @@ export const progressoService = {
     if (xp < 15000) return 'especialista';
     return 'lenda';
   },
+
+  /**
+   * Verifica e aplica rewards de milestone de streak
+   */
+  async checkStreakMilestone(userId: string, streak: number): Promise<{ isMilestone: boolean; xpReward: number }> {
+    try {
+      // Milestones: 7, 30, 100 dias
+      const milestones = [
+        { days: 7, xp: 200 },
+        { days: 30, xp: 500 },
+        { days: 100, xp: 1000 },
+      ];
+
+      for (const milestone of milestones) {
+        if (streak === milestone.days) {
+          // Adicionar XP do milestone
+          await this.addXP(userId, milestone.xp, `Milestone Streak ${streak} dias`);
+          
+          // Adicionar badge especial
+          const badge: Badge = {
+            id: `streak_${streak}`,
+            titulo: `Streak ${streak} Dias`,
+            descricao: `Manteve um streak de ${streak} dias consecutivos`,
+            emoji: streak >= 100 ? '👑' : streak >= 30 ? '🏆' : '🥇',
+            icone: 'streak',
+            criterio: `streak_${streak}`,
+            raro: streak >= 30,
+            dataLancamento: new Date().toISOString(),
+          };
+          
+          await this.addBadge(userId, badge);
+          
+          console.log(`🎉 Milestone de streak ${streak} dias desbloqueado! +${milestone.xp} XP`);
+          return { isMilestone: true, xpReward: milestone.xp };
+        }
+      }
+
+      return { isMilestone: false, xpReward: 0 };
+    } catch (error) {
+      console.error('❌ Erro ao verificar milestone:', error);
+      return { isMilestone: false, xpReward: 0 };
+    }
+  },
 };
 
 export default progressoService;

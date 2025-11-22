@@ -17,6 +17,8 @@ import useProgresso from '../hooks/useProgresso';
 import LeaderboardView from '../components/LeaderboardView';
 import LevelUpCelebration from '../components/LevelUpCelebration';
 import BadgeUnlockCelebration from '../components/BadgeUnlockCelebration';
+import WeeklyChallengeSection from '../components/WeeklyChallengeSection';
+import StreakMilestoneModal from '../components/StreakMilestoneModal';
 import { Badge } from '../TIPOS_CURSO_ROCKETSEAT';
 
 // --- Shell Components (Local to Dashboard) ---
@@ -1077,15 +1079,24 @@ const StudentDashboard: React.FC = () => {
         }
 
         return (
-            <DashboardTrilhasSection
-                userTrilhas={trilhas}
-                userProjetos={projetos}
-                userXP={user?.xp || xp || 0}
-                userStreak={user?.streak || streak || 0}
-                userBadges={user?.achievements || badges || []}
-                enrolledTrilhaIds={user?.enrolledCourseIds || []}
-                onEnroll={enrollTrilha}
-            />
+            <div className="space-y-8">
+                {/* Desafio Semanal */}
+                <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-500/20 rounded-2xl p-6">
+                    <h3 className="text-2xl font-black text-white mb-4">⚡ Desafio da Semana</h3>
+                    <WeeklyChallengeSection userId={user?.id || ''} />
+                </div>
+
+                {/* Trilhas */}
+                <DashboardTrilhasSection
+                    userTrilhas={trilhas}
+                    userProjetos={projetos}
+                    userXP={user?.xp || xp || 0}
+                    userStreak={user?.streak || streak || 0}
+                    userBadges={user?.achievements || badges || []}
+                    enrolledTrilhaIds={user?.enrolledCourseIds || []}
+                    onEnroll={enrollTrilha}
+                />
+            </div>
         );
     }
 
