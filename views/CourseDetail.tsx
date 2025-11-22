@@ -8,14 +8,14 @@ import Badge from '../components/Badge';
 import CourseModalityBadge from '../components/CourseModalityBadge';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
-    <div className="group bg-gradient-to-br from-white/8 to-white/5 p-4 rounded-xl border border-white/15 hover:border-[#8a4add]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#8a4add]/20">
-        <div className="flex items-center gap-3">
-            <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-gradient-to-br from-[#8a4add]/30 to-[#f27983]/20 flex items-center justify-center text-[#c4b5fd] group-hover:scale-110 transition-transform">
+    <div className="group bg-gradient-to-br from-white/8 to-white/5 p-5 rounded-xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8a4add]/25 hover:bg-white/10">
+        <div className="flex items-center gap-4">
+            <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-[#8a4add]/40 to-[#f27983]/30 flex items-center justify-center text-[#c4b5fd] group-hover:scale-110 transition-transform">
                 <div className="transform scale-100">{icon}</div>
             </div>
-            <div>
-                <p className="text-[11px] text-gray-400 uppercase tracking-wider font-semibold opacity-75">{label}</p>
-                <p className="font-bold text-white capitalize text-base">{value}</p>
+            <div className="flex-1">
+                <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold">{label}</p>
+                <p className="font-bold text-white capitalize text-lg mt-1">{value}</p>
             </div>
         </div>
     </div>
@@ -137,18 +137,18 @@ const CourseDetail: React.FC = () => {
             />
             
             {/* Hero */}
-            <div className="relative py-20 md:py-24 bg-black/20 overflow-hidden">
+            <div className="relative py-16 md:py-28 bg-gradient-to-b from-black/40 to-black/20 overflow-hidden border-b border-white/10">
                 <div className="absolute inset-0">
-                    <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover opacity-20 blur-sm" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/80 to-transparent"></div>
+                    <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover opacity-15 blur-lg scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/70 to-transparent"></div>
                 </div>
                 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-end">
                         <div className="flex-1">
-                            {getStatusBadge()}
-                            <h1 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">{course.title}</h1>
-                            <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-2xl">{course.description}</p>
+                            <div className="mb-6">{getStatusBadge()}</div>
+                            <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight tracking-tight">{course.title}</h1>
+                            <p className="text-gray-300 text-base md:text-xl leading-relaxed max-w-3xl">{course.description}</p>
                             
                             <div className="flex items-center gap-4 mt-6">
                                 <img src={instructor?.avatarUrl || 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/default-avatar.png'} alt={instructor?.name} className="w-10 h-10 rounded-full border border-white/20" />
@@ -275,10 +275,10 @@ const CourseDetail: React.FC = () => {
                                 </div>
                             )}
 
-                            <div className="space-y-4 mb-8">
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Duração" value={course.duration} />
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>} label="Nível" value={course.skillLevel} />
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Formato" value={course.format} />
+                            <div className="grid grid-cols-1 gap-3 mb-8">
+                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="⏱️ Duração" value={course.duration} />
+                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>} label="📊 Nível" value={course.skillLevel} />
+                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="🎓 Formato" value={course.format} />
                             </div>
                             
                             {user && isEnrolled ? (

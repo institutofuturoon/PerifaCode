@@ -506,27 +506,33 @@ const LessonView: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="mb-8 flex items-center justify-between">
-            <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group" aria-label="Voltar">
-                <span className="inline-block transform group-hover:-translate-x-1 transition-transform" aria-hidden="true">&larr;</span> {user ? 'Voltar para Meu Painel' : 'Voltar para os cursos'}
-            </button>
-            
-            <div className="hidden md:flex items-center gap-3 bg-white/5 px-4 py-2 rounded-lg border border-white/10">
-                <span className="text-xs text-gray-400">Progresso do Curso:</span>
-                <div className="flex items-center gap-2">
-                    <div className="w-24 bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                        <div 
-                            className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983] transition-all duration-500"
-                            style={{ width: `${courseProgress}%` }}
-                        />
+    <div className="min-h-screen bg-[#09090B] flex flex-col">
+        {/* Top Navigation Bar */}
+        <div className="border-b border-white/10 bg-white/5 backdrop-blur-sm sticky top-0 z-40">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+                <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group flex items-center gap-2" aria-label="Voltar">
+                    <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span>
+                    <span className="hidden sm:inline">{user ? 'Meu Painel' : 'Cursos'}</span>
+                </button>
+                
+                <div className="flex items-center gap-4 bg-white/10 px-4 py-2 rounded-xl border border-white/20">
+                    <span className="text-xs text-gray-300 font-semibold">Progresso:</span>
+                    <div className="flex items-center gap-2">
+                        <div className="w-24 bg-gray-800 rounded-full h-2 overflow-hidden">
+                            <div 
+                                className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983] transition-all duration-500"
+                                style={{ width: `${courseProgress}%` }}
+                            />
+                        </div>
+                        <span className="text-sm font-bold text-white">{courseProgress}%</span>
                     </div>
-                    <span className="text-xs font-bold text-white">{courseProgress}%</span>
                 </div>
             </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-12">
+        {/* Main Content Area */}
+        <div className="flex-1">
+            <div className="grid lg:grid-cols-3 gap-12">
         <main className="lg:col-span-2">
             <div className="bg-black/20 backdrop-blur-xl p-8 rounded-lg border border-white/10">
                 <header className="mb-6">
@@ -725,7 +731,8 @@ const LessonView: React.FC = () => {
                 </div>
              </div>
         </aside>
-      </div>
+            </div>
+        </div>
 
       <AITutor />
       <ChatBot />
