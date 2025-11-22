@@ -382,6 +382,8 @@ const CourseDetail: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
             {/* 🎯 RESOURCE 4: SCROLL-TO-TOP BUTTON */}
             <ScrollToTopButton />
         </motion.div>
