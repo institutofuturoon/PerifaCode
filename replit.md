@@ -1,195 +1,7 @@
 # FuturoOn - PerifaCode LMS Platform
 
-## Project Overview
-FuturoOn é uma plataforma de Learning Management System (LMS) focada em inclusão digital para comunidades carentes no Brasil. A plataforma oferece cursos de tecnologia com recursos avançados incluindo inscrição em cursos, rastreamento de progresso, tutoria com IA, fóruns comunitários, e gamificação.
-
-**Status**: MVP em produção com melhorias de UX em implementação
-
-## Recent Session Summary (Nov 22, 2025 - Final Update)
-
-### Completed - Course Modality System (Online/Hybrid/Presencial) 🎓
-
-#### 3 Types of Courses Fully Supported:
-
-**ONLINE (100% Plataforma)**
-- ✅ AI Tutor crucial (24/7 disponível)
-- ✅ Community forum importante
-- ✅ Flexible schedule (estude quando quiser)
-- ✅ Digital certificate
-- ✅ Pre-requisites support
-- Visual: 🌐 Badge com informações claras
-
-**HÍBRIDO (Plataforma + Presencial)**
-- ✅ Proporção online/presencial configurável (ex: 60/40)
-- ✅ Sync schedule (aulas síncronas com horários)
-- ✅ Presencial dates (encontros definidos)
-- ✅ Local facilitator support
-- ✅ Zoom integration ready
-- ✅ Hybrid certificate
-- Visual: 🔄 Badge com progress bar
-
-**PRESENCIAL (Plataforma como Apoio)**
-- ✅ Short-form videos (não lições completas)
-- ✅ Downloadable resources
-- ✅ Sync lives (aulas ao vivo)
-- ✅ Physical location tracking
-- ✅ Lower community weight
-- ✅ Presential certificate
-- Visual: 🏢 Badge com local
-
-#### Implementation Complete
-- ✅ CourseModality interface with all 3 types
-- ✅ CourseModalityBadge component (reusable)
-- ✅ CourseDetail integration with modality display
-- ✅ Visual indicators for each format
-- ✅ Admin-ready data structure
-- ✅ Zero-cost (no external APIs)
-
-## Recent Session Summary (Nov 22, 2025 - Chat Bot)
-
-### Completed - Chat Bot Zero-Cost Implementation 🤖
-
-#### Chat Widget Features
-- ✅ Componente flutuante ChatBot.tsx integrado em LessonView
-- ✅ Interface estilizada com gradient (roxo/magenta)
-- ✅ Histórico de mensagens em tempo real (Firestore)
-- ✅ Sistema de feedback (👍 Ajudou / 👎 Não ajudou)
-- ✅ Indicador de digitação com animação
-- ✅ Responsivo e acessível
-
-#### Chat Bot Admin Dashboard
-- ✅ Views: Métricas | FAQ Base | Conversas
-- ✅ Adicionar/editar/deletar FAQs com palavras-chave
-- ✅ Dashboard de métricas em tempo real:
-  - Total de mensagens processadas
-  - Taxa de resolução automática
-  - Escaladas para mentor
-  - FAQs mais usadas (ranking)
-- ✅ Rota protegida: /admin/chatbot (admin only)
-
-#### Backend Infrastructure
-- ✅ Cloud Function template (processChatMessage.ts)
-- ✅ Estrutura Firestore: chatMessages, faqBase, chatFeedback, botMetrics
-- ✅ NLP utilities (chatBotUtils.ts):
-  - Levenshtein distance para similaridade
-  - Keyword extraction
-  - FAQ matching com scoring
-  - Sentiment detection
-- ✅ Auto-initialization de FAQs (8 examples de exemplo)
-
-#### FAQ Base de Conhecimento
-- ✅ 8 FAQs de exemplo em 3 categorias:
-  - **Técnico** (Python, JavaScript debugging, comparações)
-  - **Administrativo** (prazos, modalidades)
-  - **Motivacional** (encorajamento, autoconfiança)
-- ✅ Keywords, links de vídeos e materiais
-- ✅ Effectiveness scoring e usage tracking
-
-#### Tipos TypeScript Adicionados
-- ✅ FAQ interface (courseId, keywords, effectiveness, usageCount)
-- ✅ ChatMessage com botResponse metadata
-- ✅ ChatFeedback para avaliar qualidade
-- ✅ BotMetrics para analytics
-
-#### Integração Completa
-- ✅ Inicialização automática de FAQs no App.tsx
-- ✅ ChatBot renderizado em todas as aulas
-- ✅ Admin dashboard acessível via /admin/chatbot
-- ✅ Zero-cost: apenas Firestore (free tier)
-
-#### Previous Completions (Nov 22 Earlier)
-- ✅ Badge "Inscrito" nos CartõesEnrollmentConfirmation modals
-- ✅ Barra de progresso visual em cursos
-- ✅ Trilha de progresso no CourseDetail
-- ✅ Breadcrumb na LessonView
-- ✅ Checklist completa de aulas na sidebar
-- ✅ Sistema de inscrição em cursos (handleEnrollUser)
-- ✅ Modais de celebração (LessonComplete, ModuleMilestone, CourseComplete)
-- ✅ AI Tutor com Google Gemini
-- ✅ Indicador de digitação com animação
-
-## Architecture & Key Decisions
-
-### State Management
-- **Pattern**: Context API (não Redux/Zustand)
-- **Location**: App.tsx com AppContext
-- **Key States**: 
-  - `user.enrolledCourseIds[]` - cursos inscritos
-  - `user.completedLessonIds[]` - aulas completadas
-  - `user.xp` - pontos de experiência
-
-### Component Structure
-```
-App.tsx (Context Provider)
-├── LessonView.tsx (Main learning interface)
-│   ├── AITutor (FloatingChat)
-│   ├── LessonTabs (content/notes/forum/exercise)
-│   └── Modals (completion celebrations)
-├── CourseDetail.tsx (Course overview)
-│   └── ModuleAccordion + LessonItem list
-└── CourseCard.tsx (Grid cards with progress)
-```
-
-### API Integration
-- **Backend**: Firebase (Firestore + Auth)
-- **AI**: Google Gemini 2.5 Flash
-- **Deployment Ready**: Static assets + serverless functions
-
-## Implementation Details
-
-### Files Created/Modified
-```
-Components:
-├─ components/ChatBot.tsx (NEW) - Floating chat widget
-├─ views/ChatBotAdmin.tsx (NEW) - Admin dashboard
-├─ utils/chatBotUtils.ts (NEW) - NLP utilities
-├─ utils/initializeFAQs.ts (NEW) - FAQ initialization
-
-Cloud Functions:
-├─ functions/processChatMessage.ts (NEW) - Message processing template
-
-Updated Files:
-├─ types.ts - Added FAQ, ChatMessage, ChatFeedback, BotMetrics
-├─ App.tsx - Integrated ChatBotAdmin route + FAQ initialization
-├─ views/LessonView.tsx - Added ChatBot component
-├─ views/Admin.tsx - (may add link to chatbot admin)
-```
-
-### Firestore Collections Structure
-```
-faqBase/
-├─ id: string
-├─ courseId: string
-├─ category: 'tecnico' | 'administrativo' | 'motivacional'
-├─ keywords: string[]
-├─ question: string
-├─ answer: string (markdown)
-├─ videoUrl?: string
-├─ linkToMaterial?: string
-├─ effectiveness: number (0-100)
-├─ usageCount: number
-├─ createdAt: timestamp
-└─ updatedAt: timestamp
-
-chatMessages/
-├─ id: string
-├─ userId: string
-├─ courseId: string
-├─ lessonId?: string
-├─ message: string
-├─ sender: 'user' | 'bot' | 'mentor'
-├─ timestamp: timestamp
-├─ status: 'pending' | 'answered'
-└─ botResponse?: { type, faqId, confidence, mentorId }
-
-chatFeedback/
-├─ id: string
-├─ messageId: string
-├─ userId: string
-├─ rating: 1-5
-├─ comment?: string
-└─ timestamp: timestamp
-```
+## Overview
+FuturoOn is an LMS platform designed for digital inclusion in underprivileged Brazilian communities. It provides technology courses with advanced features such as course enrollment, progress tracking, AI-powered tutoring, community forums, and gamification. The project aims to provide an accessible and engaging learning experience, preparing students for the tech job market and fostering community growth.
 
 ## User Preferences
 - Language: Portuguese (Brazil) - PT-BR
@@ -197,162 +9,34 @@ chatFeedback/
 - UX Priority: Clear visual feedback, celebration moments, minimal friction
 - Bot Strategy: FAQ-based, no ML needed, learning loop with feedback
 
-## Known Limitations & Future Improvements
-1. **Cloud Functions**: Template provided, needs Firebase CLI deployment for production
-2. **Gemini API Key**: Still needed for AI Tutor (separate from Chat Bot)
-3. **Chat Bot Learning**: Currently loads FAQs static, will improve with feedback loop
-4. **NLP**: Keyword-matching based, can upgrade to Hugging Face models later
+## System Architecture
+The platform is built with a clear separation between the institutional "SITE" and the LMS "SISTEMA".
 
-## Testing Checklist - Chat Bot
-- [ ] Navigate to /course/{id}/lesson/{id}
-- [ ] Click 💬 button (bottom right)
-- [ ] Test: "Qual é a diferença entre == e is?"
-- [ ] Bot should respond with FAQ match + feedback buttons
-- [ ] Click "👍 Ajudou" and verify feedback is recorded
-- [ ] Visit /admin/chatbot to see:
-  - [ ] Métricas updated (1 resolved)
-  - [ ] FAQ showing in "FAQs existentes"
-  - [ ] Conversa logged
-- [ ] Add new FAQ via admin panel
-- [ ] Test escalation (ask something not in FAQ)
+**UI/UX Decisions:**
+- **Course Modalities:** Supports Online, Hybrid, and Presential courses with distinct visual badges and configurable features.
+- **Chat Bot:** Features a floating widget with a stylized interface, real-time message history, feedback system, and typing indicator.
+- **Pre-Lesson Screen:** A full-screen onboarding component displays lesson duration, XP, position, module progress, and objectives to improve retention and completion rates.
+- **Mentor Dashboard:** Professional dashboard with status tabs (Pending, In Progress, Resolved), real-time escalation lists, priority indicators, category icons, and response time tracking.
+- **Notification System:** Real-time notifications via Firestore with a bell icon, unread badge counter, and visual distinction between read/unread messages.
+- **Theming:** Utilizes a gradient (purple/magenta) for specific UI elements like the chat bot.
 
-## Recent Session Summary (Nov 22, 2025 - EmailJS Email Notifications)
+**Technical Implementations:**
+- **State Management:** Uses React's Context API for global state management (e.g., `user.enrolledCourseIds`, `user.completedLessonIds`, `user.xp`).
+- **Component Structure:** Follows a modular approach with `App.tsx` as the context provider, `LessonView.tsx` for the main learning interface, `CourseDetail.tsx` for course overviews, and `CourseCard.tsx` for course listings.
+- **API Integration:** Leverages Firebase (Firestore for database, Auth for authentication) and Google Gemini 2.5 Flash for AI tutoring.
+- **Chat Bot Logic:** Implemented with NLP utilities (`chatBotUtils.ts`) including Levenshtein distance for similarity, keyword extraction, FAQ matching with scoring, and sentiment detection. It uses a Firestore-based knowledge base (`faqBase`) and tracks metrics in `botMetrics`.
+- **Email Notifications:** Integrates EmailJS for sending email notifications, particularly for mentor escalations, with templated variables.
+- **Routing:** A clear separation of routes into `SiteLayout` (for institutional pages like Home, Blog), `SistemaLayout` (for LMS features like Dashboard, Lessons, Admin), and authentication routes, protected by `PrivateRoute`.
 
-### Completed - EmailJS Email Integration 📧
+**Feature Specifications:**
+- **Course Progress Tracking:** Visual progress bars, progress trails, and a checklist of completed lessons.
+- **Enrollment System:** User enrollment in courses with confirmation modals.
+- **AI Tutor:** Integration with Google Gemini for AI-powered tutoring within lessons.
+- **Gamification:** Celebration modals for lesson completion, module milestones, and course completion.
+- **Admin Dashboards:** Dedicated `/admin/chatbot` route for managing FAQs, viewing bot metrics, and tracking conversations.
 
-#### Email Notification Features
-- ✅ @emailjs/browser installed (npm)
-- ✅ App.tsx initialization with public key
-- ✅ sendEmailNotification() function in notificationService
-- ✅ Environment variables: VITE_EMAILJS_PUBLIC_KEY, SERVICE_ID, TEMPLATE_ID
-- ✅ Template variables ready: mentor_name, student_name, message, timestamp, dashboard_link
-- ✅ HTML email template with proper formatting
-- ✅ Error handling and logging
-
-#### Integration Points
-- ✅ App.tsx: Initializes EmailJS on app startup
-- ✅ notificationService.ts: sendEmailNotification() function ready
-- ✅ ChatBot.tsx: Ready to call sendEmailNotification on escalation
-- ✅ MentorDashboard.tsx: No changes needed (notification system works)
-
-#### Cost Breakdown
-- Free tier: 200 emails/month (enough for 10 escalations/day)
-- Plus: R$ 15/mês (1.000 emails)
-- **Current Cost**: R$ 0 / month
-- **Scalable to R$ 15/month if needed**
-
-#### Setup Instructions
-See: EMAILJS_SETUP_GUIDE.md for complete setup in 5 minutes
-
-## Recent Session Summary (Nov 22, 2025 - Mentor Notifications)
-
-### Completed - Zero-Cost Notification System 🔔
-
-#### Notification Features
-- ✅ Real-time notifications via Firestore
-- ✅ Bell icon with unread badge counter (🔴 com número)
-- ✅ Dropdown showing all notifications
-- ✅ Visual distinction: unread (blue) vs read (gray)
-- ✅ Mark as read on click
-- ✅ Timestamp for each notification
-- ✅ Auto-created when escalation happens
-- ✅ Zero cost (Firestore free tier: 50k reads/day, using <1%)
-
-#### Integration Points
-- ✅ MentorDashboard.tsx: Bell button + dropdown UI
-- ✅ notificationService.ts: createMentorNotification() function
-- ✅ ChatBot.tsx: Ready to create notifications on escalation
-- ✅ Firestore collection: mentorNotifications
-
-#### Optional Email Notifications
-- ✅ sendEmailNotification() function in notificationService.ts
-- ✅ EmailJS integration ready (up to 200 emails/month FREE)
-- ✅ Template-ready for customization
-- ✅ Zero additional cost
-
-#### Cost Breakdown
-- Firestore: R$ 0 (free tier covers everything)
-- EmailJS: R$ 0 (200 emails/month free)
-- Push notifications: R$ 0 (Web API, no external service needed)
-- **TOTAL**: R$ 0 / month
-
-## Recent Session Summary (Nov 22, 2025 - Mentor Dashboard)
-
-### Completed - Professional Mentor Dashboard 🎓
-
-#### Dashboard Features
-- ✅ 3 status tabs: Pendentes | Em Progresso | Resolvidas
-- ✅ Real-time escalation list with student info
-- ✅ Visual priority indicators (Baixa/Média/Alta)
-- ✅ Category icons (🔧 Técnico, 📋 Admin, 💪 Motivacional)
-- ✅ Response time tracking (em minutos)
-- ✅ Quick status update buttons
-- ✅ Statistics panel (pending/in-progress/resolved counts)
-
-#### Response Management
-- ✅ Mentor response panel (side panel)
-- ✅ Original question display
-- ✅ Text area for detailed responses
-- ✅ "Send & Resolve" button (marks escalation as done)
-- ✅ Automatic timestamp + response time calculation
-- ✅ Feedback loop (tracks mentor effectiveness)
-
-#### Integration
-- ✅ Route: /mentor-dashboard
-- ✅ Access control: Only mentors (role == 'instructor' || isMentor)
-- ✅ Real-time updates via Firestore onSnapshot
-- ✅ Integrated with existing chat system
-- ✅ Response saved to chatMessages collection
-
-#### Data Structure
-- Reads from: chatMessages collection (sender == 'mentor')
-- Writes to: 
-  - Updates escalation status/response
-  - Creates new message for response
-  - Tracks responseTime automatically
-
-## Recent Session Summary (Nov 22, 2025 - Pre-Lesson Screen)
-
-### Completed - Pre-Lesson Onboarding Screen 🎯
-
-#### Pre-Lesson Features
-- ✅ PreLessonScreen.tsx component (full-screen welcome)
-- ✅ Breadcrumb navigation (Course > Module > Lesson)
-- ✅ 4 Info cards: Duration, XP, Lesson position, Module progress
-- ✅ Module timeline visual (✓ completed | 🔵 current | ⭕ upcoming)
-- ✅ Course progress bar with percentage
-- ✅ Lesson objective highlighted
-- ✅ Call-to-action buttons (Back | Start Lesson)
-- ✅ localStorage tracking (zero-cost analytics)
-
-#### Integration
-- ✅ LessonView.tsx: state showPreLesson, conditional render
-- ✅ Responsive design (4 cols desktop, 2 cols tablet, 1 col mobile)
-- ✅ Zero backend cost (only localStorage)
-- ✅ Calculated on-the-fly (no extra Firestore reads)
-
-#### Expected Impact
-- **Completion rate:** +8-10%
-- **Retention (first minute):** -20% drop-off
-- **Retenção na aula:** +12-15%
-- **Student satisfaction:** +15%
-
-#### Files Modified/Created
-```
-✨ NEW: components/PreLessonScreen.tsx
-✏️ MODIFIED: views/LessonView.tsx
-```
-
-## Next Phase (Post-MVP)
-1. **Cloud Function Deployment**: Deploy processChatMessage to Firebase ⚡ (NEXT!)
-2. **Mentor Notifications**: Push/email when escalations arrive
-3. **Advanced NLP**: Integrate Hugging Face for semantic similarity
-4. **Multi-channel**: WhatsApp, Telegram, Email
-5. **Analytics**: Bot performance dashboard for mentors
-6. **Gamification**: Badges for answering FAQs correctly
-7. **Certificate Generation**: PDF certs with custom design
-8. **Leaderboards & Achievements**: Ranking system
-
----
-**Last Updated**: Nov 22, 2025 (Chat Bot Implementation Complete)
-**Maintained By**: PerifaCode Development Team
+## External Dependencies
+- **Firebase:** Firestore (database, real-time updates), Authentication.
+- **Google Gemini 2.5 Flash:** For AI Tutor functionality.
+- **EmailJS:** For sending email notifications (`@emailjs/browser`).
+- **npm packages:** `@emailjs/browser`.

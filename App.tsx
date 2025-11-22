@@ -9,6 +9,11 @@ import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } 
 import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
+
+// Layouts (criados dentro de components por enquanto - serão reorganizados depois)
+import SiteLayout from './components/SiteLayout';
+import SistemaLayout from './components/SistemaLayout';
+import PrivateRoute from './components/PrivateRoute';
 import Home from './views/Home';
 import Dashboard from './views/Dashboard';
 import ConnectView from './views/ConnectView';
@@ -914,43 +919,45 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppContent: React.FC = () => {
     const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeBottleneckModal, closeInscriptionModal } = useAppContext();
     
-    const location = useLocation();
-    
-    // Updated logic: Consider lessons, certificates, dashboard, admin, profile and change password as "Workspace" routes
-    // This effectively hides the global Institutional Header/Footer on these pages.
-    const isWorkspaceRoute = 
-        location.pathname.startsWith('/dashboard') || 
-        location.pathname.startsWith('/admin') || 
-        location.pathname.includes('/lesson/') || 
-        location.pathname.includes('/certificate') ||
-        location.pathname.includes('/profile') ||
-        location.pathname.includes('/change-password') ||
-        location.pathname.includes('/chatbot');
-    
     return (
-        <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
-            <ScrollToTop />
-            {!isWorkspaceRoute && <Header />}
-            {/* Componente de Tracking do Google Analytics */}
-            <AnalyticsTracker />
-            <main className="flex-grow relative">
-                {!isWorkspaceRoute && <ScrollSpaceship />}
-                <Routes>
+        <div className="bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
+            <Routes>
+                {/* ===== SITE (Institucional) ===== */}
+                <Route element={<SiteLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />
-                    <Route path="/course/:courseId" element={<CourseDetail />} />
                     <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
-                    <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
-                    <Route path="/course/:courseId/certificate" element={<CertificateView />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/connect" element={<ConnectView />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/article/:articleId" element={<ArticleView />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                    <Route path="/team" element={<TeamView />} />
+                    <Route path="/partnerships" element={<PartnershipsView />} />
+                    <Route path="/supporters" element={<SupportersView />} />
+                    <Route path="/supporter/:partnerId" element={<PartnerDetailView />} />
+                    <Route path="/events" element={<EventDetailView />} />
+                    <Route path="/event/:eventId" element={<EventDetailView />} />
+                    <Route path="/donate" element={<DonateView />} />
+                    <Route path="/privacy" element={<PrivacyPolicyView />} />
+                    <Route path="/terms" element={<TermsOfUseView />} />
+                    <Route path="/about" element={<AboutUsView />} />
+                    <Route path="/annual-report" element={<AnnualReportView />} />
+                    <Route path="/financial-statement" element={<FinancialStatementView />} />
+                </Route>
+
+                {/* ===== AUTH (sem layout) ===== */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/connect" element={<ConnectView />} />
+
+                {/* ===== SISTEMA (LMS) - Protegido ===== */}
+                <Route element={<PrivateRoute><SistemaLayout /></PrivateRoute>}>
                     <Route path="/complete-profile" element={<CompleteProfile />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/course/:courseId" element={<CourseDetail />} />
+                    <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
+                    <Route path="/course/:courseId/certificate" element={<CertificateView />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/change-password" element={<ChangePassword />} />
+
                     <Route path="/admin" element={<Dashboard />} />
                     <Route path="/admin/course-editor" element={<CourseEditor />} />
                     <Route path="/admin/course-editor/:courseId" element={<CourseEditor />} />
@@ -958,40 +965,31 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
                     <Route path="/admin/user-editor/new" element={<StudentEditor />} />
                     <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
-                    <Route path="/admin/teammember-editor/new" element={<TeamMemberEditor />} />
-                    <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
                     <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
                     <Route path="/admin/transparency-editor" element={<TransparencyEditor />} />
                     <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
                     <Route path="/admin/chatbot" element={<ChatBotAdmin />} />
+
                     <Route path="/mentor-dashboard" element={<MentorDashboard />} />
                     <Route path="/analytics" element={<Analytics />} />
+
                     <Route path="/community" element={<CommunityView />} />
                     <Route path="/forum" element={<ForumView />} />
+                    <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
+                    <Route path="/community/post/new" element={<ForumPostEditor />} />
+
                     <Route path="/project/:projectId" element={<ProjectDetailView />} />
                     <Route path="/project/edit" element={<ProjectEditor />} />
                     <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
-                    <Route path="/community/post/new" element={<ForumPostEditor />} />
-                    <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
-                    <Route path="/partnerships" element={<PartnershipsView />} />
-                    <Route path="/supporters" element={<SupportersView />} />
-                    <Route path="/supporter/:partnerId" element={<PartnerDetailView />} />
-                    <Route path="/event/new" element={<EventEditor />} />
-                    <Route path="/event/edit/:eventId" element={<EventEditor />} />
-                    <Route path="/event/:eventId" element={<EventDetailView />} />
-                    <Route path="/privacy" element={<PrivacyPolicyView />} />
-                    <Route path="/terms" element={<TermsOfUseView />} />
-                    <Route path="/team" element={<TeamView />} />
-                    <Route path="/donate" element={<DonateView />} />
-                    <Route path="/about" element={<AboutUsView />} />
-                    <Route path="/annual-report" element={<AnnualReportView />} />
-                    <Route path="/financial-statement" element={<FinancialStatementView />} />
-                    <Route path="/upload-test" element={<StudentUploadTest />} />
-                    <Route path="/api-test" element={<ApiTest />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            </main>
-            {!isWorkspaceRoute && <Footer />}
+                </Route>
+
+                {/* ===== TEST ROUTES ===== */}
+                <Route path="/upload-test" element={<StudentUploadTest />} />
+                <Route path="/api-test" element={<ApiTest />} />
+
+                {/* ===== 404 ===== */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
 
             {/* Modals */}
             {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={closeProfileModal} />}
