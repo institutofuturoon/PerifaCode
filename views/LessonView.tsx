@@ -330,7 +330,11 @@ const LessonView: React.FC = () => {
   }
   
   const handleBackToCourse = () => {
-    navigate('/courses');
+    if (user) {
+        navigate('/dashboard');
+    } else {
+        navigate('/courses');
+    }
   };
 
   const handleCompleteLesson = () => {
@@ -379,8 +383,8 @@ const LessonView: React.FC = () => {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-8">
-            <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group" aria-label="Voltar para a lista de cursos">
-                <span className="inline-block transform group-hover:-translate-x-1 transition-transform" aria-hidden="true">&larr;</span> Voltar para os cursos
+            <button onClick={handleBackToCourse} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group" aria-label="Voltar">
+                <span className="inline-block transform group-hover:-translate-x-1 transition-transform" aria-hidden="true">&larr;</span> {user ? 'Voltar para Meu Painel' : 'Voltar para os cursos'}
             </button>
         </div>
       <div className="grid lg:grid-cols-3 gap-12">

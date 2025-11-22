@@ -10,11 +10,11 @@ import Badge from '../components/Badge';
 
 const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => void }> = ({ course, onSelect }) => (
     <div 
-        className="relative rounded-2xl overflow-hidden p-6 md:p-10 flex items-end min-h-[300px] bg-black/20 border border-white/10 group cursor-pointer"
+        className="relative rounded-2xl overflow-hidden p-6 md:p-10 flex items-end min-h-[350px] bg-black/20 border border-white/10 group cursor-pointer shadow-2xl shadow-black/50"
         onClick={() => onSelect(course)}
     >
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
-            <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover opacity-40" />
+            <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover opacity-50" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/60 to-transparent"></div>
         </div>
         <div className="relative z-10 max-w-3xl">
@@ -22,12 +22,12 @@ const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => v
                  <span className="inline-block py-1 px-3 rounded bg-[#8a4add] text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-[#8a4add]/20">
                     Destaque
                 </span>
-                <span className="font-semibold text-xs text-[#c4b5fd] uppercase tracking-wider">{course.track}</span>
+                <span className="font-semibold text-xs text-[#c4b5fd] uppercase tracking-wider bg-black/40 px-2 py-1 rounded backdrop-blur-sm border border-white/10">{course.track}</span>
             </div>
-            <h2 className="text-2xl md:text-4xl font-black text-white mb-2 leading-tight group-hover:text-[#c4b5fd] transition-colors">{course.title}</h2>
-            <p className="text-sm md:text-base text-gray-300 line-clamp-2 mb-6 max-w-2xl">{course.longDescription}</p>
+            <h2 className="text-3xl md:text-5xl font-black text-white mb-3 leading-tight group-hover:text-[#c4b5fd] transition-colors">{course.title}</h2>
+            <p className="text-sm md:text-base text-gray-200 line-clamp-2 mb-8 max-w-2xl leading-relaxed drop-shadow-md">{course.longDescription}</p>
             <button
-                className="bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm flex items-center gap-2"
+                className="bg-white text-black font-bold py-3.5 px-8 rounded-lg hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm flex items-center gap-2"
             >
                 Acessar Agora
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
@@ -37,7 +37,7 @@ const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => v
 );
 
 const Courses: React.FC = () => {
-  const { courses } = useAppContext();
+  const { courses, user } = useAppContext();
   const navigate = useNavigate();
   
   const [activeTrack, setActiveTrack] = useState<string>('Todos');
@@ -51,6 +51,21 @@ const Courses: React.FC = () => {
     } else {
         navigate(`/course/${course.id}`);
     }
+  };
+
+  // Helper to calculate progress for the card
+  const getCourseProgress = (course: Course) => {
+      if (!user) return { progress: 0, isEnrolled: false };
+      
+      const courseLessonIds = course.modules.flatMap(m => m.lessons.map(l => l.id));
+      if (courseLessonIds.length === 0) return { progress: 0, isEnrolled: false };
+
+      const completedInCourse = user.completedLessonIds.filter(id => courseLessonIds.includes(id));
+      const isEnrolled = completedInCourse.length > 0 || (user.completedLessonIds && user.completedLessonIds.some(id => courseLessonIds.includes(id))); // Basic check if they started any lesson
+      
+      const progress = Math.round((completedInCourse.length / courseLessonIds.length) * 100);
+      
+      return { progress, isEnrolled: isEnrolled || progress > 0 };
   };
 
   const featuredCourse = useMemo(() => courses.find(c => c.heroContent) || courses[0], [courses]);
@@ -154,9 +169,18 @@ const Courses: React.FC = () => {
 
                 {filteredCourses.length > 0 ? (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
-                        {filteredCourses.map(course => (
-                            <CourseCard key={course.id} course={course} onCourseSelect={handleCourseSelect}/>
-                        ))}
+                        {filteredCourses.map(course => {
+                            const { progress, isEnrolled } = getCourseProgress(course);
+                            return (
+                                <CourseCard 
+                                    key={course.id} 
+                                    course={course} 
+                                    onCourseSelect={handleCourseSelect}
+                                    progress={progress}
+                                    isEnrolled={isEnrolled}
+                                />
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10 border-dashed">

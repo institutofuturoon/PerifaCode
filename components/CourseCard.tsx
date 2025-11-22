@@ -5,6 +5,8 @@ import { Course } from '../types';
 interface CourseCardProps {
   course: Course;
   onCourseSelect: (course: Course) => void;
+  progress?: number;
+  isEnrolled?: boolean;
 }
 
 const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
@@ -24,7 +26,7 @@ const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
     return <>{icon}</>;
 };
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progress = 0, isEnrolled = false }) => {
   const statusConfig = {
     open: { text: 'Abertas', classes: 'bg-green-500/80' },
     closed: { text: 'Fechadas', classes: 'bg-red-500/80' },
@@ -35,29 +37,68 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect }) => {
   return (
     <button
       onClick={() => onCourseSelect(course)}
-      className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-[#8a4add]/10 h-full"
+      className="bg-[#121214] hover:bg-[#202024] rounded-xl overflow-hidden border border-white/5 group flex flex-col text-left transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-[#8a4add]/10 h-full w-full"
     >
-      <div className="overflow-hidden aspect-video relative">
+      <div className="overflow-hidden aspect-video relative w-full">
         <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl} alt={course.title} />
-        {status && (
-            <div className={`absolute top-1.5 left-1.5 backdrop-blur-sm px-1 py-0.5 rounded text-[8px] font-semibold text-white ${status.classes}`}>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent opacity-60"></div>
+        
+        {status && !isEnrolled && (
+            <div className={`absolute top-2 left-2 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wide shadow-sm ${status.classes}`}>
               {status.text}
             </div>
         )}
-        <div className="absolute top-1.5 right-1.5 bg-black/50 backdrop-blur-sm px-1 py-0.5 rounded text-[8px] font-semibold text-white">
+        
+        {isEnrolled && (
+             <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-700">
+                <div 
+                    className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-[#8a4add]'}`} 
+                    style={{ width: `${progress}%` }}
+                ></div>
+             </div>
+        )}
+
+        <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10">
           {course.skillLevel}
         </div>
       </div>
-      <div className="p-2.5 flex flex-col flex-grow">
-        <div className="flex items-center justify-between text-[8px] font-semibold text-gray-400">
-          <div className="flex items-center gap-1">
+
+      <div className="p-4 flex flex-col flex-grow w-full">
+        <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 mb-2 uppercase tracking-wider">
+          <div className="flex items-center gap-1.5 text-[#8a4add]">
             <CategoryIcon category={course.category} />
-            <span className="uppercase tracking-wider">{course.track}</span>
+            <span>{course.track}</span>
           </div>
           <span>{course.duration}</span>
         </div>
-        <h3 className="mt-1 text-xs font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-2 flex-grow">{course.title}</h3>
-        <p className="mt-0.5 text-[9px] text-gray-400 line-clamp-2">{course.description}</p>
+        
+        <h3 className="text-base font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-2 mb-2 flex-grow leading-tight">
+            {course.title}
+        </h3>
+        
+        <p className="text-xs text-gray-400 line-clamp-2 mb-4 leading-relaxed">
+            {course.description}
+        </p>
+
+        <div className="mt-auto pt-3 border-t border-white/5 w-full">
+            {isEnrolled ? (
+                <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-gray-300">
+                        {progress === 100 ? 'Concluído 🎉' : `${progress}% concluído`}
+                    </span>
+                    <span className="text-xs font-bold text-[#c4b5fd] group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                        {progress === 100 ? 'Revisar' : 'Continuar'} &rarr;
+                    </span>
+                </div>
+            ) : (
+                <div className="flex items-center justify-between">
+                     <span className="text-xs text-gray-500 group-hover:text-gray-300 transition-colors">Saiba mais</span>
+                     <span className="text-xs font-bold text-white bg-white/10 px-3 py-1.5 rounded-full group-hover:bg-[#8a4add] transition-colors">
+                        Acessar
+                     </span>
+                </div>
+            )}
+        </div>
       </div>
     </button>
   );

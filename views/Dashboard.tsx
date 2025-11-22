@@ -66,6 +66,96 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
   </div>
 );
 
+// --- Internal Components ---
+
+const ExploreCoursesPanel: React.FC = () => {
+    const { courses, user } = useAppContext();
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeTrack, setActiveTrack] = useState('Todos');
+
+    const tracks = useMemo(() => ['Todos', ...Array.from(new Set(courses.map(c => c.track)))].sort(), [courses]);
+
+    const filteredCourses = useMemo(() => courses.filter(course => 
+        (course.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (activeTrack === 'Todos' || course.track === activeTrack)
+    ), [courses, searchTerm, activeTrack]);
+
+    const handleCourseClick = (course: Course) => {
+        // If enrolled or not, for students in workspace, we always try to go to the content.
+        // The LessonView handles enrollment/first lesson logic or the dashboard flow.
+        // If the course has no lessons, it might fallback, but generally this keeps them in the app.
+        const firstLesson = course.modules?.[0]?.lessons?.[0];
+        if (firstLesson) {
+            navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
+        } else {
+            // If no lessons, maybe go to a detailed view, but we want to avoid the public landing page if possible.
+            // For now, let's route to the standard detail view but it will likely be the public one.
+            // Ideally, we'd have an internal detail view.
+            navigate(`/course/${course.id}`); 
+        }
+    };
+
+    const getCourseProgress = (course: Course) => {
+        if (!user) return { progress: 0, isEnrolled: false };
+        const courseLessonIds = course.modules.flatMap(m => m.lessons.map(l => l.id));
+        if (courseLessonIds.length === 0) return { progress: 0, isEnrolled: false };
+        const completedInCourse = user.completedLessonIds.filter(id => courseLessonIds.includes(id));
+        // Simple logic: if user has completed at least 1 lesson OR implies enrollment via some other future flag
+        const isEnrolled = completedInCourse.length > 0; 
+        const progress = Math.round((completedInCourse.length / courseLessonIds.length) * 100);
+        return { progress, isEnrolled };
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
+                <div className="relative w-full md:w-96">
+                    <input 
+                        type="search" 
+                        placeholder="Buscar curso..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white"
+                    />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+                <div className="flex gap-2 overflow-x-auto max-w-full no-scrollbar">
+                    {tracks.map(track => (
+                        <button 
+                            key={track}
+                            onClick={() => setActiveTrack(track)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${activeTrack === track ? 'bg-[#8a4add] text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                        >
+                            {track}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredCourses.map(course => {
+                    const { progress, isEnrolled } = getCourseProgress(course);
+                    return (
+                        <CourseCard 
+                            key={course.id} 
+                            course={course} 
+                            onCourseSelect={handleCourseClick}
+                            progress={progress}
+                            isEnrolled={isEnrolled}
+                        />
+                    );
+                })}
+            </div>
+            {filteredCourses.length === 0 && (
+                <div className="text-center py-20 text-gray-500">Nenhum curso encontrado.</div>
+            )}
+        </div>
+    );
+};
+
+
+// ... (Other Admin Panel Components: MyAgendaPanel, TeamOrderingPanel, etc. remain unchanged) ...
 const MyAgendaPanel: React.FC<{
   user: User;
   mentorSessions: MentorSession[];
@@ -351,6 +441,7 @@ const tabTitles: Record<string, string> = {
     overview: 'Visão Geral',
     myAgenda: 'Minha Agenda',
     myCourses: 'Meus Cursos',
+    explore: 'Catálogo de Cursos',
     courses: 'Gestão de Cursos',
     tracks: 'Trilhas de Aprendizado',
     blog: 'Gerenciar Blog',
@@ -770,34 +861,23 @@ const StudentsTable = () => (
 
 const StudentDashboard: React.FC = () => {
     const { 
-      user, courses, articles,
-      courseProgress, mentors, 
-      projects, events, mentorSessions, showToast
+      user, courses, 
+      courseProgress, 
+      showToast
     } = useAppContext();
     const navigate = useNavigate();
-    const [showAllCourses, setShowAllCourses] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [activeTab, setActiveTab] = useState('overview');
+    const [activeTab, setActiveTab] = useState('myCourses');
 
     if (!user) return null;
     
     const handleCourseNavigation = (course: Course) => {
-        if (course.heroContent) {
-            navigate(`/course-landing/${course.id}`);
-        } else {
-            navigate(`/course/${course.id}`);
-        }
-    };
-
-    const handleStartCourse = (course: Course) => {
         const firstLesson = course.modules?.[0]?.lessons?.[0];
         if (firstLesson) {
             navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
         } else {
-            handleCourseNavigation(course);
-            if (showToast) {
-                showToast('🚀 Começando o curso! A primeira aula será adicionada em breve.');
-            }
+            // Fallback if no lessons
+            navigate(`/course/${course.id}`);
         }
     };
 
@@ -809,152 +889,121 @@ const StudentDashboard: React.FC = () => {
       return allLessons.find(l => !user.completedLessonIds.includes(l.id)) || null;
     }, [latestInProgress, user.completedLessonIds]);
   
-    const startedOrCompletedCourseIds = useMemo(() => {
-      const inProgressIds = inProgressCourses.map(item => item.course.id);
-      const completedIds = completedCourses.map(course => course.id);
-      return new Set([...inProgressIds, ...completedIds]);
+    // Combine in-progress and completed courses into a single list for "My Courses"
+    const allMyCourses = useMemo(() => {
+        return [
+            ...inProgressCourses.map(c => ({...c.course, progress: c.progress, isEnrolled: true})), 
+            ...completedCourses.map(c => ({...c, progress: 100, isEnrolled: true}))
+        ];
     }, [inProgressCourses, completedCourses]);
-  
-    const notStartedCourses = useMemo(() => 
-      courses.filter(course => !startedOrCompletedCourseIds.has(course.id)),
-      [courses, startedOrCompletedCourseIds]
-    );
-    
-    const firstCourseToStart = notStartedCourses.length > 0 ? notStartedCourses[0] : null;
-    const userLevel = Math.floor((user.xp || 0) / 100) + 1;
-    const xpForNextLevel = 100;
-    const xpInCurrentLevel = (user.xp || 0) % xpForNextLevel;
 
     const OverviewContent = () => (
         <div className="space-y-8">
-             {/* Welcome & Progress Header */}
-             <div className="bg-gradient-to-r from-[#8a4add]/20 to-transparent p-6 rounded-2xl border border-[#8a4add]/20">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h2 className="text-2xl font-bold text-white">Olá, {user.name.split(' ')[0]}! 👋</h2>
-                        <p className="text-gray-300 text-sm mt-1">Você está no <span className="text-[#c4b5fd] font-bold">Nível {userLevel}</span>. Faltam {xpForNextLevel - xpInCurrentLevel} XP para o próximo nível.</p>
-                    </div>
-                    <div className="w-full md:w-64">
-                        <ProgressBar progress={(xpInCurrentLevel / xpForNextLevel) * 100} className="h-2" />
-                    </div>
-                </div>
+             {/* Welcome & Hero Section */}
+             <div className="bg-gradient-to-r from-[#8a4add]/20 to-transparent p-8 rounded-2xl border border-[#8a4add]/20 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#8a4add]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                <h2 className="text-3xl font-black text-white mb-2 relative z-10">Olá, {user.name.split(' ')[0]}! 👋</h2>
+                <p className="text-gray-300 text-lg relative z-10 max-w-xl">
+                    Pronto para continuar sua jornada? O aprendizado é a única coisa que a mente nunca se cansa, nunca tem medo e nunca se arrepende.
+                </p>
              </div>
 
-            {/* Continue Learning */}
+            {/* Continue Learning Hero */}
              {latestInProgress && nextLesson ? (
-              <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Continue Estudando</h3>
-                 <div className="flex flex-col md:flex-row items-center gap-6">
-                    <img src={latestInProgress.course.imageUrl} className="w-full md:w-32 h-20 object-cover rounded-lg opacity-80" alt="" />
-                    <div className="flex-1 w-full">
-                        <h4 className="text-lg font-bold text-white">{latestInProgress.course.title}</h4>
-                        <p className="text-sm text-gray-400 mt-1">Próxima aula: <span className="text-white">{nextLesson.title}</span></p>
-                        <div className="mt-3 max-w-md">
-                            <ProgressBar progress={latestInProgress.progress} className="h-1.5" />
+              <div>
+                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Continue Estudando
+                 </h3>
+                 <div className="bg-[#121214] rounded-2xl border border-white/10 p-0 overflow-hidden flex flex-col md:flex-row shadow-2xl shadow-black/50 group hover:border-[#8a4add]/30 transition-all">
+                    <div className="w-full md:w-80 h-48 md:h-auto relative flex-shrink-0">
+                        <img src={latestInProgress.course.imageUrl} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" alt="" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent"></div>
+                        <div className="absolute bottom-4 left-4">
+                             <span className="bg-[#8a4add] text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide shadow-lg">Em Andamento</span>
                         </div>
                     </div>
-                    <button 
-                        onClick={() => navigate(`/course/${latestInProgress.course.id}/lesson/${nextLesson.id}`)}
-                        className="w-full md:w-auto bg-[#8a4add] text-white font-bold py-2 px-6 rounded-lg hover:bg-[#7c3aed] transition-all shadow-lg shadow-[#8a4add]/20 whitespace-nowrap"
-                    >
-                        Continuar Aula
-                    </button>
+                    <div className="p-6 md:p-8 flex flex-col justify-center flex-grow">
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">{latestInProgress.course.track}</p>
+                                <h4 className="text-2xl font-bold text-white group-hover:text-[#c4b5fd] transition-colors">{latestInProgress.course.title}</h4>
+                            </div>
+                        </div>
+                        
+                        <div className="mt-4 mb-6">
+                            <div className="flex justify-between text-xs text-gray-400 mb-2 font-medium">
+                                <span>Próxima aula: <span className="text-white">{nextLesson.title}</span></span>
+                                <span>{latestInProgress.progress}%</span>
+                            </div>
+                            <div className="w-full bg-gray-800 rounded-full h-1.5">
+                                <div className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] h-full rounded-full" style={{ width: `${latestInProgress.progress}%` }}></div>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => navigate(`/course/${latestInProgress.course.id}/lesson/${nextLesson.id}`)}
+                            className="w-full md:w-fit bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Continuar Aula
+                        </button>
+                    </div>
                  </div>
               </div>
-            ) : firstCourseToStart && (
-                 <div className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 rounded-xl border border-indigo-500/30 p-6 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-4">
+            ) : (
+                 <div className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 rounded-2xl border border-indigo-500/30 p-8 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6">
                     <div>
-                        <h3 className="text-lg font-bold text-white">Comece algo novo hoje!</h3>
-                        <p className="text-sm text-gray-300 mt-1">O curso <span className="font-semibold text-indigo-300">{firstCourseToStart.title}</span> está esperando por você.</p>
+                        <h3 className="text-2xl font-bold text-white">Comece algo novo hoje!</h3>
+                        <p className="text-gray-300 mt-2 max-w-lg">Você ainda não iniciou nenhum curso. Explore nosso catálogo e dê o primeiro passo na sua carreira tech.</p>
                     </div>
-                    <button onClick={() => handleStartCourse(firstCourseToStart)} className="bg-white text-indigo-900 font-bold py-2 px-6 rounded-lg hover:bg-gray-100 transition-colors">
-                        Iniciar Curso
+                    <button onClick={() => setActiveTab('explore')} className="bg-white text-indigo-900 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors shadow-lg whitespace-nowrap">
+                        Explorar Cursos
                     </button>
                 </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-6">
-                 {/* Em Andamento List */}
-                 {inProgressCourses.length > 0 && (
-                     <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                         <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Meus Cursos</h3>
-                         <div className="space-y-3">
-                            {inProgressCourses.map(({course, progress}) => (
-                                <div key={course.id} onClick={() => handleCourseNavigation(course)} className="group flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
-                                    <div className="h-10 w-10 rounded bg-gray-800 flex-shrink-0 overflow-hidden">
-                                        <img src={course.imageUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" alt="" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-200 group-hover:text-white truncate">{course.title}</p>
-                                        <div className="w-24 mt-1">
-                                            <ProgressBar progress={progress} className="h-1" />
-                                        </div>
-                                    </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600 group-hover:text-white"><polyline points="9 18 15 12 9 6"/></svg>
-                                </div>
-                            ))}
-                         </div>
-                     </div>
-                 )}
-
-                 {/* Presencial & Hibrido */}
-                 <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                     <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Turmas Presenciais</h3>
-                     <div className="space-y-3">
-                        {courses.filter(c => c.format === 'presencial' || c.format === 'hibrido').slice(0, 3).map(course => (
-                             <OnsiteCourseCard key={course.id} course={course} />
+            {/* My Courses Grid */}
+            <div className="space-y-6">
+                 <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-white">Meus Cursos</h3>
+                 </div>
+                 
+                 {allMyCourses.length > 0 ? (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {allMyCourses.map((course) => (
+                            <CourseCard 
+                                key={course.id} 
+                                course={course} 
+                                onCourseSelect={handleCourseNavigation} 
+                                progress={course.progress}
+                                isEnrolled={true}
+                            />
                         ))}
-                     </div>
-                 </div>
-            </div>
-        </div>
-    );
-
-    const MyCoursesContent = () => (
-        <div className="space-y-6">
-             <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                 <h3 className="text-lg font-bold text-white mb-6">Todos os Meus Cursos</h3>
-                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {startedOrCompletedCourseIds.size === 0 ? (
-                        <p className="col-span-full text-center text-gray-500 py-12">Você ainda não se inscreveu em nenhum curso.</p>
-                    ) : (
-                        [...inProgressCourses.map(c => ({...c.course, progress: c.progress, status: 'active'})), ...completedCourses.map(c => ({...c, progress: 100, status: 'completed'}))].map((item: any) => (
-                            <div key={item.id} className="bg-black/20 border border-white/5 rounded-xl overflow-hidden hover:border-white/10 transition-all group">
-                                <div className="h-32 overflow-hidden relative">
-                                    <img src={item.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="" />
-                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleCourseNavigation(item)} className="bg-white text-black text-xs font-bold py-2 px-4 rounded-full">Acessar</button>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h4 className="font-bold text-white text-sm line-clamp-1">{item.title}</h4>
-                                    <div className="mt-3">
-                                        <div className="flex justify-between text-[10px] text-gray-400 mb-1">
-                                            <span>Progresso</span>
-                                            <span>{item.progress}%</span>
-                                        </div>
-                                        <div className="w-full bg-black/50 rounded-full h-1.5">
-                                            <div className={`h-full rounded-full ${item.progress === 100 ? 'bg-green-400' : 'bg-[#8a4add]'}`} style={{width: `${item.progress}%`}}></div>
-                                        </div>
-                                    </div>
-                                    {item.progress === 100 && (
-                                        <button onClick={() => navigate(`/course/${item.id}/certificate`)} className="w-full mt-4 text-center text-xs font-semibold text-green-400 border border-green-500/20 bg-green-500/10 py-2 rounded hover:bg-green-500/20 transition-colors">
-                                            Ver Certificado
-                                        </button>
-                                    )}
-                                </div>
+                        
+                        {/* "Find More" Card */}
+                        <button 
+                            onClick={() => setActiveTab('explore')}
+                            className="border border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 hover:border-white/20 transition-all group h-full min-h-[300px]"
+                        >
+                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
                             </div>
-                        ))
-                    )}
-                 </div>
-             </div>
+                            <span className="text-gray-400 font-bold group-hover:text-white">Descobrir Novos Cursos</span>
+                        </button>
+                    </div>
+                 ) : (
+                    <div className="text-center py-12 bg-white/5 rounded-xl border border-white/10 border-dashed">
+                        <p className="text-gray-400">Você ainda não está matriculado em nenhum curso.</p>
+                    </div>
+                 )}
+            </div>
         </div>
     );
     
     const renderStudentContent = () => {
         switch(activeTab) {
-            case 'overview': return <OverviewContent />;
-            case 'myCourses': return <MyCoursesContent />;
+            case 'myCourses': return <OverviewContent />;
+            case 'explore': return <ExploreCoursesPanel />;
             case 'forum': return <ForumView embedded={true} />;
             default: return <OverviewContent />;
         }
@@ -977,7 +1026,7 @@ const StudentDashboard: React.FC = () => {
                     title={tabTitles[activeTab] || 'Meu Aprendizado'}
                 />
                 <div className="flex-1 p-6 md:p-8 overflow-y-auto">
-                    <div className="max-w-5xl mx-auto animate-fade-in">
+                    <div className="max-w-6xl mx-auto animate-fade-in">
                         {renderStudentContent()}
                     </div>
                 </div>

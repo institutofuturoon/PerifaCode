@@ -52,6 +52,14 @@ const Header: React.FC = () => {
     navigate(path);
     setIsMenuOpen(false);
   };
+  
+  const handleLogoClick = () => {
+      if (user) {
+          handleNav('/dashboard');
+      } else {
+          handleNav('/');
+      }
+  };
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -65,7 +73,7 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <button onClick={() => handleNav('/')} className="flex-shrink-0 z-50 relative">
+            <button onClick={handleLogoClick} className="flex-shrink-0 z-50 relative">
               <Logo style={{ width: '100px', height: 'auto' }} />
             </button>
 
