@@ -63,7 +63,7 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
 };
 
 const CourseDetail: React.FC = () => {
-    const { courses, openInscriptionModal, user, instructors } = useAppContext();
+    const { courses, openInscriptionModal, user, instructors, showToast } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
 
@@ -80,7 +80,7 @@ const CourseDetail: React.FC = () => {
             if (firstLesson) {
                 navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
             } else {
-                alert("Este curso ainda não tem aulas cadastradas.");
+                showToast("⚠️ Este curso ainda não tem aulas cadastradas.");
             }
         } else {
             openInscriptionModal(course);

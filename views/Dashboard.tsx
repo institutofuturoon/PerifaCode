@@ -69,7 +69,7 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 // --- Internal Components ---
 
 const ExploreCoursesPanel: React.FC = () => {
-    const { courses, user } = useAppContext();
+    const { courses, user, showToast } = useAppContext();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTrack, setActiveTrack] = useState('Todos');
@@ -82,17 +82,13 @@ const ExploreCoursesPanel: React.FC = () => {
     ), [courses, searchTerm, activeTrack]);
 
     const handleCourseClick = (course: Course) => {
-        // If enrolled or not, for students in workspace, we always try to go to the content.
-        // The LessonView handles enrollment/first lesson logic or the dashboard flow.
-        // If the course has no lessons, it might fallback, but generally this keeps them in the app.
+        // Always try to go to the content if logged in (which we are if we are in Dashboard)
         const firstLesson = course.modules?.[0]?.lessons?.[0];
         if (firstLesson) {
             navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
         } else {
-            // If no lessons, maybe go to a detailed view, but we want to avoid the public landing page if possible.
-            // For now, let's route to the standard detail view but it will likely be the public one.
-            // Ideally, we'd have an internal detail view.
-            navigate(`/course/${course.id}`); 
+            // If no lessons, warn user but keep them in the workspace
+            showToast("⚠️ Este curso ainda não tem aulas disponíveis. Fique atento!");
         }
     };
 
@@ -876,8 +872,8 @@ const StudentDashboard: React.FC = () => {
         if (firstLesson) {
             navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
         } else {
-            // Fallback if no lessons
-            navigate(`/course/${course.id}`);
+            // If no lessons, warn user but keep them in the workspace
+            showToast("⚠️ Este curso ainda não tem aulas disponíveis.");
         }
     };
 

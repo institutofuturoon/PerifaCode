@@ -447,30 +447,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
     
     const handleSaveProject = async (projectToSave: Project) => {
-        const isNew = !projects.some(p => p.id === projectToSave.id);
-        
-        // If it's a new project by a student, status is pending.
-        // Admins can auto-approve or status is preserved on edit.
-        let status: Project['status'] = projectToSave.status || 'pending';
-        
-        if (isNew && user?.role === 'student') {
-            status = 'pending';
-        } else if (isNew && (user?.role === 'admin' || user?.role === 'instructor')) {
-            status = 'approved';
-        }
-
-        const projectWithStatus = { ...projectToSave, status };
-
-        setProjects(prev => isNew ? [...prev, projectWithStatus] : prev.map(p => p.id === projectToSave.id ? projectWithStatus : p));
-        
-        if (status === 'pending') {
-            showToast("✅ Projeto enviado para aprovação!");
-        } else {
-            showToast("✅ Projeto salvo!");
-        }
-
+         const isNew = !projects.some(p => p.id === projectToSave.id);
+         setProjects(prev => isNew ? [...prev, projectToSave] : prev.map(p => p.id === projectToSave.id ? projectToSave : p));
+         showToast("✅ Projeto salvo!");
          try {
-             await setDoc(doc(db, "projects", projectWithStatus.id), projectWithStatus);
+             await setDoc(doc(db, "projects", projectToSave.id), projectToSave);
          } catch(error) {
               console.error("Erro ao salvar projeto:", error);
          }
@@ -892,19 +873,26 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppContent: React.FC = () => {
     const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeBottleneckModal, closeInscriptionModal } = useAppContext();
     
-    // Determine if we should hide global header/footer based on the route
-    // This logic creates the "Separate System" feel for the dashboard
     const location = useLocation();
-    const isDashboardRoute = location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/admin');
+    
+    // Updated logic: Consider lessons, certificates, dashboard, admin, profile and change password as "Workspace" routes
+    // This effectively hides the global Institutional Header/Footer on these pages.
+    const isWorkspaceRoute = 
+        location.pathname.startsWith('/dashboard') || 
+        location.pathname.startsWith('/admin') || 
+        location.pathname.includes('/lesson/') || 
+        location.pathname.includes('/certificate') ||
+        location.pathname.includes('/profile') ||
+        location.pathname.includes('/change-password');
     
     return (
         <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
             <ScrollToTop />
-            {!isDashboardRoute && <Header />}
+            {!isWorkspaceRoute && <Header />}
             {/* Componente de Tracking do Google Analytics */}
             <AnalyticsTracker />
             <main className="flex-grow relative">
-                {!isDashboardRoute && <ScrollSpaceship />}
+                {!isWorkspaceRoute && <ScrollSpaceship />}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />
@@ -959,7 +947,7 @@ const AppContent: React.FC = () => {
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </main>
-            {!isDashboardRoute && <Footer />}
+            {!isWorkspaceRoute && <Footer />}
 
             {/* Modals */}
             {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={closeProfileModal} />}

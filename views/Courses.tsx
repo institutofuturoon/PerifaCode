@@ -37,7 +37,7 @@ const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => v
 );
 
 const Courses: React.FC = () => {
-  const { courses, user } = useAppContext();
+  const { courses, user, showToast } = useAppContext();
   const navigate = useNavigate();
   
   const [activeTrack, setActiveTrack] = useState<string>('Todos');
@@ -46,10 +46,23 @@ const Courses: React.FC = () => {
   const [selectedFormat, setSelectedFormat] = useState<string>('Todos');
 
   const handleCourseSelect = (course: Course) => {
-    if (course.heroContent) {
-        navigate(`/course-landing/${course.id}`);
+    if (user) {
+        // Se logado, tenta ir para a primeira aula (Workspace)
+        const firstLesson = course.modules?.[0]?.lessons?.[0];
+        if (firstLesson) {
+            navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
+        } else {
+            // Se não há aulas, não joga para a página institucional.
+            // Mostra um aviso de que o curso está em breve/manutenção.
+            showToast("⚠️ Este curso ainda não tem aulas disponíveis. Fique atento!");
+        }
     } else {
-        navigate(`/course/${course.id}`);
+        // Se não logado, fluxo de marketing
+        if (course.heroContent) {
+            navigate(`/course-landing/${course.id}`);
+        } else {
+            navigate(`/course/${course.id}`);
+        }
     }
   };
 

@@ -49,7 +49,7 @@ const CurriculumItemCard: React.FC<{ title: string, description: string, index: 
 
 // --- Main Component ---
 const CourseLandingPage: React.FC = () => {
-    const { courses, instructors, openInscriptionModal, openProfileModal } = useAppContext();
+    const { courses, instructors, openInscriptionModal, openProfileModal, user } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
 
@@ -68,6 +68,21 @@ const CourseLandingPage: React.FC = () => {
     }
     
     const { heroContent, benefitsSection, curriculumSection, methodologySection, ctaSection } = currentCourse;
+
+    const handleCtaClick = () => {
+        if (user) {
+             // Se logado, vai direto para a primeira aula (Workspace)
+             const firstLesson = currentCourse.modules?.[0]?.lessons?.[0];
+             if (firstLesson) {
+                 navigate(`/course/${currentCourse.id}/lesson/${firstLesson.id}`);
+             } else {
+                 navigate(`/dashboard`);
+             }
+        } else {
+            // Se não, abre modal de interesse/cadastro
+            openInscriptionModal(currentCourse);
+        }
+    }
 
     const getIconForTitle = (title: string): React.ReactNode => {
         const iconProps = { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 1.5 };
@@ -119,10 +134,10 @@ const CourseLandingPage: React.FC = () => {
                     </p>
                     <div className="mt-10">
                         <button
-                            onClick={() => openInscriptionModal(currentCourse)}
+                            onClick={handleCtaClick}
                             className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-lg"
                         >
-                            Garanta seu Interesse na Próxima Turma
+                            {user ? 'Acessar Conteúdo Agora' : 'Garanta seu Interesse Agora'}
                         </button>
                     </div>
                 </div>
@@ -198,10 +213,10 @@ const CourseLandingPage: React.FC = () => {
                      <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">{ctaSection.description}</p>
                      <div className="mt-10">
                         <button
-                            onClick={() => openInscriptionModal(currentCourse)}
+                            onClick={handleCtaClick}
                             className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-lg"
                         >
-                            Garanta seu Interesse Agora
+                            {user ? 'Acessar Conteúdo Agora' : 'Garanta seu Interesse Agora'}
                         </button>
                     </div>
                 </Section>

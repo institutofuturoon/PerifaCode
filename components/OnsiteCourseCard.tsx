@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Course } from '../types';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../App';
 
 interface OnsiteCourseCardProps {
   course: Course;
@@ -8,8 +10,22 @@ interface OnsiteCourseCardProps {
 
 const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
     const navigate = useNavigate();
+    const { user, showToast } = useAppContext();
 
     const navigateToCourse = (course: Course) => {
+        if (user) {
+            // Se logado, tenta ir para a primeira aula
+            const firstLesson = course.modules?.[0]?.lessons?.[0];
+            if (firstLesson) {
+                navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
+                return;
+            } else {
+                showToast("⚠️ Este curso ainda não tem aulas disponíveis. Fique atento!");
+                return;
+            }
+        }
+        
+        // Se não logado ou sem aulas, fluxo normal de marketing
         if (course.heroContent) {
             navigate(`/course-landing/${course.id}`);
         } else {
@@ -62,7 +78,7 @@ const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
                     onClick={() => navigateToCourse(course)}
                     className="w-full md:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300"
                 >
-                    Ver Detalhes do Curso
+                    {user ? 'Acessar Curso' : 'Ver Detalhes'}
                 </button>
             </div>
         </div>

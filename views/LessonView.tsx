@@ -331,6 +331,7 @@ const LessonView: React.FC = () => {
   
   const handleBackToCourse = () => {
     if (user) {
+        // If logged in, go back to the Student Dashboard, not public catalog.
         navigate('/dashboard');
     } else {
         navigate('/courses');
