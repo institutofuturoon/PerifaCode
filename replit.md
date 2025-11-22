@@ -37,7 +37,48 @@ The platform is built with a clear separation between the institutional "SITE" a
 
 ## Recent Changes (November 22, 2025)
 
-### 🏆 Leaderboard + Level Up Celebration Complete
+### ✨ Toast Notifications + Badge Unlock Celebration Complete
+**Status:** Both features fully implemented + integrated
+
+#### Implementation:
+1. **Toast Notifications System**
+   - Uses existing App.tsx context (showToast)
+   - Auto-dismiss in 3 seconds
+   - Displays at bottom-right of screen
+   - Integrated with Badge unlock + XP gains
+   - Examples: "+50 XP!", "🏆 Badge Desbloqueada: Primeiro Passo!"
+
+2. **BadgeUnlockCelebration Modal** (`components/BadgeUnlockCelebration.tsx`)
+   - Yellow/amber gradient design
+   - Badge emoji with spin animation
+   - Auto-close after 3 seconds
+   - Share button (future integration)
+   - Smooth bounce-in animation
+
+3. **Badge Detection**
+   - Triggers when user.achievements length increases
+   - Shows modal + toast notification
+   - Integrated with StudentTrilhasContent
+   - Real-time Firestore sync
+
+#### Features:
+✅ Toast notifications on XP gain
+✅ Toast on badge unlock
+✅ Badge unlock modal with emoji
+✅ Confetti + animations
+✅ Auto-dismiss 3-4 seconds
+✅ Responsive design
+✅ Real-time detection
+
+#### Status:
+✅ BadgeUnlockCelebration component created
+✅ Toast notifications integrated
+✅ Badge detection working
+✅ Dashboard integration complete
+
+---
+
+### 🏆 Leaderboard + Level Up Celebration Complete (Previous)
 **Status:** Both features fully implemented + integrated
 
 #### Implementation:

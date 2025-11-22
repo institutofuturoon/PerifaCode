@@ -16,6 +16,8 @@ import useTrilhas from '../hooks/useTrilhas';
 import useProgresso from '../hooks/useProgresso';
 import LeaderboardView from '../components/LeaderboardView';
 import LevelUpCelebration from '../components/LevelUpCelebration';
+import BadgeUnlockCelebration from '../components/BadgeUnlockCelebration';
+import { Badge } from '../TIPOS_CURSO_ROCKETSEAT';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -876,6 +878,9 @@ const StudentDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState('myCourses');
     const [showLevelUpModal, setShowLevelUpModal] = useState(false);
     const [previousLevel, setPreviousLevel] = useState<string>('');
+    const [showBadgeModal, setShowBadgeModal] = useState(false);
+    const [unlockedBadge, setUnlockedBadge] = useState<Badge | null>(null);
+    const [previousBadgesCount, setPreviousBadgesCount] = useState(0);
 
     if (!user) return null;
     
@@ -1036,6 +1041,30 @@ const StudentDashboard: React.FC = () => {
             }
         }, [user?.nivel, nivel, previousLevel]);
 
+        // Detectar badge desbloqueada
+        useMemo(() => {
+            const currentBadgesCount = user?.achievements?.length || badges.length;
+            if (previousBadgesCount > 0 && currentBadgesCount > previousBadgesCount) {
+                // Nova badge foi desbloqueada
+                // Encontrar qual é a nova (a última adicionada)
+                const allBadges: Partial<Badge>[] = [
+                    { id: 'first_lesson', titulo: 'Primeiro Passo', descricao: 'Completar a primeira aula', ícone: '👣' },
+                    { id: 'level_up', titulo: 'Ascensão', descricao: 'Subir de nível', ícone: '⬆️' },
+                    { id: 'course_completed', titulo: 'Conquistador', descricao: 'Completar um curso inteiro', ícone: '🏆' },
+                    { id: 'week_streak', titulo: 'Consistência', descricao: '7 dias de streak', ícone: '🔥' },
+                    { id: 'month_streak', titulo: 'Campeão', descricao: '30 dias de streak', ícone: '⭐' },
+                ];
+                const newBadgeId = (user?.achievements || badges)?.[currentBadgesCount - 1];
+                const newBadgeInfo = allBadges.find(b => b.id === newBadgeId);
+                if (newBadgeInfo) {
+                    setUnlockedBadge(newBadgeInfo as Badge);
+                    setShowBadgeModal(true);
+                    showToast(`🏆 Badge Desbloqueada: ${newBadgeInfo.titulo}!`);
+                }
+            }
+            setPreviousBadgesCount(currentBadgesCount);
+        }, [user?.achievements, badges, previousBadgesCount, showToast]);
+
         if (loading) {
             return (
                 <div className="flex items-center justify-center py-20">
@@ -1093,6 +1122,11 @@ const StudentDashboard: React.FC = () => {
                     title="Top 10 Estudantes"
                     showCategoryFilter={false}
                 />
+
+                {/* Toast Notifications */}
+                <div className="fixed bottom-6 right-6 space-y-3 pointer-events-none">
+                    {/* Example: Toast messages will appear here */}
+                </div>
             </div>
         );
     }
@@ -1127,6 +1161,13 @@ const StudentDashboard: React.FC = () => {
                 xpCurrent={user?.xp || 0}
                 xpNextLevel={7000} // Next level XP threshold
                 onClose={() => setShowLevelUpModal(false)}
+            />
+
+            {/* Badge Unlock Celebration Modal */}
+            <BadgeUnlockCelebration
+                isOpen={showBadgeModal}
+                badge={unlockedBadge}
+                onClose={() => setShowBadgeModal(false)}
             />
         </div>
     );
