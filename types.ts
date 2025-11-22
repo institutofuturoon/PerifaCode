@@ -134,6 +134,47 @@ export interface SeoConfig {
   keywords?: string[];
 }
 
+export interface CourseModality {
+  // ONLINE (100% plataforma)
+  online?: {
+    aiTutorEnabled: boolean;
+    communityForumEnabled: boolean;
+    certificateType: 'digital';
+    prerequisites?: string[];
+    scheduleFlexibility: 'total' | 'partial';
+  };
+  
+  // HÍBRIDO (plataforma + presencial)
+  hybrid?: {
+    onlinePortion: number; // 0-100 (%)
+    presencialPortion: number; // 0-100 (%)
+    presencialDates: string[]; // ['2025-01-15', '2025-02-20']
+    presencialLocation?: string; // Local físico
+    facilitatorId?: string; // ID do facilitador local
+    syncSchedule?: { // Aulas síncronas
+      day: string; // 'segunda', 'quarta'
+      time: string; // '19:00'
+      zoomUrl?: string;
+    }[];
+    certificateType: 'hybrid';
+  };
+  
+  // PRESENCIAL (plataforma como apoio)
+  presencial?: {
+    videoFormat: 'short'; // Vídeos curtos, não lições completas
+    downloadableResources: boolean;
+    syncLives: { // Aulas síncronas (Zoom/etc)
+      day: string;
+      time: string;
+      zoomUrl?: string;
+    }[];
+    presencialLocation: string;
+    instructorId?: string; // Instrutor presencial
+    certificateType: 'presencial';
+    communityWeight: 'low'; // Comunidade tem menos peso
+  };
+}
+
 export interface Course {
   id: string;
   title: string;
@@ -152,6 +193,7 @@ export interface Course {
   projectDescription?: string;
   projectCriteria?: string;
   format: 'online' | 'presencial' | 'hibrido';
+  modality?: CourseModality;
   lessonRelease?: 'sequencial' | 'manual';
   enrollmentStatus?: 'open' | 'closed' | 'soon';
   

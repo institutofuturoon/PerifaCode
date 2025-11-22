@@ -5,6 +5,7 @@ import { Lesson, Module, Course } from '../types';
 import { useAppContext } from '../App';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
+import CourseModalityBadge from '../components/CourseModalityBadge';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
     <div className="bg-[#1f2328] p-3 rounded-xl border border-gray-700/50 flex items-center gap-3 hover:border-[#8a4add]/30 transition-colors">
@@ -183,6 +184,62 @@ const CourseDetail: React.FC = () => {
                         <div className="bg-white/5 p-6 rounded-xl border border-white/10">
                             <h3 className="text-xl font-bold text-white mb-4">Sobre o Curso</h3>
                             <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{course.longDescription}</p>
+                        </div>
+
+                        {/* Modalidade do Curso */}
+                        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                            <h3 className="text-xl font-bold text-white mb-4">Formato do Curso</h3>
+                            <div className="mb-4">
+                                <CourseModalityBadge format={course.format} size="lg" />
+                            </div>
+                            <div className="text-sm text-gray-300">
+                                {course.format === 'online' && (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <span>🌐</span> Estude 100% online, no seu ritmo
+                                        </div>
+                                        {course.modality?.online?.aiTutorEnabled && (
+                                            <div className="flex items-center gap-2">
+                                                <span>🤖</span> Tutor IA disponível 24/7
+                                            </div>
+                                        )}
+                                        {course.modality?.online?.communityForumEnabled && (
+                                            <div className="flex items-center gap-2">
+                                                <span>👥</span> Comunidade ativa para ajudar
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                {course.format === 'hibrido' && (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <span>🔄</span> {course.modality?.hybrid?.onlinePortion || 50}% Online + {course.modality?.hybrid?.presencialPortion || 50}% Presencial
+                                        </div>
+                                        {course.modality?.hybrid?.syncSchedule && course.modality.hybrid.syncSchedule.length > 0 && (
+                                            <div className="mt-3 p-2 bg-purple-500/5 rounded border border-purple-500/10">
+                                                <p className="text-xs text-gray-400 font-semibold mb-2">📅 Aulas Síncronas:</p>
+                                                {course.modality.hybrid.syncSchedule.map((session, idx) => (
+                                                    <div key={idx} className="text-xs text-gray-300">
+                                                        {session.day} às {session.time}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                {course.format === 'presencial' && (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <span>🏢</span> Aulas presenciais com suporte online
+                                        </div>
+                                        {course.modality?.presencial?.presencialLocation && (
+                                            <div className="flex items-center gap-2">
+                                                <span>📍</span> {course.modality.presencial.presencialLocation}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div>
