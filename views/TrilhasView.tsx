@@ -1,14 +1,18 @@
 /**
  * TrilhasView - Página Principal de Trilhas
  * Exibe todas as trilhas disponíveis com filtros
- * Integra TrilhaCard, ProjetoCard, LeaderboardView
+ * Integra TrilhaCard, ProjetoCard, LeaderboardView + Firebase
  */
 
 import React, { useState, useMemo } from 'react';
 import TrilhaCard from '../components/TrilhaCard';
 import ProjetoCard from '../components/ProjetoCard';
 import LeaderboardView from '../components/LeaderboardView';
+import { useAppContext } from '../App';
+import useTrilhas from '../hooks/useTrilhas';
+import useProgresso from '../hooks/useProgresso';
 import { TRILHA_JS_COMPLETA, PROJETOS_EXEMPLO, BADGES } from '../DADOS_EXEMPLO_ROCKETSEAT';
+import { Trilha, Projeto } from '../TIPOS_CURSO_ROCKETSEAT';
 
 interface TrilhasViewProps {
   userXp?: number;
@@ -19,15 +23,41 @@ interface TrilhasViewProps {
 
 const TrilhasView: React.FC<TrilhasViewProps> = ({
   userXp = 250,
-  currentUserId = 'user_1',
-  enrolledTrilhaIds = ['trilha_js_essencial'],
-  completedProjetosIds = ['proj_calculadora'],
+  currentUserId,
+  enrolledTrilhaIds = [],
+  completedProjetosIds = [],
 }) => {
+  const appContext = useAppContext();
+  const userId = currentUserId || appContext?.user?.id || 'user_demo';
+  
+  // Hooks para dados
+  const { trilhas: fbTrilhas, projetos: fbProjetos, loading, error } = useTrilhas();
+  const { xp, nivel, enrollTrilha } = useProgresso(userId);
+
+  // Estado UI
   const [selectedTab, setSelectedTab] = useState<'trilhas' | 'projetos' | 'leaderboard'>('trilhas');
   const [selectedNivel, setSelectedNivel] = useState<'todos' | 'iniciante' | 'intermediario' | 'avancado'>('todos');
+  const [enrollingTrilhaId, setEnrollingTrilhaId] = useState<string | null>(null);
 
-  // Mock data de trilhas
-  const trilhas = [TRILHA_JS_COMPLETA];
+  // Usar dados do Firebase ou fallback para dados de exemplo
+  const trilhas = fbTrilhas.length > 0 ? fbTrilhas : [TRILHA_JS_COMPLETA];
+  const projetos = fbProjetos.length > 0 ? fbProjetos : PROJETOS_EXEMPLO;
+  const userEnrolledIds = appContext?.user?.enrolledCourseIds || enrolledTrilhaIds;
+  const userCompletedIds = appContext?.user?.completedLessonIds || completedProjetosIds;
+  const userXpValue = appContext?.user?.xp || xp || userXp || 250;
+
+  // Handler para inscrição em trilha
+  const handleEnrollTrilha = async (trilhaId: string) => {
+    try {
+      setEnrollingTrilhaId(trilhaId);
+      await enrollTrilha(trilhaId);
+      console.log(`✅ Inscrito na trilha ${trilhaId}`);
+    } catch (err) {
+      console.error('❌ Erro ao inscrever:', err);
+    } finally {
+      setEnrollingTrilhaId(null);
+    }
+  };
 
   // Mock data de usuarios para leaderboard
   const mockLeaderboard = [
@@ -101,6 +131,30 @@ const TrilhasView: React.FC<TrilhasViewProps> = ({
     return filtered;
   }, [selectedNivel]);
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0F172A] to-[#1a1f35] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-purple-500 border-r-2 border-pink-500 mx-auto mb-4" />
+          <p className="text-white text-lg">Carregando trilhas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0F172A] to-[#1a1f35] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <p className="text-red-400 text-lg mb-4">⚠️ {error}</p>
+          <p className="text-gray-400">Usando dados locais de exemplo</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0F172A] to-[#1a1f35] py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -115,18 +169,22 @@ const TrilhasView: React.FC<TrilhasViewProps> = ({
           </p>
 
           {/* User Stats */}
-          {currentUserId && (
+          {userId && (
             <div className="mt-8 inline-block bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/50 rounded-lg p-6">
               <div className="flex items-center gap-6">
                 <div>
                   <p className="text-gray-400 text-sm">Seu XP Atual</p>
                   <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                    {userXp.toLocaleString()}
+                    {userXpValue.toLocaleString()}
                   </p>
                 </div>
                 <div className="border-l border-white/20 pl-6">
                   <p className="text-gray-400 text-sm">Trilhas Inscritas</p>
-                  <p className="text-3xl font-bold text-white">{enrolledTrilhaIds.length}</p>
+                  <p className="text-3xl font-bold text-white">{userEnrolledIds.length}</p>
+                </div>
+                <div className="border-l border-white/20 pl-6">
+                  <p className="text-gray-400 text-sm">Seu Nível</p>
+                  <p className="text-2xl font-bold text-white">{nivel}</p>
                 </div>
               </div>
             </div>
@@ -178,24 +236,33 @@ const TrilhasView: React.FC<TrilhasViewProps> = ({
             <div>
               <h2 className="text-2xl font-bold text-white mb-6">Trilhas Disponíveis</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {trilhasFiltradas.map((trilha) => (
-                  <TrilhaCard
-                    key={trilha.id}
-                    id={trilha.id}
-                    titulo={trilha.titulo}
-                    descricao={trilha.descricao}
-                    nivel={trilha.nivel}
-                    duracao={trilha.duracao}
-                    numAulas={trilha.numAulas}
-                    numAlunos={trilha.numAlunos}
-                    xpTotal={trilha.xpTotal}
-                    avaliacao={trilha.avaliacao}
-                    imagem={trilha.imagem}
-                    isInscrito={enrolledTrilhaIds.includes(trilha.id)}
-                    percentualConclusao={enrolledTrilhaIds.includes(trilha.id) ? 35 : 0}
-                    onClick={() => console.log('Clicou em', trilha.id)}
-                  />
-                ))}
+                {trilhasFiltradas.map((trilha) => {
+                  const isEnrolled = userEnrolledIds.includes(trilha.id);
+                  return (
+                    <TrilhaCard
+                      key={trilha.id}
+                      id={trilha.id}
+                      titulo={trilha.titulo}
+                      descricao={trilha.descricao}
+                      nivel={trilha.nivel}
+                      duracao={trilha.duracao}
+                      numAulas={trilha.numAulas}
+                      numAlunos={trilha.numAlunos}
+                      xpTotal={trilha.xpTotal}
+                      avaliacao={trilha.avaliacao}
+                      imagem={trilha.imagem}
+                      isInscrito={isEnrolled}
+                      percentualConclusao={isEnrolled ? 35 : 0}
+                      onClick={() => {
+                        if (!isEnrolled) {
+                          handleEnrollTrilha(trilha.id);
+                        } else {
+                          console.log('Continuar trilha:', trilha.id);
+                        }
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -206,21 +273,24 @@ const TrilhasView: React.FC<TrilhasViewProps> = ({
             <div>
               <h2 className="text-2xl font-bold text-white mb-6">Projetos Práticos</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projetos.map((projeto) => (
-                  <ProjetoCard
-                    key={projeto.id}
-                    id={projeto.id}
-                    titulo={projeto.titulo}
-                    descricao={projeto.descricao}
-                    nivel={projeto.nivel}
-                    duracao={projeto.duracao}
-                    xpReward={projeto.xpReward}
-                    skills={projeto.skills}
-                    numSubmissoes={projeto.numSubmissoes}
-                    isCompleted={completedProjetosIds.includes(projeto.id)}
-                    onClick={() => console.log('Clicou em projeto', projeto.id)}
-                  />
-                ))}
+                {projetos.map((projeto) => {
+                  const isCompleted = userCompletedIds.includes(projeto.id);
+                  return (
+                    <ProjetoCard
+                      key={projeto.id}
+                      id={projeto.id}
+                      titulo={projeto.titulo}
+                      descricao={projeto.descricao}
+                      nivel={projeto.nivel}
+                      duracao={projeto.duracao}
+                      xpReward={projeto.xpReward}
+                      skills={projeto.skills}
+                      numSubmissoes={projeto.numSubmissoes}
+                      isCompleted={isCompleted}
+                      onClick={() => console.log('Clicou em projeto', projeto.id)}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
