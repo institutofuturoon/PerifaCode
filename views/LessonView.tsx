@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Play, CheckCircle2, Home } from 'lucide-reac
 import { useAppContext } from '../App';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonCompleteModal from '../components/LessonCompleteModal';
+import CourseCompleteModal from '../components/CourseCompleteModal';
 import ChatBot from '../components/ChatBot';
 
 const LessonView: React.FC = () => {
@@ -12,7 +13,8 @@ const LessonView: React.FC = () => {
   const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
 
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showLessonModal, setShowLessonModal] = useState(false);
+  const [showCourseModal, setShowCourseModal] = useState(false);
 
   const currentCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
   const currentLesson = useMemo(() => 
@@ -30,21 +32,39 @@ const LessonView: React.FC = () => {
   const currentLessonIndex = allLessons.findIndex(l => l.id === lessonId);
   const previousLesson = currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1] : null;
   const nextLesson = currentLessonIndex < allLessons.length - 1 ? allLessons[currentLessonIndex + 1] : null;
+  const isLastLesson = currentLessonIndex === allLessons.length - 1;
   const isCompleted = user?.completedLessonIds?.includes(lessonId || '') || false;
+  
+  // Calcular XP total ganho no curso
+  const totalCourseXp = useMemo(() => {
+    return completedLessons.length * 50; // 50 XP base por aula
+  }, [completedLessons.length]);
 
   const handleCompleteLesson = () => {
     completeLesson(currentLesson!.id);
-    setShowCompleteModal(true);
+    if (isLastLesson) {
+      setShowCourseModal(true);
+    } else {
+      setShowLessonModal(true);
+    }
   };
 
-  const handleContinueFromModal = () => {
-    setShowCompleteModal(false);
+  const handleContinueFromLessonModal = () => {
+    setShowLessonModal(false);
     if (nextLesson) {
       navigate(`/course/${courseId}/lesson/${nextLesson.id}`);
-    } else {
-      showToast('🎉 Parabéns! Curso concluído!');
-      navigate('/dashboard');
     }
+  };
+
+  const handleBackToDashboard = () => {
+    setShowCourseModal(false);
+    navigate('/dashboard');
+  };
+
+  const handleExploreCourses = () => {
+    setShowCourseModal(false);
+    navigate('/dashboard');
+    showToast('🎓 Veja mais cursos disponíveis!');
   };
 
   if (!currentCourse || !currentLesson) {
@@ -240,13 +260,22 @@ const LessonView: React.FC = () => {
         </div>
       </div>
 
-      {/* MODALS E CHATBOT */}
-      {showCompleteModal && (
+      {/* MODALS */}
+      {showLessonModal && (
         <LessonCompleteModal
           lessonTitle={currentLesson.title}
           xpGained={currentLesson.xp}
-          onContinue={handleContinueFromModal}
-          onClose={() => setShowCompleteModal(false)}
+          onContinue={handleContinueFromLessonModal}
+          onClose={() => setShowLessonModal(false)}
+        />
+      )}
+      {showCourseModal && (
+        <CourseCompleteModal
+          course={currentCourse}
+          totalXpGained={totalCourseXp + 50} // +50 da última aula
+          totalLessons={allLessons.length}
+          onBackToDashboard={handleBackToDashboard}
+          onExploreCourses={handleExploreCourses}
         />
       )}
       <ChatBot />

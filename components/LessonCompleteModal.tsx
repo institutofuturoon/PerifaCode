@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle2, Zap, ChevronRight, Home } from 'lucide-react';
 
 interface LessonCompleteModalProps {
   lessonTitle: string;
@@ -21,60 +23,127 @@ const LessonCompleteModal: React.FC<LessonCompleteModalProps> = ({
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      {/* CONFETTI ANIMADO */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {Array.from({ length: 50 }).map((_, i) => (
-            <div
+          {Array.from({ length: 60 }).map((_, i) => (
+            <motion.div
               key={i}
               className="absolute w-2 h-2 rounded-full"
+              initial={{ 
+                y: '-10px', 
+                opacity: 1,
+                left: `${Math.random() * 100}%` 
+              }}
+              animate={{ 
+                y: '100vh', 
+                opacity: 0,
+                rotate: 360
+              }}
+              transition={{
+                duration: 2 + Math.random() * 1.5,
+                ease: 'easeIn',
+                delay: Math.random() * 0.3
+              }}
               style={{
-                left: `${Math.random() * 100}%`,
-                top: '-10px',
                 backgroundColor: ['#8a4add', '#f27983', '#fbbf24', '#34d399'][Math.floor(Math.random() * 4)],
-                animation: `confetti-fall ${2 + Math.random() * 2}s linear forwards`,
-                animationDelay: `${Math.random() * 0.5}s`,
               }}
             />
           ))}
         </div>
       )}
 
-      <div className="bg-[#121212] border border-green-500/30 rounded-2xl max-w-md w-full p-8 shadow-2xl shadow-green-500/20 animate-fade-in relative z-10">
-        <div className="text-center mb-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h2 className="text-3xl font-black text-white mb-2">Parabéns! 🎉</h2>
-          <p className="text-gray-400 text-sm mb-1">Você concluiu a aula</p>
-          <p className="text-white font-bold">{lessonTitle}</p>
-        </div>
+      {/* MODAL PRINCIPAL */}
+      <motion.div 
+        className="bg-gradient-to-b from-[#121212] to-[#0a0a0a] border border-green-500/40 rounded-2xl max-w-md w-full p-8 shadow-2xl shadow-green-500/20"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      >
+        {/* HEADER - CHECKMARK ANIMADO */}
+        <motion.div 
+          className="text-center mb-6"
+          initial={{ y: -20 }}
+          animate={{ y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <motion.div 
+            className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg shadow-green-500/50"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <CheckCircle2 size={40} className="text-white" />
+          </motion.div>
 
-        <div className="bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 rounded-xl p-6 mb-6 border border-[#8a4add]/30">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-12 h-12 bg-[#8a4add] rounded-full flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <div className="text-center">
-              <p className="text-white text-3xl font-black">+{xpGained} XP</p>
-              <p className="text-gray-300 text-xs">Experiência ganha</p>
+          <motion.h2 
+            className="text-3xl font-black text-white mb-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            Parabéns! 🎉
+          </motion.h2>
+          <motion.p 
+            className="text-gray-400 text-sm mb-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            Você concluiu a aula
+          </motion.p>
+          <motion.p 
+            className="text-white font-bold text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            {lessonTitle}
+          </motion.p>
+        </motion.div>
+
+        {/* XP GANHO - DESTAQUE */}
+        <motion.div 
+          className="bg-gradient-to-r from-[#8a4add]/30 to-[#f27983]/30 rounded-xl p-6 mb-6 border border-[#8a4add]/40"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <div className="flex items-center justify-center gap-4">
+            <motion.div 
+              className="w-14 h-14 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-full flex items-center justify-center shadow-lg shadow-[#8a4add]/40"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 0.6, repeat: Infinity }}
+            >
+              <Zap size={24} className="text-white" />
+            </motion.div>
+            <div>
+              <motion.p 
+                className="text-white text-3xl font-black"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.9, type: 'spring' }}
+              >
+                +{xpGained} XP
+              </motion.p>
+              <p className="text-gray-300 text-xs font-semibold">Experiência Ganha</p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="space-y-3">
+        {/* BOTÕES DE AÇÃO */}
+        <motion.div 
+          className="space-y-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+        >
           <button
             onClick={onContinue}
-            className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold hover:opacity-90 transition-opacity shadow-lg shadow-[#8a4add]/30 flex items-center justify-center gap-2"
+            className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold hover:shadow-lg hover:shadow-[#8a4add]/30 transition-all flex items-center justify-center gap-2 group"
           >
             Próxima Aula
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
+            <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
           <button
             onClick={onClose}
@@ -82,17 +151,8 @@ const LessonCompleteModal: React.FC<LessonCompleteModalProps> = ({
           >
             Continuar Estudando
           </button>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes confetti-fall {
-          to {
-            transform: translateY(100vh) rotate(360deg);
-            opacity: 0;
-          }
-        }
-      `}</style>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
