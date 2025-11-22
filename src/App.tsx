@@ -53,6 +53,7 @@ import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
 import ApiTest from './views/ApiTest';
+import ImageUploadTest from './views/ImageUploadTest';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -791,6 +792,7 @@ const AppContent: React.FC = () => {
                     <Route path="/financial-statement" element={<FinancialStatementView />} />
                     <Route path="/upload-test" element={<StudentUploadTest />} />
                     <Route path="/api-test" element={<ApiTest />} />
+                    <Route path="/image-upload-test" element={<ImageUploadTest />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </main>
