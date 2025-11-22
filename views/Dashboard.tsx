@@ -14,6 +14,8 @@ import Blog from './Blog';
 import DashboardTrilhasSection from '../components/DashboardTrilhasSection';
 import useTrilhas from '../hooks/useTrilhas';
 import useProgresso from '../hooks/useProgresso';
+import LeaderboardView from '../components/LeaderboardView';
+import LevelUpCelebration from '../components/LevelUpCelebration';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -439,6 +441,7 @@ const ModerationPanel: React.FC = () => {
 // TAB TITLE MAPPING
 const tabTitles: Record<string, string> = {
     'trilhas': 'Trilhas & Gamificação',
+    'leaderboard': 'Ranking & Leaderboard',
     overview: 'Visão Geral',
     myAgenda: 'Minha Agenda',
     myCourses: 'Meus Cursos',
@@ -864,13 +867,15 @@ const StudentsTable = () => (
 
 const StudentDashboard: React.FC = () => {
     const { 
-      user, courses, 
+      user, courses, users,
       courseProgress, 
       showToast
     } = useAppContext();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('myCourses');
+    const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+    const [previousLevel, setPreviousLevel] = useState<string>('');
 
     if (!user) return null;
     
@@ -1007,6 +1012,7 @@ const StudentDashboard: React.FC = () => {
         switch(activeTab) {
             case 'myCourses': return <OverviewContent />;
             case 'trilhas': return <StudentTrilhasContent />;
+            case 'leaderboard': return <LeaderboardContent />;
             case 'explore': return <ExploreCoursesPanel />;
             case 'forum': return <ForumView embedded={true} />;
             case 'blog-feed': return <Blog embedded={true} />;
@@ -1017,7 +1023,18 @@ const StudentDashboard: React.FC = () => {
     const StudentTrilhasContent = () => {
         const userId = user?.id || '';
         const { trilhas, projetos, loading } = useTrilhas();
-        const { xp, streak, badges, enrollTrilha } = useProgresso(userId);
+        const { xp, nivel, streak, badges, enrollTrilha } = useProgresso(userId);
+
+        // Detectar mudança de nível
+        useMemo(() => {
+            const currentNivel = user?.nivel || nivel;
+            if (previousLevel && previousLevel !== currentNivel) {
+                setShowLevelUpModal(true);
+                setPreviousLevel(currentNivel);
+            } else if (!previousLevel) {
+                setPreviousLevel(currentNivel);
+            }
+        }, [user?.nivel, nivel, previousLevel]);
 
         if (loading) {
             return (
@@ -1043,6 +1060,43 @@ const StudentDashboard: React.FC = () => {
         );
     }
 
+    const LeaderboardContent = () => {
+        const userId = user?.id || '';
+        const allUsers = users || [];
+
+        // Transformar usuários para formato do leaderboard
+        const rankingUsers = allUsers
+            .filter(u => u.role === 'student')
+            .map((u, index) => ({
+                userId: u.id,
+                posicao: index + 1,
+                nome: u.name,
+                avatar: u.avatar || 'https://via.placeholder.com/50',
+                xp: u.xp || 0,
+                nivel: u.nivel || 'ovo',
+                badge: u.achievements?.[0],
+            }))
+            .sort((a, b) => b.xp - a.xp)
+            .map((u, index) => ({ ...u, posicao: index + 1 }));
+
+        return (
+            <div className="space-y-8">
+                <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/20 rounded-2xl p-8">
+                    <h2 className="text-3xl font-black text-white mb-2">🏆 Ranking Global</h2>
+                    <p className="text-gray-400">Veja como você está em relação aos outros alunos</p>
+                </div>
+
+                <LeaderboardView
+                    users={rankingUsers}
+                    currentUserId={userId}
+                    period="semana"
+                    title="Top 10 Estudantes"
+                    showCategoryFilter={false}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className="flex min-h-screen bg-[#09090B]">
             <DashboardSidebar 
@@ -1065,6 +1119,15 @@ const StudentDashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Level Up Celebration Modal */}
+            <LevelUpCelebration
+                isOpen={showLevelUpModal}
+                newLevel={user?.nivel || 'ovo'}
+                xpCurrent={user?.xp || 0}
+                xpNextLevel={7000} // Next level XP threshold
+                onClose={() => setShowLevelUpModal(false)}
+            />
         </div>
     );
 };
