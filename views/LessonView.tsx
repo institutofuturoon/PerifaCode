@@ -8,7 +8,6 @@ import LessonCompleteModal from '../components/LessonCompleteModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';
 import ChatBot from '../components/ChatBot';
 import Breadcrumb from '../components/Breadcrumb';
-import SidebarLessonIndex from '../components/SidebarLessonIndex';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import KeyboardHintsModal from '../components/KeyboardHintsModal';
 import { syncLessonHistory } from '../utils/firebaseHistorySync';
@@ -126,21 +125,11 @@ const LessonView: React.FC = () => {
 
   return (
     <motion.div 
-      className="min-h-screen bg-[#09090B] flex flex-col md:flex-row"
+      className="min-h-screen bg-[#09090B] flex flex-col"
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
-      {/* 🎯 RESOURCE 1: SIDEBAR COM ÍNDICE */}
-      {currentCourse && (
-        <SidebarLessonIndex
-          modules={currentCourse.modules}
-          currentLessonId={currentLesson?.id || ''}
-          completedLessonIds={user?.completedLessonIds || []}
-          courseId={courseId || ''}
-          courseName={currentCourse.title}
-        />
-      )}
       {/* ============ HEADER MELHORADO ============ */}
       <div className="border-b border-white/10 bg-white/5 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
