@@ -136,9 +136,9 @@ const CourseLandingPage: React.FC = () => {
                     <div className="mt-10">
                         <button
                             onClick={handleCtaClick}
-                            className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-lg"
+                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg ${user ? 'bg-green-600 text-white hover:bg-green-700 shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/30'}`}
                         >
-                            {user ? 'Acessar Conteúdo' : 'Garanta sua Vaga Grátis'}
+                            {user ? 'Acessar Conteúdo Agora' : 'Garanta sua Vaga Grátis'}
                         </button>
                     </div>
                 </div>
@@ -215,7 +215,7 @@ const CourseLandingPage: React.FC = () => {
                      <div className="mt-10">
                         <button
                             onClick={handleCtaClick}
-                            className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8a4add]/30 text-lg"
+                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg ${user ? 'bg-green-600 text-white hover:bg-green-700 shadow-green-500/20' : 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-[#8a4add]/30'}`}
                         >
                             {user ? 'Acessar Conteúdo Agora' : 'Garanta seu Interesse Agora'}
                         </button>

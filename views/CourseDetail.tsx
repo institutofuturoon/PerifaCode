@@ -134,9 +134,9 @@ const CourseDetail: React.FC = () => {
                             <div className="mt-8 md:hidden">
                                  <button 
                                     onClick={handleEnroll}
-                                    className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20"
+                                    className={`w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg ${user ? 'bg-green-600 text-white shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20'}`}
                                 >
-                                    {user ? 'Continuar Curso' : 'Inscrever-se Grátis'}
+                                    {user ? 'Acessar Conteúdo' : 'Inscrever-se Grátis'}
                                 </button>
                             </div>
                         </div>
@@ -172,9 +172,9 @@ const CourseDetail: React.FC = () => {
                             
                             <button 
                                 onClick={handleEnroll}
-                                className="w-full bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20 hidden md:block"
+                                className={`w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg hidden md:block ${user ? 'bg-green-600 text-white shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20'}`}
                             >
-                                {user ? 'Continuar Curso' : 'Inscrever-se Grátis'}
+                                {user ? 'Acessar Conteúdo' : 'Inscrever-se Grátis'}
                             </button>
                         </div>
                     </div>
