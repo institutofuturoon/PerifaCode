@@ -480,6 +480,59 @@ export interface MarketingPost {
     authorId: string;
 }
 
+// --- Chat Bot Types ---
+export interface FAQ {
+  id: string;
+  courseId: string;
+  category: 'tecnico' | 'administrativo' | 'motivacional';
+  keywords: string[];
+  question: string;
+  answer: string;
+  videoUrl?: string;
+  linkToMaterial?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  effectiveness: number;
+  usageCount: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  userId: string;
+  courseId: string;
+  lessonId?: string;
+  message: string;
+  timestamp: Date;
+  sender: 'user' | 'bot' | 'mentor';
+  botResponse?: {
+    type: 'faq_match' | 'faq_match_uncertain' | 'escalated' | 'follow_up';
+    faqId?: string;
+    confidence?: number;
+    mentorId?: string;
+  };
+  mentorResponse?: string;
+  status?: 'pending' | 'answered';
+}
+
+export interface ChatFeedback {
+  id: string;
+  messageId: string;
+  userId: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+  comment?: string;
+  timestamp: Date;
+}
+
+export interface BotMetrics {
+  id: string;
+  courseId: string;
+  date: Date;
+  messagesProcessed: number;
+  resolvedAutomatically: number;
+  escalatedToMentor: number;
+  avgResponseTime: number;
+  helpfulnessRate: number;
+}
 
 export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'changePassword' | 'courseLanding' | 'transparencyEditor' | 'supporters' | 'partnerDetail';
 

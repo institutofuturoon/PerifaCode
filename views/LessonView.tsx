@@ -11,6 +11,7 @@ import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import ModuleMilestoneModal from '../components/ModuleMilestoneModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';
+import ChatBot from '../components/ChatBot';
 
 
 const AITutor: React.FC = () => {
@@ -657,6 +658,7 @@ const LessonView: React.FC = () => {
       </div>
 
       <AITutor />
+      <ChatBot />
 
       {showCompleteModal && (
         <LessonCompleteModal

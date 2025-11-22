@@ -50,6 +50,8 @@ import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
+import ChatBotAdmin from './views/ChatBotAdmin';
+import { initializeFAQsIfNeeded } from './utils/initializeFAQs';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
@@ -199,6 +201,10 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
     };
 
+  // Inicializar FAQs do Chat Bot
+  useEffect(() => {
+    initializeFAQsIfNeeded().catch(err => console.error('Erro ao inicializar FAQs:', err));
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -904,7 +910,8 @@ const AppContent: React.FC = () => {
         location.pathname.includes('/lesson/') || 
         location.pathname.includes('/certificate') ||
         location.pathname.includes('/profile') ||
-        location.pathname.includes('/change-password');
+        location.pathname.includes('/change-password') ||
+        location.pathname.includes('/chatbot');
     
     return (
         <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
@@ -942,6 +949,7 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
                     <Route path="/admin/transparency-editor" element={<TransparencyEditor />} />
                     <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
+                    <Route path="/admin/chatbot" element={<ChatBotAdmin />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/community" element={<CommunityView />} />
                     <Route path="/forum" element={<ForumView />} />
