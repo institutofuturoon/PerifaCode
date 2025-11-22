@@ -14,6 +14,7 @@ import {
   addDoc,
 } from 'firebase/firestore';
 import SEO from '../components/SEO';
+import { MentorNotification, markNotificationAsRead } from '../utils/notificationService';
 
 interface ChatEscalation {
   id: string;
@@ -34,10 +35,12 @@ interface ChatEscalation {
 const MentorDashboard: React.FC = () => {
   const { user, showToast, courses } = useAppContext();
   const [escalations, setEscalations] = useState<ChatEscalation[]>([]);
+  const [notifications, setNotifications] = useState<MentorNotification[]>([]);
   const [activeTab, setActiveTab] = useState<'pending' | 'in_progress' | 'resolved'>('pending');
   const [selectedEscalation, setSelectedEscalation] = useState<ChatEscalation | null>(null);
   const [mentorResponse, setMentorResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Verificar se é mentor
   const isMentor = user?.role === 'instructor' || user?.isMentor;
@@ -75,6 +78,29 @@ const MentorDashboard: React.FC = () => {
 
     return () => unsubscribe();
   }, [isMentor]);
+
+  // Carregar notificações em tempo real
+  useEffect(() => {
+    if (!user?.id || !isMentor) return;
+
+    const q = query(
+      collection(db, 'mentorNotifications'),
+      where('mentorId', '==', user.id),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate(),
+        readAt: doc.data().readAt?.toDate(),
+      })) as MentorNotification[];
+      setNotifications(data);
+    });
+
+    return () => unsubscribe();
+  }, [user?.id, isMentor]);
 
   const filteredEscalations = escalations.filter((e) => e.status === activeTab);
 
@@ -170,6 +196,8 @@ const MentorDashboard: React.FC = () => {
     );
   }
 
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
   return (
     <div className="min-h-screen bg-black/50 py-8">
       <SEO
@@ -178,10 +206,67 @@ const MentorDashboard: React.FC = () => {
       />
 
       <div className="container mx-auto px-4 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Dashboard do Mentor</h1>
-          <p className="text-gray-400">Gerenciar escalações e responder dúvidas dos alunos</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Dashboard do Mentor</h1>
+            <p className="text-gray-400">Gerenciar escalações e responder dúvidas dos alunos</p>
+          </div>
+          {/* Notification Bell */}
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative p-3 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 transition-colors"
+          >
+            <span className="text-2xl">🔔</span>
+            {unreadCount > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </button>
         </div>
+
+        {/* Notificações Dropdown */}
+        {showNotifications && (
+          <div className="mb-8 bg-white/5 p-6 rounded-xl border border-white/10">
+            <h3 className="text-lg font-bold text-white mb-4">📢 Notificações</h3>
+            {notifications.length === 0 ? (
+              <p className="text-gray-400 text-sm">Sem notificações</p>
+            ) : (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {notifications.map((notif) => (
+                  <div
+                    key={notif.id}
+                    className={`p-3 rounded-lg border transition-all ${
+                      notif.isRead
+                        ? 'bg-black/20 border-white/5 opacity-60'
+                        : 'bg-blue-500/10 border-blue-500/30 cursor-pointer hover:bg-blue-500/20'
+                    }`}
+                    onClick={() => {
+                      if (!notif.isRead) {
+                        markNotificationAsRead(notif.id);
+                      }
+                    }}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-white">
+                          {notif.type === 'new_escalation' ? '🆕' : '💬'} {notif.studentName}
+                        </p>
+                        <p className="text-xs text-gray-300 mt-1">{notif.message}</p>
+                      </div>
+                      {!notif.isRead && (
+                        <div className="ml-3 w-2 h-2 rounded-full bg-blue-400 flex-shrink-0 mt-1"></div>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">
+                      {notif.createdAt.toLocaleString('pt-BR')}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-4 mb-8 border-b border-gray-700">

@@ -4,6 +4,7 @@ import { useAppContext } from '../App';
 import { db } from '../firebaseConfig';
 import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc } from 'firebase/firestore';
 import { ChatMessage as ChatMessageType } from '../types';
+import { createMentorNotification } from '../utils/notificationService';
 
 const ChatBot: React.FC = () => {
   const { user, showToast } = useAppContext();

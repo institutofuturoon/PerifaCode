@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 import { FAQ, ChatMessage as ChatMessageType } from '../types';
 import SEO from '../components/SEO';
+import { createMentorNotification, sendEmailNotification } from '../utils/notificationService';
 
 const ChatBotAdmin: React.FC = () => {
   const { user, courses, showToast } = useAppContext();

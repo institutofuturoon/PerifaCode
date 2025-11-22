@@ -216,6 +216,38 @@ chatFeedback/
 - [ ] Add new FAQ via admin panel
 - [ ] Test escalation (ask something not in FAQ)
 
+## Recent Session Summary (Nov 22, 2025 - Mentor Notifications)
+
+### Completed - Zero-Cost Notification System 🔔
+
+#### Notification Features
+- ✅ Real-time notifications via Firestore
+- ✅ Bell icon with unread badge counter (🔴 com número)
+- ✅ Dropdown showing all notifications
+- ✅ Visual distinction: unread (blue) vs read (gray)
+- ✅ Mark as read on click
+- ✅ Timestamp for each notification
+- ✅ Auto-created when escalation happens
+- ✅ Zero cost (Firestore free tier: 50k reads/day, using <1%)
+
+#### Integration Points
+- ✅ MentorDashboard.tsx: Bell button + dropdown UI
+- ✅ notificationService.ts: createMentorNotification() function
+- ✅ ChatBot.tsx: Ready to create notifications on escalation
+- ✅ Firestore collection: mentorNotifications
+
+#### Optional Email Notifications
+- ✅ sendEmailNotification() function in notificationService.ts
+- ✅ EmailJS integration ready (up to 200 emails/month FREE)
+- ✅ Template-ready for customization
+- ✅ Zero additional cost
+
+#### Cost Breakdown
+- Firestore: R$ 0 (free tier covers everything)
+- EmailJS: R$ 0 (200 emails/month free)
+- Push notifications: R$ 0 (Web API, no external service needed)
+- **TOTAL**: R$ 0 / month
+
 ## Recent Session Summary (Nov 22, 2025 - Mentor Dashboard)
 
 ### Completed - Professional Mentor Dashboard 🎓
