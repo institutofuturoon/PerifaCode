@@ -74,26 +74,38 @@ export const sendEmailNotification = async (
   mentorEmail: string,
   mentorName: string,
   studentName: string,
-  message: string
+  message: string,
+  courseId: string
 ) => {
   try {
-    // Verificar se EmailJS está disponível
-    if (typeof window !== 'undefined' && (window as any).emailjs) {
-      const emailjs = (window as any).emailjs;
-
-      await emailjs.send('service_futuroon', 'template_mentor_alert', {
-        mentor_name: mentorName,
-        mentor_email: mentorEmail,
-        student_name: studentName,
-        message: message.substring(0, 200),
-        timestamp: new Date().toLocaleString('pt-BR'),
-        dashboard_link: `${window.location.origin}/mentor-dashboard`,
-      });
-
-      console.log('✅ Email enviado');
-    } else {
-      console.log('⚠️ EmailJS não configurado - apenas Firestore');
+    // Verificar se EmailJS está inicializado
+    const emailjs = (window as any).emailjs;
+    
+    if (!emailjs) {
+      console.log('⚠️ EmailJS não disponível');
+      return;
     }
+
+    // Enviar email usando os dados do ambiente
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+
+    if (!serviceId || !templateId) {
+      console.log('⚠️ EmailJS keys not configured - email disabled');
+      return;
+    }
+
+    await emailjs.send(serviceId, templateId, {
+      mentor_name: mentorName,
+      mentor_email: mentorEmail,
+      student_name: studentName,
+      student_message: message.substring(0, 200),
+      course_id: courseId,
+      timestamp: new Date().toLocaleString('pt-BR'),
+      dashboard_link: `${window.location.origin}/mentor-dashboard`,
+    });
+
+    console.log('✅ Email enviado para', mentorEmail);
   } catch (error) {
     console.error('Erro ao enviar email:', error);
   }

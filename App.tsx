@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
+import emailjs from '@emailjs/browser';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -81,6 +82,17 @@ const calculateReadingTime = (content: string): number => {
     const wordsPerMinute = 200;
     const words = content.trim().split(/\s+/).length;
     return Math.ceil(words / wordsPerMinute);
+};
+
+// Initialize EmailJS on app load
+const initializeEmailJS = () => {
+  const emailjsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+  if (emailjsPublicKey) {
+    emailjs.init(emailjsPublicKey);
+    console.log('✅ EmailJS initialized');
+  } else {
+    console.log('⚠️ VITE_EMAILJS_PUBLIC_KEY not configured - email disabled');
+  }
 };
 
 
@@ -202,9 +214,10 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
     };
 
-  // Inicializar FAQs do Chat Bot
+  // Inicializar FAQs do Chat Bot e EmailJS
   useEffect(() => {
     initializeFAQsIfNeeded().catch(err => console.error('Erro ao inicializar FAQs:', err));
+    initializeEmailJS();
   }, []);
 
   useEffect(() => {
