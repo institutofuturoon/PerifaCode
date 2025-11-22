@@ -1,263 +1,7 @@
 # FuturoOn - PerifaCode LMS Platform
 
-## 🚀 LATEST UPDATES (November 22, 2025)
-
-### 🎯 4 RECURSOS AVANÇADOS IMPLEMENTADOS! (NEW!)
-
-#### 1️⃣ Breadcrumb Navigation ✅
-- **Componente:** `components/Breadcrumb.tsx` (novo!)
-- **Localização:** CourseDetail + LessonView
-- **Fluxo:** Dashboard → Curso → Aula
-- **Interativo:** Clica para voltar a qualquer nível
-- **Responsive:** Hidden em mobile, visível em tablet+
-- **Impacto:** +70% navegabilidade intuitiva
-
-#### 2️⃣ Voltar Automático Modal ✅
-- **Status:** JÁ IMPLEMENTADO + TESTADO
-- **Quando:** Ao fechar LessonCompleteModal → Próxima aula
-- **Quando:** Ao fechar CourseCompleteModal → Dashboard
-- **Como:** Funções: `handleContinueFromLessonModal` e `handleBackToDashboard`
-- **Impacto:** +50% fluxo automático, sem confusão
-
-#### 3️⃣ Histórico - Última Aula Lembrada 🧠
-- **Storage:** localStorage (`futuroon_lesson_history`)
-- **Guarda:** courseId → { lessonId, timestamp, courseName }
-- **Uso:** Próximo: Dashboard pode oferecer "Continuar de onde parei"
-- **Persistente:** Sobrevive refresh da página
-- **Impacto:** +40% retenção, melhor UX
-
-#### 4️⃣ Atalhos de Teclado ⌨️
-- **ESC** → Volta para Dashboard (com toast: "← Voltando para o painel...")
-- **← Seta Esquerda** → Aula Anterior (com toast: "◀️ Aula anterior")
-- **→ Seta Direita** → Próxima Aula (com toast: "▶️ Próxima aula →")
-- **Enter** → Completar Aula (com toast: "✓ Aula concluída!")
-- **Só funciona:** Fora de modals (não interfere com inputs)
-- **Dica Visual:** Mostrada abaixo do breadcrumb
-- **Impacto:** +60% velocidade navegação power users
-
-### 🎯 NAVEGAÇÃO MELHORADA - SIMPLES E CONCISA!
-
-#### CourseDetail - Header Sticky com Navegação ✅ (NEW!)
-- **Status:** ✅ IMPLEMENTADO + TESTADO
-- **Adições:**
-  - ✅ Header sticky no topo (z-40, backdrop blur)
-  - ✅ Botão "← Painel" com ícone Home (volta para /dashboard)
-  - ✅ Título do curso no centro (hidden em mobile)
-  - ✅ Progress bar % + visual no header (desktop)
-  - ✅ Botão "Continuar →" compacto no canto (desktop)
-  - ✅ Sempre visível durante scroll
-  - ✅ Animações suaves (whileHover: x -4px no botão voltar)
-- **Responsividade:**
-  - Mobile: Apenas botão "← " com ícone
-  - Tablet: "← Painel" visível
-  - Desktop: Tudo visível (título + progress + botão continuar)
-- **Impacto:** +60% navegabilidade, -80% cliques para voltar
-
-#### Page Transitions & Animations ✅
-- **Library:** framer-motion (installed)
-- **Status:** ✅ INTEGRADO + TESTADO
-- **Implementations:**
-  - CourseCard: Staggered enter animations (delay: index * 0.1s)
-  - CourseCard: Hover lift effect (whileHover: y -8px)
-  - CourseDetail: Fade-in page transition (0.5s)
-  - LessonView: Fade-in page transition (0.5s)
-  - All: Smooth 300-500ms transitions
-- **Impacto:** +50% perceived performance, melhor UX engagement
-
-#### Mobile Responsiveness ✅ (TESTED!)
-- **Status:** ✅ 100% RESPONSIVO EM TODOS OS DEVICES
-- **CourseCard:**
-  - Mobile (320px): 1 column full-width
-  - Tablet (640px): sm:grid-cols-2
-  - Desktop (1024px+): lg:grid-cols-3 xl:grid-cols-4
-  - Badges: Responsive text scaling
-  - Progress bar: Visible + readable on mobile
-- **CourseDetail:**
-  - Hero: text-4xl → md:text-6xl scaling
-  - Info cards: grid-cols-1 on mobile
-  - Buttons: Full-width CTA on mobile (md:hidden)
-  - Sidebar: Responsive stacking (lg:col-span-2)
-  - **NEW:** Header sticky com navegação responsiva
-- **LessonView:**
-  - Nav bar: Responsive padding (px-4 sm:px-6 lg:px-8)
-  - Progress text: Hidden on mobile (hidden sm:inline)
-  - Grid: lg:grid-cols-3 responsive layout
-  - Sidebar: Collapses properly on mobile
-- **Impacto:** +40% mobile usability, +35% conversion on mobile
-
-### ⚡ 3 FEATURES IMPLEMENTADAS - PRODUCTION READY!
-
-#### 1️⃣ Weekly Challenges ⚡
-- **File:** `services/challengeService.ts` (200+ lines)
-- **Status:** ✅ INTEGRADO + TESTADO
-- Auto-reset toda segunda-feira
-- 4 tipos rotacionados: Aulas, Projetos, Forum, Streak
-- Rewards 2x XP (bonus automático)
-- Progress tracking em tempo real
-- **Integração:** Dashboard → "⚡ Desafio da Semana"
-- **Impacto:** +35% engagement, +40% completions
-
-#### 2️⃣ Streak Milestones 🔥
-- **File:** `components/StreakMilestoneModal.tsx` (150+ lines)
-- **Update:** `services/progressoService.ts` (+checkStreakMilestone)
-- **Status:** ✅ INTEGRADO + TESTADO
-- Milestones: 7 dias (+200 XP), 30 dias (+500 XP), 100 dias (+1000 XP)
-- Modal animado com confete e emoji dinâmico
-- Badges automáticas criadas
-- Auto-reward e celebração
-- **Impacto:** +50% retention, +60% daily login
-
-#### 3️⃣ Profile Avatar Upload 📸
-- **File:** `components/ProfileModal.tsx` (UPDATED)
-- **Status:** ✅ INTEGRADO + TESTADO
-- Botão câmera no avatar
-- ImageUpload component reutilizado
-- Salva URL em Firestore automaticamente
-- Preview instantâneo
-- UX personalizado
-- **Impacto:** +25% engagement pessoal, senso de comunidade melhorado
-
-**Implementation Summary - Phase 2:**
-- ✅ framer-motion installed (animations library)
-- ✅ CourseCard: Staggered animations + hover effects
-- ✅ CourseDetail: Page fade-in transitions
-- ✅ LessonView: Page fade-in transitions
-- ✅ All 3 views fully mobile responsive (320px - 1920px)
-- ✅ Production-ready with smooth animations
-- ✅ Index prop passed to CourseCard for stagger delays
-
-**Implementation Summary - Phase 1:**
-- ✅ 3 novos services/components criados
-- ✅ 2 componentes principais atualizados (Dashboard, ProfileModal)
-- ✅ Tudo sincronizado com Firebase em tempo real
-- ✅ Pronto para produção
-
----
-
 ## Overview
 FuturoOn is an LMS platform designed for digital inclusion in underprivileged Brazilian communities. It provides technology courses with features such as course enrollment, progress tracking, AI-powered tutoring, community forums, and gamification. The project aims to deliver an accessible and engaging learning experience, preparing students for the tech job market and fostering community growth.
-
-## 🎨 PAGE SIMPLIFICATION (November 22, 2025 - ULTRA-SIMPLES + FLUXO MELHORADO!)
-
-### LessonView.tsx - OPÇÃO A ✨ (COMPLETO!)
-- **Status:** ✅ IMPLEMENTADO + TESTADO + FLUXO APRIMORADO
-- **Redução:** 791 linhas → 150 linhas (-81% código!)
-- **Removido:**
-  - ❌ Sidebar gigante com checklist
-  - ❌ Time Display (contador de tempo)
-  - ❌ Forum de dúvidas
-  - ❌ Anotações (Notes tab)
-  - ❌ Quiz/Code Playground complexos
-  - ❌ Navegação complexa
-  - ❌ Progress Tracker detalhado
-  - ❌ Post-Lesson Reflection Modal
-- **Mantido:**
-  - ✅ Header minimalista (voltar + progresso + aula atual)
-  - ✅ Conteúdo principal (markdown renderizado)
-  - ✅ Objetivo da aula
-  - ✅ Botão "Marcar como Concluído"
-  - ✅ Navegação anterior/próxima aula (com ícones animados)
-  - ✅ Animações smooth (framer-motion)
-  - ✅ Responsividade mobile perfeita
-  - ✅ ChatBot flutuante
-
-### LessonCompleteModal - MELHORADO ✨ (NEW!)
-- **Status:** ✅ REDESENHADO COM MAIS DETALHES
-- **Melhorias:**
-  - ✅ Confetti animado (60 partículas)
-  - ✅ CheckCircle2 icon animado
-  - ✅ XP destaque com ícone Zap piscante
-  - ✅ Modal com spring animation suave
-  - ✅ Melhor visual com gradientes
-  - ✅ Transições smooth em todos os elementos
-
-### CourseCompleteModal - COMPLETAMENTE RENOVADO! 🏆 (NEW!)
-- **Status:** ✅ NOVO COMPONENTE COMPLETO
-- **Implementações:**
-  - ✅ Confetti animado (80 partículas) com rotação
-  - ✅ Troféu com animação scale + rotate dupla
-  - ✅ XP total ganho no curso (destacado em amarelo)
-  - ✅ Número de aulas completadas (grid 2 colunas)
-  - ✅ Percentual 100% de conclusão
-  - ✅ Badge "Conquistador" desbloqueada
-  - ✅ Botões claros: "Voltar para Painel" + "Explorar Mais Cursos"
-  - ✅ Mensagem motivacional final
-  - ✅ Animações em cascata (staggered)
-  - ✅ Detecção automática de última aula
-
-### Fluxo de Pontuação Melhorado! 💰 (NEW!)
-- **Status:** ✅ SISTEMA COMPLETO
-- **Como Funciona:**
-  - Ao completar aula: Modal com +50 XP (LessonCompleteModal)
-  - Ao completar ÚLTIMA aula: Modal especial com XP TOTAL do curso (CourseCompleteModal)
-  - Cálculo: XP = completedLessons.length × 50 + 50 da última
-  - Exemplo: Curso com 10 aulas = 500 XP total + bônus
-
-### Fluxo de Navegação Perfeito! 🎯 (NEW!)
-- **Status:** ✅ TESTADO E FUNCIONANDO
-- **Navegação em 3 cenários:**
-  1. **Aula normal:** "Próxima Aula" → modal LessonComplete + botão "Próxima" leva para próxima
-  2. **Última aula:** Detecta `isLastLesson = true` → mostra CourseCompleteModal
-  3. **Voltar:** Botão home no header → sempre vai para /dashboard
-  4. **Explorar mais:** CourseCompleteModal → "Explorar Mais Cursos" → volta para dashboard
-- **Botões com ícones:**
-  - ← Voltar (Home icon)
-  - ▶️ Marcar concluído (Play icon)
-  - → Próxima aula (ChevronRight com animation)
-  - ← Aula anterior (ChevronLeft com animation)
-
-**Impactos Finais:**
-- 🚀 +60% performance (menos componentes, bundle menor)
-- 🎯 +50% conversão (fluxo claro de conclusão)
-- 📱 +100% mobile usability (navegação perfeita)
-- 💰 +40% satisfaction (pontuação visível e motivadora)
-- ⚡ 1 clique para conclusão (vs 5 antes)
-- 🎨 +200% visual appeal (animações + modals renovados)
-
-## 🎨 UI/UX REFACTORING (November 22, 2025 - Complete!)
-
-### Course Pages Redesign ✅
-**Status:** 100% COMPLETO + REFATORADO + TESTADO
-
-#### CourseCard.tsx - MELHORADO
-- ✅ Rounded borders aumentados (rounded-2xl)
-- ✅ Hover effects mais atraentes (elevação + sombra)
-- ✅ Badges com emojis + cores mais vivas
-- ✅ Info metadata em estilo mais limpo
-- ✅ Progress bar no footer mais visível
-- ✅ CTA buttons com gradiente vibrante
-
-**Impacto:** +30% visual appeal, melhor engagement em cards
-
-#### CourseDetail.tsx - REFATORADO
-- ✅ Hero section com background blur melhorado
-- ✅ InfoCards com layout 2D (h-12, gap-4)
-- ✅ Icons maiores com backgrounds gradiente
-- ✅ Spacing melhorado (py-16 md:py-28)
-- ✅ Labels com emojis (+⏱️, +📊, +🎓)
-- ✅ Border refinado no hero
-
-**Impacto:** +40% profissionalismo, melhor hierarchy
-
-#### LessonView.tsx - REFATORADO
-- ✅ Sticky top navigation bar com backdrop blur
-- ✅ Progress bar inline no header
-- ✅ Layout reorganizado (flex-col)
-- ✅ Container com py-8 spacing
-- ✅ Grid layout melhor organizado
-- ✅ Responsividade mobile-first
-
-**Impacto:** +25% usabilidade, melhor navegação
-
-### Design Principles Applied
-- ✅ Color consistency (purple #8a4add + pink #f27983)
-- ✅ Better spacing & padding
-- ✅ Improved visual hierarchy
-- ✅ Smooth transitions & animations
-- ✅ Enhanced typography scale
-- ✅ Better contrast ratios
-
----
 
 ## User Preferences
 - Language: Portuguese (Brazil) - PT-BR
@@ -269,39 +13,46 @@ FuturoOn is an LMS platform designed for digital inclusion in underprivileged Br
 The platform maintains a clear separation between the institutional "SITE" and the LMS "SISTEMA".
 
 **UI/UX Decisions:**
-- **Course Modalities:** Supports Online, Hybrid, and Presential courses with distinct visual badges.
-- **Chat Bot:** Features a floating widget with a stylized interface, real-time message history, feedback system, and typing indicator.
-- **Pre-Lesson Screen:** A full-screen onboarding component displays lesson duration, XP, position, module progress, and objectives.
-- **Mentor Dashboard:** Professional dashboard with status tabs (Pending, In Progress, Resolved), real-time escalation lists, priority indicators, category icons, and response time tracking.
-- **Notification System:** Real-time notifications via Firestore with a bell icon, unread badge counter, and visual distinction between read/unread messages.
-- **Theming:** Utilizes a gradient (purple/magenta) for specific UI elements.
-- **Gamification Visuals:** Features like BadgeUnlockCelebration modal (yellow/amber gradient, badge emoji spin animation), LevelUpCelebration modal (animated with confetti, new level emoji/name, XP progress bar), and Leaderboard (medals, user highlight, period filter).
-- **Course Design:** Enhanced CourseDetail with gradients, shadows, hover effects, and improved visual hierarchy.
+- **Color Scheme:** Consistent use of purple (`#8a4add`) and pink (`#f27983`) gradients.
+- **Course Modalities:** Visual badges for Online, Hybrid, and Presential courses.
+- **Chat Bot:** Floating widget with stylized interface, real-time message history, feedback, and typing indicator.
+- **Pre-Lesson Screen:** Full-screen onboarding with lesson duration, XP, position, module progress, and objectives.
+- **Mentor Dashboard:** Professional dashboard with status tabs, real-time escalation lists, priority indicators, category icons, and response time tracking.
+- **Notification System:** Real-time notifications via Firestore with bell icon, unread badge, and read/unread distinction.
+- **Gamification Visuals:** Animated modals for BadgeUnlockCelebration, LevelUpCelebration (confetti, XP progress), and Leaderboard (medals, user highlight, period filter).
+- **Course Design:** Enhanced CourseCard and CourseDetail components with gradients, shadows, hover effects, and improved visual hierarchy.
+- **LessonView:** Simplified layout, sticky top navigation with backdrop blur, inline progress bar, and perfect mobile responsiveness.
+- **Page Transitions & Animations:** Utilizes `framer-motion` for smooth transitions and animations across CourseCard, CourseDetail, and LessonView.
 
 **Technical Implementations:**
-- **State Management:** Uses React's Context API for global state management.
-- **Component Structure:** Modular approach with `App.tsx` as context provider, and dedicated components for `LessonView.tsx`, `CourseDetail.tsx`, and `CourseCard.tsx`.
-- **API Integration:** Leverages Firebase (Firestore for database, Auth for authentication) and Google Gemini 2.5 Flash for AI tutoring.
-- **Chat Bot Logic:** Implemented with NLP utilities (`chatBotUtils.ts`) including Levenshtein distance, keyword extraction, FAQ matching, and sentiment detection, using a Firestore-based knowledge base.
-- **Email Notifications:** Integrates EmailJS for sending templated email notifications, especially for mentor escalations.
-- **Routing:** Clear separation of routes into `SiteLayout` (institutional pages), `SistemaLayout` (LMS features), and authentication routes, protected by `PrivateRoute`.
-- **Image Upload System:** Robust system with Firebase integration, client/server-side validation, automatic JPEG compression, retry logic, drag & drop, progress bar, image preview, and metadata storage in Firestore. Supports multiple versions (thumbnail/small/medium) and WebP optimization.
-- **Gamification System:** `xpSystem.ts` defines 18+ XP events, 5 dynamic multipliers, 6 levels, and 12+ automatic badges. Integrated into the Dashboard with visual displays for XP, Level, Streak, Badges, and progress bars.
+- **State Management:** React's Context API for global state.
+- **Component Structure:** Modular approach with `App.tsx` as context provider and dedicated components.
+- **API Integration:** Firebase (Firestore, Auth) and Google Gemini 2.5 Flash for AI tutoring.
+- **Chat Bot Logic:** NLP utilities (`chatBotUtils.ts`) including Levenshtein distance, keyword extraction, FAQ matching, and sentiment detection, backed by a Firestore knowledge base.
+- **Email Notifications:** EmailJS integration for templated notifications, particularly for mentor escalations.
+- **Routing:** Clear separation into `SiteLayout`, `SistemaLayout`, and authenticated routes, protected by `PrivateRoute`.
+- **Image Upload System:** Robust Firebase integration with client/server-side validation, automatic JPEG compression, retry logic, drag & drop, progress bar, image preview, and metadata storage. Supports multiple versions and WebP optimization.
+- **Gamification System:** `xpSystem.ts` defines 18+ XP events, 5 dynamic multipliers, 6 levels, and 12+ automatic badges, integrated into the Dashboard. Includes Weekly Challenges and Streak Milestones with celebratory modals.
 - **Firebase Services:** `trilhaService.ts`, `projetoService.ts`, and `progressoService.ts` for CRUD operations with a cache-first approach.
-- **React Hooks:** `useTrilhas()` for loading tracks/projects and `useProgresso()` for managing user XP/level/streak/badges.
-- **Cache Utility:** `firebaseCache.ts` with TTL-based caching to reduce database reads.
+- **React Hooks:** `useTrilhas()` and `useProgresso()` for data management.
+- **Cache Utility:** `firebaseCache.ts` with TTL-based caching.
+- **Keyboard Shortcuts:** Implemented for navigation (ESC, arrow keys) and lesson completion (Enter).
+- **Breadcrumb Navigation:** Interactive breadcrumbs for improved navigation within courses.
+- **Automated Modals:** Auto-return logic for completing lessons/courses.
+- **Lesson History:** LocalStorage-based tracking of the last viewed lesson.
+- **Score System:** Detailed XP calculation and celebratory modals for lesson and course completion.
 
 **Feature Specifications:**
-- **Course Progress Tracking:** Visual progress bars, progress trails, and a checklist of completed lessons.
+- **Course Progress Tracking:** Visual progress bars, trails, and checklists.
 - **Enrollment System:** User enrollment with confirmation modals.
-- **AI Tutor:** Integration with Google Gemini for AI-powered tutoring.
-- **Gamification:** Celebration modals for lesson/module/course completion, XP system, levels, badges, and a leaderboard.
-- **Admin Dashboards:** `/admin/chatbot` for managing FAQs, bot metrics, and conversations.
-- **Image Upload:** Comprehensive image upload functionality.
-- **Toast Notifications:** System-wide toast notifications for events like XP gains and badge unlocks.
+- **AI Tutor:** Google Gemini integration.
+- **Gamification:** XP system, levels, badges, leaderboard, weekly challenges, streak milestones.
+- **Admin Dashboards:** For managing chatbot FAQs and metrics.
+- **Toast Notifications:** System-wide notifications for key events.
 
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
-- **Google Gemini 2.5 Flash:** For AI Tutor functionality.
-- **EmailJS:** For sending email notifications (`@emailjs/browser`).
-- **React Icons:** Lucide-react for modern icons.
+- **Google Gemini 2.5 Flash:** AI Tutor functionality.
+- **EmailJS:** Sending email notifications.
+- **React Icons:** Lucide-react for icons.
+- **framer-motion:** Animation library.
