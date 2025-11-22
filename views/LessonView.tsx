@@ -12,6 +12,7 @@ import LessonCompleteModal from '../components/LessonCompleteModal';
 import ModuleMilestoneModal from '../components/ModuleMilestoneModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';
 import ChatBot from '../components/ChatBot';
+import PreLessonScreen from '../components/PreLessonScreen';
 
 
 const AITutor: React.FC = () => {
@@ -344,6 +345,7 @@ const LessonView: React.FC = () => {
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
   const [showCourseCompleteModal, setShowCourseCompleteModal] = useState(false);
   const [milestoneData, setMilestoneData] = useState<{moduleTitle: string, moduleNumber: number, totalModules: number, progressPercentage: number} | null>(null);
+  const [showPreLesson, setShowPreLesson] = useState(true);
 
   const exercise = EXERCISES.find(ex => ex.id === currentLesson?.exerciseId);
   const isCompleted = user?.completedLessonIds.includes(currentLesson?.id || '') || false;
@@ -367,6 +369,30 @@ const LessonView: React.FC = () => {
 
   if (!currentCourse || !currentLesson) {
     return <div className="text-center py-20">Aula não encontrada.</div>;
+  }
+
+  // Show PreLesson screen on first load
+  if (showPreLesson) {
+    const currentModuleIndex = currentCourse.modules.findIndex(m => 
+      m.lessons.some(l => l.id === currentLesson.id)
+    );
+    const currentModule = currentCourse.modules[currentModuleIndex];
+    const moduleAllLessons = currentModule.lessons;
+    const lessonIndexInModule = moduleAllLessons.findIndex(l => l.id === currentLesson.id);
+
+    return (
+      <PreLessonScreen
+        course={currentCourse}
+        currentModule={currentModule}
+        currentLesson={currentLesson}
+        lessonIndex={lessonIndexInModule}
+        totalLessonsInModule={moduleAllLessons.length}
+        totalLessonsInCourse={allLessons.length}
+        completedLessonIds={user?.completedLessonIds || []}
+        onStart={() => setShowPreLesson(false)}
+        onBack={() => navigate(-1)}
+      />
+    );
   }
   
   const handleBackToCourse = () => {
