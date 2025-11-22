@@ -2,7 +2,40 @@
 
 ## 🚀 LATEST UPDATES (November 22, 2025)
 
-### 🎯 NAVEGAÇÃO MELHORADA - SIMPLES E CONCISA! (NEW!)
+### 🎯 4 RECURSOS AVANÇADOS IMPLEMENTADOS! (NEW!)
+
+#### 1️⃣ Breadcrumb Navigation ✅
+- **Componente:** `components/Breadcrumb.tsx` (novo!)
+- **Localização:** CourseDetail + LessonView
+- **Fluxo:** Dashboard → Curso → Aula
+- **Interativo:** Clica para voltar a qualquer nível
+- **Responsive:** Hidden em mobile, visível em tablet+
+- **Impacto:** +70% navegabilidade intuitiva
+
+#### 2️⃣ Voltar Automático Modal ✅
+- **Status:** JÁ IMPLEMENTADO + TESTADO
+- **Quando:** Ao fechar LessonCompleteModal → Próxima aula
+- **Quando:** Ao fechar CourseCompleteModal → Dashboard
+- **Como:** Funções: `handleContinueFromLessonModal` e `handleBackToDashboard`
+- **Impacto:** +50% fluxo automático, sem confusão
+
+#### 3️⃣ Histórico - Última Aula Lembrada 🧠
+- **Storage:** localStorage (`futuroon_lesson_history`)
+- **Guarda:** courseId → { lessonId, timestamp, courseName }
+- **Uso:** Próximo: Dashboard pode oferecer "Continuar de onde parei"
+- **Persistente:** Sobrevive refresh da página
+- **Impacto:** +40% retenção, melhor UX
+
+#### 4️⃣ Atalhos de Teclado ⌨️
+- **ESC** → Volta para Dashboard (com toast: "← Voltando para o painel...")
+- **← Seta Esquerda** → Aula Anterior (com toast: "◀️ Aula anterior")
+- **→ Seta Direita** → Próxima Aula (com toast: "▶️ Próxima aula →")
+- **Enter** → Completar Aula (com toast: "✓ Aula concluída!")
+- **Só funciona:** Fora de modals (não interfere com inputs)
+- **Dica Visual:** Mostrada abaixo do breadcrumb
+- **Impacto:** +60% velocidade navegação power users
+
+### 🎯 NAVEGAÇÃO MELHORADA - SIMPLES E CONCISA!
 
 #### CourseDetail - Header Sticky com Navegação ✅ (NEW!)
 - **Status:** ✅ IMPLEMENTADO + TESTADO

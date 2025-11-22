@@ -8,6 +8,7 @@ import { useAppContext } from '../App';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
 import CourseModalityBadge from '../components/CourseModalityBadge';
+import Breadcrumb from '../components/Breadcrumb';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
     <div className="group bg-gradient-to-br from-white/8 to-white/5 p-5 rounded-xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8a4add]/25 hover:bg-white/10">
@@ -242,6 +243,14 @@ const CourseDetail: React.FC = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-6">
+                        {/* BREADCRUMB */}
+                        <Breadcrumb
+                            items={[
+                                { label: 'Dashboard', path: '/dashboard' }
+                            ]}
+                            currentPage={course.title}
+                        />
+
                         <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
                             <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><span>📖</span> Sobre o Curso</h3>
                             <p className="text-gray-300 text-base leading-relaxed whitespace-pre-wrap">{course.longDescription}</p>

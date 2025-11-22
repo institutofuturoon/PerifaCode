@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Play, CheckCircle2, Home } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, CheckCircle2, Home, Keyboard } from 'lucide-react';
 import { useAppContext } from '../App';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';
 import ChatBot from '../components/ChatBot';
+import Breadcrumb from '../components/Breadcrumb';
 
 const LessonView: React.FC = () => {
   const { courses, user, completeLesson, showToast } = useAppContext();
@@ -67,6 +68,54 @@ const LessonView: React.FC = () => {
     showToast('🎓 Veja mais cursos disponíveis!');
   };
 
+  // 🔸 SALVAR HISTÓRICO - Última aula visitada
+  useEffect(() => {
+    if (courseId && lessonId) {
+      const history = JSON.parse(localStorage.getItem('futuroon_lesson_history') || '{}');
+      history[courseId] = {
+        lessonId,
+        timestamp: new Date().toISOString(),
+        courseName: currentCourse?.title || 'Curso'
+      };
+      localStorage.setItem('futuroon_lesson_history', JSON.stringify(history));
+    }
+  }, [courseId, lessonId, currentCourse?.title]);
+
+  // 🎮 ATALHOS DE TECLADO
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // ESC = Voltar para dashboard
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        showToast('← Voltando para o painel...');
+        navigate('/dashboard');
+      }
+
+      // ArrowRight = Próxima aula
+      if (e.key === 'ArrowRight' && nextLesson && !showLessonModal && !showCourseModal) {
+        e.preventDefault();
+        showToast('▶️ Próxima aula →');
+        navigate(`/course/${courseId}/lesson/${nextLesson.id}`);
+      }
+
+      // ArrowLeft = Aula anterior
+      if (e.key === 'ArrowLeft' && previousLesson && !showLessonModal && !showCourseModal) {
+        e.preventDefault();
+        showToast('◀️ Aula anterior ←');
+        navigate(`/course/${courseId}/lesson/${previousLesson.id}`);
+      }
+
+      // Enter = Completar aula
+      if (e.key === 'Enter' && !isCompleted && !showLessonModal && !showCourseModal) {
+        e.preventDefault();
+        handleCompleteLesson();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [nextLesson, previousLesson, courseId, lessonId, isCompleted, showLessonModal, showCourseModal]);
+
   if (!currentCourse || !currentLesson) {
     return <div className="text-center py-20 text-white">Aula não encontrada.</div>;
   }
@@ -118,6 +167,27 @@ const LessonView: React.FC = () => {
       <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-4xl mx-auto">
           
+          {/* BREADCRUMB COM NAVEGAÇÃO */}
+          <Breadcrumb
+            items={[
+              { label: 'Dashboard', path: '/dashboard' },
+              { label: currentCourse.title, path: `/course/${courseId}` }
+            ]}
+            currentPage={currentLesson.title}
+          />
+
+          {/* DICA DE ATALHOS */}
+          <motion.div
+            className="mb-6 flex items-center gap-2 text-xs text-gray-500 hover:text-gray-400 transition-colors cursor-help"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            title="Atalhos: ESC=Voltar, ←→=Anterior/Próxima, Enter=Completar"
+          >
+            <Keyboard size={14} />
+            <span>Atalhos: <kbd className="bg-white/10 px-2 py-1 rounded">ESC</kbd> Voltar • <kbd className="bg-white/10 px-2 py-1 rounded">←→</kbd> Navegar • <kbd className="bg-white/10 px-2 py-1 rounded">Enter</kbd> Completar</span>
+          </motion.div>
+
           {/* BREADCRUMB + TÍTULO */}
           <motion.div 
             className="mb-12"
@@ -125,8 +195,7 @@ const LessonView: React.FC = () => {
             animate={{ y: 0, opacity: 1 }} 
             transition={{ delay: 0.1 }}
           >
-            <span className="text-[#c4b5fd] text-sm font-semibold uppercase tracking-wide">{currentCourse.title}</span>
-            <h1 className="text-4xl sm:text-5xl font-black text-white mt-3 mb-4 leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-black text-white mb-4 leading-tight">
               {currentLesson.title}
             </h1>
             {currentLesson.description && (
