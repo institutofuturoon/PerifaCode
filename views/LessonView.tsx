@@ -11,6 +11,7 @@ import Breadcrumb from '../components/Breadcrumb';
 import SidebarLessonIndex from '../components/SidebarLessonIndex';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import KeyboardHintsModal from '../components/KeyboardHintsModal';
+import { syncLessonHistory } from '../utils/firebaseHistorySync';
 
 const LessonView: React.FC = () => {
   const { courses, user, completeLesson, showToast } = useAppContext();
@@ -71,18 +72,18 @@ const LessonView: React.FC = () => {
     showToast('🎓 Veja mais cursos disponíveis!');
   };
 
-  // 🔸 SALVAR HISTÓRICO - Última aula visitada
+  // 💾 SALVAR HISTÓRICO - Última aula visitada + Sincronizar com Firebase
   useEffect(() => {
-    if (courseId && lessonId) {
-      const history = JSON.parse(localStorage.getItem('futuroon_lesson_history') || '{}');
-      history[courseId] = {
+    if (courseId && lessonId && user?.id) {
+      // 🔸 Sincronizar com localStorage + Firebase
+      syncLessonHistory(
+        user.id,
+        courseId,
         lessonId,
-        timestamp: new Date().toISOString(),
-        courseName: currentCourse?.title || 'Curso'
-      };
-      localStorage.setItem('futuroon_lesson_history', JSON.stringify(history));
+        currentCourse?.title || 'Curso'
+      ).catch(err => console.warn('Sync falhou (usando localStorage):', err));
     }
-  }, [courseId, lessonId, currentCourse?.title]);
+  }, [courseId, lessonId, currentCourse?.title, user?.id]);
 
   // 🎮 ATALHOS DE TECLADO
   useEffect(() => {

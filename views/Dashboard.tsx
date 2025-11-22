@@ -22,6 +22,7 @@ import WeeklyChallengeSection from '../components/WeeklyChallengeSection';
 import StreakMilestoneModal from '../components/StreakMilestoneModal';
 import { Badge } from '../TIPOS_CURSO_ROCKETSEAT';
 import ScrollToTopButton from '../components/ScrollToTopButton';
+import { getLessonHistoryFromFirebase, syncLocalToFirebase } from '../utils/firebaseHistorySync';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -83,9 +84,46 @@ const StatCard: React.FC<{ title: string; value: string | number; icon: React.Re
 const ContinueLearningPanel: React.FC = () => {
     const navigate = useNavigate();
     const { courses, user, showToast } = useAppContext();
+    const [firebaseLesson, setFirebaseLesson] = React.useState<any>(null);
 
-    // 🎯 RESOURCE 2: GET HISTORY FROM LOCALSTORAGE
+    // 💾 SINCRONIZAR COM FIREBASE ao carregar (apenas uma vez)
+    React.useEffect(() => {
+        if (user?.id) {
+            // Tentar buscar do Firebase primeiro
+            getLessonHistoryFromFirebase(user.id).then(lesson => {
+                if (lesson) {
+                    setFirebaseLesson(lesson);
+                }
+            });
+
+            // Sincronizar localStorage com Firebase (para novos dados)
+            syncLocalToFirebase(user.id);
+        }
+    }, [user?.id]);
+
+    // 🎯 RESOURCE 2: GET HISTORY FROM LOCALSTORAGE or FIREBASE
     const lastLesson = useMemo(() => {
+        // Priorizar Firebase se disponível
+        if (firebaseLesson) {
+            const course = courses.find(c => c.id === firebaseLesson.courseId);
+            if (!course) return null;
+
+            const lesson = course.modules
+                .flatMap(m => m.lessons)
+                .find(l => l.id === firebaseLesson.lessonId);
+
+            if (!lesson) return null;
+
+            return { 
+                courseId: firebaseLesson.courseId, 
+                course, 
+                lessonId: firebaseLesson.lessonId, 
+                lesson, 
+                courseName: firebaseLesson.courseName 
+            };
+        }
+
+        // Fallback para localStorage
         const history = JSON.parse(localStorage.getItem('futuroon_lesson_history') || '{}');
         if (Object.keys(history).length === 0) return null;
 
@@ -107,7 +145,7 @@ const ContinueLearningPanel: React.FC = () => {
         if (!lesson) return null;
 
         return { courseId, course, lessonId: lessonData.lessonId, lesson, courseName: lessonData.courseName };
-    }, [courses]);
+    }, [courses, firebaseLesson]);
 
     if (!lastLesson) return null;
 
@@ -1120,11 +1158,11 @@ const StudentDashboard: React.FC = () => {
                 // Nova badge foi desbloqueada
                 // Encontrar qual é a nova (a última adicionada)
                 const allBadges: Partial<Badge>[] = [
-                    { id: 'first_lesson', titulo: 'Primeiro Passo', descricao: 'Completar a primeira aula', ícone: '👣' },
-                    { id: 'level_up', titulo: 'Ascensão', descricao: 'Subir de nível', ícone: '⬆️' },
-                    { id: 'course_completed', titulo: 'Conquistador', descricao: 'Completar um curso inteiro', ícone: '🏆' },
-                    { id: 'week_streak', titulo: 'Consistência', descricao: '7 dias de streak', ícone: '🔥' },
-                    { id: 'month_streak', titulo: 'Campeão', descricao: '30 dias de streak', ícone: '⭐' },
+                    { id: 'first_lesson', titulo: 'Primeiro Passo', descricao: 'Completar a primeira aula', icone: '👣' },
+                    { id: 'level_up', titulo: 'Ascensão', descricao: 'Subir de nível', icone: '⬆️' },
+                    { id: 'course_completed', titulo: 'Conquistador', descricao: 'Completar um curso inteiro', icone: '🏆' },
+                    { id: 'week_streak', titulo: 'Consistência', descricao: '7 dias de streak', icone: '🔥' },
+                    { id: 'month_streak', titulo: 'Campeão', descricao: '30 dias de streak', icone: '⭐' },
                 ];
                 const newBadgeId = (user?.achievements || badges)?.[currentBadgesCount - 1];
                 const newBadgeInfo = allBadges.find(b => b.id === newBadgeId);

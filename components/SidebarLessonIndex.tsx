@@ -34,10 +34,10 @@ const SidebarLessonIndex: React.FC<SidebarLessonIndexProps> = ({
 
   return (
     <>
-      {/* MOBILE TOGGLE BUTTON */}
+      {/* 📱 MOBILE TOGGLE BUTTON - Otimizado para tablets */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed left-4 bottom-4 z-50 md:hidden p-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] rounded-full shadow-lg hover:shadow-xl"
+        className="fixed left-4 bottom-4 z-50 lg:hidden p-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] rounded-full shadow-lg hover:shadow-xl"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -50,32 +50,38 @@ const SidebarLessonIndex: React.FC<SidebarLessonIndexProps> = ({
         </AnimatePresence>
       </motion.button>
 
-      {/* SIDEBAR OVERLAY (Mobile) */}
+      {/* 🎨 SIDEBAR OVERLAY (Mobile) - Com entrada animada */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             onClick={() => setIsOpen(false)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           />
         )}
       </AnimatePresence>
 
-      {/* SIDEBAR */}
+      {/* 📱 SIDEBAR - Otimizado para tablets, animação suave no mobile */}
       <motion.div
         initial={false}
         animate={{
           x: isOpen ? 0 : -400,
-          opacity: isOpen ? 1 : 0.9,
+          opacity: isOpen ? 1 : 0,
         }}
-        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-        className={`fixed md:sticky top-0 left-0 h-screen w-80 bg-gradient-to-b from-[#09090B] to-black border-r border-white/10 overflow-y-auto z-40 md:z-auto ${
+        transition={{ type: 'spring', damping: 25, stiffness: 120, duration: 0.3 }}
+        className={`fixed md:sticky top-0 left-0 h-screen w-80 bg-gradient-to-b from-[#09090B] to-black border-r border-white/10 overflow-y-auto z-40 lg:z-auto ${
           isOpen ? 'block' : 'hidden md:block'
         }`}
       >
-        <div className="p-6 space-y-6">
+        <motion.div 
+          className="p-6 space-y-6"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
+        >
           {/* HEADER */}
           <div className="space-y-2">
             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Índice de Aulas</h3>
@@ -93,8 +99,8 @@ const SidebarLessonIndex: React.FC<SidebarLessonIndexProps> = ({
             </p>
           </div>
 
-          {/* MÓDULOS */}
-          <div className="space-y-4">
+          {/* MÓDULOS - Com sincronização Firebase */}
+          <div className="space-y-4" data-sync="firebase-lesson-history">
             {modules.map((module, moduleIdx) => {
               const moduleCompletedCount = module.lessons.filter(l =>
                 completedLessonIds.includes(l.id)
@@ -172,7 +178,7 @@ const SidebarLessonIndex: React.FC<SidebarLessonIndexProps> = ({
               );
             })}
           </div>
-        </div>
+        </motion.div>
       </motion.div>
     </>
   );
