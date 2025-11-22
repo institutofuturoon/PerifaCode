@@ -13,6 +13,9 @@ import ModuleMilestoneModal from '../components/ModuleMilestoneModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';
 import ChatBot from '../components/ChatBot';
 import PreLessonScreen from '../components/PreLessonScreen';
+import LessonProgressTracker from '../components/LessonProgressTracker';
+import TimeDisplay from '../components/TimeDisplay';
+import PostLessonReflection from '../components/PostLessonReflection';
 
 
 const AITutor: React.FC = () => {
@@ -346,6 +349,8 @@ const LessonView: React.FC = () => {
   const [showCourseCompleteModal, setShowCourseCompleteModal] = useState(false);
   const [milestoneData, setMilestoneData] = useState<{moduleTitle: string, moduleNumber: number, totalModules: number, progressPercentage: number} | null>(null);
   const [showPreLesson, setShowPreLesson] = useState(true);
+  const [showReflectionModal, setShowReflectionModal] = useState(false);
+  const [tutorOpen, setTutorOpen] = useState(false);
 
   const exercise = EXERCISES.find(ex => ex.id === currentLesson?.exerciseId);
   const isCompleted = user?.completedLessonIds.includes(currentLesson?.id || '') || false;
@@ -427,6 +432,11 @@ const LessonView: React.FC = () => {
     const justCompletedModule = completedInModule === moduleLessons.length;
     const justCompletedCourse = newProgress === 100;
 
+    // Mostrar modal de reflexão primeiro (exceto se completou módulo/curso)
+    if (!justCompletedCourse && !justCompletedModule) {
+      setShowReflectionModal(true);
+    }
+
     if (justCompletedCourse) {
       setShowCourseCompleteModal(true);
     } else if (justCompletedModule) {
@@ -437,6 +447,8 @@ const LessonView: React.FC = () => {
         progressPercentage: newProgress
       });
       setShowMilestoneModal(true);
+    } else if (!justCompletedCourse && !justCompletedModule) {
+      // Reflection modal já é mostrado acima
     } else {
       setShowCompleteModal(true);
     }
@@ -589,6 +601,44 @@ const LessonView: React.FC = () => {
         </main>
         <aside className="space-y-8">
              <div className="sticky top-24 space-y-8">
+                {/* Time Display */}
+                <TimeDisplay 
+                  startTime={lessonStartTime}
+                  estimatedDuration={currentLesson.duration}
+                  isCompleted={isCompleted}
+                />
+
+                {/* Lesson Progress Tracker */}
+                <LessonProgressTracker 
+                  steps={[
+                    { 
+                      id: 'read-content', 
+                      label: 'Ler Conteúdo', 
+                      icon: '📖',
+                      status: activeTab === 'content' ? 'in-progress' : 'completed'
+                    },
+                    { 
+                      id: 'do-exercise', 
+                      label: 'Fazer Exercício', 
+                      icon: '🎯',
+                      status: activeTab === 'exercise' ? 'in-progress' : !exercise ? 'completed' : 'pending'
+                    },
+                    { 
+                      id: 'take-notes', 
+                      label: 'Anotações (Opcional)', 
+                      icon: '📝',
+                      status: note.trim().length > 0 ? 'completed' : 'pending'
+                    },
+                    { 
+                      id: 'ask-questions', 
+                      label: 'Tirar Dúvidas (Opcional)', 
+                      icon: '💬',
+                      status: 'pending'
+                    }
+                  ]}
+                  currentStep={activeTab}
+                />
+
                 <div className="bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10">
                     <h3 className="text-lg font-bold text-white mb-4">Navegação da Aula</h3>
                     <div className="flex justify-between items-center gap-2 mb-6">
@@ -710,6 +760,23 @@ const LessonView: React.FC = () => {
           onClose={() => setShowCourseCompleteModal(false)}
         />
       )}
+
+      {/* Post-Lesson Reflection Modal */}
+      <PostLessonReflection
+        isOpen={showReflectionModal}
+        onClose={() => setShowReflectionModal(false)}
+        onContinue={() => {
+          setShowReflectionModal(false);
+          if (nextLesson) {
+            navigateToLesson(nextLesson);
+          } else {
+            handleBackToCourse();
+          }
+        }}
+        lessonTitle={currentLesson.title}
+        hasNextLesson={!!nextLesson}
+        onOpenTutor={() => setTutorOpen(true)}
+      />
     </div>
   );
 };
