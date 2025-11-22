@@ -51,6 +51,7 @@ import InscriptionFormModal from './components/InscriptionFormModal';
 import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
 import ChatBotAdmin from './views/ChatBotAdmin';
+import MentorDashboard from './views/MentorDashboard';
 import { initializeFAQsIfNeeded } from './utils/initializeFAQs';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
@@ -950,6 +951,7 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/transparency-editor" element={<TransparencyEditor />} />
                     <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
                     <Route path="/admin/chatbot" element={<ChatBotAdmin />} />
+                    <Route path="/mentor-dashboard" element={<MentorDashboard />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/community" element={<CommunityView />} />
                     <Route path="/forum" element={<ForumView />} />
