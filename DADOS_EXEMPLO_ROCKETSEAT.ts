@@ -135,6 +135,8 @@ export const PROJETOS_EXEMPLO: Projeto[] = [
       documentacao: 10,
     },
     numSubmissoes: 234,
+    exemplosSubmissoes: ['https://github.com/...', 'https://github.com/...'],
+    forumTopicId: 'forum_calc_1',
     dataCriacao: '2024-01-01',
     atualizacao: '2024-01-15',
     isActive: true,
@@ -157,6 +159,8 @@ export const PROJETOS_EXEMPLO: Projeto[] = [
     duracao: 60,
     xpReward: 100,
     skills: ['JavaScript', 'DOM', 'localStorage', 'CSS'],
+    starterCode: '<div id="app"></div>',
+    solucaoCode: 'class TodoApp { /* implementação */ }',
     videoTutorialUrl: 'https://youtube.com/...',
     requisitos: [
       'Adicionar novas tarefas',
@@ -177,6 +181,8 @@ export const PROJETOS_EXEMPLO: Projeto[] = [
       documentacao: 10,
     },
     numSubmissoes: 567,
+    exemplosSubmissoes: ['https://github.com/...', 'https://github.com/...'],
+    forumTopicId: 'forum_todo_1',
     dataCriacao: '2024-01-05',
     atualizacao: '2024-01-20',
     isActive: true,
@@ -267,7 +273,7 @@ export const DESAFIOS_SEMANAIS: ChallengesSemanal[] = [
     - Documentação no README
     
     Ganhe 100 XP + Badge Inovador!`,
-    dificuldade: 'medio',
+    dificuldade: 'media',
     xpReward: 100,
     badgeReward: BADGES[5],
     dataInicio: '2024-12-16',

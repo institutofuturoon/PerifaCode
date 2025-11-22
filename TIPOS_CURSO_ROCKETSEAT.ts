@@ -343,7 +343,7 @@ export interface TrilhaAnalytics {
   tempoMedioConclusao: number; // em dias
   taxaAbandonoModulo: Record<string, number>;
   alunosComMelhorDesempenho: string[];
-  alulnosCom Dificuldade: string[];
+  alunosComDificuldade: string[];
   aulasMaisAssistidas: string[];
   aulasMenosAssistidas: string[];
 }

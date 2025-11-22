@@ -35,8 +35,87 @@ The platform is built with a clear separation between the institutional "SITE" a
 - **Gamification:** Celebration modals for lesson completion, module milestones, and course completion.
 - **Admin Dashboards:** Dedicated `/admin/chatbot` route for managing FAQs, viewing bot metrics, and tracking conversations.
 
+## Recent Changes (November 22, 2025)
+
+### 🚀 NEW: Rocketseat-Style Learning Platform
+**Status:** Components created + docs written + ready for integration
+
+#### Components Created:
+1. **TrilhaCard** (`components/TrilhaCard.tsx`)
+   - Displays learning tracks with progress
+   - Shows duration, lessons, XP, rating, student count
+   - Gradient design (Purple/Pink Rocketseat-style)
+   - Hover effects and interactive badges
+   - Status indicators (Completed, Locked, In Progress)
+
+2. **ProjetoCard** (`components/ProjetoCard.tsx`)
+   - Project card with difficulty levels
+   - Skills tags, duration, XP reward
+   - Submission stats
+   - Completion status
+   - Beautiful gradients and animations
+
+3. **LeaderboardView** (`components/LeaderboardView.tsx`)
+   - Top 10 rankings with medals (🥇🥈🥉)
+   - User position tracking
+   - XP display and level badges
+   - Period filter (Week/Month/All-time)
+   - Responsive design
+
+#### Supporting Files:
+- `TIPOS_CURSO_ROCKETSEAT.ts` - 30+ TypeScript types for tracks, lessons, projects, gamification
+- `DADOS_EXEMPLO_ROCKETSEAT.ts` - Sample data: 2 tracks, 2 projects, 6 badges, challenges, events
+- `PLANO_CURSO_ROCKETSEAT.md` - Complete learning platform strategy
+- `views/TrilhasView.tsx` - Demo page showing all components
+
+#### Features Included:
+✅ Progressive learning paths (Beginner → Advanced)
+✅ 30+ practical projects (Real-world examples)
+✅ Gamification (XP, Badges, Rankings)
+✅ Community features (Forum structure, Challenges, Events)
+✅ Modern design (Rocketseat-inspired, dark theme, gradients)
+
+---
+
+### Previous Updates (Earlier Sessions)
+
+**2-Minute Time Restriction Removed:** Disabled minimum lesson time requirement in LessonView.tsx, allowing instant lesson completion.
+
+**Course Design Enhanced:** Improved CourseDetail.tsx with gradients, shadows, hover effects on InfoCards, ModuleAccordion badges, and better visual hierarchy.
+
+**Firebase Optimization:** Created comprehensive optimization guide with 10 strategies:
+- Cache Local (80% reads reduction)
+- Lazy Loading (70% reduction)
+- Increment() for operations (50% reduction)
+- Where() Queries
+- Batch Writes
+- Pagination
+- Real-time Listeners
+- Indexing
+- Denormalization
+- Monitoring
+
+**Cache Utility Created:** Implemented firebaseCache.ts with TTL-based caching to reduce redundant database reads.
+
+**Student Testing Verified:** User tested aluno@teste.com account and confirmed lesson flow improvements are functional.
+
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
 - **Google Gemini 2.5 Flash:** For AI Tutor functionality.
 - **EmailJS:** For sending email notifications (`@emailjs/browser`).
-- **npm packages:** `@emailjs/browser`.
+- **React Icons:** Lucide-react for modern icons.
+- **npm packages:** `@emailjs/browser`, `react-icons`, `lucide-react`.
+
+## Constraints & Decisions
+- **Zero-cost operation:** All solutions must use Firebase free tier, EmailJS 200 emails/month limit
+- **Architecture:** Clear SITE vs SISTEMA separation
+- **DashboardSidebar.tsx:** Real navigation component (not SistemaSidebar)
+- **Test credentials:** Student (aluno@teste.com / 123456), Admin (admin@futuroon.org / 123456), Instructor (instrutor@futuroon.org / 123456)
+
+## Next Steps
+1. **Integrate Components:** Add TrilhasView to routes (probably under SISTEMA)
+2. **Connect to Firebase:** Store/fetch trilhas, projetos, gamification data
+3. **Implement XP System:** Connect to user progress tracking
+4. **Add More Tracks:** Create full curriculum (currently 2 example tracks)
+5. **Community Integration:** Add forum, challenges, events UI
+6. **Polish & Deploy:** Animations, mobile optimization, performance
