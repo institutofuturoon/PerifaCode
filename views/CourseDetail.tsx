@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Lesson, Module, Course } from '../types';
 import { useAppContext } from '../App';
 import SEO from '../components/SEO';
@@ -129,7 +130,12 @@ const CourseDetail: React.FC = () => {
     };
 
     return (
-        <div className="bg-[#09090B] min-h-screen">
+        <motion.div 
+            className="bg-[#09090B] min-h-screen"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <SEO 
                 title={`${course.title} | Curso FuturoOn`}
                 description={course.description}
@@ -312,7 +318,7 @@ const CourseDetail: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Course } from '../types';
 
 interface CourseCardProps {
@@ -6,9 +7,10 @@ interface CourseCardProps {
   onCourseSelect: (course: Course) => void;
   progress?: number;
   isEnrolled?: boolean;
+  index?: number;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progress = 0, isEnrolled = false }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progress = 0, isEnrolled = false, index = 0 }) => {
   const statusConfig = {
     open: { text: '🟢 Abertas', classes: 'bg-green-500/80' },
     closed: { text: '🔴 Fechadas', classes: 'bg-red-500/80' },
@@ -17,9 +19,13 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
   const status = course.enrollmentStatus ? statusConfig[course.enrollmentStatus] : null;
 
   return (
-    <button
+    <motion.button
       onClick={() => onCourseSelect(course)}
-      className="bg-[#121214] hover:bg-[#1a1a1e] rounded-2xl overflow-hidden border border-white/10 hover:border-[#8a4add]/40 group flex flex-col text-left transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#8a4add]/20 h-full w-full"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
+      whileHover={{ y: -8 }}
+      className="bg-[#121214] hover:bg-[#1a1a1e] rounded-2xl overflow-hidden border border-white/10 hover:border-[#8a4add]/40 group flex flex-col text-left transition-all duration-300 transform hover:shadow-2xl hover:shadow-[#8a4add]/20 h-full w-full"
     >
       {/* Image Section */}
       <div className="overflow-hidden aspect-video relative w-full bg-gradient-to-br from-gray-900 to-black">
@@ -129,7 +135,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
           )}
         </div>
       </div>
-    </button>
+    </motion.button>
   );
 };
 

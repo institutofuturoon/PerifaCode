@@ -182,7 +182,7 @@ const Courses: React.FC = () => {
 
                 {filteredCourses.length > 0 ? (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
-                        {filteredCourses.map(course => {
+                        {filteredCourses.map((course, idx) => {
                             const { progress, isEnrolled } = getCourseProgress(course);
                             return (
                                 <CourseCard 
@@ -191,6 +191,7 @@ const Courses: React.FC = () => {
                                     onCourseSelect={handleCourseSelect}
                                     progress={progress}
                                     isEnrolled={isEnrolled}
+                                    index={idx}
                                 />
                             );
                         })}

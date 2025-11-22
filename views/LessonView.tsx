@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { ForumPost, ChatMessage, Reply } from '../types';
 import { EXERCISES } from '../constants';
 import QuizExercise from '../components/QuizExercise';
@@ -506,7 +507,12 @@ const LessonView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090B] flex flex-col">
+    <motion.div 
+        className="min-h-screen bg-[#09090B] flex flex-col"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+    >
         {/* Top Navigation Bar */}
         <div className="border-b border-white/10 bg-white/5 backdrop-blur-sm sticky top-0 z-40">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -778,7 +784,7 @@ const LessonView: React.FC = () => {
         hasNextLesson={!!nextLesson}
         onOpenTutor={() => setTutorOpen(true)}
       />
-    </div>
+    </motion.div>
   );
 };
 

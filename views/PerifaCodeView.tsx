@@ -57,8 +57,8 @@ const PerifaCodeView: React.FC = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredCourses.map(course => (
-            <CourseCard key={course.id} course={course} onCourseSelect={handleCourseSelect}/>
+            {filteredCourses.map((course, idx) => (
+            <CourseCard key={course.id} course={course} onCourseSelect={handleCourseSelect} index={idx}/>
             ))}
         </div>
         </div>
