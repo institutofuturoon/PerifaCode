@@ -15,15 +15,8 @@ import Blog from './Blog';
 import DashboardTrilhasSection from '../components/DashboardTrilhasSection';
 import useTrilhas from '../hooks/useTrilhas';
 import useProgresso from '../hooks/useProgresso';
-import LeaderboardView from '../components/LeaderboardView';
-import LevelUpCelebration from '../components/LevelUpCelebration';
-import BadgeUnlockCelebration from '../components/BadgeUnlockCelebration';
-import WeeklyChallengeSection from '../components/WeeklyChallengeSection';
-import StreakMilestoneModal from '../components/StreakMilestoneModal';
-import { Badge } from '../TIPOS_CURSO_ROCKETSEAT';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import { getLessonHistoryFromFirebase, syncLocalToFirebase } from '../utils/firebaseHistorySync';
-import DashboardAnalytics from '../components/DashboardAnalytics';
 import NotificationBell from '../components/NotificationBell';
 import CourseJSONManager from '../components/CourseJSONManager';
 
@@ -555,8 +548,7 @@ const ModerationPanel: React.FC = () => {
 
 // TAB TITLE MAPPING
 const tabTitles: Record<string, string> = {
-    'trilhas': 'Trilhas & Gamificação',
-    'leaderboard': 'Ranking & Leaderboard',
+    'trilhas': 'Trilhas',
     overview: 'Visão Geral',
     myAgenda: 'Minha Agenda',
     myCourses: 'Meus Cursos',
@@ -999,11 +991,6 @@ const StudentDashboard: React.FC = () => {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('myCourses');
-    const [showLevelUpModal, setShowLevelUpModal] = useState(false);
-    const [previousLevel, setPreviousLevel] = useState<string>('');
-    const [showBadgeModal, setShowBadgeModal] = useState(false);
-    const [unlockedBadge, setUnlockedBadge] = useState<Badge | null>(null);
-    const [previousBadgesCount, setPreviousBadgesCount] = useState(0);
 
     if (!user) return null;
     
@@ -1035,13 +1022,6 @@ const StudentDashboard: React.FC = () => {
 
     const OverviewContent = () => (
         <div className="space-y-8">
-             {/* 📊 DASHBOARD ANALYTICS - XP, STREAK, BADGES, etc */}
-             <DashboardAnalytics
-                 user={user}
-                 totalCoursesEnrolled={inProgressCourses.length + completedCourses.length}
-                 totalCoursesCompleted={completedCourses.length}
-             />
-
              {/* 🎯 RESOURCE 2: CONTINUE LEARNING PANEL */}
              <ContinueLearningPanel />
 
@@ -1150,7 +1130,6 @@ const StudentDashboard: React.FC = () => {
         switch(activeTab) {
             case 'myCourses': return <OverviewContent />;
             case 'trilhas': return <StudentTrilhasContent />;
-            case 'leaderboard': return <LeaderboardContent />;
             case 'explore': return <ExploreCoursesPanel />;
             case 'forum': return <ForumView embedded={true} />;
             case 'blog-feed': return <Blog embedded={true} />;
@@ -1163,40 +1142,6 @@ const StudentDashboard: React.FC = () => {
         const { trilhas, projetos, loading } = useTrilhas();
         const { xp, nivel, streak, badges, enrollTrilha } = useProgresso(userId);
 
-        // Detectar mudança de nível
-        useMemo(() => {
-            const currentNivel = user?.nivel || nivel;
-            if (previousLevel && previousLevel !== currentNivel) {
-                setShowLevelUpModal(true);
-                setPreviousLevel(currentNivel);
-            } else if (!previousLevel) {
-                setPreviousLevel(currentNivel);
-            }
-        }, [user?.nivel, nivel, previousLevel]);
-
-        // Detectar badge desbloqueada
-        useMemo(() => {
-            const currentBadgesCount = user?.achievements?.length || badges.length;
-            if (previousBadgesCount > 0 && currentBadgesCount > previousBadgesCount) {
-                // Nova badge foi desbloqueada
-                // Encontrar qual é a nova (a última adicionada)
-                const allBadges: Partial<Badge>[] = [
-                    { id: 'first_lesson', titulo: 'Primeiro Passo', descricao: 'Completar a primeira aula', icone: '👣' },
-                    { id: 'level_up', titulo: 'Ascensão', descricao: 'Subir de nível', icone: '⬆️' },
-                    { id: 'course_completed', titulo: 'Conquistador', descricao: 'Completar um curso inteiro', icone: '🏆' },
-                    { id: 'week_streak', titulo: 'Consistência', descricao: '7 dias de streak', icone: '🔥' },
-                    { id: 'month_streak', titulo: 'Campeão', descricao: '30 dias de streak', icone: '⭐' },
-                ];
-                const newBadgeId = (user?.achievements || badges)?.[currentBadgesCount - 1];
-                const newBadgeInfo = allBadges.find(b => b.id === newBadgeId);
-                if (newBadgeInfo) {
-                    setUnlockedBadge(newBadgeInfo as Badge);
-                    setShowBadgeModal(true);
-                    showToast(`🏆 Badge Desbloqueada: ${newBadgeInfo.titulo}!`);
-                }
-            }
-            setPreviousBadgesCount(currentBadgesCount);
-        }, [user?.achievements, badges, previousBadgesCount, showToast]);
 
         if (loading) {
             return (
@@ -1211,19 +1156,10 @@ const StudentDashboard: React.FC = () => {
 
         return (
             <div className="space-y-8">
-                {/* Desafio Semanal */}
-                <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-500/20 rounded-2xl p-6">
-                    <h3 className="text-2xl font-black text-white mb-4">⚡ Desafio da Semana</h3>
-                    <WeeklyChallengeSection userId={user?.id || ''} />
-                </div>
-
                 {/* Trilhas */}
                 <DashboardTrilhasSection
                     userTrilhas={trilhas}
                     userProjetos={projetos}
-                    userXP={user?.xp || xp || 0}
-                    userStreak={user?.streak || streak || 0}
-                    userBadges={user?.achievements || badges || []}
                     enrolledTrilhaIds={user?.enrolledCourseIds || []}
                     onEnroll={enrollTrilha}
                 />
@@ -1231,47 +1167,6 @@ const StudentDashboard: React.FC = () => {
         );
     }
 
-    const LeaderboardContent = () => {
-        const userId = user?.id || '';
-        const allUsers = users || [];
-
-        // Transformar usuários para formato do leaderboard
-        const rankingUsers = allUsers
-            .filter(u => u.role === 'student')
-            .map((u, index) => ({
-                userId: u.id,
-                posicao: index + 1,
-                nome: u.name,
-                avatar: u.avatar || 'https://via.placeholder.com/50',
-                xp: u.xp || 0,
-                nivel: u.nivel || 'ovo',
-                badge: u.achievements?.[0],
-            }))
-            .sort((a, b) => b.xp - a.xp)
-            .map((u, index) => ({ ...u, posicao: index + 1 }));
-
-        return (
-            <div className="space-y-8">
-                <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/20 rounded-2xl p-8">
-                    <h2 className="text-3xl font-black text-white mb-2">🏆 Ranking Global</h2>
-                    <p className="text-gray-400">Veja como você está em relação aos outros alunos</p>
-                </div>
-
-                <LeaderboardView
-                    users={rankingUsers}
-                    currentUserId={userId}
-                    period="semana"
-                    title="Top 10 Estudantes"
-                    showCategoryFilter={false}
-                />
-
-                {/* Toast Notifications */}
-                <div className="fixed bottom-6 right-6 space-y-3 pointer-events-none">
-                    {/* Example: Toast messages will appear here */}
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="flex min-h-screen bg-[#09090B]">
@@ -1296,21 +1191,6 @@ const StudentDashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* Level Up Celebration Modal */}
-            <LevelUpCelebration
-                isOpen={showLevelUpModal}
-                newLevel={user?.nivel || 'ovo'}
-                xpCurrent={user?.xp || 0}
-                xpNextLevel={7000} // Next level XP threshold
-                onClose={() => setShowLevelUpModal(false)}
-            />
-
-            {/* Badge Unlock Celebration Modal */}
-            <BadgeUnlockCelebration
-                isOpen={showBadgeModal}
-                badge={unlockedBadge}
-                onClose={() => setShowBadgeModal(false)}
-            />
         </div>
     );
 };

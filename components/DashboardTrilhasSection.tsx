@@ -1,21 +1,17 @@
 /**
  * Dashboard - Seção de Trilhas
- * Mostra trilhas inscritas, progresso, XP e gamificação
+ * Mostra trilhas inscritas e disponíveis
  */
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Zap, Trophy, Flame, Lock, Check } from 'lucide-react';
+import { Lock, Check } from 'lucide-react';
 import { Trilha, Projeto } from '../TIPOS_CURSO_ROCKETSEAT';
 import TrilhaCard from './TrilhaCard';
-import { XPSystem, LEVELS } from '../utils/xpSystem';
 
 interface DashboardTrilhasSectionProps {
   userTrilhas: Trilha[];
   userProjetos: Projeto[];
-  userXP: number;
-  userStreak: number;
-  userBadges: string[];
   enrolledTrilhaIds: string[];
   onEnroll?: (trilhaId: string) => Promise<void>;
 }
@@ -23,19 +19,12 @@ interface DashboardTrilhasSectionProps {
 const DashboardTrilhasSection: React.FC<DashboardTrilhasSectionProps> = ({
   userTrilhas,
   userProjetos,
-  userXP,
-  userStreak,
-  userBadges,
   enrolledTrilhaIds,
   onEnroll,
 }) => {
   const navigate = useNavigate();
   const [selectedTrilha, setSelectedTrilha] = useState<Trilha | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const levelInfo = XPSystem.getLevelInfo(userXP);
-  const isMaxLevel = levelInfo.current.id === 'lenda';
-  const daysToNextLevel = XPSystem.estimateTimeToNextLevel(userXP);
 
   // Filtrar trilhas inscritas
   const inscritasTrilhas = userTrilhas.filter(t => enrolledTrilhaIds.includes(t.id));
@@ -57,46 +46,6 @@ const DashboardTrilhasSection: React.FC<DashboardTrilhasSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* === COMPACT STATUS BAR === */}
-      <div className="bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between text-sm">
-        <div className="flex items-center gap-6">
-          <div>
-            <span className="text-gray-400">XP:</span>
-            <span className="ml-2 font-bold text-white">{XPSystem.formatXP(userXP)}</span>
-          </div>
-          <div className="w-px h-6 bg-white/10"></div>
-          <div>
-            <span className="text-gray-400">Nível:</span>
-            <span className="ml-2 font-bold text-white">{levelInfo.current.emoji} {levelInfo.current.nome}</span>
-          </div>
-          <div className="w-px h-6 bg-white/10"></div>
-          <div>
-            <span className="text-gray-400">Streak:</span>
-            <span className="ml-2 font-bold text-white">{userStreak} dias</span>
-          </div>
-          <div className="w-px h-6 bg-white/10"></div>
-          <div>
-            <span className="text-gray-400">Badges:</span>
-            <span className="ml-2 font-bold text-white">{userBadges.length}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* === PROGRESS BAR === */}
-      <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-        <div className="flex items-center justify-between mb-2 text-xs">
-          <h3 className="font-semibold text-white">{levelInfo.current.nome} → {levelInfo.next?.nome || 'Máximo'}</h3>
-          <p className="text-gray-400">{levelInfo.progressPercent}%</p>
-        </div>
-        
-        <div className="w-full bg-black/50 rounded-full h-2 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
-            style={{ width: `${levelInfo.progressPercent}%` }}
-          />
-        </div>
-      </div>
-
       {/* === TRILHAS INSCRITAS === */}
       {inscritasTrilhas.length > 0 && (
         <div>
@@ -163,9 +112,9 @@ const DashboardTrilhasSection: React.FC<DashboardTrilhasSectionProps> = ({
               >
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-white">{projeto.titulo}</p>
-                  <p className="text-xs text-gray-400">{projeto.duracao} min • {projeto.xpReward} XP</p>
+                  <p className="text-xs text-gray-400">{projeto.duracao} min</p>
                 </div>
-                <Zap className="w-4 h-4 text-yellow-400" />
+                <span className="text-lg">→</span>
               </div>
             ))}
           </div>

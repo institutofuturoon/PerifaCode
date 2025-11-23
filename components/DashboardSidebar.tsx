@@ -75,14 +75,8 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ activeTab, onTabCha
             },
             {
                 id: 'trilhas',
-                label: 'Trilhas & XP',
+                label: 'Trilhas',
                 icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>,
-                roles: ['student']
-            },
-            {
-                id: 'leaderboard',
-                label: 'Ranking',
-                icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15c3.314 0 6-1.343 6-3 0-.742-.541-1.435-1.406-1.901M12 15c-3.314 0-6-1.343-6-3 0-.742.541-1.435 1.406-1.901M12 15v3m0 0c3.314 0 6-1.343 6-3v-3M12 18c-3.314 0-6-1.343-6-3v-3M7.594 10.099C6.541 9.565 6 8.872 6 8c0-1.657 2.686-3 6-3s6 1.343 6 3c0 .872-.541 1.565-1.406 2.099M12 6v3"/></svg>,
                 roles: ['student']
             },
             { 
