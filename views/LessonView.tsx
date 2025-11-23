@@ -10,6 +10,8 @@ import ChatBot from '../components/ChatBot';
 import Breadcrumb from '../components/Breadcrumb';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import KeyboardHintsModal from '../components/KeyboardHintsModal';
+import LessonMicroView from '../components/LessonMicroView';
+import InteractiveExercise from '../components/InteractiveExercise';
 import { syncLessonHistory } from '../utils/firebaseHistorySync';
 
 const LessonView: React.FC = () => {
@@ -19,6 +21,7 @@ const LessonView: React.FC = () => {
 
   const [showLessonModal, setShowLessonModal] = useState(false);
   const [showCourseModal, setShowCourseModal] = useState(false);
+  const [showExerciseTab, setShowExerciseTab] = useState(false);
 
   const currentCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
   const currentLesson = useMemo(() => 
@@ -246,15 +249,74 @@ const LessonView: React.FC = () => {
             </motion.div>
           )}
 
-          {/* CONTEÚDO PRINCIPAL */}
-          <motion.div 
-            className="prose prose-invert max-w-none mb-16 text-gray-300 leading-relaxed"
-            initial={{ y: 20, opacity: 0 }} 
-            animate={{ y: 0, opacity: 1 }} 
-            transition={{ delay: 0.2 }}
-          >
-            <MarkdownRenderer content={currentLesson.mainContent} />
-          </motion.div>
+          {/* TABS: Aprender vs Exercitar */}
+          {(currentLesson.microSteps || currentLesson.exercise) && (
+            <motion.div 
+              className="flex gap-2 mb-8 border-b border-white/10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.18 }}
+            >
+              <motion.button
+                onClick={() => setShowExerciseTab(false)}
+                className={`px-6 py-3 font-semibold transition-all border-b-2 ${
+                  !showExerciseTab
+                    ? 'text-white border-[#8a4add]'
+                    : 'text-gray-400 border-transparent hover:text-white'
+                }`}
+                whileHover={{ y: -2 }}
+              >
+                📚 Aprender
+              </motion.button>
+              {currentLesson.exercise && (
+                <motion.button
+                  onClick={() => setShowExerciseTab(true)}
+                  className={`px-6 py-3 font-semibold transition-all border-b-2 ${
+                    showExerciseTab
+                      ? 'text-white border-[#f27983]'
+                      : 'text-gray-400 border-transparent hover:text-white'
+                  }`}
+                  whileHover={{ y: -2 }}
+                >
+                  🎯 Exercitar
+                </motion.button>
+              )}
+            </motion.div>
+          )}
+
+          {/* CONTEÚDO: APRENDER */}
+          {!showExerciseTab && (
+            <>
+              {/* MICRO-STEPS (Se disponível) */}
+              {currentLesson.microSteps && currentLesson.microSteps.length > 0 && (
+                <LessonMicroView
+                  microSteps={currentLesson.microSteps}
+                  onComplete={() => setShowExerciseTab(true)}
+                />
+              )}
+
+              {/* CONTEÚDO PRINCIPAL */}
+              <motion.div 
+                className="prose prose-invert max-w-none mb-16 text-gray-300 leading-relaxed"
+                initial={{ y: 20, opacity: 0 }} 
+                animate={{ y: 0, opacity: 1 }} 
+                transition={{ delay: 0.2 }}
+              >
+                <MarkdownRenderer content={currentLesson.mainContent} />
+              </motion.div>
+            </>
+          )}
+
+          {/* CONTEÚDO: EXERCITAR */}
+          {showExerciseTab && currentLesson.exercise && (
+            <InteractiveExercise
+              exercise={currentLesson.exercise}
+              onComplete={(score) => {
+                showToast(`🎉 Exercício concluído com ${score}% de acerto!`);
+                setShowExerciseTab(false);
+              }}
+            />
+          )}
 
           {/* CTA BUTTON MELHORADO */}
           <motion.div 

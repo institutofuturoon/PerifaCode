@@ -92,6 +92,34 @@ export interface Supporter {
     since: string; // Ano de início do apoio
 }
 
+export interface MicroStep {
+  id: string;
+  title: string;
+  content: string;
+  estimatedMinutes: number;
+}
+
+export type QuestionType = 'multipleChoice' | 'dragDrop' | 'fillInBlank' | 'trueOrFalse';
+
+export interface ExerciseQuestion {
+  id: string;
+  type: QuestionType;
+  question: string;
+  options?: string[]; // Para MC e TrueOrFalse
+  correctAnswer?: string | number;
+  items?: string[]; // Para drag-drop
+  placeholder?: string; // Para fill-in-blank
+  explanation?: string;
+}
+
+export interface InteractiveLesson {
+  id: string;
+  title: string;
+  description?: string;
+  estimatedMinutes: number;
+  questions: ExerciseQuestion[];
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -104,6 +132,8 @@ export interface Lesson {
   complementaryMaterial?: string;
   summary?: string;
   exerciseId?: string;
+  microSteps?: MicroStep[];
+  exercise?: InteractiveLesson;
 }
 
 export interface Module {
