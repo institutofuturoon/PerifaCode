@@ -8,6 +8,7 @@ import {
   dismissNotification,
   SmartNotification,
 } from '../utils/smartNotificationService';
+import { trackNotificationImpression, trackNotificationClick, trackNotificationDismiss } from '../utils/notificationAnalytics';
 
 const NotificationBell: React.FC = () => {
   const { user } = useAppContext();
@@ -37,6 +38,11 @@ const NotificationBell: React.FC = () => {
   }, [user?.id]);
 
   const handleNotificationClick = async (notif: SmartNotification) => {
+    // Track click
+    if (user?.id && notif.id) {
+      await trackNotificationClick(user.id, notif.id, notif.type);
+    }
+
     // Marcar como lida
     if (notif.id) {
       await markAsRead(notif.id);
@@ -51,9 +57,14 @@ const NotificationBell: React.FC = () => {
     }
   };
 
-  const handleDismiss = async (notifId: string | undefined, e: React.MouseEvent) => {
+  const handleDismiss = async (notifId: string | undefined, e: React.MouseEvent, notifType?: string) => {
     e.stopPropagation();
     if (!notifId) return;
+
+    // Track dismiss
+    if (user?.id && notifType) {
+      await trackNotificationDismiss(user.id, notifId, notifType);
+    }
 
     await dismissNotification(notifId);
     setNotifications((prev) => prev.filter((n) => n.id !== notifId));
@@ -130,7 +141,15 @@ const NotificationBell: React.FC = () => {
                   </div>
                 ) : (
                   <div className="divide-y divide-white/5">
-                    {notifications.map((notif) => (
+                    {notifications.map((notif) => {
+                      // Track impression when notification becomes visible
+                      useEffect(() => {
+                        if (user?.id && notif.id && isOpen) {
+                          trackNotificationImpression(user.id, notif.id, notif.type);
+                        }
+                      }, [isOpen]);
+
+                      return (
                       <motion.div
                         key={notif.id}
                         initial={{ opacity: 0, x: 20 }}
@@ -155,7 +174,7 @@ const NotificationBell: React.FC = () => {
 
                           {/* Dismiss Button */}
                           <button
-                            onClick={(e) => handleDismiss(notif.id, e)}
+                            onClick={(e) => handleDismiss(notif.id, e, notif.type)}
                             className="flex-shrink-0 p-1 rounded hover:bg-red-500/20 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                           >
                             <svg
@@ -175,7 +194,8 @@ const NotificationBell: React.FC = () => {
                           </button>
                         </div>
                       </motion.div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

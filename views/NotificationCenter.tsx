@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { getAllNotifications, markAllAsRead, togglePinNotification, deleteNotification, SmartNotification } from '../utils/smartNotificationService';
+import { trackNotificationClick } from '../utils/notificationAnalytics';
 import NotificationPreferencesComponent from '../components/NotificationPreferences';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 
@@ -9,6 +11,7 @@ type FilterType = 'all' | 'unread' | 'pinned';
 
 const NotificationCenter: React.FC = () => {
   const { user, showToast } = useAppContext();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<SmartNotification[]>([]);
   const [filter, setFilter] = useState<FilterType>('all');
   const [loading, setLoading] = useState(true);
@@ -195,7 +198,15 @@ const NotificationCenter: React.FC = () => {
                   <div className="text-3xl flex-shrink-0">{notif.icon || getTypeIcon(notif.type)}</div>
 
                   {/* Content */}
-                  <div className="flex-1">
+                  <div 
+                    className="flex-1 cursor-pointer"
+                    onClick={async () => {
+                      if (user?.id && notif.id) {
+                        await trackNotificationClick(user.id, notif.id, notif.type);
+                      }
+                      if (notif.link) navigate(notif.link);
+                    }}
+                  >
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <h3 className={`font-bold text-lg ${notif.isRead ? 'text-gray-300' : 'text-white'}`}>
@@ -215,7 +226,7 @@ const NotificationCenter: React.FC = () => {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleTogglePin(notif.id, notif.isPinned)}
                           className={`p-2 rounded hover:bg-white/10 transition-colors ${

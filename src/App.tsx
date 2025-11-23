@@ -54,6 +54,8 @@ import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
 import ApiTest from './views/ApiTest';
 import ImageUploadTest from './views/ImageUploadTest';
+import NotificationCenter from './views/NotificationCenter';
+import NotificationAnalyticsDashboard from './components/NotificationAnalyticsDashboard';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -755,6 +757,7 @@ const AppContent: React.FC = () => {
                     <Route path="/course/:courseId/certificate" element={<CertificateView />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/notifications" element={<NotificationCenter />} />
+                    <Route path="/notifications/analytics" element={<NotificationAnalyticsDashboard />} />
                     <Route path="/connect" element={<ConnectView />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/article/:articleId" element={<ArticleView />} />

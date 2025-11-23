@@ -34,6 +34,7 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Data Management:** React Hooks (`useTrilhas()`, `useProgresso()`) and `firebaseCache.ts` with TTL-based caching.
 - **Lesson History:** `localStorage` and Firebase-synced tracking of the last viewed lesson for cross-device continuity.
 - **Smart Notification System:** Firestore-based, real-time notification system with various intelligent triggers (streaks, reminders, inactivity, badges, level-ups) and user-configurable preferences.
+- **Notification Analytics:** CTR tracking system (`notificationAnalytics.ts`) with impression, click, and dismiss tracking for each notification type. Dashboard (`NotificationAnalyticsDashboard.tsx`) shows best/worst performers and detailed metrics per type.
 
 **Feature Specifications:**
 - **Course Progress Tracking:** Visual progress bars, trails, and checklists.
@@ -43,6 +44,7 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Admin Dashboards:** For managing chatbot FAQs and metrics.
 - **Toast Notifications:** System-wide notifications for key events.
 - **User History Synchronization:** LocalStorage and Firebase synchronization for lesson progress across devices, with offline-first capabilities.
+- **Notification CTR Analytics:** Track which notification types have highest engagement, dismiss rates, and average response times. Dashboard shows best/worst performers by type.
 
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
