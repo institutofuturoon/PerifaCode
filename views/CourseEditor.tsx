@@ -129,59 +129,65 @@ const CourseEditor: React.FC = () => {
   };
 
   const addLessonToModule = (moduleIndex: number) => {
+    console.log("🔹 addLessonToModule called with moduleIndex:", moduleIndex);
+    console.log("📝 lessonTitle value:", lessonTitle);
+    console.log("📚 course.modules length:", course.modules.length);
+    
     // Validação 1: Título não vazio
-    if (!lessonTitle.trim()) {
+    const titleTrimmed = lessonTitle.trim();
+    if (!titleTrimmed) {
+      console.warn("❌ Título vazio");
       showToast("❌ Digite um nome para a aula");
       return;
     }
 
     // Validação 2: Módulo existe
     if (!course.modules[moduleIndex]) {
+      console.error("❌ Módulo não existe no índice", moduleIndex);
       showToast("❌ Módulo não encontrado");
       return;
     }
 
-    try {
-      const newLesson: Lesson = {
-        id: `les_${Date.now()}`,
-        title: lessonTitle.trim(),
-        duration: '10 min',
-        type: 'text',
-        xp: 10
-      };
+    console.log("✅ Validações passaram. Criando aula...");
 
-      // Calcula o índice da nova aula
-      const newLessonIndex = course.modules[moduleIndex].lessons.length;
+    const newLesson: Lesson = {
+      id: `les_${Date.now()}`,
+      title: titleTrimmed,
+      duration: '10 min',
+      type: 'text',
+      xp: 10
+    };
 
-      // Atualiza course com a nova aula
-      setCourse(prev => {
-        const newModules = [...prev.modules];
-        if (!newModules[moduleIndex]) {
-          throw new Error("Módulo inválido");
-        }
-        newModules[moduleIndex] = {
-          ...newModules[moduleIndex],
-          lessons: [...newModules[moduleIndex].lessons, newLesson]
-        };
-        return { ...prev, modules: newModules };
-      });
+    // Calcula o índice ANTES de setState
+    const newLessonIndex = course.modules[moduleIndex].lessons.length;
+    console.log("🆕 Nova aula será no índice:", newLessonIndex);
 
-      // Imediatamente seleciona a nova aula
-      setSelectedItem({
-        type: 'lesson',
-        moduleIndex: moduleIndex,
-        lessonIndex: newLessonIndex
-      });
+    // Atualiza state de uma vez
+    const newModules = [...course.modules];
+    newModules[moduleIndex] = {
+      ...newModules[moduleIndex],
+      lessons: [...newModules[moduleIndex].lessons, newLesson]
+    };
 
-      // Limpa input
-      setAddingLessonToModule(null);
-      setLessonTitle('');
+    setCourse({
+      ...course,
+      modules: newModules
+    });
 
-      showToast("✅ Aula adicionada!");
-    } catch (error) {
-      console.error("Erro ao adicionar aula:", error);
-      showToast("❌ Erro ao adicionar aula");
-    }
+    console.log("✅ Course atualizado. Aula criada com sucesso!");
+
+    // Seleciona a aula
+    setSelectedItem({
+      type: 'lesson',
+      moduleIndex: moduleIndex,
+      lessonIndex: newLessonIndex
+    });
+
+    // Limpa estado de adicionar aula
+    setAddingLessonToModule(null);
+    setLessonTitle('');
+
+    showToast("✅ Aula adicionada!");
   };
 
   const deleteLesson = (moduleIndex: number, lessonIndex: number) => {
@@ -390,13 +396,18 @@ const CourseEditor: React.FC = () => {
                       ref={inputRef}
                       type="text"
                       value={lessonTitle}
-                      onChange={(e) => setLessonTitle(e.target.value)}
+                      onChange={(e) => {
+                        console.log("🔤 Input value changed to:", e.target.value);
+                        setLessonTitle(e.target.value);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
+                          console.log("⌨️ Enter pressionado! Valor atual:", lessonTitle);
                           e.preventDefault();
                           addLessonToModule(mIdx);
                         }
                         if (e.key === 'Escape') {
+                          console.log("❌ Escape pressionado");
                           setAddingLessonToModule(null);
                           setLessonTitle('');
                         }
@@ -404,11 +415,21 @@ const CourseEditor: React.FC = () => {
                       placeholder="Nome da aula"
                       className="flex-1 px-3 py-2 bg-white/5 border border-white/20 rounded text-white text-sm focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
                     />
-                    <button type="button" onClick={() => addLessonToModule(mIdx)} className="px-3 py-2 bg-[#8a4add] text-white rounded text-sm font-semibold hover:bg-[#7c3aed]">✓</button>
-                    <button type="button" onClick={() => { setAddingLessonToModule(null); setLessonTitle(''); }} className="px-3 py-2 bg-white/10 text-white rounded text-sm hover:bg-white/20">✕</button>
+                    <button type="button" onClick={() => {
+                      console.log("🖱️ Botão ✓ clicado! Valor:", lessonTitle);
+                      addLessonToModule(mIdx);
+                    }} className="px-3 py-2 bg-[#8a4add] text-white rounded text-sm font-semibold hover:bg-[#7c3aed]">✓</button>
+                    <button type="button" onClick={() => { 
+                      console.log("❌ Botão ✕ clicado");
+                      setAddingLessonToModule(null); 
+                      setLessonTitle(''); 
+                    }} className="px-3 py-2 bg-white/10 text-white rounded text-sm hover:bg-white/20">✕</button>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setAddingLessonToModule(mIdx)} className="w-full py-2 text-[#c4b5fd] hover:text-white text-xs border-t border-white/10 mt-2">+ Aula</button>
+                  <button type="button" onClick={() => {
+                    console.log("📝 Clique em + Aula para módulo", mIdx);
+                    setAddingLessonToModule(mIdx);
+                  }} className="w-full py-2 text-[#c4b5fd] hover:text-white text-xs border-t border-white/10 mt-2">+ Aula</button>
                 )}
               </div>
             </div>
