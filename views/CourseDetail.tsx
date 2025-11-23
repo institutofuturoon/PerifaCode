@@ -242,99 +242,54 @@ const CourseDetail: React.FC = () => {
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 {/* 🎯 NEXT LESSON CARD - DESTAQUE NO TOPO */}
-                {isEnrolled && user && nextLesson && (
-                    <div className="mb-12">
-                        {(() => {
-                            const nextModule = course.modules.find(m => 
-                                m.lessons.some(l => l.id === nextLesson.id)
-                            );
-                            return nextModule ? (
-                                <NextLessonCard
-                                    lesson={nextLesson}
-                                    module={nextModule}
-                                    progress={progress}
-                                    completedCount={completedLessons.length}
-                                    totalLessons={allLessons.length}
-                                    onContinue={handleContinue}
-                                />
-                            ) : null;
-                        })()}
-                    </div>
-                )}
-
-                <div className="grid lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* BREADCRUMB */}
-                        <Breadcrumb
-                            items={[
-                                { label: 'Dashboard', path: '/dashboard' }
-                            ]}
-                            currentPage={course.title}
+                {isEnrolled && user && nextLesson && (() => {
+                    const nextModule = course.modules.find(m => 
+                        m.lessons.some(l => l.id === nextLesson.id)
+                    );
+                    return nextModule ? (
+                        <NextLessonCard
+                            lesson={nextLesson}
+                            module={nextModule}
+                            progress={progress}
+                            completedCount={completedLessons.length}
+                            totalLessons={allLessons.length}
+                            onContinue={handleContinue}
                         />
+                    ) : null;
+                })()}
 
-                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
-                            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><span>📖</span> Sobre o Curso</h3>
-                            <p className="text-gray-300 text-base leading-relaxed whitespace-pre-wrap">{course.longDescription}</p>
-                        </div>
-
-                        {/* Modalidade do Curso */}
-                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
-                            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><span>🎓</span> Formato do Curso</h3>
-                            <div className="mb-4">
-                                <span className="inline-block px-4 py-2 rounded-lg text-sm font-bold bg-[#8a4add]/20 text-[#c4b5fd]">{course.format === 'online' ? '🌐 Online' : course.format === 'hibrido' ? '🔄 Híbrido' : '📍 Presencial'}</span>
-                            </div>
-                            <div className="text-sm text-gray-300">
+                <div className="grid lg:grid-cols-4 gap-8">
+                    <div className="lg:col-span-3 space-y-6">
+                        {/* SOBRE + FORMATO CONSOLIDADOS */}
+                        <div className="rounded-xl bg-gradient-to-br from-white/8 to-white/5 p-6 md:p-8 border border-white/10">
+                            <h3 className="text-xl md:text-2xl font-bold text-white mb-4">Sobre o Curso</h3>
+                            <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-6">{course.longDescription || course.description}</p>
+                            
+                            <div className="space-y-3 text-sm text-gray-300">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[#c4b5fd]">📌</span>
+                                    <span><strong>Formato:</strong> {course.format === 'online' ? '🌐 Online' : course.format === 'hibrido' ? '🔄 Híbrido' : '📍 Presencial'}</span>
+                                </div>
                                 {course.format === 'online' && (
-                                    <div className="space-y-2">
+                                    <>
                                         <div className="flex items-center gap-2">
-                                            <span>🌐</span> Estude 100% online, no seu ritmo
+                                            <span>✅</span>
+                                            <span>Estude 100% online, no seu ritmo</span>
                                         </div>
                                         {course.modality?.online?.aiTutorEnabled && (
                                             <div className="flex items-center gap-2">
-                                                <span>🤖</span> Tutor IA disponível 24/7
+                                                <span>🤖</span>
+                                                <span>Tutor IA disponível 24/7</span>
                                             </div>
                                         )}
-                                        {course.modality?.online?.communityForumEnabled && (
-                                            <div className="flex items-center gap-2">
-                                                <span>👥</span> Comunidade ativa para ajudar
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                                {course.format === 'hibrido' && (
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span>🔄</span> {course.modality?.hybrid?.onlinePortion || 50}% Online + {course.modality?.hybrid?.presencialPortion || 50}% Presencial
-                                        </div>
-                                        {course.modality?.hybrid?.syncSchedule && course.modality.hybrid.syncSchedule.length > 0 && (
-                                            <div className="mt-3 p-2 bg-purple-500/5 rounded border border-purple-500/10">
-                                                <p className="text-xs text-gray-400 font-semibold mb-2">📅 Aulas Síncronas:</p>
-                                                {course.modality.hybrid.syncSchedule.map((session, idx) => (
-                                                    <div key={idx} className="text-xs text-gray-300">
-                                                        {session.day} às {session.time}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                                {course.format === 'presencial' && (
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span>🏢</span> Aulas presenciais com suporte online
-                                        </div>
-                                        {course.modality?.presencial?.presencialLocation && (
-                                            <div className="flex items-center gap-2">
-                                                <span>📍</span> {course.modality.presencial.presencialLocation}
-                                            </div>
-                                        )}
-                                    </div>
+                                    </>
                                 )}
                             </div>
                         </div>
 
-                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
-                            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><span>📚</span> Conteúdo do Curso</h3>
+                        {/* Conteúdo do Curso */}
+                        <div className="rounded-xl bg-gradient-to-br from-white/8 to-white/5 p-6 md:p-8 border border-white/10">
+                            <h3 className="text-xl md:text-2xl font-bold text-white mb-6">Conteúdo do Curso</h3>
                             <div className="space-y-3">
                                 {course.modules.map((module, i) => (
                                     <ModuleAccordion key={module.id} module={module} index={i} />
@@ -343,57 +298,47 @@ const CourseDetail: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5 sticky top-24">
+                    <div>
+                        <div className="rounded-xl bg-gradient-to-br from-white/8 to-white/5 p-6 border border-white/10 sticky top-24 space-y-4">
                             {isEnrolled && user && (
-                                <div className="mb-8">
-                                    {/* 🎯 RESOURCE 6: PROGRESS CIRCLE COMPONENT */}
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.2 }}
-                                        className="flex justify-center mb-8"
-                                    >
-                                        <ProgressCircle
-                                            title={course.title}
-                                            completed={completedLessons.length}
-                                            total={allLessons.length}
-                                            size="md"
-                                            showLabel={true}
-                                        />
-                                    </motion.div>
-                                </div>
+                                <>
+                                    {/* Progress simples */}
+                                    <div>
+                                        <p className="text-xs text-gray-400 font-semibold mb-2">Seu Progresso</p>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                                <div 
+                                                    className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983]"
+                                                    style={{ width: `${progress}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-sm font-bold text-white whitespace-nowrap">{progress}%</span>
+                                        </div>
+                                    </div>
+                                </>
                             )}
 
-                            <div className="grid grid-cols-1 gap-3 mb-8">
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="⏱️ Duração" value={course.duration} />
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>} label="📊 Nível" value={course.skillLevel} />
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="🎓 Formato" value={course.format} />
+                            {/* Info Cards simples */}
+                            <div className="space-y-2">
+                                <div className="text-xs text-gray-400 font-semibold">⏱️ Duração</div>
+                                <div className="text-sm font-semibold text-white">{course.duration}</div>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="text-xs text-gray-400 font-semibold">📊 Nível</div>
+                                <div className="text-sm font-semibold text-white capitalize">{course.skillLevel}</div>
                             </div>
                             
                             {user && isEnrolled ? (
-                                <div className="space-y-3">
-                                    <button 
-                                        onClick={handleContinue}
-                                        className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/30 flex items-center justify-center gap-2 hidden md:flex"
-                                    >
-                                        {progress === 100 ? 'Revisar Curso' : progress === 0 ? 'Começar Agora' : 'Continuar de onde parei'}
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </button>
-                                    {progress < 100 && nextLesson && (
-                                        <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                                            <p className="text-xs text-gray-400 mb-1">Próxima aula:</p>
-                                            <p className="text-sm font-semibold text-white">{nextLesson.title}</p>
-                                        </div>
-                                    )}
-                                </div>
+                                <button 
+                                    onClick={handleContinue}
+                                    className="w-full mt-4 font-bold py-3 px-6 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-sm hover:opacity-90 transition-opacity hidden md:block"
+                                >
+                                    {progress === 100 ? 'Revisar' : 'Continuar'}
+                                </button>
                             ) : (
                                 <button 
                                     onClick={handleEnroll}
-                                    className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg hidden md:block bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20"
+                                    className="w-full mt-4 font-bold py-3 px-6 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-sm hover:opacity-90 transition-opacity hidden md:block"
                                 >
                                     {user ? 'Começar Agora' : 'Inscrever-se Grátis'}
                                 </button>
