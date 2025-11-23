@@ -53,6 +53,7 @@ import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
 import ScrollToTopButton from './components/ScrollToTopButton';
 import TransparencyEditor from './views/TransparencyEditor';
+import InscriptionFormModal from './components/InscriptionFormModal';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -113,9 +114,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
-  
-  const [isBottleneckModalOpen, setIsBottleneckModalOpen] = useState(false);
-  const [selectedBottleneck, setSelectedBottleneck] = useState<{ lesson: Lesson, students: User[] } | null>(null);
 
   const [isInscriptionModalOpen, setIsInscriptionModalOpen] = useState(false);
   const [selectedCourseForInscription, setSelectedCourseForInscription] = useState<Course | null>(null);
@@ -882,9 +880,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Handlers for modals
   const openProfileModal = (member: User) => { setSelectedProfile(member); setIsProfileModalOpen(true); };
   const closeProfileModal = () => { setIsProfileModalOpen(false); setSelectedProfile(null); };
-  
-  const openBottleneckModal = (lesson: Lesson, students: User[]) => { setSelectedBottleneck({ lesson, students }); setIsBottleneckModalOpen(true); };
-  const closeBottleneckModal = () => { setIsBottleneckModalOpen(false); setSelectedBottleneck(null); };
 
   const openInscriptionModal = (course: Course) => { setSelectedCourseForInscription(course); setIsInscriptionModalOpen(true); };
   const closeInscriptionModal = () => { setIsInscriptionModalOpen(false); setSelectedCourseForInscription(null); };
@@ -892,9 +887,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const value = {
     user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
-    courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
+    courseProgress, isProfileModalOpen, selectedProfile, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
-    handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
+    handleLogout, openProfileModal, closeProfileModal, openInscriptionModal, closeInscriptionModal,
     handleEnrollUser, completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
     handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
@@ -912,7 +907,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const AppContent: React.FC = () => {
-    const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeBottleneckModal, closeInscriptionModal } = useAppContext();
+    const { user, toast, isProfileModalOpen, selectedProfile, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeInscriptionModal } = useAppContext();
     
     return (
         <div className="bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
@@ -975,7 +970,6 @@ const AppContent: React.FC = () => {
 
             {/* Modals */}
             {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={closeProfileModal} />}
-            {isBottleneckModalOpen && selectedBottleneck && <BottleneckAnalysisModal isOpen={isBottleneckModalOpen} onClose={closeBottleneckModal} lesson={selectedBottleneck.lesson} students={selectedBottleneck.students} />}
             {isInscriptionModalOpen && <InscriptionFormModal isOpen={isInscriptionModalOpen} onClose={closeInscriptionModal} courseName={selectedCourseForInscription?.title} />}
             
             {/* Onboarding Tour */}
