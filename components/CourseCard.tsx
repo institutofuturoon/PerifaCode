@@ -18,6 +18,9 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
   };
   const status = course.enrollmentStatus ? statusConfig[course.enrollmentStatus] : null;
 
+  // Display first 3 technologies/tags
+  const technologies = (course.tags || []).slice(0, 3);
+
   return (
     <motion.button
       onClick={() => onCourseSelect(course)}
@@ -53,12 +56,17 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
           )}
         </div>
 
-        {/* Duration Badge */}
-        <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded text-xs font-semibold text-[#c4b5fd] flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          {course.duration}
+        {/* Duration + Level Badges */}
+        <div className="absolute top-2 right-2 flex flex-col gap-2">
+          <div className="bg-black/70 px-2 py-1 rounded text-xs font-semibold text-[#c4b5fd] flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {course.duration}
+          </div>
+          <div className="bg-black/70 px-2 py-1 rounded text-xs font-semibold text-[#f27983]">
+            {course.skillLevel}
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -80,12 +88,23 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
         <span className="text-xs font-semibold text-[#c4b5fd] mb-2">{course.track}</span>
 
         {/* Title */}
-        <h3 className="text-sm font-bold text-white line-clamp-2 mb-1 flex-grow">
+        <h3 className="text-sm font-bold text-white line-clamp-2 mb-2 flex-grow">
           {course.title}
         </h3>
 
+        {/* Technologies */}
+        {technologies.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {technologies.map((tech, idx) => (
+              <span key={idx} className="text-xs px-2 py-1 rounded bg-white/10 text-[#c4b5fd] font-medium">
+                {tech}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Description */}
-        <p className="text-xs text-gray-400 line-clamp-1 mb-3">
+        <p className="text-xs text-gray-400 line-clamp-1 mb-3 flex-grow">
           {course.description}
         </p>
 
