@@ -350,67 +350,85 @@ const LessonView: React.FC = () => {
             </motion.button>
           </motion.div>
 
-          {/* NAVEGAÇÃO AULAS - ANTERIOR E PRÓXIMA */}
+          {/* NAVEGAÇÃO AULAS */}
           <motion.div 
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-white/10 pt-12"
+            className="border-t border-white/10 pt-12"
             initial={{ y: 20, opacity: 0 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ delay: 0.3 }}
           >
-            {/* AULA ANTERIOR */}
-            {previousLesson ? (
-              <motion.button
-                onClick={() => navigate(`/course/${courseId}/lesson/${previousLesson.id}`)}
-                whileHover={{ x: -4, borderColor: '#8a4add' }}
-                whileTap={{ scale: 0.98 }}
-                className="group text-left p-5 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all"
-              >
-                <div className="flex items-start gap-3">
-                  <ChevronLeft size={20} className="mt-1 text-[#c4b5fd] group-hover:text-white transition-colors group-hover:-translate-x-1 transition-transform" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Aula Anterior</p>
-                    <h3 className="text-sm font-bold text-white group-hover:text-[#c4b5fd] transition-colors truncate">
-                      {previousLesson.title}
-                    </h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      {previousLesson.duration} • {previousLesson.type === 'video' ? '🎥' : '📄'}
-                    </p>
-                  </div>
-                </div>
-              </motion.button>
-            ) : (
-              <div className="p-5 bg-white/5 rounded-lg border border-white/10 opacity-40">
-                <p className="text-xs text-gray-500 mb-2">Primeira aula</p>
-                <p className="text-sm text-gray-400">Sem aula anterior</p>
-              </div>
-            )}
-
-            {/* PRÓXIMA AULA */}
+            {/* PRÓXIMA AULA - DESTAQUE PRINCIPAL */}
             {nextLesson ? (
               <motion.button
                 onClick={() => navigate(`/course/${courseId}/lesson/${nextLesson.id}`)}
-                whileHover={{ x: 4, borderColor: '#f27983' }}
+                whileHover={{ y: -4, borderColor: '#f27983' }}
                 whileTap={{ scale: 0.98 }}
-                className="group text-right sm:text-left p-5 bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/10 hover:from-[#8a4add]/20 hover:to-[#f27983]/20 rounded-lg border border-[#8a4add]/40 transition-all"
+                className="w-full group rounded-2xl border border-[#8a4add]/40 bg-gradient-to-br from-[#8a4add]/15 to-[#f27983]/15 hover:from-[#8a4add]/25 hover:to-[#f27983]/25 p-7 sm:p-8 transition-all overflow-hidden relative"
               >
-                <div className="flex items-start gap-3 flex-row-reverse sm:flex-row">
-                  <ChevronRight size={20} className="mt-1 text-[#f27983] group-hover:text-white transition-colors group-hover:translate-x-1 transition-transform" />
-                  <div className="flex-1 min-w-0 sm:text-left text-right">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Próxima Aula</p>
-                    <h3 className="text-sm font-bold text-white group-hover:text-[#f27983] transition-colors truncate">
-                      {nextLesson.title}
-                    </h3>
-                    <p className="text-xs text-gray-400 mt-1">
-                      {nextLesson.duration} • {nextLesson.type === 'video' ? '🎥' : '📄'}
-                    </p>
+                {/* Decoração de fundo */}
+                <div className="absolute -right-20 -top-20 w-40 h-40 bg-gradient-to-br from-[#f27983]/10 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                {/* Conteúdo */}
+                <div className="relative z-10">
+                  {/* Label */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-lg">🎯</span>
+                    <p className="text-xs sm:text-sm font-bold text-[#c4b5fd] uppercase tracking-wider">Próxima Aula</p>
+                  </div>
+
+                  {/* Título */}
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 group-hover:text-[#f27983] transition-colors text-left">
+                    {nextLesson.title}
+                  </h3>
+
+                  {/* Detalhes compactos */}
+                  <div className="flex flex-wrap gap-3 items-center text-sm mb-5">
+                    <span className="text-gray-400 flex items-center gap-1">
+                      {nextLesson.type === 'video' ? '🎥' : '📄'} {nextLesson.duration}
+                    </span>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-gray-400 text-xs">Clique para continuar</span>
+                  </div>
+
+                  {/* Barra de ação */}
+                  <div className="flex items-center gap-2 pt-4 border-t border-white/10">
+                    <span className="text-xs font-semibold text-[#c4b5fd]">Continuar</span>
+                    <ChevronRight size={16} className="text-[#f27983] group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </motion.button>
             ) : (
-              <div className="p-5 bg-gradient-to-r from-green-600/20 to-green-500/10 rounded-lg border border-green-500/30">
-                <p className="text-xs text-green-400 mb-2 font-semibold">🎉 Última aula</p>
-                <p className="text-sm text-green-300">Parabéns! Você chegou ao final.</p>
-              </div>
+              <motion.div
+                className="w-full rounded-2xl border border-green-500/30 bg-gradient-to-br from-green-600/10 to-green-500/5 p-7 sm:p-8"
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">🎉</span>
+                  <div className="text-left">
+                    <p className="font-bold text-green-400 mb-1">Última aula concluída!</p>
+                    <p className="text-sm text-green-300">Parabéns! Você completou todo o conteúdo deste curso.</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* AULA ANTERIOR - COMPACTA */}
+            {previousLesson && (
+              <motion.button
+                onClick={() => navigate(`/course/${courseId}/lesson/${previousLesson.id}`)}
+                whileHover={{ x: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full mt-4 group text-left p-4 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-all flex items-center gap-3"
+              >
+                <ChevronLeft size={18} className="text-[#c4b5fd] group-hover:text-white transition-colors flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 mb-1">Aula anterior</p>
+                  <p className="text-sm font-semibold text-white truncate">
+                    {previousLesson.title}
+                  </p>
+                </div>
+              </motion.button>
             )}
           </motion.div>
         </div>

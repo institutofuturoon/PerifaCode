@@ -70,6 +70,24 @@ The platform maintains a clear separation between the institutional "SITE" and t
   - ✅ **Student Dashboard**: Ultra-minimal - only essential learning features
   - ✅ **Zero Gamification**: No XP system, no badges, no rankings, no levels - pure learning focus
 
+## Version 1.7 - UI Simplification (Next Lesson Section)
+
+### Improved "Próxima Aula" Section:
+- ✅ **Design Minimalista**: Card grande com gradiente purple-pink
+- ✅ **Destaque Principal**: Próxima aula em primeiro plano, aula anterior compactada abaixo
+- ✅ **Info Essencial**: Título, duração (com emoji tipo), "Clique para continuar"
+- ✅ **Hover Effects**: Decoração com blur que aparece no hover, movimento suave (y: -4)
+- ✅ **Mobile-First**: Padding responsivo (p-7 sm:p-8), font escalável (text-xl sm:text-2xl)
+- ✅ **Animações**: Framer-motion com transições suaves
+- ✅ **Status Final**: Verde com celebração quando última aula
+- ✅ **Hierarquia Visual**: Próxima aula em grande destaque > Aula anterior compacta
+
+### Visual Changes:
+- Removed: Grid 2-col layout (anterior vs próxima lado-a-lado)
+- Added: Stacked layout com próxima em destaque + anterior compacta embaixo
+- Melhor uso do espaço e hierarquia visual
+- Mais motivador para continuar o aprendizado
+
 ## Recent Fixes (v1.4) - Micro-Lessons & Interactive Exercises
 
 ### New Features:
