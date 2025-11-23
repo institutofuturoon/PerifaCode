@@ -11,6 +11,7 @@ import CourseModalityBadge from '../components/CourseModalityBadge';
 import Breadcrumb from '../components/Breadcrumb';
 import ProgressCircle from '../components/ProgressCircle';
 import ScrollToTopButton from '../components/ScrollToTopButton';
+import SidebarLessonIndex from '../components/SidebarLessonIndex';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
     <div className="group bg-gradient-to-br from-white/8 to-white/5 p-5 rounded-xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8a4add]/25 hover:bg-white/10">
@@ -135,11 +136,23 @@ const CourseDetail: React.FC = () => {
 
     return (
         <motion.div 
-            className="bg-[#09090B] min-h-screen"
+            className="bg-[#09090B] min-h-screen flex flex-col md:flex-row"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
         >
+            {/* 📚 SIDEBAR COM ÍNDICE DE AULAS */}
+            {course && (
+                <SidebarLessonIndex
+                    modules={course.modules}
+                    currentLessonId=""
+                    completedLessonIds={user?.completedLessonIds || []}
+                    courseId={courseId || ''}
+                    courseName={course.title}
+                />
+            )}
+            
+            <div className="flex-1 flex flex-col">
             <SEO 
                 title={`${course.title} | Curso FuturoOn`}
                 description={course.description}
@@ -386,6 +399,7 @@ const CourseDetail: React.FC = () => {
 
             {/* 🎯 RESOURCE 4: SCROLL-TO-TOP BUTTON */}
             <ScrollToTopButton />
+            </div>
         </motion.div>
     );
 };
