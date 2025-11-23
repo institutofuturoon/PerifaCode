@@ -118,11 +118,7 @@ const CourseEditor: React.FC = () => {
       title: 'Novo Módulo', 
       lessons: [] 
     };
-    setCourse(prev => {
-      const updated = { ...prev, modules: [...prev.modules, newModule] };
-      setTimeout(() => setSelectedItem({ type: 'module', moduleIndex: updated.modules.length - 1 }), 0);
-      return updated;
-    });
+    setCourse(prev => ({ ...prev, modules: [...prev.modules, newModule] }));
   };
   
   const deleteModule = (moduleIndex: number) => {
@@ -133,13 +129,19 @@ const CourseEditor: React.FC = () => {
   };
 
   const addLessonToModule = (moduleIndex: number) => {
+    // Validação 1: Título não vazio
     if (!lessonTitle.trim()) {
       showToast("❌ Digite um nome para a aula");
       return;
     }
 
-    setCourse(prev => {
-      const newModules = [...prev.modules];
+    // Validação 2: Módulo existe
+    if (!course.modules[moduleIndex]) {
+      showToast("❌ Módulo não encontrado");
+      return;
+    }
+
+    try {
       const newLesson: Lesson = {
         id: `les_${Date.now()}`,
         title: lessonTitle.trim(),
@@ -147,32 +149,47 @@ const CourseEditor: React.FC = () => {
         type: 'text',
         xp: 10
       };
-      newModules[moduleIndex].lessons = [...newModules[moduleIndex].lessons, newLesson];
-      
-      // Atualiza state e coloca a aula selecionada
-      setTimeout(() => {
-        setSelectedItem({
-          type: 'lesson',
-          moduleIndex: moduleIndex,
-          lessonIndex: newModules[moduleIndex].lessons.length - 1
-        });
-      }, 0);
 
-      return { ...prev, modules: newModules };
-    });
+      // Calcula o índice da nova aula
+      const newLessonIndex = course.modules[moduleIndex].lessons.length;
 
-    setAddingLessonToModule(null);
-    setLessonTitle('');
-    showToast("✅ Aula adicionada!");
+      // Atualiza course com a nova aula
+      setCourse(prev => {
+        const newModules = [...prev.modules];
+        if (!newModules[moduleIndex]) {
+          throw new Error("Módulo inválido");
+        }
+        newModules[moduleIndex] = {
+          ...newModules[moduleIndex],
+          lessons: [...newModules[moduleIndex].lessons, newLesson]
+        };
+        return { ...prev, modules: newModules };
+      });
+
+      // Imediatamente seleciona a nova aula
+      setSelectedItem({
+        type: 'lesson',
+        moduleIndex: moduleIndex,
+        lessonIndex: newLessonIndex
+      });
+
+      // Limpa input
+      setAddingLessonToModule(null);
+      setLessonTitle('');
+
+      showToast("✅ Aula adicionada!");
+    } catch (error) {
+      console.error("Erro ao adicionar aula:", error);
+      showToast("❌ Erro ao adicionar aula");
+    }
   };
 
   const deleteLesson = (moduleIndex: number, lessonIndex: number) => {
     setCourse(prev => {
       const newModules = [...prev.modules];
-      newModules[moduleIndex].lessons.splice(lessonIndex, 1);
+      newModules[moduleIndex].lessons = newModules[moduleIndex].lessons.filter((_, i) => i !== lessonIndex);
       return { ...prev, modules: newModules };
     });
-    setSelectedItem({ type: 'module', moduleIndex });
   };
 
   const handleGenerateStructureWithAI = async () => {
@@ -375,8 +392,14 @@ const CourseEditor: React.FC = () => {
                       value={lessonTitle}
                       onChange={(e) => setLessonTitle(e.target.value)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') addLessonToModule(mIdx);
-                        if (e.key === 'Escape') { setAddingLessonToModule(null); setLessonTitle(''); }
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addLessonToModule(mIdx);
+                        }
+                        if (e.key === 'Escape') {
+                          setAddingLessonToModule(null);
+                          setLessonTitle('');
+                        }
                       }}
                       placeholder="Nome da aula"
                       className="flex-1 px-3 py-2 bg-white/5 border border-white/20 rounded text-white text-sm focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
@@ -400,7 +423,7 @@ const CourseEditor: React.FC = () => {
   // ABA 3: Conteúdo
   const renderContentTab = () => {
     if (selectedItem.type === 'lesson') {
-      const lesson = course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex];
+      const lesson = course.modules[selectedItem.moduleIndex]?.lessons[selectedItem.lessonIndex];
       if (!lesson) return <div className="text-gray-400">Aula não encontrada</div>;
 
       return (
