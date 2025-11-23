@@ -161,23 +161,21 @@ const StudentDashboard: React.FC = () => {
         <div className="flex-1 p-6 md:p-8 overflow-y-auto">
           <div className="max-w-6xl mx-auto animate-fade-in">
             {activeTab === 'myCourses' && (
-              <div className="space-y-8">
-                {/* Personalized Greeting */}
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                  <h1 className="text-3xl sm:text-4xl font-black text-white">Olá, {user.name.split(' ')[0]}! 👋</h1>
-                  <p className="text-sm text-gray-400 mt-2 font-medium">Bem-vindo(a) à sua plataforma de aprendizado</p>
-                </motion.div>
+              <div className="space-y-6">
+                {/* Greeting */}
+                <div>
+                  <h1 className="text-2xl font-bold text-white">Olá, {user.name.split(' ')[0]}! 👋</h1>
+                  <p className="text-sm text-gray-400 mt-1">Continue sua jornada de aprendizado</p>
+                </div>
                 
-                {/* Show Continue Learning or Empty State with Hero */}
+                {/* Continue Learning or Empty State */}
                 {latestInProgress && nextLesson ? (
                   <>
                     <ContinueLearningSection latestInProgress={latestInProgress} nextLesson={nextLesson} user={user} />
                     <MyCoursesSection allMyCourses={allMyCourses} handleCourseNavigation={handleCourseNavigation} setActiveTab={setActiveTab} />
                   </>
                 ) : (
-                  <>
-                    <EmptyCoursesState setActiveTab={setActiveTab} />
-                  </>
+                  <EmptyCoursesState setActiveTab={setActiveTab} />
                 )}
               </div>
             )}

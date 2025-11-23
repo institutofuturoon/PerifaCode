@@ -7,6 +7,7 @@ FuturoOn is an LMS platform designed for digital inclusion in underprivileged Br
 - Language: Portuguese (Brazil) - PT-BR
 - Tone: Friendly, encouraging, accessible (designed for underserved communities)
 - UX Priority: Clear visual feedback, celebration moments, minimal friction
+- Design Philosophy: **ULTRA-SIMPLE & CLEAN** - only essential UI elements
 - Bot Strategy: FAQ-based, no ML needed, learning loop with feedback
 - Course Editor: SIMPLIFIED - Essential fields only (Title, Description, Track, Instructor), no complex landing pages
 - Course Creation: Focus on speed and simplicity, not on extensive metadata
@@ -15,15 +16,15 @@ FuturoOn is an LMS platform designed for digital inclusion in underprivileged Br
 The platform maintains a clear separation between the institutional "SITE" and the LMS "SISTEMA".
 
 ### UI/UX Decisions
-- **Color Scheme:** Consistent use of purple (`#8a4add`) and pink (`#f27983`) gradients.
-- **Visual Feedback:** Visual indicators for achievements.
-- **Navigation:** Floating chatbot widget, full-screen pre-lesson onboarding, sticky top navigation, interactive breadcrumbs, keyboard shortcuts.
-- **Dashboards:** Professional Mentor Dashboard with status tabs and a Notification Center. Student dashboard is ultra-minimal, focusing on essential learning features.
-- **Course Design:** Enhanced CourseCard and CourseDetail components with gradients, shadows, and hover effects.
+- **Color Scheme:** Consistent use of purple (`#8a4add`) and pink (`#f27983`) gradients (minimal).
+- **Visual Feedback:** Simple progress bars and status indicators.
+- **Navigation:** Floating chatbot widget, sticky top navigation.
+- **Dashboards:** Minimal student dashboard with only essential learning features.
+- **Course Design:** Simple CourseCard with essentials (image, title, progress, status).
 - **Responsiveness:** Perfect mobile responsiveness across all components.
-- **Animations:** Uses `framer-motion` for smooth transitions and animations.
-- **Card Design System:** Consistent CourseCard, ModuleCard, LessonCard, and StatCard designs with clear typography and spacing.
-- **Typography Hierarchy:** Defined hierarchy for titles, headers, body text, and metadata.
+- **Animations:** Light framer-motion transitions (entry animations only).
+- **Card Design System:** Minimal CourseCard and simple layout.
+- **Typography Hierarchy:** Simple h1, body text, labels.
 
 ### Technical Implementations
 - **State Management:** React's Context API (AuthContext, UIContext, DataContext) for global state.
@@ -40,7 +41,7 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Notification Analytics:** CTR tracking system (`notificationAnalytics.ts`) with impression, click, and dismiss tracking.
 
 ### Feature Specifications
-- **Course Progress Tracking:** Visual progress bars, trails, and checklists.
+- **Course Progress Tracking:** Simple progress bars and visual indicators.
 - **Enrollment System:** User enrollment with confirmation modals.
 - **AI Tutor:** Google Gemini integration.
 - **Admin Dashboards:** For managing chatbot FAQs and metrics.
@@ -49,77 +50,78 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Course Editor:** Simplified with 3 tabs (Info, Estrutura, Conteúdo), essential fields, AI-powered structure generation, and ultra-simple inline lesson adding.
 - **Micro-Lessons:** Lessons broken into bite-sized steps (~2-3 min each) with visual progress tracking and interactive exercises.
 - **Interactive Exercises:** Multiple question types (multiple choice, drag-drop, fill-in-blank, true/false) with instant feedback, explanations, scoring, and retry capability.
-- **Dashboard "Meus Cursos" Redesign:** Simplified greeting, clean "Continue Studying Card," compact "My Courses Grid," and "Discover New Courses" card.
-- **"Próxima Aula" Section:** Minimalist design with a large card for the next lesson and a compact previous lesson, essential info, hover effects, and a green celebration for the last lesson.
-- **Learning Journey Visualization:** Hero section, continue learning, course modules preview, my courses grid, and discovery section.
-- **Removed Gamification:** XP system, levels, badges, leaderboard, weekly challenges, and streak milestones have been completely removed to maintain a pure learning focus.
+- **Dashboard "Meus Cursos" Redesign:** Minimalist greeting, "Continue Studying Card," compact "My Courses Grid," and "Discover New Courses" card.
+- **Learning Journey Visualization:** Minimal hero, continue learning, course modules preview, my courses grid.
+- **Removed Gamification:** XP system, levels, badges, leaderboard, weekly challenges, and streak milestones have been completely removed.
 
-## Version 3.1 - Dashboard & Cards ULTRA-PREMIUM Refactor (COMPLETED)
+## Version 3.2 - ULTRA-SIMPLE Dashboard & Cards (COMPLETED)
 
-### 🎨 Dashboard Enhancement:
+### 📋 Dashboard Simplification:
 
-**StudentDashboardPanels (386 lines - Premium Design):**
-- ✅ **DashboardHeroSection:** Stunning first impression with animations
-- ✅ **ContinueLearningSection:** Animated progress, motivational messages, enhanced CTAs
-- ✅ **ExploreCoursesSection:** Beautiful search/filter with smooth animations
-- ✅ **MyCoursesSection:** Improved grid with staggered animations
-- ✅ **EmptyCoursesState:** Premium design with floating animation, stats preview, strong CTAs
+**StudentDashboardPanels (186 lines):**
+- ✅ **ContinueLearningSection:** Simple card with course title, next lesson, progress bar, CTA
+- ✅ **ExploreCoursesSection:** Clean search + track filter + course grid
+- ✅ **MyCoursesSection:** Simple grid with course cards + discover button
+- ✅ **EmptyCoursesState:** Minimal design with encouraging message + CTA
 
-**Visual Improvements:**
-- Gradient overlays on images (from-black/70 via-black/20 to-transparent)
-- Animated status badges with scale transforms
-- Shadow effects on badges (shadow-lg)
-- Smooth staggered animations for course grids
-- Better typography hierarchy and spacing
-- Enhanced mobile responsiveness
+**Removals:**
+- ❌ DashboardHeroSection (premium messaging)
+- ❌ Dynamic motivational messages
+- ❌ Excessive animations on badges
+- ❌ Complex hover effects
+- ❌ Stats preview grid
+- ❌ Floating animations
 
-### 📊 CourseCard ULTRA-PREMIUM Design (158 lines):
+### 🎯 CourseCard Ultra-Minimalist (119 lines):
 
-**New Features:**
-- Image hover scale to 110% (more dramatic)
-- Animated progress bars with motion & shadows
-- Status badges with animations (scale + fade in)
-- Skill level indicator displayed on cards
-- Better color-coded progress (green when 100%, purple→pink in progress)
-- Improved footer layout with better spacing
-- Smooth motion transitions throughout
+**Core Elements Only:**
+- Image with gradient overlay
+- Track badge (simple text)
+- Title + description
+- Progress bar (if enrolled)
+- Status badge (Inscrito / Abertas / Fechadas)
+- Duration badge
+- Footer (progress % or "Explorar" CTA)
 
-**Badge Styling:**
-```
-ENROLLED: Green-500 → Emerald-600 with green shadow
-IN PROGRESS: Purple-8a4add → Pink-f27983 with purple shadow
-COMPLETED: Green-500 with glow effect (shadow-green-500/50)
-DURATION: Purple background with border on right
-```
-
-**Design Details:**
+**Design:**
 ```
 CARD STRUCTURE:
-├── Image Section
-│   ├── Image (110% hover scale, 500ms transition)
-│   ├── Gradient overlay (black/70 → transparent)
-│   ├── Status Badge (animated entrance)
-│   ├── Duration Badge (with icon)
-│   └── Progress Bar (h-2.5, animated width)
+├── Image Section (105% hover scale, subtle)
+│   ├── Status badge (simple, top-left)
+│   ├── Duration badge (top-right)
+│   └── Progress bar (1.5px, animated width)
 └── Content Section
-    ├── Track Badge (gradient bg from-8a4add/30 to-f27983/20)
-    ├── Title (text-sm, line-clamp-2, hover color change)
-    ├── Description (text-xs, line-clamp-2)
-    ├── Skill Level (display + color)
-    └── Footer (progress or explore CTA)
+    ├── Track (text)
+    ├── Title (line-clamp-2)
+    ├── Description (line-clamp-1)
+    └── Footer (progress % + link)
 ```
 
-### Dashboard Layout Structure (Top to Bottom):
-1. Personalized Greeting (text-3xl → 4xl, font-black)
-2. Continue Learning (if enrolled) OR Empty State (premium)
-3. My Courses Grid (staggered animations)
+**Removed:**
+- ❌ Animated badge entrance
+- ❌ Skill level indicator
+- ❌ Badge shadow effects
+- ❌ Complex motion transitions
+- ❌ Multiple status conditions
 
-### Empty State Premium Design:
-- Floating animation on 🚀 icon
-- Stats grid: "10+ Cursos", "100h+ Aprendizado", "100% Grátis"
-- Strong gradient CTA button
-- Secondary CTA link
-- Encouraging copy
+### Dashboard Layout Structure:
+```
+1. Simple Greeting
+   └─ "Olá, [Nome]! 👋"
+
+2. Continue Learning (simple card)
+   ├─ Course title
+   ├─ Next lesson
+   ├─ Progress bar
+   └─ CTA button
+
+3. My Courses Grid (simple cards)
+   └─ Card per course + discover button
+
+4. Explore Section
+   ├─ Search + track filter
+   └─ Course grid
+```
 
 ---
 
@@ -166,21 +168,6 @@ LESSON STRUCTURE (Ideal):
 - ✅ **ArticleCard**: Streamlined vertical/horizontal layouts, category color badges
 - ✅ **ProjectCard**: Clean status indicators, better typography hierarchy
 
-**Design Improvements:**
-- ✅ **Gradient Backgrounds**: `from-white/8 to-white/4` → ultra-subtle, elegant
-- ✅ **Hover Effects**: Smooth scale transforms, color transitions
-- ✅ **Spacing**: Consistent p-4 padding, clear visual hierarchy
-- ✅ **Badges**: Simplified, consistent styling across all cards
-- ✅ **Typography**: Clear hierarchy with size differentiation (sm, xs)
-- ✅ **Animations**: Smooth framer-motion transitions maintained
-
-**Result:**
-- CourseCard: 141 → 136 linhas (-4%)
-- ArticleCard: 83 → 95 linhas (better organized)
-- ProjectCard: 87 → 123 linhas (cleaner structure, more readable)
-- All cards: 100% responsive, mobile-first design
-- Zero performance impact
-
 ---
 
 ## Version 2.0 - Dashboard Refactor (COMPLETED)
@@ -188,11 +175,11 @@ LESSON STRUCTURE (Ideal):
 ### Dashboard Ultra-Clean Simplification:
 
 **Changes Applied:**
-- ✅ **Removido ScrollToTopButton** de 4 views (Dashboard, NotificationCenter, CourseDetail, LessonView)
+- ✅ **Removido ScrollToTopButton** de 4 views
 - ✅ **Header Ultra-Clean:** Removido menu dropdown, só clique no avatar → perfil direto
-- ✅ **Admin Dashboard:** Consolidado para single "Cursos" tab (mais limpo)
+- ✅ **Admin Dashboard:** Consolidado para single "Cursos" tab
 - ✅ **Student Dashboard:** Foco 100% em "Meus Cursos" + Continue Learning
-- ✅ **Animações Suaves:** `framer-motion` para transições elegantes
+- ✅ **Animações Leves:** Apenas entrada de componentes
 
 ---
 
@@ -201,5 +188,5 @@ LESSON STRUCTURE (Ideal):
 - **Google Gemini 2.5 Flash:** AI Tutor functionality.
 - **EmailJS:** Sending email notifications.
 - **React Icons:** Lucide-react for icons.
-- **framer-motion:** Animation library.
+- **framer-motion:** Animation library (minimal use).
 - **localStorage:** Client-side fallback storage for JSON courses.
