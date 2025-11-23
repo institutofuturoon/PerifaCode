@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Course, Module, Lesson } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
@@ -48,7 +48,6 @@ const CourseEditor: React.FC = () => {
   const [isGeneratingStructure, setIsGeneratingStructure] = useState(false);
   const [addingLessonToModule, setAddingLessonToModule] = useState<number | null>(null);
   const [lessonTitle, setLessonTitle] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (existingCourse) {
@@ -57,12 +56,6 @@ const CourseEditor: React.FC = () => {
       setCourse(getNewCourseTemplate);
     }
   }, [existingCourse, courseId, getNewCourseTemplate]);
-
-  useEffect(() => {
-    if (addingLessonToModule !== null) {
-      setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }, [addingLessonToModule]);
 
   const completionProgress = useMemo(() => {
     let completed = 0;
@@ -393,7 +386,7 @@ const CourseEditor: React.FC = () => {
                 {addingLessonToModule === mIdx ? (
                   <div className="flex gap-2 pt-2">
                     <input
-                      ref={inputRef}
+                      autoFocus
                       type="text"
                       value={lessonTitle}
                       onChange={(e) => {
