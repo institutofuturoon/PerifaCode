@@ -54,6 +54,38 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Learning Journey Visualization:** Minimal hero, continue learning, course modules preview, my courses grid.
 - **Removed Gamification:** XP system, levels, badges, leaderboard, weekly challenges, and streak milestones have been completely removed.
 
+## Version 3.4 - Course Detail Page Simplification (COMPLETED)
+
+### 📖 CourseDetail.tsx Ultra-Simple Redesign:
+
+**Page Structure:**
+- ✅ **NextLessonCard:** Simplified -69% decoration (removed blur effects, reduced shadows)
+- ✅ **Content Grid:** Changed from 3 cols to responsive 4-col layout (3 cols main + 1 sidebar)
+- ✅ **Consolidation:** "Sobre o Curso" + "Formato do Curso" merged into ONE section
+- ✅ **Removals:** Breadcrumb eliminated, ProgressCircle removed, redundant next lesson sidebar removed
+- ✅ **Sidebar:** Clean info cards (Duração, Nível) without hover effects
+
+**File Reductions:**
+- NextLessonCard: 116 → 94 linhas (-19%)
+- CourseDetail: 412 → 356 linhas (-14%)
+- Total: ~100 linhas removidas (-12%)
+
+**Mobile Optimization:**
+- Full-width layout on mobile
+- Stacked columns (content above sidebar)
+- Responsive grid for modules
+- Touch-friendly buttons
+
+**Decorations Removed:**
+- ❌ Blur effects and decorative accents
+- ❌ Multiple shadow layers
+- ❌ Hover scale effects on buttons
+- ❌ ProgressCircle animation
+- ❌ Extra color transitions
+- ❌ Breadcrumb navigation
+
+---
+
 ## Version 3.3 - Mobile-First Explore Page (COMPLETED)
 
 ### 📱 ExploreCoursesSection Refactored:
