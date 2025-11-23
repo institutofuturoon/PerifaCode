@@ -52,6 +52,32 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **"Próxima Aula" Section:** Minimalist design with a large card for the next lesson and a compact previous lesson, essential info, hover effects, and a green celebration for the last lesson.
 - **Removed Gamification:** XP system, levels, badges, leaderboard, weekly challenges, and streak milestones have been completely removed from the platform to maintain a pure learning focus.
 
+## Version 2.1 - Card Components Simplification (COMPLETED)
+
+### Ultra-Clean Card Design:
+
+**Cards Refactored:**
+- ✅ **CourseCard**: Simplified layout, removed redundant badges, cleaner gradient design
+- ✅ **ArticleCard**: Streamlined vertical/horizontal layouts, category color badges
+- ✅ **ProjectCard**: Clean status indicators, better typography hierarchy
+  
+**Design Improvements:**
+- ✅ **Gradient Backgrounds**: `from-white/8 to-white/4` → ultra-subtle, elegant
+- ✅ **Hover Effects**: Smooth scale transforms, color transitions
+- ✅ **Spacing**: Consistent p-4 padding, clear visual hierarchy
+- ✅ **Badges**: Simplified, consistent styling across all cards
+- ✅ **Typography**: Clear hierarchy with size differentiation (sm, xs)
+- ✅ **Animations**: Smooth framer-motion transitions maintained
+
+**Result:**
+- CourseCard: 141 → 136 linhas (-4%)
+- ArticleCard: 83 → 95 linhas (better organized)
+- ProjectCard: 87 → 123 linhas (cleaner structure, more readable)
+- All cards: 100% responsive, mobile-first design
+- Zero performance impact
+
+---
+
 ## Version 2.0 - Dashboard Refactor (COMPLETED)
 
 ### Dashboard Ultra-Clean Simplification:

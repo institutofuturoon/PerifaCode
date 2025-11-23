@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Project } from '../types';
 import { useAppContext } from '../contexts/AppContextAdapter';
@@ -17,67 +16,104 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) =
 
   return (
     <div
-      className={`bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border ${isRejected ? 'border-red-500/30' : 'border-white/10'} group flex flex-col text-left hover:border-[#8a4add]/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-[#8a4add]/10 h-full relative`}
+      className={`group bg-gradient-to-br from-white/8 to-white/4 hover:from-white/12 hover:to-white/6 rounded-xl overflow-hidden border transition-all duration-300 flex flex-col text-left h-full relative ${
+        isRejected 
+          ? 'border-red-500/30 opacity-60' 
+          : 'border-white/10 hover:border-[#8a4add]/50'
+      }`}
     >
-      {/* Status Badges */}
+      {/* Status Badge */}
       {isPending && (
-        <div className="absolute top-1.5 left-1.5 z-20 bg-yellow-500 text-black text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
-            ⏳ ANÁLISE
+        <div className="absolute top-3 left-3 z-20 bg-yellow-500/80 text-black text-xs font-bold px-2 py-1 rounded-lg">
+          ⏳ Análise
         </div>
       )}
-       {isRejected && (
-        <div className="absolute top-1.5 left-1.5 z-20 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
-            🚫 REJEITADO
+      {isRejected && (
+        <div className="absolute top-3 left-3 z-20 bg-red-500/80 text-white text-xs font-bold px-2 py-1 rounded-lg">
+          🚫 Rejeitado
         </div>
       )}
 
-      <button onClick={() => onProjectSelect(project)} className="block w-full text-left relative" disabled={isPending || isRejected}>
-        <div className="overflow-hidden aspect-video">
-          <img className={`h-full w-full object-cover transition-transform duration-500 ${isPending || isRejected ? 'grayscale opacity-50' : 'group-hover:scale-105'}`} src={project.imageUrl} alt={project.title} />
+      {/* Collab Badge */}
+      {project.lookingForCollab && !isPending && !isRejected && (
+        <div className="absolute top-3 right-3 bg-[#8a4add]/80 text-white text-xs font-bold px-2 py-1 rounded-lg">
+          🤝 Time
         </div>
-        {project.lookingForCollab && !isPending && !isRejected && (
-            <div className="absolute top-1.5 right-1.5 bg-[#8a4add] text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-md flex items-center gap-1">
-                <span>🤝</span> Time
-            </div>
-        )}
+      )}
+
+      {/* Image */}
+      <button 
+        onClick={() => onProjectSelect(project)} 
+        disabled={isPending || isRejected}
+        className="block w-full"
+      >
+        <div className="overflow-hidden aspect-video">
+          <img 
+            className={`h-full w-full object-cover transition-transform duration-500 ${
+              isPending || isRejected 
+                ? 'grayscale opacity-50' 
+                : 'group-hover:scale-105'
+            }`} 
+            src={project.imageUrl} 
+            alt={project.title} 
+          />
+        </div>
       </button>
-      <div className="p-2.5 flex flex-col flex-grow">
-        <button onClick={() => onProjectSelect(project)} className="block w-full text-left" disabled={isPending || isRejected}>
-            <h3 className="text-[11px] font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-1">{project.title}</h3>
-            <p className="text-[9px] text-gray-400 mt-0.5 line-clamp-2">{project.description}</p>
+
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-grow">
+        <button 
+          onClick={() => onProjectSelect(project)} 
+          disabled={isPending || isRejected}
+          className="block w-full text-left"
+        >
+          <h3 className="text-sm font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-2">
+            {project.title}
+          </h3>
+          <p className="text-xs text-gray-400 mt-1.5 line-clamp-2">
+            {project.description}
+          </p>
         </button>
-        
-        <div className="mt-1.5 flex flex-wrap gap-1">
+
+        {/* Tech Tags */}
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {project.technologies.slice(0, 3).map(tech => (
-            <span key={tech} className="px-1 py-0.5 text-[8px] font-semibold rounded-full bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20">
+            <span 
+              key={tech} 
+              className="px-2 py-1 text-xs font-semibold rounded-lg bg-[#8a4add]/20 text-[#c4b5fd] border border-[#8a4add]/30"
+            >
               {tech}
             </span>
           ))}
           {project.technologies.length > 3 && (
-             <span className="px-1 py-0.5 text-[8px] font-semibold rounded-full bg-gray-500/10 text-gray-300 border border-gray-500/20">
+            <span className="px-2 py-1 text-xs font-semibold rounded-lg bg-gray-500/10 text-gray-300">
               +{project.technologies.length - 3}
             </span>
           )}
         </div>
 
-        <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[9px]">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent card click
-                if (author) openProfileModal(author);
-              }}
-              className="flex items-center gap-1.5 overflow-hidden rounded-md p-0.5 -ml-0.5 hover:bg-white/10 transition-colors"
-              title={`Ver perfil de ${author?.name}`}
-              disabled={isPending || isRejected}
-            >
-                <img src={author?.avatarUrl} alt={author?.name} className="h-3.5 w-3.5 rounded-full flex-shrink-0 border border-white/10"/>
-                <span className="text-gray-300 truncate hover:text-white max-w-[80px]">{author?.name.split(' ')[0]}</span>
-            </button>
-            <div className="flex items-center gap-2 text-gray-400 flex-shrink-0">
-                <span className="text-[9px]">👏 {project.claps}</span>
-                <span className="text-[9px]">💬 {project.comments.length}</span>
-            </div>
+        {/* Footer */}
+        <div className="mt-auto pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (author) openProfileModal(author);
+            }}
+            disabled={isPending || isRejected}
+            className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors"
+          >
+            <img 
+              src={author?.avatarUrl} 
+              alt={author?.name} 
+              className="h-5 w-5 rounded-full border border-white/10"
+            />
+            <span className="font-medium truncate">{author?.name.split(' ')[0]}</span>
+          </button>
+          <div className="flex items-center gap-2 text-gray-400 text-xs">
+            <span>👏 {project.claps}</span>
+            <span>💬 {project.comments.length}</span>
+          </div>
         </div>
       </div>
     </div>
