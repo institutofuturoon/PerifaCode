@@ -162,18 +162,23 @@ const StudentDashboard: React.FC = () => {
           <div className="max-w-6xl mx-auto animate-fade-in">
             {activeTab === 'myCourses' && (
               <div className="space-y-8">
+                {/* Personalized Greeting */}
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                  <h1 className="text-2xl font-black text-white">Olá, {user.name.split(' ')[0]}! 👋</h1>
-                  <p className="text-sm text-gray-400 mt-1">Continue sua jornada</p>
+                  <h1 className="text-3xl sm:text-4xl font-black text-white">Olá, {user.name.split(' ')[0]}! 👋</h1>
+                  <p className="text-sm text-gray-400 mt-2 font-medium">Bem-vindo(a) à sua plataforma de aprendizado</p>
                 </motion.div>
                 
+                {/* Show Continue Learning or Empty State with Hero */}
                 {latestInProgress && nextLesson ? (
-                  <ContinueLearningSection latestInProgress={latestInProgress} nextLesson={nextLesson} user={user} />
+                  <>
+                    <ContinueLearningSection latestInProgress={latestInProgress} nextLesson={nextLesson} user={user} />
+                    <MyCoursesSection allMyCourses={allMyCourses} handleCourseNavigation={handleCourseNavigation} setActiveTab={setActiveTab} />
+                  </>
                 ) : (
-                  <EmptyCoursesState setActiveTab={setActiveTab} />
+                  <>
+                    <EmptyCoursesState setActiveTab={setActiveTab} />
+                  </>
                 )}
-                
-                <MyCoursesSection allMyCourses={allMyCourses} handleCourseNavigation={handleCourseNavigation} setActiveTab={setActiveTab} />
               </div>
             )}
             {activeTab === 'explore' && <ExploreCoursesSection setActiveTab={setActiveTab} />}
