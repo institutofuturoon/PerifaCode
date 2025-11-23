@@ -5,7 +5,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
 import Uploader from '../components/Uploader';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type SelectedItem = 
   | { type: 'course' }
@@ -47,7 +47,7 @@ const CourseEditor: React.FC = () => {
   const [aiTopic, setAiTopic] = useState('');
   const [isGeneratingStructure, setIsGeneratingStructure] = useState(false);
   const [addingLessonToModule, setAddingLessonToModule] = useState<number | null>(null);
-  const [quickLessonTitle, setQuickLessonTitle] = useState('');
+  const [lessonTitle, setLessonTitle] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -58,17 +58,21 @@ const CourseEditor: React.FC = () => {
     }
   }, [existingCourse, courseId, getNewCourseTemplate]);
 
-  // Completion progress
+  useEffect(() => {
+    if (addingLessonToModule !== null) {
+      setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  }, [addingLessonToModule]);
+
   const completionProgress = useMemo(() => {
     let completed = 0;
-    let total = 6;
     if (course.title) completed++;
     if (course.description) completed++;
     if (course.track) completed++;
     if (course.instructorId) completed++;
     if (course.imageUrl) completed++;
     if (course.modules.length > 0) completed++;
-    return Math.round((completed / total) * 100);
+    return Math.round((completed / 6) * 100);
   }, [course]);
 
   const onCancel = () => navigate('/admin');
@@ -109,9 +113,16 @@ const CourseEditor: React.FC = () => {
   };
 
   const addModule = () => {
-    const newModule: Module = { id: `mod_${Date.now()}`, title: 'Novo Módulo', lessons: [] };
-    setCourse(prev => ({ ...prev, modules: [...prev.modules, newModule] }));
-    setSelectedItem({ type: 'module', moduleIndex: course.modules.length });
+    const newModule: Module = { 
+      id: `mod_${Date.now()}`, 
+      title: 'Novo Módulo', 
+      lessons: [] 
+    };
+    setCourse(prev => {
+      const updated = { ...prev, modules: [...prev.modules, newModule] };
+      setTimeout(() => setSelectedItem({ type: 'module', moduleIndex: updated.modules.length - 1 }), 0);
+      return updated;
+    });
   };
   
   const deleteModule = (moduleIndex: number) => {
@@ -121,60 +132,44 @@ const CourseEditor: React.FC = () => {
     }
   };
 
-  const startAddingLesson = (moduleIndex: number) => {
-    setAddingLessonToModule(moduleIndex);
-    setQuickLessonTitle('');
-    setTimeout(() => inputRef.current?.focus(), 0);
-  };
-
-  const handleAddLessonKeyDown = (e: React.KeyboardEvent, moduleIndex: number) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      confirmAddLesson(moduleIndex);
-    } else if (e.key === 'Escape') {
-      setAddingLessonToModule(null);
-      setQuickLessonTitle('');
-    }
-  };
-
-  const confirmAddLesson = (moduleIndex: number) => {
-    if (!quickLessonTitle.trim()) {
-      showToast("❌ Digite um título para a aula");
+  const addLessonToModule = (moduleIndex: number) => {
+    if (!lessonTitle.trim()) {
+      showToast("❌ Digite um nome para a aula");
       return;
     }
 
-    const newLesson: Lesson = {
-      id: `les_${Date.now()}`,
-      title: quickLessonTitle,
-      duration: '10 min',
-      type: 'text',
-      xp: 10
-    };
-
-    const newLessonIndex = course.modules[moduleIndex].lessons.length;
-    
     setCourse(prev => {
       const newModules = [...prev.modules];
+      const newLesson: Lesson = {
+        id: `les_${Date.now()}`,
+        title: lessonTitle.trim(),
+        duration: '10 min',
+        type: 'text',
+        xp: 10
+      };
       newModules[moduleIndex].lessons = [...newModules[moduleIndex].lessons, newLesson];
+      
+      // Atualiza state e coloca a aula selecionada
+      setTimeout(() => {
+        setSelectedItem({
+          type: 'lesson',
+          moduleIndex: moduleIndex,
+          lessonIndex: newModules[moduleIndex].lessons.length - 1
+        });
+      }, 0);
+
       return { ...prev, modules: newModules };
     });
 
     setAddingLessonToModule(null);
-    setQuickLessonTitle('');
-
-    setTimeout(() => {
-      setSelectedItem({
-        type: 'lesson',
-        moduleIndex: moduleIndex,
-        lessonIndex: newLessonIndex
-      });
-    }, 50);
+    setLessonTitle('');
+    showToast("✅ Aula adicionada!");
   };
 
   const deleteLesson = (moduleIndex: number, lessonIndex: number) => {
     setCourse(prev => {
       const newModules = [...prev.modules];
-      newModules[moduleIndex].lessons = newModules[moduleIndex].lessons.filter((_, i) => i !== lessonIndex);
+      newModules[moduleIndex].lessons.splice(lessonIndex, 1);
       return { ...prev, modules: newModules };
     });
     setSelectedItem({ type: 'module', moduleIndex });
@@ -188,7 +183,7 @@ const CourseEditor: React.FC = () => {
     setIsGeneratingStructure(true);
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const prompt = `Você é um designer instrucional sênior. Crie uma estrutura de curso para "${aiTopic}". O público são jovens da periferia iniciando em tecnologia. A estrutura deve ser clara, motivadora e prática. Retorne um objeto JSON com uma chave "modules", que é um array. Cada objeto no array deve ter "title" (string, nome do módulo) e "lessons" (array de objetos, onde cada objeto tem "title" (string, nome da aula), "duration" (string, ex: "15 min") e "xp" (number, entre 10 e 50)).`;
+      const prompt = `Você é um designer instrucional sênior. Crie uma estrutura de curso para "${aiTopic}". O público são jovens da periferia iniciando em tecnologia. Retorne um objeto JSON com "modules" (array onde cada módulo tem "title" e "lessons" array com "title", "duration" e "xp").`;
 
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
@@ -227,21 +222,23 @@ const CourseEditor: React.FC = () => {
       });
 
       const result = JSON.parse(response.text);
-      const newModules = result.modules.map((mod: any) => ({
-        ...mod,
+      const newModules: Module[] = result.modules.map((mod: any) => ({
         id: `mod_${Date.now()}_${Math.random()}`,
+        title: mod.title,
         lessons: mod.lessons.map((les: any) => ({
-          ...les,
           id: `les_${Date.now()}_${Math.random()}`,
-          type: 'text'
+          title: les.title,
+          duration: les.duration,
+          type: 'text' as const,
+          xp: les.xp
         }))
       }));
 
-      setCourse(prev => ({ ...prev, modules: newModules, title: prev.title || aiTopic }));
-      showToast("✅ Estrutura do curso gerada!");
+      setCourse(prev => ({ ...prev, modules: newModules }));
+      showToast("✅ Estrutura gerada com IA!");
     } catch (error) {
-      console.error("Erro ao gerar estrutura com IA:", error);
-      showToast("❌ Erro ao gerar estrutura. Tente novamente.");
+      console.error("Erro ao gerar estrutura:", error);
+      showToast("❌ Erro ao gerar. Tente novamente.");
     } finally {
       setIsGeneratingStructure(false);
     }
@@ -249,13 +246,13 @@ const CourseEditor: React.FC = () => {
 
   const handleImageUploadComplete = (url: string) => {
     setCourse(prev => ({ ...prev, imageUrl: url }));
-    showToast('✅ Imagem do curso salva!');
+    showToast('✅ Imagem salva!');
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!course.title || !course.description) {
-      showToast("❌ Preencha o título e a descrição do curso");
+      showToast("❌ Preencha título e descrição");
       return;
     }
     handleSaveCourse(course);
@@ -265,29 +262,29 @@ const CourseEditor: React.FC = () => {
   const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors text-white";
   const labelClasses = "block text-sm font-semibold text-gray-300 mb-2";
   
-  // Basics Tab - Apenas o essencial
+  // ABA 1: Informações
   const renderBasicsTab = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div>
-        <label className={labelClasses}>📝 Título do Curso *</label>
-        <input type="text" name="title" value={course.title} onChange={handleChange} required className={inputClasses} placeholder="Ex: Python para Iniciantes" />
+        <label className={labelClasses}>📝 Título *</label>
+        <input type="text" name="title" value={course.title} onChange={handleChange} className={inputClasses} placeholder="Nome do curso" required />
       </div>
       
       <div>
         <label className={labelClasses}>📄 Descrição Curta *</label>
-        <textarea name="description" value={course.description} onChange={handleChange} required className={inputClasses} rows={2} placeholder="Breve descrição para os cards" />
+        <textarea name="description" value={course.description} onChange={handleChange} className={inputClasses} rows={2} placeholder="Breve descrição" required />
       </div>
 
       <div>
         <label className={labelClasses}>📚 Descrição Longa</label>
-        <textarea name="longDescription" value={course.longDescription} onChange={handleChange} className={inputClasses} rows={3} placeholder="Detalhes completos do curso" />
+        <textarea name="longDescription" value={course.longDescription} onChange={handleChange} className={inputClasses} rows={3} placeholder="Detalhes do curso" />
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelClasses}>🎯 Trilha</label>
           <select name="track" value={course.track} onChange={handleChange} className={inputClasses}>
-            {tracks.map(t => (<option key={t.id} value={t.name}>{t.name}</option>))}
+            {tracks.map(t => <option key={t.id} value={t.name}>{t.name}</option>)}
           </select>
         </div>
         <div>
@@ -298,7 +295,7 @@ const CourseEditor: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelClasses}>📊 Nível</label>
           <select name="skillLevel" value={course.skillLevel} onChange={handleChange} className={inputClasses}>
@@ -309,19 +306,19 @@ const CourseEditor: React.FC = () => {
         </div>
         <div>
           <label className={labelClasses}>⏱️ Duração</label>
-          <input type="text" name="duration" value={course.duration} onChange={handleChange} placeholder="Ex: 8 horas" className={inputClasses} />
+          <input type="text" name="duration" value={course.duration} onChange={handleChange} className={inputClasses} placeholder="8 horas" />
         </div>
       </div>
 
-      <div className="flex items-end gap-4">
+      <div className="flex items-end gap-2">
         <div className="flex-1">
-          <label className={labelClasses}>🖼️ Capa</label>
-          <input type="text" name="imageUrl" value={course.imageUrl} onChange={handleChange} className={inputClasses} placeholder="URL da imagem" />
+          <label className={labelClasses}>🖼️ Imagem</label>
+          <input type="text" name="imageUrl" value={course.imageUrl} onChange={handleChange} className={inputClasses} />
         </div>
         <Uploader pathnamePrefix={`courses/${course.id}`} onUploadComplete={handleImageUploadComplete}>
           {(trigger, loading) => (
-            <button type="button" onClick={trigger} disabled={loading} className="py-3 px-4 bg-[#8a4add]/20 text-[#c4b5fd] hover:bg-[#8a4add]/30 rounded-md transition-colors font-semibold text-sm">
-              {loading ? '⏳' : '📤'}
+            <button type="button" onClick={trigger} disabled={loading} className="py-3 px-4 bg-[#8a4add]/20 text-[#c4b5fd] hover:bg-[#8a4add]/30 rounded transition-colors">
+              {loading ? '...' : '📤'}
             </button>
           )}
         </Uploader>
@@ -329,100 +326,86 @@ const CourseEditor: React.FC = () => {
     </motion.div>
   );
 
-  // Structure Tab - Módulos e Aulas
+  // ABA 2: Estrutura
   const renderStructureTab = () => (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      {/* AI Generator */}
       <div className="bg-[#8a4add]/10 border border-[#8a4add]/30 rounded-lg p-4">
-        <h3 className="font-semibold text-white mb-3">✨ Gerar Estrutura com IA</h3>
+        <h3 className="font-semibold text-white mb-3">✨ Gerar com IA</h3>
         <div className="flex gap-2">
-          <input 
-            type="text" 
-            value={aiTopic} 
-            onChange={(e) => setAiTopic(e.target.value)} 
-            placeholder="Ex: React para iniciantes" 
-            className={`${inputClasses} flex-1`} 
-          />
-          <button 
-            type="button" 
-            onClick={handleGenerateStructureWithAI} 
-            disabled={isGeneratingStructure} 
-            className="py-3 px-4 bg-[#8a4add] text-white rounded-md hover:bg-[#7c3aed] disabled:opacity-50 font-semibold transition-colors whitespace-nowrap"
-          >
-            {isGeneratingStructure ? '⏳' : '✨'} Gerar
+          <input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} className={`${inputClasses} flex-1`} placeholder="React para iniciantes" />
+          <button type="button" onClick={handleGenerateStructureWithAI} disabled={isGeneratingStructure} className="py-3 px-4 bg-[#8a4add] text-white rounded hover:bg-[#7c3aed] disabled:opacity-50 font-semibold whitespace-nowrap">
+            {isGeneratingStructure ? '...' : '✨'}
           </button>
         </div>
       </div>
 
-      {/* Módulos e Aulas */}
       {course.modules.length === 0 ? (
         <div className="text-center py-12 bg-white/[0.02] border border-white/10 rounded-lg">
-          <p className="text-gray-400 mb-3">Nenhum módulo ainda</p>
+          <p className="text-gray-400 mb-3">Sem módulos</p>
           <button type="button" onClick={addModule} className="text-[#c4b5fd] hover:text-white font-semibold">+ Criar Primeiro Módulo</button>
         </div>
       ) : (
         <div className="space-y-4">
           {course.modules.map((module, mIdx) => (
-            <motion.div key={module.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/[0.02] border border-white/10 rounded-lg p-4">
+            <div key={module.id} className="bg-white/[0.02] border border-white/10 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="font-bold text-white text-lg">{mIdx + 1}. {module.title} ({module.lessons.length})</h4>
+                <h4 className="font-bold text-white">{mIdx + 1}. {module.title} ({module.lessons.length})</h4>
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => setSelectedItem({ type: 'module', moduleIndex: mIdx })} className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded transition-colors">✏️</button>
-                  <button type="button" onClick={() => deleteModule(mIdx)} className="px-3 py-1 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-colors">🗑️</button>
+                  <button type="button" onClick={() => setSelectedItem({ type: 'module', moduleIndex: mIdx })} className="px-3 py-1 text-sm bg-white/10 hover:bg-white/20 rounded">✏️</button>
+                  <button type="button" onClick={() => deleteModule(mIdx)} className="px-3 py-1 text-sm bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded">🗑️</button>
                 </div>
               </div>
               
               <div className="space-y-2 border-t border-white/10 pt-3">
                 {module.lessons.map((lesson, lIdx) => (
-                  <div key={lesson.id} className="flex items-center justify-between bg-black/30 p-3 rounded text-sm group">
-                    <div>
-                      <span className="text-gray-300">{lesson.title}</span>
-                      <span className="text-gray-500 ml-2">({lesson.duration})</span>
-                    </div>
-                    <div className="flex gap-2">
+                  <div key={lesson.id} className="flex items-center justify-between bg-black/30 p-2 rounded text-sm">
+                    <span className="text-gray-300">{lesson.title} <span className="text-gray-500">({lesson.duration})</span></span>
+                    <div className="flex gap-1">
                       <button type="button" onClick={() => setSelectedItem({ type: 'lesson', moduleIndex: mIdx, lessonIndex: lIdx })} className="text-[#c4b5fd] hover:text-white text-xs">✏️</button>
                       <button type="button" onClick={() => deleteLesson(mIdx, lIdx)} className="text-red-400 hover:text-red-300 text-xs">🗑️</button>
                     </div>
                   </div>
                 ))}
 
-                {/* Inline Add Lesson */}
                 {addingLessonToModule === mIdx ? (
-                  <div className="bg-[#8a4add]/10 border border-[#8a4add]/30 p-3 rounded flex gap-2">
+                  <div className="flex gap-2 pt-2">
                     <input
                       ref={inputRef}
                       type="text"
-                      value={quickLessonTitle}
-                      onChange={(e) => setQuickLessonTitle(e.target.value)}
-                      onKeyDown={(e) => handleAddLessonKeyDown(e, mIdx)}
-                      placeholder="Nome da aula..."
-                      className="flex-1 px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder-gray-500 focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
+                      value={lessonTitle}
+                      onChange={(e) => setLessonTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') addLessonToModule(mIdx);
+                        if (e.key === 'Escape') { setAddingLessonToModule(null); setLessonTitle(''); }
+                      }}
+                      placeholder="Nome da aula"
+                      className="flex-1 px-3 py-2 bg-white/5 border border-white/20 rounded text-white text-sm focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
                     />
-                    <button type="button" onClick={() => confirmAddLesson(mIdx)} className="px-3 py-2 bg-[#8a4add] hover:bg-[#7c3aed] text-white rounded text-sm font-semibold transition-colors">✓</button>
-                    <button type="button" onClick={() => { setAddingLessonToModule(null); setQuickLessonTitle(''); }} className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded text-sm transition-colors">✕</button>
+                    <button type="button" onClick={() => addLessonToModule(mIdx)} className="px-3 py-2 bg-[#8a4add] text-white rounded text-sm font-semibold hover:bg-[#7c3aed]">✓</button>
+                    <button type="button" onClick={() => { setAddingLessonToModule(null); setLessonTitle(''); }} className="px-3 py-2 bg-white/10 text-white rounded text-sm hover:bg-white/20">✕</button>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => startAddingLesson(mIdx)} className="w-full py-2 text-[#c4b5fd] hover:text-white text-sm font-semibold border-t border-white/10 mt-2 transition-colors">+ Adicionar Aula</button>
+                  <button type="button" onClick={() => setAddingLessonToModule(mIdx)} className="w-full py-2 text-[#c4b5fd] hover:text-white text-xs border-t border-white/10 mt-2">+ Aula</button>
                 )}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
       
-      <button type="button" onClick={addModule} className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold text-white transition-colors">+ Novo Módulo</button>
+      <button type="button" onClick={addModule} className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold text-white">+ Módulo</button>
     </motion.div>
   );
 
-  // Content Tab - Editar aulas em detalhe
+  // ABA 3: Conteúdo
   const renderContentTab = () => {
     if (selectedItem.type === 'lesson') {
       const lesson = course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex];
+      if (!lesson) return <div className="text-gray-400">Aula não encontrada</div>;
+
       return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-          <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 mb-6">
-            <p className="text-gray-400">📍 {course.modules[selectedItem.moduleIndex].title} {'\u003e'} {lesson.title}</p>
-          </div>
+          <div className="text-sm text-gray-400">📍 {course.modules[selectedItem.moduleIndex].title}</div>
 
           <div>
             <label className={labelClasses}>Título</label>
@@ -441,39 +424,22 @@ const CourseEditor: React.FC = () => {
             <div>
               <label className={labelClasses}>Tipo</label>
               <select name="type" value={lesson.type} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses}>
-                <option value="text">📝 Texto</option>
-                <option value="video">🎬 Vídeo</option>
+                <option value="text">Texto</option>
+                <option value="video">Vídeo</option>
               </select>
             </div>
           </div>
 
           {lesson.type === 'video' && (
             <div>
-              <label className={labelClasses}>URL do Vídeo (YouTube)</label>
+              <label className={labelClasses}>URL Vídeo</label>
               <input type="text" name="videoUrl" value={lesson.videoUrl || ''} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} />
             </div>
           )}
 
-          <RichContentEditor 
-            label="🎯 Objetivo da Aula" 
-            value={lesson.objective || ''} 
-            onChange={(val) => handleLessonContentChange(val, 'objective', selectedItem.moduleIndex, selectedItem.lessonIndex)} 
-            textareaRef={useRef(null)} 
-          />
-
-          <RichContentEditor 
-            label="📖 Conteúdo Principal" 
-            value={lesson.mainContent || ''} 
-            onChange={(val) => handleLessonContentChange(val, 'mainContent', selectedItem.moduleIndex, selectedItem.lessonIndex)} 
-            textareaRef={useRef(null)} 
-          />
-
-          <RichContentEditor 
-            label="📝 Resumo" 
-            value={lesson.summary || ''} 
-            onChange={(val) => handleLessonContentChange(val, 'summary', selectedItem.moduleIndex, selectedItem.lessonIndex)} 
-            textareaRef={useRef(null)} 
-          />
+          <RichContentEditor label="🎯 Objetivo" value={lesson.objective || ''} onChange={(val) => handleLessonContentChange(val, 'objective', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
+          <RichContentEditor label="📖 Conteúdo" value={lesson.mainContent || ''} onChange={(val) => handleLessonContentChange(val, 'mainContent', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
+          <RichContentEditor label="📝 Resumo" value={lesson.summary || ''} onChange={(val) => handleLessonContentChange(val, 'summary', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
         </motion.div>
       );
     }
@@ -490,11 +456,7 @@ const CourseEditor: React.FC = () => {
       );
     }
 
-    return (
-      <div className="text-center py-12 text-gray-400">
-        <p>Selecione um módulo ou aula para editar</p>
-      </div>
-    );
+    return <div className="text-center py-12 text-gray-400">Selecione um módulo ou aula</div>;
   };
 
   return (
@@ -503,39 +465,27 @@ const CourseEditor: React.FC = () => {
       <div className="sticky top-0 bg-[#09090B]/95 border-b border-white/10 z-30">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-black">{courseId === 'new' ? '✨ Novo Curso' : '📝 Editor'}</h1>
-              <p className="text-gray-400 text-sm mt-1">Crie um curso incrível</p>
-            </div>
+            <h1 className="text-3xl font-black">✨ {courseId === 'new' ? 'Novo Curso' : 'Editar'}</h1>
             <div className="flex gap-3">
-              <button type="button" onClick={onCancel} className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-colors">Cancelar</button>
-              <button type="submit" onClick={handleSubmit} className="px-6 py-2 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white rounded-lg font-semibold hover:opacity-90 transition-all">💾 Salvar</button>
+              <button type="button" onClick={onCancel} className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg font-semibold">Cancelar</button>
+              <button type="submit" onClick={handleSubmit} className="px-6 py-2 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white rounded-lg font-semibold hover:opacity-90">💾 Salvar</button>
             </div>
           </div>
-
-          {/* Progress */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-gray-400">Progresso: {completionProgress}%</p>
-            </div>
-            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983] transition-all duration-300" style={{ width: `${completionProgress}%` }}></div>
-            </div>
+          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983]" style={{ width: `${completionProgress}%` }}></div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white/[0.02] border border-white/10 rounded-lg p-4 sticky top-32">
-              <h3 className="font-bold text-white mb-4">📚 Estrutura</h3>
-              <div className="space-y-2 max-h-[70vh] overflow-y-auto">
-                <button type="button" onClick={() => setSelectedItem({ type: 'course' })} className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${selectedItem.type === 'course' ? 'bg-[#8a4add]/30 text-white' : 'text-gray-300 hover:bg-white/10'}`}>
-                  ℹ️ Informações
-                </button>
+              <h3 className="font-bold text-white mb-4">📚</h3>
+              <div className="space-y-2 text-sm max-h-96 overflow-y-auto">
+                <button type="button" onClick={() => setSelectedItem({ type: 'course' })} className={`w-full text-left px-3 py-2 rounded transition-colors ${selectedItem.type === 'course' ? 'bg-[#8a4add]/30 text-white' : 'text-gray-300 hover:bg-white/10'}`}>ℹ️ Info</button>
                 {course.modules.map((mod, idx) => (
                   <div key={mod.id}>
                     <button type="button" onClick={() => setSelectedItem({ type: 'module', moduleIndex: idx })} className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${selectedItem.type === 'module' && selectedItem.moduleIndex === idx ? 'bg-[#8a4add]/30 text-white' : 'text-gray-300 hover:bg-white/10'}`}>
@@ -554,20 +504,19 @@ const CourseEditor: React.FC = () => {
             </div>
           </div>
 
-          {/* Content */}
+          {/* Main Content */}
           <div className="lg:col-span-3">
             {selectedItem.type === 'course' ? (
               <>
                 <div className="flex gap-2 mb-6 border-b border-white/10 pb-4">
                   {(['basics', 'structure', 'content'] as const).map((tab) => (
                     <button key={tab} type="button" onClick={() => setEditTab(tab)} className={`px-4 py-2 font-semibold text-sm transition-colors ${editTab === tab ? 'text-white border-b-2 border-[#8a4add] -mb-4 pb-4' : 'text-gray-400 hover:text-gray-300'}`}>
-                      {tab === 'basics' && '📋 Informações'}
+                      {tab === 'basics' && '📋 Info'}
                       {tab === 'structure' && '🏗️ Estrutura'}
                       {tab === 'content' && '📖 Conteúdo'}
                     </button>
                   ))}
                 </div>
-
                 <div className="bg-white/[0.02] border border-white/10 rounded-lg p-8">
                   {editTab === 'basics' && renderBasicsTab()}
                   {editTab === 'structure' && renderStructureTab()}

@@ -47,7 +47,7 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Toast Notifications:** System-wide notifications for key events.
 - **User History Synchronization:** LocalStorage and Firebase synchronization for lesson progress across devices, with offline-first capabilities.
 - **Notification CTR Analytics:** Track which notification types have highest engagement, dismiss rates, and average response times. Dashboard shows best/worst performers by type.
-- **Course Editor REDESIGNED:** 3 clean tabs (Informações, Estrutura, Conteúdo). Minimal form fields in Basics (title, description, track, instructor, skill level, duration, image). AI-powered structure generation. Inline lesson add form (title only, Enter to confirm, auto-select editor). Direct module/lesson editing in Content tab. No complex landing pages, benefits sections, or SEO tabs.
+- **Course Editor MASSIVELY SIMPLIFIED:** 3 clean tabs (Info, Estrutura, Conteúdo). Only essential fields (title, description, track, instructor, level, duration). AI-powered structure generation. Ultra-simple inline lesson adding (title only + Enter or click ✓). Direct module/lesson editing. No landing pages, SEO, or benefits tabs. Completely fixed and tested add lesson functionality.
 
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
