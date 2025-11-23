@@ -54,6 +54,36 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Learning Journey Visualization:** Minimal hero, continue learning, course modules preview, my courses grid.
 - **Removed Gamification:** XP system, levels, badges, leaderboard, weekly challenges, and streak milestones have been completely removed.
 
+## Version 3.3 - Mobile-First Explore Page (COMPLETED)
+
+### 📱 ExploreCoursesSection Refactored:
+
+**Mobile Optimization:**
+- ✅ **Search Full-Width** - No side-by-side layout
+- ✅ **Collapsible Filters** - Drawer button (mobile only) to toggle filters
+- ✅ **Responsive Grid:**
+  - `grid-cols-1` on mobile (1 course per row)
+  - `sm:grid-cols-2` on tablet (2 courses per row)
+  - `lg:grid-cols-3` on desktop (3 courses per row)
+  - `xl:grid-cols-4` on XL screens (4 courses per row)
+- ✅ **Results Counter** - Shows number of courses found
+- ✅ **Clear Filters CTA** - Button to reset search/track filters
+- ✅ **No Horizontal Scroll** - Filters expand vertically on mobile
+
+**Desktop Behavior:**
+- Filters always visible horizontally
+- Full-width search bar
+- Standard grid layout
+
+**Mobile Behavior:**
+- Search bar full-width
+- "Filtros" button to open/close filter panel
+- Filters expand vertically in a drawer
+- Filter closes automatically when selection is made
+- Grid optimized for small screens
+
+---
+
 ## Version 3.2 - ULTRA-SIMPLE Dashboard & Cards (COMPLETED)
 
 ### 📋 Dashboard Simplification:

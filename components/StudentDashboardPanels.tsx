@@ -52,7 +52,7 @@ export const ContinueLearningSection: React.FC<{
   );
 };
 
-// Explore Courses - SIMPLE
+// Explore Courses - MOBILE OPTIMIZED
 export const ExploreCoursesSection: React.FC<{
   setActiveTab: (tab: string) => void;
 }> = ({ setActiveTab }) => {
@@ -60,6 +60,7 @@ export const ExploreCoursesSection: React.FC<{
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTrack, setActiveTrack] = useState('Todos');
+  const [showFilters, setShowFilters] = useState(false);
 
   const tracks = useMemo(() => ['Todos', ...Array.from(new Set(courses.map(c => c.track)))].sort(), [courses]);
   const filteredCourses = useMemo(() => courses.filter(course => 
@@ -81,28 +82,40 @@ export const ExploreCoursesSection: React.FC<{
   };
 
   return (
-    <div className="space-y-5">
-      {/* Search & Filter */}
-      <div className="flex flex-col md:flex-row gap-3">
-        <div className="relative flex-1">
-          <input
-            type="search"
-            placeholder="Buscar curso..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-[#8a4add] focus:outline-none text-sm text-white"
-          />
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    <div className="space-y-4">
+      {/* Search Bar - Full Width */}
+      <div className="relative">
+        <input
+          type="search"
+          placeholder="Buscar curso..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-[#8a4add] focus:outline-none text-sm text-white"
+        />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      {/* Filters Toggle (Mobile) & Filter Pills (Desktop) */}
+      <div className="flex items-center gap-2 justify-between md:justify-start flex-wrap">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="md:hidden flex items-center gap-1.5 px-3 py-2 bg-white/10 rounded-lg text-sm font-semibold text-white hover:bg-white/20 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
           </svg>
-        </div>
-        
-        <div className="flex gap-2 overflow-x-auto">
+          Filtros
+        </button>
+
+        {/* Desktop Filters (always visible) */}
+        <div className="hidden md:flex gap-2 flex-wrap">
           {tracks.map(track => (
             <button
               key={track}
               onClick={() => setActiveTrack(track)}
-              className={`px-3 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 activeTrack === track
                   ? 'bg-[#8a4add] text-white'
                   : 'bg-white/10 text-gray-300 hover:bg-white/20'
@@ -114,8 +127,43 @@ export const ExploreCoursesSection: React.FC<{
         </div>
       </div>
 
-      {/* Courses Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {/* Mobile Filters (Expandable) */}
+      {showFilters && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.2 }}
+          className="md:hidden flex flex-col gap-2 p-3 bg-white/5 rounded-lg border border-white/10"
+        >
+          {tracks.map(track => (
+            <button
+              key={track}
+              onClick={() => {
+                setActiveTrack(track);
+                setShowFilters(false);
+              }}
+              className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors text-left ${
+                activeTrack === track
+                  ? 'bg-[#8a4add] text-white'
+                  : 'bg-white/10 text-gray-300 hover:bg-white/20'
+              }`}
+            >
+              {track}
+            </button>
+          ))}
+        </motion.div>
+      )}
+
+      {/* Results Count */}
+      {filteredCourses.length > 0 && (
+        <p className="text-xs text-gray-400 font-medium">
+          {filteredCourses.length} curso{filteredCourses.length !== 1 ? 's' : ''} encontrado{filteredCourses.length !== 1 ? 's' : ''}
+        </p>
+      )}
+
+      {/* Courses Grid - Mobile Optimized */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filteredCourses.map((course, idx) => {
           const { progress, isEnrolled } = getCourseProgress(course);
           return (
@@ -132,7 +180,18 @@ export const ExploreCoursesSection: React.FC<{
       </div>
 
       {filteredCourses.length === 0 && (
-        <div className="text-center py-12 text-gray-500">Nenhum curso encontrado</div>
+        <div className="text-center py-16 text-gray-500">
+          <p className="text-sm">Nenhum curso encontrado com esses critérios</p>
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              setActiveTrack('Todos');
+            }}
+            className="text-xs text-[#c4b5fd] hover:text-[#f27983] mt-2 underline transition-colors"
+          >
+            Limpar filtros
+          </button>
+        </div>
       )}
     </div>
   );
