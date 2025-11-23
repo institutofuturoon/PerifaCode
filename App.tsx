@@ -24,14 +24,11 @@ import CompleteProfile from './views/CompleteProfile';
 import Profile from './views/Profile';
 import CourseDetail from './views/CourseDetail';
 import LessonView from './views/LessonView';
-import Admin from './views/Admin';
 import CourseEditor from './views/CourseEditor';
 import CertificateView from './views/CertificateView';
-import Analytics from './views/Analytics';
 import ArticleView from './views/ArticleView';
 import ArticleEditor from './views/ArticleEditor';
 import StudentEditor from './views/StudentEditor';
-import InstructorCourseDashboard from './views/InstructorCourseDashboard';
 import CommunityView from './views/CommunityView';
 import ForumView from './views/ForumView';
 import ProjectDetailView from './views/ProjectDetailView';
@@ -52,11 +49,9 @@ import FinancialStatementView from './views/FinancialStatementView';
 import EventDetailView from './views/EventDetailView';
 import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
-import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
-import ChatBotAdmin from './views/ChatBotAdmin';
 import MentorDashboard from './views/MentorDashboard';
 import NotificationCenter from './views/NotificationCenter';
 import { initializeFAQsIfNeeded } from './utils/initializeFAQs';
@@ -66,7 +61,6 @@ import PageLayout from './components/PageLayout';
 import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
-import ApiTest from './views/ApiTest';
 import ScrollToTop from './components/ScrollToTop';
 import TransparencyEditor from './views/TransparencyEditor';
 import AnalyticsTracker from './components/AnalyticsTracker';
@@ -938,7 +932,6 @@ const AppContent: React.FC = () => {
                 <Route element={<SiteLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />
-                    <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/article/:articleId" element={<ArticleView />} />
                     <Route path="/team" element={<TeamView />} />
@@ -977,13 +970,10 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/article-editor/:articleId" element={<ArticleEditor />} />
                     <Route path="/admin/user-editor/new" element={<StudentEditor />} />
                     <Route path="/admin/user-editor/:userId" element={<StudentEditor />} />
-                    <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
                     <Route path="/admin/transparency-editor" element={<TransparencyEditor />} />
                     <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
-                    <Route path="/admin/chatbot" element={<ChatBotAdmin />} />
 
                     <Route path="/mentor-dashboard" element={<MentorDashboard />} />
-                    <Route path="/analytics" element={<Analytics />} />
 
                     <Route path="/community" element={<CommunityView />} />
                     <Route path="/forum" element={<ForumView />} />
@@ -997,7 +987,6 @@ const AppContent: React.FC = () => {
 
                 {/* ===== TEST ROUTES ===== */}
                 <Route path="/upload-test" element={<StudentUploadTest />} />
-                <Route path="/api-test" element={<ApiTest />} />
 
                 {/* ===== 404 ===== */}
                 <Route path="*" element={<Navigate to="/" replace />} />

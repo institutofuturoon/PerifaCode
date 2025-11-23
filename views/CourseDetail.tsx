@@ -122,14 +122,14 @@ const CourseDetail: React.FC = () => {
 
     const getStatusBadge = () => {
         if (isEnrolled && user) {
-            return <Badge text={`${progress}% Concluído`} variant={progress === 100 ? "success" : "default"} />;
+            return <div className="inline-block px-3 py-1 rounded text-xs font-bold bg-green-500/20 text-green-400">{progress}% Concluído</div>;
         }
-        switch(course.enrollmentStatus) {
-            case 'open': return <Badge text="Matrículas Abertas" variant="success" />;
-            case 'closed': return <Badge text="Turma Lotada" variant="danger" />;
-            case 'soon': return <Badge text="Em Breve" variant="warning" />;
-            default: return <Badge text="Curso Online" variant="default" />;
-        }
+        const statuses: Record<string, string> = {
+            'open': 'Matrículas Abertas',
+            'closed': 'Turma Lotada',
+            'soon': 'Em Breve'
+        };
+        return <div className="inline-block px-3 py-1 rounded text-xs font-bold bg-[#8a4add]/20 text-[#c4b5fd]">{statuses[course.enrollmentStatus] || 'Curso Online'}</div>;
     };
 
     return (
@@ -282,7 +282,7 @@ const CourseDetail: React.FC = () => {
                         <div className="bg-gradient-to-br from-white/10 to-white/5 p-8 rounded-xl border border-white/15 shadow-lg shadow-white/5">
                             <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"><span>🎓</span> Formato do Curso</h3>
                             <div className="mb-4">
-                                <CourseModalityBadge format={course.format} size="lg" />
+                                <span className="inline-block px-4 py-2 rounded-lg text-sm font-bold bg-[#8a4add]/20 text-[#c4b5fd]">{course.format === 'online' ? '🌐 Online' : course.format === 'hibrido' ? '🔄 Híbrido' : '📍 Presencial'}</span>
                             </div>
                             <div className="text-sm text-gray-300">
                                 {course.format === 'online' && (

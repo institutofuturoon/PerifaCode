@@ -127,21 +127,6 @@ const Courses: React.FC = () => {
                 </section>
             )}
 
-             {onsiteCourses.length > 0 && (
-                <section className="py-4 mb-12">
-                    <div className="flex items-center gap-3 mb-6">
-                        <span className="bg-green-500/20 text-green-400 p-1.5 rounded-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        </span>
-                        <h2 className="text-xl font-bold text-white">Próximas Turmas Presenciais</h2>
-                    </div>
-                    <div className="grid gap-4">
-                        {onsiteCourses.map(course => (
-                            <OnsiteCourseCard key={course.id} course={course} />
-                        ))}
-                    </div>
-                </section>
-            )}
 
             <section id="all-courses" className="scroll-mt-24">
                 <div className="flex items-center gap-3 mb-6">
