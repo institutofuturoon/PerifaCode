@@ -24,6 +24,7 @@ import { Badge } from '../TIPOS_CURSO_ROCKETSEAT';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import { getLessonHistoryFromFirebase, syncLocalToFirebase } from '../utils/firebaseHistorySync';
 import DashboardAnalytics from '../components/DashboardAnalytics';
+import NotificationBell from '../components/NotificationBell';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -43,6 +44,11 @@ const DashboardHeader: React.FC<{ user: User, toggleSidebar: () => void, title: 
                     <span className="hidden sm:inline">/</span>
                     <span className="text-white font-medium">{title}</span>
                 </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <NotificationBell />
+                <div className="w-px h-6 bg-white/10"></div>
             </div>
 
             <div className="flex items-center gap-4">

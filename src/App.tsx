@@ -754,6 +754,7 @@ const AppContent: React.FC = () => {
                     <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
                     <Route path="/course/:courseId/certificate" element={<CertificateView />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/notifications" element={<NotificationCenter />} />
                     <Route path="/connect" element={<ConnectView />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/article/:articleId" element={<ArticleView />} />

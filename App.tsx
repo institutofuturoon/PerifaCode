@@ -58,6 +58,7 @@ import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
 import ChatBotAdmin from './views/ChatBotAdmin';
 import MentorDashboard from './views/MentorDashboard';
+import NotificationCenter from './views/NotificationCenter';
 import { initializeFAQsIfNeeded } from './utils/initializeFAQs';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
