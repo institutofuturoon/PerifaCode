@@ -132,44 +132,32 @@ const LessonView: React.FC = () => {
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
-      {/* ============ HEADER MELHORADO ============ */}
-      <div className="border-b border-white/10 bg-white/5 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* ============ HEADER SIMPLES ============ */}
+      <div className="border-b border-white/10 bg-white/5 sticky top-0 z-40">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
             {/* VOLTAR HOME */}
             <motion.button 
               onClick={() => navigate('/dashboard')}
-              whileHover={{ x: -4 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-[#c4b5fd] hover:text-white group"
-              title="Voltar ao Painel (ESC)"
-            >
-              <Home size={20} />
-            </motion.button>
-
-            {/* 🎯 RESOURCE 3: BOTÃO VOLTAR AO CURSO */}
-            <motion.button 
-              onClick={() => navigate(`/course/${courseId}`)}
               whileHover={{ x: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors text-[#f27983] hover:text-white text-sm font-semibold"
-              title="Voltar à página do curso"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-[#c4b5fd] hover:text-white"
+              title="Voltar (ESC)"
             >
-              <ArrowLeft size={16} />
-              <span>Curso</span>
+              <Home size={18} />
             </motion.button>
 
             {/* PROGRESSO CENTRAL */}
-            <div className="flex-1 flex items-center gap-3">
-              <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
                 <motion.div 
                   className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983]"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                  transition={{ duration: 0.8 }}
                 />
               </div>
-              <span className="text-sm font-bold text-white whitespace-nowrap">{progress}%</span>
+              <span className="text-xs font-bold text-white whitespace-nowrap">{progress}%</span>
             </div>
 
             {/* AULA ATUAL */}
@@ -184,38 +172,7 @@ const LessonView: React.FC = () => {
       <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-4xl mx-auto">
           
-          {/* 🎯 RESOURCE 7: BREADCRUMB COM MÓDULO */}
-          {(() => {
-            const currentLessonModule = currentCourse?.modules.find(m =>
-              m.lessons.some(l => l.id === lessonId)
-            );
-            return (
-              <Breadcrumb
-                items={[
-                  { label: 'Dashboard', path: '/dashboard' },
-                  { label: currentCourse?.title || 'Curso', path: `/course/${courseId}` },
-                  ...(currentLessonModule ? [{ label: currentLessonModule.title, path: `/course/${courseId}` }] : [])
-                ]}
-                currentPage={currentLesson?.title || 'Aula'}
-              />
-            );
-          })()}
-
-          {/* 🎯 RESOURCE 5: KEYBOARD HINTS MELHORADOS */}
-          <motion.div
-            className="mb-6 flex items-center justify-between gap-4 flex-wrap"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <Keyboard size={14} />
-              <span>Atalhos: <kbd className="bg-white/10 px-2 py-1 rounded">ESC</kbd> Voltar • <kbd className="bg-white/10 px-2 py-1 rounded">←→</kbd> Navegar • <kbd className="bg-white/10 px-2 py-1 rounded">Enter</kbd> Completar</span>
-            </div>
-            <KeyboardHintsModal />
-          </motion.div>
-
-          {/* BREADCRUMB + TÍTULO */}
+          {/* TÍTULO */}
           <motion.div 
             className="mb-12"
             initial={{ y: 20, opacity: 0 }} 
