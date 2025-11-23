@@ -122,26 +122,18 @@ const CourseEditor: React.FC = () => {
   };
 
   const addLessonToModule = (moduleIndex: number) => {
-    console.log("🔹 addLessonToModule called with moduleIndex:", moduleIndex);
-    console.log("📝 lessonTitle value:", lessonTitle);
-    console.log("📚 course.modules length:", course.modules.length);
-    
     // Validação 1: Título não vazio
     const titleTrimmed = lessonTitle.trim();
     if (!titleTrimmed) {
-      console.warn("❌ Título vazio");
       showToast("❌ Digite um nome para a aula");
       return;
     }
 
     // Validação 2: Módulo existe
     if (!course.modules[moduleIndex]) {
-      console.error("❌ Módulo não existe no índice", moduleIndex);
       showToast("❌ Módulo não encontrado");
       return;
     }
-
-    console.log("✅ Validações passaram. Criando aula...");
 
     const newLesson: Lesson = {
       id: `les_${Date.now()}`,
@@ -153,7 +145,6 @@ const CourseEditor: React.FC = () => {
 
     // Calcula o índice ANTES de setState
     const newLessonIndex = course.modules[moduleIndex].lessons.length;
-    console.log("🆕 Nova aula será no índice:", newLessonIndex);
 
     // Atualiza state de uma vez
     const newModules = [...course.modules];
@@ -166,8 +157,6 @@ const CourseEditor: React.FC = () => {
       ...course,
       modules: newModules
     });
-
-    console.log("✅ Course atualizado. Aula criada com sucesso!");
 
     // Seleciona a aula
     setSelectedItem({
@@ -389,18 +378,13 @@ const CourseEditor: React.FC = () => {
                       autoFocus
                       type="text"
                       value={lessonTitle}
-                      onChange={(e) => {
-                        console.log("🔤 Input value changed to:", e.target.value);
-                        setLessonTitle(e.target.value);
-                      }}
+                      onChange={(e) => setLessonTitle(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          console.log("⌨️ Enter pressionado! Valor atual:", lessonTitle);
                           e.preventDefault();
                           addLessonToModule(mIdx);
                         }
                         if (e.key === 'Escape') {
-                          console.log("❌ Escape pressionado");
                           setAddingLessonToModule(null);
                           setLessonTitle('');
                         }
@@ -408,21 +392,14 @@ const CourseEditor: React.FC = () => {
                       placeholder="Nome da aula"
                       className="flex-1 px-3 py-2 bg-white/5 border border-white/20 rounded text-white text-sm focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
                     />
-                    <button type="button" onClick={() => {
-                      console.log("🖱️ Botão ✓ clicado! Valor:", lessonTitle);
-                      addLessonToModule(mIdx);
-                    }} className="px-3 py-2 bg-[#8a4add] text-white rounded text-sm font-semibold hover:bg-[#7c3aed]">✓</button>
+                    <button type="button" onClick={() => addLessonToModule(mIdx)} className="px-3 py-2 bg-[#8a4add] text-white rounded text-sm font-semibold hover:bg-[#7c3aed]">✓</button>
                     <button type="button" onClick={() => { 
-                      console.log("❌ Botão ✕ clicado");
                       setAddingLessonToModule(null); 
                       setLessonTitle(''); 
                     }} className="px-3 py-2 bg-white/10 text-white rounded text-sm hover:bg-white/20">✕</button>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => {
-                    console.log("📝 Clique em + Aula para módulo", mIdx);
-                    setAddingLessonToModule(mIdx);
-                  }} className="w-full py-2 text-[#c4b5fd] hover:text-white text-xs border-t border-white/10 mt-2">+ Aula</button>
+                  <button type="button" onClick={() => setAddingLessonToModule(mIdx)} className="w-full py-2 text-[#c4b5fd] hover:text-white text-xs border-t border-white/10 mt-2">+ Aula</button>
                 )}
               </div>
             </div>
@@ -474,9 +451,9 @@ const CourseEditor: React.FC = () => {
             </div>
           )}
 
-          <RichContentEditor label="🎯 Objetivo" value={lesson.objective || ''} onChange={(val) => handleLessonContentChange(val, 'objective', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
-          <RichContentEditor label="📖 Conteúdo" value={lesson.mainContent || ''} onChange={(val) => handleLessonContentChange(val, 'mainContent', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
-          <RichContentEditor label="📝 Resumo" value={lesson.summary || ''} onChange={(val) => handleLessonContentChange(val, 'summary', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
+          <RichContentEditor label="🎯 Objetivo" value={lesson.objective || ''} onChange={(val) => handleLessonContentChange(val, 'objective', selectedItem.moduleIndex, selectedItem.lessonIndex)} />
+          <RichContentEditor label="📖 Conteúdo" value={lesson.mainContent || ''} onChange={(val) => handleLessonContentChange(val, 'mainContent', selectedItem.moduleIndex, selectedItem.lessonIndex)} />
+          <RichContentEditor label="📝 Resumo" value={lesson.summary || ''} onChange={(val) => handleLessonContentChange(val, 'summary', selectedItem.moduleIndex, selectedItem.lessonIndex)} />
         </motion.div>
       );
     }

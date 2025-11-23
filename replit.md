@@ -47,7 +47,15 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Toast Notifications:** System-wide notifications for key events.
 - **User History Synchronization:** LocalStorage and Firebase synchronization for lesson progress across devices, with offline-first capabilities.
 - **Notification CTR Analytics:** Track which notification types have highest engagement, dismiss rates, and average response times. Dashboard shows best/worst performers by type.
-- **Course Editor MASSIVELY SIMPLIFIED:** 3 clean tabs (Info, Estrutura, Conteúdo). Only essential fields (title, description, track, instructor, level, duration). AI-powered structure generation. Ultra-simple inline lesson adding (title only + Enter or click ✓). Direct module/lesson editing with robust error handling. No landing pages, SEO, or benefits tabs. Add lesson flow completely fixed and tested.
+- **Course Editor MASSIVELY SIMPLIFIED:** 3 clean tabs (Info, Estrutura, Conteúdo). Only essential fields (title, description, track, instructor, level, duration). AI-powered structure generation. Ultra-simple inline lesson adding (title only + Enter or click ✓). Direct module/lesson editing with robust error handling. No landing pages, SEO, or benefits tabs. 
+- **Fixed Issues (v1.1):** 
+  - ✅ Removed useRef() hooks causing React Error #310
+  - ✅ Fixed race conditions in setState for lesson creation
+  - ✅ Calculated lesson index before setState to ensure correct auto-selection
+  - ✅ Used autoFocus instead of imperative ref.focus()
+  - ✅ Removed unnecessary textareaRef props from RichContentEditor
+  - ✅ Cleaned up all console.log debug statements
+  - Add lesson flow completely fixed and tested.
 
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
