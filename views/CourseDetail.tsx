@@ -6,8 +6,6 @@ import { Home, ChevronRight } from 'lucide-react';
 import { Lesson, Module, Course } from '../types';
 import { useAppContext } from '../App';
 import SEO from '../components/SEO';
-import Badge from '../components/Badge';
-import CourseModalityBadge from '../components/CourseModalityBadge';
 import Breadcrumb from '../components/Breadcrumb';
 import ProgressCircle from '../components/ProgressCircle';
 import ScrollToTopButton from '../components/ScrollToTopButton';

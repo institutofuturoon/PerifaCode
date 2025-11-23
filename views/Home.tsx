@@ -6,7 +6,6 @@ import SimplifiedTimeline from '../components/SimplifiedTimeline';
 import TeamMemberPreviewCard from '../components/TeamMemberPreviewCard';
 import SEO from '../components/SEO';
 import { Partner } from '../types';
-import Badge from '../components/Badge';
 
 const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ finalStat, duration = 2000 }) => {
   const [currentValue, setCurrentValue] = React.useState(0);
@@ -240,7 +239,7 @@ const Home: React.FC = () => {
         {/* Hero Section - Ajustado para maior impacto, com responsividade mobile */}
         <section className="py-20 md:py-32 text-center relative z-10 bg-grid-pattern">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <Badge text="Matrículas Abertas" />
+            <div className="inline-block px-3 py-1.5 rounded-full bg-[#8a4add]/20 text-[#c4b5fd] text-xs font-bold">Matrículas Abertas</div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight max-w-5xl mx-auto">
               Seu futuro na tecnologia<br />
               começa <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">na quebrada.</span>

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
-import Badge from '../components/Badge';
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
     <div className="flex-shrink-0 w-[180px] h-[80px] bg-white/5 border border-white/5 rounded-xl flex items-center justify-center p-4 grayscale hover:grayscale-0 hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer group relative overflow-hidden">
@@ -132,7 +131,7 @@ const PartnershipsView: React.FC = () => {
                 <div className="absolute inset-0 bg-grid-pattern opacity-30 -z-10"></div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <Badge text="B2B & Impacto Social" />
+                    <div className="inline-block px-3 py-1.5 rounded-full bg-[#8a4add]/20 text-[#c4b5fd] text-xs font-bold">B2B & Impacto Social</div>
                     
                     <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-tight mb-6 max-w-5xl mx-auto">
                         Invista em talentos que <br className="hidden md:block" />

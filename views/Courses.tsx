@@ -4,9 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CourseCard from '../components/CourseCard';
 import { useAppContext } from '../App';
 import { Course } from '../types';
-import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import SEO from '../components/SEO';
-import Badge from '../components/Badge';
 
 const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => void }> = ({ course, onSelect }) => (
     <div 
@@ -110,7 +108,7 @@ const Courses: React.FC = () => {
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#8a4add]/10 rounded-full blur-[100px] pointer-events-none"></div>
              
              <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <Badge text="Catálogo de Cursos" />
+                <div className="inline-block px-3 py-1.5 rounded-full bg-[#8a4add]/20 text-[#c4b5fd] text-xs font-bold">Catálogo de Cursos</div>
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4 leading-tight">
                     Explore nosso <br/>
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">Catálogo de Cursos</span>

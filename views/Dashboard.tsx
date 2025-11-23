@@ -1,24 +1,16 @@
 
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport, Project } from '../types';
-import ProgressBar from '../components/ProgressBar';
-import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
+import { Course, Lesson, User, MentorSession, Track, FinancialStatement, AnnualReport, Project } from '../types';
 import { useAppContext } from '../App';
 import CourseCard from '../components/CourseCard';
-import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import DashboardSidebar from '../components/DashboardSidebar';
 import ForumView from './ForumView';
-import MarketingGeneratorView from './MarketingGeneratorView';
 import Blog from './Blog';
-import DashboardTrilhasSection from '../components/DashboardTrilhasSection';
-import useTrilhas from '../hooks/useTrilhas';
-import useProgresso from '../hooks/useProgresso';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import { getLessonHistoryFromFirebase, syncLocalToFirebase } from '../utils/firebaseHistorySync';
 import NotificationBell from '../components/NotificationBell';
-import CourseJSONManager from '../components/CourseJSONManager';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -549,20 +541,20 @@ const ModerationPanel: React.FC = () => {
 // TAB TITLE MAPPING
 const tabTitles: Record<string, string> = {
     overview: 'Visão Geral',
-    myAgenda: 'Minha Agenda',
     myCourses: 'Meus Cursos',
-    explore: 'Catálogo de Cursos',
-    courses: 'Gestão de Cursos',
-    tracks: 'Trilhas de Aprendizado',
-    blog: 'Gerenciar Blog',
-    'blog-feed': 'Notícias e Artigos',
+    explore: 'Catálogo',
+    forum: 'Fórum',
+    'blog-feed': 'Blog',
+    courses: 'Gerenciar Cursos',
+    students: 'Alunos',
+    myAgenda: 'Minha Agenda',
+    tracks: 'Trilhas',
     events: 'Eventos',
+    blog: 'Blog',
     moderation: 'Moderação',
-    students: 'Base de Alunos',
     teamMembers: 'Equipe',
     transparency: 'Transparência',
-    forum: 'Fórum de Dúvidas',
-    marketing: 'Marketing Studio'
+    marketing: 'Marketing'
 };
 
 const AdminDashboard: React.FC = () => {
@@ -747,21 +739,20 @@ const StudentsTable = () => (
   <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full">
-        <TableHeader cols={['Aluno', 'Email', 'XP', 'Ações']} />
+        <TableHeader cols={['Aluno', 'Email', 'Ações']} />
         <tbody className="divide-y divide-white/5">
             {students.length === 0 ? (
-                <tr><td colSpan={4} className="text-center py-8 text-gray-500 text-sm">Nenhum aluno.</td></tr>
+                <tr><td colSpan={3} className="text-center py-8 text-gray-500 text-sm">Nenhum aluno.</td></tr>
             ) : (
                 students.map((student) => (
                 <tr key={student.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-3">
                             <img className="h-8 w-8 rounded-full border border-white/10" src={student.avatarUrl} alt={student.name} />
-                            <div className="ml-3"><div className="text-sm font-medium text-white">{student.name}</div></div>
+                            <span className="text-sm font-medium text-white">{student.name}</span>
                         </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap"><div className="text-xs text-gray-400">{student.email}</div></td>
-                    <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-[#c4b5fd]">{student.xp} XP</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-400">{student.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
                         <button onClick={() => handleEditUser(student.id, student.role)} className="text-blue-400 hover:text-blue-300">Editar</button>
                         {user?.id !== student.id && (<button onClick={() => handleDeleteUser(student.id)} className="text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">Desativar</button>)}
@@ -854,12 +845,9 @@ const StudentsTable = () => (
                         <h2 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Alunos Destaque</h2>
                          <ul className="space-y-3">
                             {studentEngagement.topStudents.slice(0, 3).map(student => (
-                                <li key={student.id} className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <img src={student.avatarUrl} alt={student.name} className="h-6 w-6 rounded-full" />
-                                        <span className="text-xs font-medium text-gray-300">{student.name.split(' ')[0]}</span>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-[#c4b5fd]">{student.xp} XP</span>
+                                <li key={student.id} className="flex items-center gap-2">
+                                    <img src={student.avatarUrl} alt={student.name} className="h-6 w-6 rounded-full" />
+                                    <span className="text-xs font-medium text-gray-300">{student.name.split(' ')[0]}</span>
                                 </li>
                             ))}
                         </ul>
@@ -878,7 +866,6 @@ const StudentsTable = () => (
                 <h3 className="text-xl font-bold text-white mb-4">📚 Meus Cursos</h3>
                 <CoursesTable />
               </div>
-              <CourseJSONManager />
             </div>
           );
           case 'blog': return <BlogTable />;
@@ -890,7 +877,6 @@ const StudentsTable = () => (
           case 'transparency': return <TransparencyTable />;
           case 'moderation': return <ModerationPanel />;
           case 'forum': return <ForumView embedded={true} />;
-          case 'marketing': return <MarketingGeneratorView />;
           case 'myAgenda': return <MyAgendaPanel 
             user={user}
             mentorSessions={mentorSessions}
