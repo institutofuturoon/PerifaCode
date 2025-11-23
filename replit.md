@@ -54,6 +54,38 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Learning Journey Visualization:** Minimal hero, continue learning, course modules preview, my courses grid.
 - **Removed Gamification:** XP system, levels, badges, leaderboard, weekly challenges, and streak milestones have been completely removed.
 
+## Version 3.5 - Lesson Player Rocketseat Design (COMPLETED)
+
+### 🎨 PreLessonScreen & LessonView Redesign:
+
+**PreLessonScreen Ultra-Clean Refactor:**
+- ✅ **Background:** Simples escuro (#09090B), sem gradients complexos
+- ✅ **Cards:** Border gray-700/50 bem definida, design clean
+- ✅ **Info Cards:** Reduzido para 2 essenciais (Duração, Pontos)
+- ✅ **Typography:** Clara e hierarquizada (sem emojis pesados)
+- ✅ **Spacing:** Generoso, Rocketseat-style
+- ✅ **Animations:** Removidas decorações excessivas
+
+**LessonView Header Simplification:**
+- ✅ **Header:** Home + Progress + Lesson# (essencial)
+- ✅ **Colors:** Neutras, sem excessos
+- ✅ **Padding:** Reduzido (py-3 instead of py-4)
+- ✅ **Objective Card:** Background #1a1a2e, border gray-700/50
+
+**Line Reductions:**
+- PreLessonScreen: 247 → 133 linhas (-46%)
+- LessonView: 463 → 418 linhas (-10%)
+- Total: 710 → 551 linhas (-22%)
+
+**Design Philosophy (Rocketseat):**
+- Cards com bordas limpas
+- Tipografia hierarquizada
+- Espaçamento bem calculado
+- Cores estratégicas (não excessivas)
+- Mobile-first responsivo
+
+---
+
 ## Version 3.4 - Course Detail Page Simplification (COMPLETED)
 
 ### 📖 CourseDetail.tsx Ultra-Simple Redesign:

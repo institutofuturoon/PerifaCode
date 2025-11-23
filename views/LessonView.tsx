@@ -132,24 +132,22 @@ const LessonView: React.FC = () => {
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
-      {/* ============ HEADER SIMPLES ============ */}
-      <div className="border-b border-white/10 bg-white/5 sticky top-0 z-40">
+      {/* ============ HEADER CLEAN ============ */}
+      <div className="border-b border-gray-700/50 bg-[#09090B] sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 max-w-4xl mx-auto">
             {/* VOLTAR HOME */}
-            <motion.button 
+            <button 
               onClick={() => navigate('/dashboard')}
-              whileHover={{ x: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors text-[#c4b5fd] hover:text-white"
+              className="p-1.5 rounded-lg hover:bg-gray-800 transition-colors text-gray-400 hover:text-white flex-shrink-0"
               title="Voltar (ESC)"
             >
-              <Home size={18} />
-            </motion.button>
+              <Home size={16} />
+            </button>
 
             {/* PROGRESSO CENTRAL */}
-            <div className="flex-1 flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div className="flex-1 flex items-center gap-3">
+              <div className="flex-1 h-1 bg-gray-800/50 rounded-full overflow-hidden">
                 <motion.div 
                   className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983]"
                   initial={{ width: 0 }}
@@ -157,11 +155,13 @@ const LessonView: React.FC = () => {
                   transition={{ duration: 0.8 }}
                 />
               </div>
-              <span className="text-xs font-bold text-white whitespace-nowrap">{progress}%</span>
+              <span className="text-xs font-semibold text-gray-400 whitespace-nowrap">
+                {progress}%
+              </span>
             </div>
 
             {/* AULA ATUAL */}
-            <span className="text-xs text-gray-400 whitespace-nowrap font-semibold">
+            <span className="text-xs text-gray-500 whitespace-nowrap font-semibold ml-2">
               {currentLessonIndex + 1}/{allLessons.length}
             </span>
           </div>
@@ -169,35 +169,34 @@ const LessonView: React.FC = () => {
       </div>
 
       {/* ============ CONTEÚDO PRINCIPAL ============ */}
-      <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="max-w-4xl mx-auto">
           
           {/* TÍTULO */}
           <motion.div 
-            className="mb-12"
+            className="mb-10"
             initial={{ y: 20, opacity: 0 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ delay: 0.1 }}
           >
-            <h1 className="text-4xl sm:text-5xl font-black text-white mb-4 leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3 leading-tight">
               {currentLesson.title}
             </h1>
             {currentLesson.description && (
-              <p className="text-gray-400 text-lg leading-relaxed">{currentLesson.description}</p>
+              <p className="text-gray-400 text-sm leading-relaxed">{currentLesson.description}</p>
             )}
           </motion.div>
 
           {/* OBJETIVO (Se existir) */}
           {currentLesson.objective && (
             <motion.div 
-              className="bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/10 border border-[#8a4add]/40 rounded-xl p-6 mb-10"
+              className="bg-[#1a1a2e] border border-gray-700/50 rounded-lg p-6 mb-10"
               initial={{ y: 20, opacity: 0 }} 
               animate={{ y: 0, opacity: 1 }} 
               transition={{ delay: 0.15 }}
-              whileHover={{ borderColor: '#8a4add' }}
             >
-              <h2 className="text-white font-bold mb-3 flex items-center gap-2">
-                <span className="text-2xl">🎯</span> Objetivo da Aula
+              <h2 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3">
+                Objetivo da Aula
               </h2>
               <div className="text-gray-300 text-sm leading-relaxed">
                 <MarkdownRenderer content={currentLesson.objective} />
