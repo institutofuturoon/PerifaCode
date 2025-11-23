@@ -61,12 +61,10 @@ const CourseEditor: React.FC = () => {
   const [isGeneratingStructure, setIsGeneratingStructure] = useState(false);
   const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
   
-  // Quick Add Lesson Modal
-  const [showQuickAddLesson, setShowQuickAddLesson] = useState(false);
-  const [quickAddModuleIndex, setQuickAddModuleIndex] = useState<number | null>(null);
+  // Quick Add Lesson - Inline mode
+  const [addingLessonToModule, setAddingLessonToModule] = useState<number | null>(null);
   const [quickLessonTitle, setQuickLessonTitle] = useState('');
-  const [quickLessonDuration, setQuickLessonDuration] = useState('10 min');
-  const [quickLessonType, setQuickLessonType] = useState<'text' | 'video'>('text');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Completion progress
   const completionProgress = useMemo(() => {
@@ -216,54 +214,57 @@ const CourseEditor: React.FC = () => {
     }
   };
 
-  const openQuickAddLessonModal = (moduleIndex: number) => {
-      setQuickAddModuleIndex(moduleIndex);
+  const startAddingLesson = (moduleIndex: number) => {
+    setAddingLessonToModule(moduleIndex);
+    setQuickLessonTitle('');
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const handleAddLessonKeyDown = (e: React.KeyboardEvent, moduleIndex: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      confirmAddLesson(moduleIndex);
+    } else if (e.key === 'Escape') {
+      setAddingLessonToModule(null);
       setQuickLessonTitle('');
-      setQuickLessonDuration('10 min');
-      setQuickLessonType('text');
-      setShowQuickAddLesson(true);
+    }
   };
 
-  const handleQuickAddLessonConfirm = () => {
-      if (!quickLessonTitle.trim()) {
-          showToast("❌ Digite um título para a aula");
-          return;
-      }
-      if (quickAddModuleIndex === null) return;
+  const confirmAddLesson = (moduleIndex: number) => {
+    if (!quickLessonTitle.trim()) {
+      showToast("❌ Digite um título para a aula");
+      return;
+    }
 
-      const moduleIndex = quickAddModuleIndex;
-      const currentLessonsLength = course.modules[moduleIndex].lessons.length;
+    const newLesson: Lesson = { 
+      id: `les_${Date.now()}`, 
+      title: quickLessonTitle, 
+      duration: '10 min', 
+      type: 'text', 
+      xp: 10 
+    };
 
-      const newLesson: Lesson = { 
-          id: `les_${Date.now()}`, 
-          title: quickLessonTitle, 
-          duration: quickLessonDuration, 
-          type: quickLessonType, 
-          xp: 10 
-      };
-      
-      setCourse(prev => {
-          const newModules = [...prev.modules];
-          newModules[moduleIndex].lessons = [...newModules[moduleIndex].lessons, newLesson];
-          return { ...prev, modules: newModules };
+    const newLessonIndex = course.modules[moduleIndex].lessons.length;
+    
+    setCourse(prev => {
+      const newModules = [...prev.modules];
+      newModules[moduleIndex].lessons = [...newModules[moduleIndex].lessons, newLesson];
+      return { ...prev, modules: newModules };
+    });
+
+    setAddingLessonToModule(null);
+    setQuickLessonTitle('');
+
+    // Auto-select the new lesson for editing
+    setTimeout(() => {
+      setSelectedItem({ 
+        type: 'lesson', 
+        moduleIndex: moduleIndex, 
+        lessonIndex: newLessonIndex 
       });
-      
-      setShowQuickAddLesson(false);
-      
-      // Auto-select the new lesson for editing
-      setTimeout(() => {
-          setSelectedItem({ 
-              type: 'lesson', 
-              moduleIndex: moduleIndex, 
-              lessonIndex: currentLessonsLength
-          });
-      }, 50);
+    }, 50);
   };
 
-  const addLesson = (moduleIndex: number) => {
-      openQuickAddLessonModal(moduleIndex);
-  };
-  
   const deleteLesson = (moduleIndex: number, lessonIndex: number) => {
       setCourse(prev => {
           const newModules = [...prev.modules];
@@ -540,15 +541,54 @@ const CourseEditor: React.FC = () => {
               
               <div className="space-y-2 border-t border-white/10 pt-3">
                 {module.lessons.map((lesson, lIdx) => (
-                  <div key={lesson.id} className="flex items-center justify-between bg-black/30 p-3 rounded text-sm">
+                  <div key={lesson.id} className="flex items-center justify-between bg-black/30 p-3 rounded text-sm group">
                     <div><span className="text-gray-400">{lesson.title}</span><span className="text-gray-500 ml-2">({lesson.duration})</span></div>
                     <div className="flex gap-2">
-                      <button type="button" onClick={() => setSelectedItem({ type: 'lesson', moduleIndex: mIdx, lessonIndex: lIdx })} className="text-[#c4b5fd] hover:text-white text-xs">Editar</button>
-                      <button type="button" onClick={() => deleteLesson(mIdx, lIdx)} className="text-red-400 hover:text-red-300 text-xs">Deletar</button>
+                      <button type="button" onClick={() => setSelectedItem({ type: 'lesson', moduleIndex: mIdx, lessonIndex: lIdx })} className="text-[#c4b5fd] hover:text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity">Editar</button>
+                      <button type="button" onClick={() => deleteLesson(mIdx, lIdx)} className="text-red-400 hover:text-red-300 text-xs opacity-0 group-hover:opacity-100 transition-opacity">Deletar</button>
                     </div>
                   </div>
                 ))}
-                <button type="button" onClick={() => addLesson(mIdx)} className="w-full text-center py-2 text-[#c4b5fd] hover:text-white text-sm font-semibold border-t border-white/10 mt-2">+ Adicionar Aula</button>
+
+                {/* Inline Add Lesson Form */}
+                {addingLessonToModule === mIdx ? (
+                  <div className="bg-[#8a4add]/10 border border-[#8a4add]/30 p-3 rounded flex gap-2">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={quickLessonTitle}
+                      onChange={(e) => setQuickLessonTitle(e.target.value)}
+                      onKeyDown={(e) => handleAddLessonKeyDown(e, mIdx)}
+                      placeholder="Nome da aula..."
+                      className="flex-1 px-3 py-2 bg-white/5 border border-white/20 rounded text-white placeholder-gray-500 focus:ring-2 focus:ring-[#8a4add] focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => confirmAddLesson(mIdx)}
+                      className="px-3 py-2 bg-[#8a4add] hover:bg-[#7c3aed] text-white rounded text-sm font-semibold transition-colors"
+                    >
+                      ✓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddingLessonToModule(null);
+                        setQuickLessonTitle('');
+                      }}
+                      className="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded text-sm transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <button 
+                    type="button" 
+                    onClick={() => startAddingLesson(mIdx)} 
+                    className="w-full text-center py-2 text-[#c4b5fd] hover:text-white text-sm font-semibold border-t border-white/10 mt-2 transition-colors"
+                  >
+                    + Adicionar Aula
+                  </button>
+                )}
               </div>
             </motion.div>
           ))}
@@ -693,74 +733,6 @@ const CourseEditor: React.FC = () => {
           </div>
         </form>
       </div>
-
-      {/* Quick Add Lesson Modal */}
-      <AnimatePresence>
-        {showQuickAddLesson && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-[#1a1a1f] border border-white/20 rounded-lg p-8 max-w-md w-full shadow-2xl">
-              <h2 className="text-2xl font-black text-white mb-6">✨ Nova Aula</h2>
-              
-              <div className="space-y-5">
-                <div>
-                  <label className={labelClasses}>Título da Aula *</label>
-                  <input 
-                    type="text" 
-                    value={quickLessonTitle} 
-                    onChange={(e) => setQuickLessonTitle(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleQuickAddLessonConfirm()}
-                    autoFocus
-                    placeholder="Ex: Introdução ao React"
-                    className={inputClasses}
-                  />
-                </div>
-
-                <div>
-                  <label className={labelClasses}>Duração</label>
-                  <input 
-                    type="text" 
-                    value={quickLessonDuration} 
-                    onChange={(e) => setQuickLessonDuration(e.target.value)}
-                    placeholder="Ex: 15 min"
-                    className={inputClasses}
-                  />
-                </div>
-
-                <div>
-                  <label className={labelClasses}>Tipo de Aula</label>
-                  <select 
-                    value={quickLessonType} 
-                    onChange={(e) => setQuickLessonType(e.target.value as 'text' | 'video')}
-                    className={inputClasses}
-                  >
-                    <option value="text">📝 Texto</option>
-                    <option value="video">🎬 Vídeo</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-8">
-                <button 
-                  type="button"
-                  onClick={() => setShowQuickAddLesson(false)}
-                  className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button 
-                  type="button"
-                  onClick={handleQuickAddLessonConfirm}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 rounded-lg font-semibold transition-all"
-                >
-                  ✨ Criar Aula
-                </button>
-              </div>
-
-              <p className="text-xs text-gray-400 text-center mt-4">Você poderá adicionar o conteúdo completo na próxima tela</p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

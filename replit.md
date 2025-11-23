@@ -46,7 +46,7 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Toast Notifications:** System-wide notifications for key events.
 - **User History Synchronization:** LocalStorage and Firebase synchronization for lesson progress across devices, with offline-first capabilities.
 - **Notification CTR Analytics:** Track which notification types have highest engagement, dismiss rates, and average response times. Dashboard shows best/worst performers by type.
-- **Course Editor Improvements:** Tab-based navigation (Basics, Landing Page, Modules, SEO), completion progress indicator (0-100%), sidebar structure tree, AI-powered course generation. Quick modal for adding lessons (title, duration, type) with auto-selection of editor.
+- **Course Editor Improvements:** Tab-based navigation (Basics, Landing Page, Modules, SEO), completion progress indicator (0-100%), sidebar structure tree, AI-powered course generation. Inline form for adding lessons (title only) with auto-selection of editor, press Enter or click ✓ to confirm.
 
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
