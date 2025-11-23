@@ -44,26 +44,15 @@ import OnboardingTour from './components/OnboardingTour';
 import Courses from './views/Courses';
 import DonateView from './views/DonateView';
 import AboutUsView from './views/AboutUsView';
-import AnnualReportView from './views/AnnualReportView';
-import FinancialStatementView from './views/FinancialStatementView';
-import EventDetailView from './views/EventDetailView';
 import ChangePassword from './views/ChangePassword';
-import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
-import InscriptionFormModal from './components/InscriptionFormModal';
 import SupportersView from './views/SupportersView';
-import PartnerDetailView from './views/PartnerDetailView';
 import MentorDashboard from './views/MentorDashboard';
-import NotificationCenter from './views/NotificationCenter';
 import { initializeFAQsIfNeeded } from './utils/initializeFAQs';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS } from './constants';
-import ScrollSpaceship from './components/ScrollSpaceship';
-import PageLayout from './components/PageLayout';
-import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
-import ScrollToTop from './components/ScrollToTop';
+import ScrollToTopButton from './components/ScrollToTopButton';
 import TransparencyEditor from './views/TransparencyEditor';
-import AnalyticsTracker from './components/AnalyticsTracker';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -937,15 +926,10 @@ const AppContent: React.FC = () => {
                     <Route path="/team" element={<TeamView />} />
                     <Route path="/partnerships" element={<PartnershipsView />} />
                     <Route path="/supporters" element={<SupportersView />} />
-                    <Route path="/supporter/:partnerId" element={<PartnerDetailView />} />
-                    <Route path="/events" element={<EventDetailView />} />
-                    <Route path="/event/:eventId" element={<EventDetailView />} />
                     <Route path="/donate" element={<DonateView />} />
                     <Route path="/privacy" element={<PrivacyPolicyView />} />
                     <Route path="/terms" element={<TermsOfUseView />} />
                     <Route path="/about" element={<AboutUsView />} />
-                    <Route path="/annual-report" element={<AnnualReportView />} />
-                    <Route path="/financial-statement" element={<FinancialStatementView />} />
                 </Route>
 
                 {/* ===== AUTH (sem layout) ===== */}
@@ -984,9 +968,6 @@ const AppContent: React.FC = () => {
                     <Route path="/project/edit" element={<ProjectEditor />} />
                     <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
                 </Route>
-
-                {/* ===== TEST ROUTES ===== */}
-                <Route path="/upload-test" element={<StudentUploadTest />} />
 
                 {/* ===== 404 ===== */}
                 <Route path="*" element={<Navigate to="/" replace />} />
