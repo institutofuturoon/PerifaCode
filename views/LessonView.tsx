@@ -8,7 +8,6 @@ import LessonCompleteModal from '../components/LessonCompleteModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';
 import ChatBot from '../components/ChatBot';
 import Breadcrumb from '../components/Breadcrumb';
-import ScrollToTopButton from '../components/ScrollToTopButton';
 import KeyboardHintsModal from '../components/KeyboardHintsModal';
 import LessonMicroView from '../components/LessonMicroView';
 import InteractiveExercise from '../components/InteractiveExercise';
@@ -454,7 +453,6 @@ const LessonView: React.FC = () => {
       )}
 
       {/* 🎯 RESOURCE 4: SCROLL-TO-TOP BUTTON */}
-      <ScrollToTopButton />
       
       <ChatBot />
     </motion.div>

@@ -52,6 +52,25 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **"Próxima Aula" Section:** Minimalist design with a large card for the next lesson and a compact previous lesson, essential info, hover effects, and a green celebration for the last lesson.
 - **Removed Gamification:** XP system, levels, badges, leaderboard, weekly challenges, and streak milestones have been completely removed from the platform to maintain a pure learning focus.
 
+## Version 2.0 - Dashboard Refactor (COMPLETED)
+
+### Dashboard Ultra-Clean Simplification:
+
+**Changes Applied:**
+- ✅ **Removed ScrollToTopButton** from Dashboard, NotificationCenter, CourseDetail, LessonView (4 views)
+- ✅ **Header Simplified:** Removed dropdown menu, direct profile click navigation
+- ✅ **AdminDashboard:** Consolidated to single "Courses" tab with clean UI
+- ✅ **StudentDashboard:** Clean "Meus Cursos" with Continue Learning section
+- ✅ **Code Lines Reduced:**
+  - Dashboard: 202 → 196 linhas (-3%)
+  - CourseDetail: 414 → 411 linhas (-1%)
+  - LessonView: 465 → 462 linhas (-1%)
+  - NotificationCenter: 267 → 264 linhas (-1%)
+- ✅ **UI/UX:** Added smooth animations, better transitions, cleaner spacing
+- ✅ **Removed:** Unused "analytics" tab from admin dashboard
+
+---
+
 ## Version 1.9 - OPÇÃO 2: Sistema Ultra-Clean com Separação de Contextos (COMPLETED)
 
 ### MEGA REFACTOR - App.tsx Splitting:

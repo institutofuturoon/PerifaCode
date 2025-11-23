@@ -8,7 +8,6 @@ import { useAppContext } from '../contexts/AppContextAdapter';
 import SEO from '../components/SEO';
 import Breadcrumb from '../components/Breadcrumb';
 import ProgressCircle from '../components/ProgressCircle';
-import ScrollToTopButton from '../components/ScrollToTopButton';
 import NextLessonCard from '../components/NextLessonCard';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
@@ -405,7 +404,6 @@ const CourseDetail: React.FC = () => {
             </div>
 
             {/* 🎯 RESOURCE 4: SCROLL-TO-TOP BUTTON */}
-            <ScrollToTopButton />
         </motion.div>
     );
 };

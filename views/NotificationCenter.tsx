@@ -5,7 +5,6 @@ import { useAppContext } from '../contexts/AppContextAdapter';
 import { getAllNotifications, markAllAsRead, togglePinNotification, deleteNotification, SmartNotification } from '../utils/smartNotificationService';
 import { trackNotificationClick } from '../utils/notificationAnalytics';
 import NotificationPreferencesComponent from '../components/NotificationPreferences';
-import ScrollToTopButton from '../components/ScrollToTopButton';
 
 type FilterType = 'all' | 'unread' | 'pinned';
 
@@ -93,7 +92,6 @@ const NotificationCenter: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#09090B] to-black">
-      <ScrollToTopButton />
 
       {/* Header */}
       <div className="bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 border-b border-white/10 px-6 py-8 sticky top-0 z-20">
