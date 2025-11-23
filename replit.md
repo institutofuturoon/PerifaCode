@@ -8,6 +8,7 @@ FuturoOn is an LMS platform designed for digital inclusion in underprivileged Br
 - Tone: Friendly, encouraging, accessible (designed for underserved communities)
 - UX Priority: Clear visual feedback, celebration moments, minimal friction
 - Bot Strategy: FAQ-based, no ML needed, learning loop with feedback
+- Course Editor: Tab-based navigation, progress indicator, cleaner module/lesson management
 
 ## System Architecture
 The platform maintains a clear separation between the institutional "SITE" and the LMS "SISTEMA".
@@ -45,6 +46,7 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Toast Notifications:** System-wide notifications for key events.
 - **User History Synchronization:** LocalStorage and Firebase synchronization for lesson progress across devices, with offline-first capabilities.
 - **Notification CTR Analytics:** Track which notification types have highest engagement, dismiss rates, and average response times. Dashboard shows best/worst performers by type.
+- **Course Editor Improvements:** Tab-based navigation (Basics, Landing Page, Modules, SEO), completion progress indicator, sidebar structure tree, AI-powered course generation, better module/lesson management with drag-and-drop hints.
 
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
