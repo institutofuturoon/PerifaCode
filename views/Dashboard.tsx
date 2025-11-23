@@ -23,6 +23,7 @@ import StreakMilestoneModal from '../components/StreakMilestoneModal';
 import { Badge } from '../TIPOS_CURSO_ROCKETSEAT';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import { getLessonHistoryFromFirebase, syncLocalToFirebase } from '../utils/firebaseHistorySync';
+import DashboardAnalytics from '../components/DashboardAnalytics';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -1019,6 +1020,13 @@ const StudentDashboard: React.FC = () => {
 
     const OverviewContent = () => (
         <div className="space-y-8">
+             {/* 📊 DASHBOARD ANALYTICS - XP, STREAK, BADGES, etc */}
+             <DashboardAnalytics
+                 user={user}
+                 totalCoursesEnrolled={inProgressCourses.length + completedCourses.length}
+                 totalCoursesCompleted={completedCourses.length}
+             />
+
              {/* 🎯 RESOURCE 2: CONTINUE LEARNING PANEL */}
              <ContinueLearningPanel />
 
