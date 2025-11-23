@@ -92,7 +92,7 @@ const calculateReadingTime = (content: string): number => {
 
 // Initialize EmailJS on app load
 const initializeEmailJS = () => {
-  const emailjsPublicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+  const emailjsPublicKey = (import.meta.env as any).VITE_EMAILJS_PUBLIC_KEY;
   if (emailjsPublicKey) {
     emailjs.init(emailjsPublicKey);
     console.log('✅ EmailJS initialized');
@@ -157,9 +157,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
         
         if (collectionName === 'articles') {
-            dataFromDb = dataFromDb.map(article => ({
+            dataFromDb = dataFromDb.map((article: any) => ({
                 ...article,
-                readingTime: calculateReadingTime(article.content)
+                readingTime: calculateReadingTime(article.content || '')
             }));
             const mockArticleIds = new Set(ARTICLES.map(a => a.id));
             const additionalDbArticles = dataFromDb.filter(dbArticle => !mockArticleIds.has((dbArticle as Article).id));
