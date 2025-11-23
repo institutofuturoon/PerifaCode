@@ -82,14 +82,16 @@ export const getUnreadNotifications = async (userId: string): Promise<SmartNotif
       collection(db, 'smartNotifications'),
       where('userId', '==', userId),
       where('isRead', '==', false),
-      where('dismissedAt', '==', null),
       orderBy('createdAt', 'desc')
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    } as SmartNotification));
+    // Filter out dismissed notifications in the client
+    return snapshot.docs
+      .filter((doc) => !doc.data().dismissedAt)
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      } as SmartNotification));
   } catch (error) {
     console.error('❌ Erro ao buscar notificações não lidas:', error);
     return [];
@@ -107,17 +109,19 @@ export const listenToUnreadNotifications = (
       collection(db, 'smartNotifications'),
       where('userId', '==', userId),
       where('isRead', '==', false),
-      where('dismissedAt', '==', null),
       orderBy('createdAt', 'desc')
     );
 
     return onSnapshot(
       q,
       (snapshot) => {
-        const notifs = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        } as SmartNotification));
+        // Filter out dismissed notifications in the client
+        const notifs = snapshot.docs
+          .filter((doc) => !doc.data().dismissedAt)
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          } as SmartNotification));
         onUpdate(notifs);
       },
       (error) => {

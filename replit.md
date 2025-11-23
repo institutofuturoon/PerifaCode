@@ -57,9 +57,12 @@ The platform maintains a clear separation between the institutional "SITE" and t
   - ✅ Cleaned up all console.log debug statements
   - Add lesson flow completely fixed and tested.
 
-## Recent Fixes (v1.2) - JSON Fallback & useRef Cleanup
+## Recent Fixes (v1.3) - Notifications, JSON Fallback & useRef Cleanup
+
+### Critical Fixes:
 - ✅ **Removed useRef() hooks in RichContentEditor** - Moved ref to local component scope to prevent "Cannot read properties of undefined (reading 'current')" errors
-- ✅ **Firebase Error Handling with JSON Fallback** - When Firebase fails, cursos automatically save to localStorage as JSON
+- ✅ **Firebase Query Index Error** - Simplified notification query from 4 fields to 2 fields (userId + isRead), moved dismissedAt filter to client-side to avoid composite index requirement
+- ✅ **Firebase Error Handling with JSON Fallback** - When Firebase fails, courses automatically save to localStorage as JSON
 - ✅ **CourseJSONManager Component** - New interface in Admin Dashboard for:
   - 📥 Download all courses as JSON backup
   - 📤 Upload/restore courses from JSON file
