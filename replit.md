@@ -47,7 +47,9 @@ The platform maintains a clear separation between the institutional "SITE" and t
 - **Toast Notifications:** System-wide notifications for key events.
 - **User History Synchronization:** LocalStorage and Firebase synchronization for lesson progress across devices, with offline-first capabilities.
 - **Notification CTR Analytics:** Track which notification types have highest engagement, dismiss rates, and average response times. Dashboard shows best/worst performers by type.
-- **Course Editor MASSIVELY SIMPLIFIED:** 3 clean tabs (Info, Estrutura, Conteúdo). Only essential fields (title, description, track, instructor, level, duration). AI-powered structure generation. Ultra-simple inline lesson adding (title only + Enter or click ✓). Direct module/lesson editing with robust error handling. No landing pages, SEO, or benefits tabs. 
+- **Course Editor MASSIVELY SIMPLIFIED:** 3 clean tabs (Info, Estrutura, Conteúdo). Only essential fields (title, description, track, instructor, level, duration). AI-powered structure generation. Ultra-simple inline lesson adding (title only + Enter or click ✓). Direct module/lesson editing with robust error handling. No landing pages, SEO, or benefits tabs.
+- **Micro-Lessons (NEW v1.4):** Break lessons into bite-sized steps (~2-3 min each) with visual progress tracking, step completion markers, and animated transitions.
+- **Interactive Exercises (NEW v1.4):** Multiple question types (multiple choice, drag-drop, fill-in-blank, true/false) with instant feedback, explanations, scoring system, and retry capability.
 - **Fixed Issues (v1.1):** 
   - ✅ Removed useRef() hooks causing React Error #310
   - ✅ Fixed race conditions in setState for lesson creation
@@ -57,26 +59,53 @@ The platform maintains a clear separation between the institutional "SITE" and t
   - ✅ Cleaned up all console.log debug statements
   - Add lesson flow completely fixed and tested.
 
-## Recent Fixes (v1.3) - Notifications, JSON Fallback & useRef Cleanup
+## Recent Fixes (v1.4) - Micro-Lessons & Interactive Exercises
 
-### Critical Fixes:
-- ✅ **Removed useRef() hooks in RichContentEditor** - Moved ref to local component scope to prevent "Cannot read properties of undefined (reading 'current')" errors
-- ✅ **Firebase Query Index Error** - Simplified notification query from 4 fields to 2 fields (userId + isRead), moved dismissedAt filter to client-side to avoid composite index requirement
-- ✅ **Firebase Error Handling with JSON Fallback** - When Firebase fails, courses automatically save to localStorage as JSON
-- ✅ **CourseJSONManager Component** - New interface in Admin Dashboard for:
-  - 📥 Download all courses as JSON backup
-  - 📤 Upload/restore courses from JSON file
-  - 💾 View and manage offline-saved courses
-- ✅ **Automatic Offline Mode** - When Firebase unavailable, shows yellow notification and saves to localStorage
+### New Features:
+- ✅ **Micro-Lessons Component** (LessonMicroView.tsx):
+  - Break lesson content into small steps (2-5 min each)
+  - Visual progress bar showing completion %
+  - Step completion checkmarks
+  - Auto-collapse/expand with smooth animations
+  - Fallback to auto-generated steps if none provided
+  - Smooth transitions between steps
 
-## How to Test JSON Fallback Feature
-1. Go to `/admin` → "Gestão de Cursos"
-2. Scroll down to "⚙️ Backup & Recuperação de Cursos (JSON)"
-3. **Test Options:**
-   - 📥 Download Firebase courses as JSON
-   - 📤 Upload previous JSON backup
-   - 💾 See courses saved in offline mode (if Firebase failed)
-4. When offline, saving shows: "⚠️ Salvando localmente como fallback..." then "✅ Curso salvo localmente (modo offline)"
+- ✅ **Interactive Exercises Component** (InteractiveExercise.tsx):
+  - 4 question types:
+    - 🔘 Multiple Choice (radio buttons)
+    - ✓ True/False (toggle buttons)
+    - ✏️ Fill-in-Blank (text input)
+    - 🎯 Drag-Drop (select multiple items)
+  - Question-by-question navigation with progress bar
+  - Instant feedback with explanations
+  - Score calculation and results screen
+  - Retry capability to improve score
+  - Smooth animations using Framer Motion
+
+- ✅ **Tab Navigation in Lessons** (LessonView.tsx integration):
+  - 📚 "Aprender" tab for learning content + micro-steps
+  - 🎯 "Exercitar" tab for interactive exercises
+  - Tab switching with active state styling
+  - Toast notifications for completion feedback
+
+### Type System Updates:
+- `MicroStep` interface: id, title, content, estimatedMinutes
+- `ExerciseQuestion` interface: question types, options, correctAnswer, explanation
+- `InteractiveLesson` interface: title, description, estimatedMinutes, questions array
+- `Lesson` extended with `microSteps?` and `exercise?` fields
+
+### How to Use:
+1. When creating a course, add `microSteps` array to lesson content
+2. Add `exercise` object with questions to any lesson
+3. Tab navigation appears automatically when micro-steps or exercises exist
+4. Students see progress tracking and instant feedback
+
+## How to Test Micro-Lessons & Exercises
+1. Go to any lesson with `microSteps` or `exercise` data
+2. See tab buttons: "📚 Aprender" and "🎯 Exercitar"
+3. Click steps to expand and mark complete
+4. Answer exercise questions to get instant feedback
+5. View score and retry for higher results
 
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
