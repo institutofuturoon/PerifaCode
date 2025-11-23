@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 
 const ForumPostDetailView: React.FC = () => {

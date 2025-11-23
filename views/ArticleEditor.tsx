@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import RichContentEditor from '../components/RichContentEditor';
 
 const ArticleEditor: React.FC = () => {

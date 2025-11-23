@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import {
   getOrCreatePreferences,
   updatePreferences,

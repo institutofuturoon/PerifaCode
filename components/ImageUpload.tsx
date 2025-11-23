@@ -10,7 +10,7 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { uploadService } from '../services/uploadService';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 interface ImageUploadProps {
   onUploadComplete?: (metadata: any) => void;

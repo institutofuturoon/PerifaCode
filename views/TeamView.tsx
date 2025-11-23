@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import { User } from '../types';
 
 const TeamCard: React.FC<{ member: User }> = ({ member }) => {

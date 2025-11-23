@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Home, ChevronRight } from 'lucide-react';
 import { Lesson, Module, Course } from '../types';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import SEO from '../components/SEO';
 import Breadcrumb from '../components/Breadcrumb';
 import ProgressCircle from '../components/ProgressCircle';

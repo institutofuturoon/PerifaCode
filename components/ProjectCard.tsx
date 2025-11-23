@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Project } from '../types';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 interface ProjectCardProps {
   project: Project;

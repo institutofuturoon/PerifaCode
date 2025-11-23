@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CommunityPost } from '../types';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import RichContentEditor from '../components/RichContentEditor';
 
 const ForumPostEditor: React.FC = () => {

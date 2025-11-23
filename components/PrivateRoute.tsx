@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 /**
  * PrivateRoute: Protege rotas do SISTEMA

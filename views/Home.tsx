@@ -1,7 +1,7 @@
 
 import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import SimplifiedTimeline from '../components/SimplifiedTimeline';
 import TeamMemberPreviewCard from '../components/TeamMemberPreviewCard';
 import SEO from '../components/SEO';

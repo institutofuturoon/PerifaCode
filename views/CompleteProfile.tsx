@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import { User } from '../types';
 
 const ProgressBar: React.FC<{ progress: number }> = ({ progress }) => (

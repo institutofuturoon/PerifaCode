@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Logo } from '../assets/Logo';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode; active?: boolean }> = ({ onClick, children, active }) => (
   <button 

@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Course, User, MentorSession, Track } from '../types';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import DashboardSidebar from '../components/DashboardSidebar';
 import ForumView from './ForumView';
 import Blog from './Blog';

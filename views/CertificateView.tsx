@@ -2,7 +2,7 @@ import React, { useRef, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import { Logo } from '../assets/Logo';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 const CertificateView: React.FC = () => {
   const { courses, user, instructors } = useAppContext();

@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import ProjectCard from '../components/ProjectCard';
 import { Project, User } from '../types';
 import SEO from '../components/SEO';

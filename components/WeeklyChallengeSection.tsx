@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { challengeService } from '../services/challengeService';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 interface WeeklyChallengeProps {
   userId: string;

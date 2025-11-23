@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import SEO from '../components/SEO';

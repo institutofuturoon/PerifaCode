@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import { getAllNotifications, markAllAsRead, togglePinNotification, deleteNotification, SmartNotification } from '../utils/smartNotificationService';
 import { trackNotificationClick } from '../utils/notificationAnalytics';
 import NotificationPreferencesComponent from '../components/NotificationPreferences';

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Course, Module, Lesson } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import RichContentEditor from '../components/RichContentEditor';
 import Uploader from '../components/Uploader';
 import { motion } from 'framer-motion';

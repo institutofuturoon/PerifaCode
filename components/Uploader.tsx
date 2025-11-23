@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 interface UploaderProps {
   pathnamePrefix: string;

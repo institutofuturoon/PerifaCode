@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 

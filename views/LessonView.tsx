@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Play, CheckCircle2, Home, Keyboard, ArrowLeft } from 'lucide-react';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import CourseCompleteModal from '../components/CourseCompleteModal';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../types';
-import { useAppContext } from '../App';
+import { useAppContext } from '../contexts/AppContextAdapter';
 
 interface TeamMemberPreviewCardProps {
     member: User;
