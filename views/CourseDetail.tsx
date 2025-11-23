@@ -11,6 +11,7 @@ import CourseModalityBadge from '../components/CourseModalityBadge';
 import Breadcrumb from '../components/Breadcrumb';
 import ProgressCircle from '../components/ProgressCircle';
 import ScrollToTopButton from '../components/ScrollToTopButton';
+import NextLessonCard from '../components/NextLessonCard';
 
 const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }> = ({ icon, label, value }) => (
     <div className="group bg-gradient-to-br from-white/8 to-white/5 p-5 rounded-xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8a4add]/25 hover:bg-white/10">
@@ -243,6 +244,27 @@ const CourseDetail: React.FC = () => {
             </div>
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                {/* 🎯 NEXT LESSON CARD - DESTAQUE NO TOPO */}
+                {isEnrolled && user && nextLesson && (
+                    <div className="mb-12">
+                        {(() => {
+                            const nextModule = course.modules.find(m => 
+                                m.lessons.some(l => l.id === nextLesson.id)
+                            );
+                            return nextModule ? (
+                                <NextLessonCard
+                                    lesson={nextLesson}
+                                    module={nextModule}
+                                    progress={progress}
+                                    completedCount={completedLessons.length}
+                                    totalLessons={allLessons.length}
+                                    onContinue={handleContinue}
+                                />
+                            ) : null;
+                        })()}
+                    </div>
+                )}
+
                 <div className="grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2 space-y-6">
                         {/* BREADCRUMB */}
