@@ -1007,107 +1007,119 @@ const StudentDashboard: React.FC = () => {
 
     const OverviewContent = () => (
         <div className="space-y-8">
-             {/* 🎯 RESOURCE 2: CONTINUE LEARNING PANEL */}
-             <ContinueLearningPanel />
-
-             {/* Welcome & Hero Section */}
-             <div className="bg-gradient-to-r from-[#8a4add]/20 to-transparent p-8 rounded-2xl border border-[#8a4add]/20 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#8a4add]/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                <h2 className="text-3xl font-black text-white mb-2 relative z-10">Olá, {user.name.split(' ')[0]}! 👋</h2>
-                <p className="text-gray-300 text-lg relative z-10 max-w-xl">
-                    Pronto para continuar sua jornada? O aprendizado é a única coisa que a mente nunca se cansa, nunca tem medo e nunca se arrepende.
-                </p>
+             {/* GREETING - MINIMALISTA */}
+             <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-black text-white">Olá, {user.name.split(' ')[0]}! 👋</h1>
+                    <p className="text-sm text-gray-400 mt-1">Continue sua jornada de aprendizado</p>
+                </div>
              </div>
 
-            {/* Continue Learning Hero */}
+            {/* Continue Learning - DESTAQUE PRINCIPAL */}
              {latestInProgress && nextLesson ? (
-              <div>
-                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Continue Estudando
-                 </h3>
-                 <div className="bg-[#121214] rounded-2xl border border-white/10 p-0 overflow-hidden flex flex-col md:flex-row shadow-2xl shadow-black/50 group hover:border-[#8a4add]/30 transition-all">
-                    <div className="w-full md:w-80 h-48 md:h-auto relative flex-shrink-0">
-                        <img src={latestInProgress.course.imageUrl} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" alt="" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent"></div>
-                        <div className="absolute bottom-4 left-4">
-                             <span className="bg-[#8a4add] text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide shadow-lg">Em Andamento</span>
-                        </div>
-                    </div>
-                    <div className="p-6 md:p-8 flex flex-col justify-center flex-grow">
-                        <div className="flex justify-between items-start mb-2">
-                            <div>
-                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">{latestInProgress.course.track}</p>
-                                <h4 className="text-2xl font-bold text-white group-hover:text-[#c4b5fd] transition-colors">{latestInProgress.course.title}</h4>
-                            </div>
-                        </div>
-                        
-                        <div className="mt-4 mb-6">
-                            <div className="flex justify-between text-xs text-gray-400 mb-2 font-medium">
-                                <span>Próxima aula: <span className="text-white">{nextLesson.title}</span></span>
-                                <span>{latestInProgress.progress}%</span>
-                            </div>
-                            <div className="w-full bg-gray-800 rounded-full h-1.5">
-                                <div className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] h-full rounded-full" style={{ width: `${latestInProgress.progress}%` }}></div>
-                            </div>
-                        </div>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="bg-gradient-to-br from-[#8a4add]/15 to-[#f27983]/15 rounded-2xl border border-[#8a4add]/40 p-6 sm:p-8 overflow-hidden relative group hover:border-[#8a4add]/60 transition-all"
+              >
+                {/* Decoração de fundo */}
+                <div className="absolute -right-20 -top-20 w-40 h-40 bg-gradient-to-br from-[#f27983]/10 to-transparent rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                
+                <div className="relative z-10 space-y-4">
+                  {/* Label */}
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    <p className="text-xs font-bold text-[#c4b5fd] uppercase tracking-wider">Continuar estudando</p>
+                  </div>
 
-                        <button 
-                            onClick={() => navigate(`/course/${latestInProgress.course.id}/lesson/${nextLesson.id}`)}
-                            className="w-full md:w-fit bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Continuar Aula
-                        </button>
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-400 mb-1">{latestInProgress.course.track}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-[#f27983] transition-colors">
+                        {latestInProgress.course.title}
+                      </h3>
+                      <p className="text-sm text-gray-300 mt-2">
+                        Próxima: <span className="font-semibold">{nextLesson.title}</span>
+                      </p>
                     </div>
-                 </div>
-              </div>
-            ) : (
-                 <div className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 rounded-2xl border border-indigo-500/30 p-8 text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                        <h3 className="text-2xl font-bold text-white">Comece algo novo hoje!</h3>
-                        <p className="text-gray-300 mt-2 max-w-lg">Você ainda não iniciou nenhum curso. Explore nosso catálogo e dê o primeiro passo na sua carreira tech.</p>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-2xl sm:text-3xl font-bold text-[#f27983]">{latestInProgress.progress}%</p>
+                      <p className="text-xs text-gray-400">Concluído</p>
                     </div>
-                    <button onClick={() => setActiveTab('explore')} className="bg-white text-indigo-900 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors shadow-lg whitespace-nowrap">
-                        Explorar Cursos
-                    </button>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-[#8a4add] to-[#f27983] h-full rounded-full transition-all duration-500" 
+                      style={{ width: `${latestInProgress.progress}%` }}
+                    ></div>
+                  </div>
+
+                  {/* Button */}
+                  <motion.button 
+                    onClick={() => navigate(`/course/${latestInProgress.course.id}/lesson/${nextLesson.id}`)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 rounded-lg hover:shadow-lg hover:shadow-[#8a4add]/50 transition-all flex items-center justify-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                    Continuar Aula
+                  </motion.button>
                 </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-2xl border border-indigo-500/20 p-6 sm:p-8 text-center flex flex-col items-center justify-center gap-4"
+              >
+                <h3 className="text-xl font-bold text-white">Comece algo novo!</h3>
+                <p className="text-gray-300 text-sm max-w-md">Explore nosso catálogo e dê o primeiro passo na sua carreira tech.</p>
+                <button 
+                  onClick={() => setActiveTab('explore')} 
+                  className="bg-white text-indigo-900 font-bold py-2 px-6 rounded-lg hover:bg-gray-100 transition-colors text-sm"
+                >
+                  Explorar Cursos
+                </button>
+              </motion.div>
             )}
 
-            {/* My Courses Grid */}
-            <div className="space-y-6">
-                 <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-white">Meus Cursos</h3>
-                 </div>
-                 
-                 {allMyCourses.length > 0 ? (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {allMyCourses.map((course) => (
-                            <CourseCard 
-                                key={course.id} 
-                                course={course} 
-                                onCourseSelect={handleCourseNavigation} 
-                                progress={course.progress}
-                                isEnrolled={true}
-                            />
-                        ))}
-                        
-                        {/* "Find More" Card */}
-                        <button 
-                            onClick={() => setActiveTab('explore')}
-                            className="border border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 hover:border-white/20 transition-all group h-full min-h-[300px]"
-                        >
-                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                            </div>
-                            <span className="text-gray-400 font-bold group-hover:text-white">Descobrir Novos Cursos</span>
-                        </button>
+            {/* My Courses Grid - SIMPLIFICADO */}
+            {allMyCourses.length > 0 ? (
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="space-y-4"
+              >
+                <h2 className="text-lg font-bold text-white">📚 Meus Cursos ({allMyCourses.length})</h2>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {allMyCourses.map((course) => (
+                    <CourseCard 
+                      key={course.id} 
+                      course={course} 
+                      onCourseSelect={handleCourseNavigation} 
+                      progress={course.progress}
+                      isEnrolled={true}
+                    />
+                  ))}
+                  
+                  {/* "Discover More" Card */}
+                  <button 
+                    onClick={() => setActiveTab('explore')}
+                    className="border border-dashed border-white/20 rounded-xl flex flex-col items-center justify-center p-6 hover:bg-white/5 hover:border-white/40 transition-all group h-full min-h-[280px]"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
                     </div>
-                 ) : (
-                    <div className="text-center py-12 bg-white/5 rounded-xl border border-white/10 border-dashed">
-                        <p className="text-gray-400">Você ainda não está matriculado em nenhum curso.</p>
-                    </div>
-                 )}
-            </div>
+                    <span className="text-sm font-bold text-gray-400 group-hover:text-white text-center">Descobrir<br />Novos Cursos</span>
+                  </button>
+                </div>
+              </motion.div>
+            ) : null}
         </div>
     );
     

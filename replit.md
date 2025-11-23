@@ -70,6 +70,31 @@ The platform maintains a clear separation between the institutional "SITE" and t
   - ✅ **Student Dashboard**: Ultra-minimal - only essential learning features
   - ✅ **Zero Gamification**: No XP system, no badges, no rankings, no levels - pure learning focus
 
+## Version 1.7 - UI Simplification (Full Dashboard Redesign)
+
+### Dashboard "Meus Cursos" Redesigned:
+- ✅ **Removed Redundancy**: Eliminado "ContinueLearningPanel" (banner duplicate)
+- ✅ **Simplified Greeting**: "Olá, Aluno!" agora minimalista com 1 linha de descrição
+- ✅ **Continue Studying Card**: Novo design clean com destaque principal
+  - Título grande e chamativo
+  - Percentual de progresso destacado
+  - Próxima aula inline
+  - Progress bar visual
+  - Button com gradient purple-pink
+- ✅ **My Courses Grid**: 
+  - Mais compacto (gap-4 em vez de gap-6)
+  - Counter mostrando total de cursos (📚 Meus Cursos (3))
+  - "Descobrir Novos Cursos" card mais clean
+- ✅ **Mobile-First**: Todos os elementos responsivos
+- ✅ **Animations**: Framer-motion para transitions suaves
+- ✅ **Ultra Clean**: Removidas bordas extras, redundâncias eliminadas
+
+### Visual Improvements:
+- Menos clutter, mais foco
+- Hierarquia visual clara
+- Melhor uso de espaço
+- Cards mais simples e diretos
+
 ## Version 1.7 - UI Simplification (Next Lesson Section)
 
 ### Improved "Próxima Aula" Section:
