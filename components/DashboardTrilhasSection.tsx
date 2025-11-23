@@ -57,66 +57,36 @@ const DashboardTrilhasSection: React.FC<DashboardTrilhasSectionProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* === XP & LEVEL SHOWCASE === */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* XP Card */}
-        <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border border-purple-500/50 rounded-lg p-6 hover:border-purple-400/70 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Seu XP</span>
-            <Zap className="w-5 h-5 text-yellow-400" />
+      {/* === COMPACT STATUS BAR === */}
+      <div className="bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between text-sm">
+        <div className="flex items-center gap-6">
+          <div>
+            <span className="text-gray-400">XP:</span>
+            <span className="ml-2 font-bold text-white">{XPSystem.formatXP(userXP)}</span>
           </div>
-          <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
-            {XPSystem.formatXP(userXP)}
-          </p>
-          <p className="text-xs text-gray-400 mt-2">
-            {XPSystem.formatXP(levelInfo.xpToNextLevel)} para próximo nível
-          </p>
-        </div>
-
-        {/* Level Card */}
-        <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-blue-500/50 rounded-lg p-6 hover:border-blue-400/70 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Seu Nível</span>
-            <Trophy className="w-5 h-5 text-blue-400" />
+          <div className="w-px h-6 bg-white/10"></div>
+          <div>
+            <span className="text-gray-400">Nível:</span>
+            <span className="ml-2 font-bold text-white">{levelInfo.current.emoji} {levelInfo.current.nome}</span>
           </div>
-          <p className="text-3xl font-bold text-white">{levelInfo.current.emoji}</p>
-          <p className="text-xs text-gray-400 mt-2">{levelInfo.current.nome}</p>
-        </div>
-
-        {/* Streak Card */}
-        <div className="bg-gradient-to-br from-red-600/20 to-orange-600/20 border border-red-500/50 rounded-lg p-6 hover:border-red-400/70 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Seu Streak</span>
-            <Flame className="w-5 h-5 text-orange-400" />
+          <div className="w-px h-6 bg-white/10"></div>
+          <div>
+            <span className="text-gray-400">Streak:</span>
+            <span className="ml-2 font-bold text-white">{userStreak} dias</span>
           </div>
-          <p className="text-3xl font-bold text-white">{userStreak}</p>
-          <p className="text-xs text-gray-400 mt-2">dias consecutivos</p>
-        </div>
-
-        {/* Badges Card */}
-        <div className="bg-gradient-to-br from-amber-600/20 to-yellow-600/20 border border-amber-500/50 rounded-lg p-6 hover:border-amber-400/70 transition-all">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Badges</span>
-            <Trophy className="w-5 h-5 text-amber-400" />
+          <div className="w-px h-6 bg-white/10"></div>
+          <div>
+            <span className="text-gray-400">Badges:</span>
+            <span className="ml-2 font-bold text-white">{userBadges.length}</span>
           </div>
-          <p className="text-3xl font-bold text-white">{userBadges.length}</p>
-          <p className="text-xs text-gray-400 mt-2">desbloqueadas</p>
         </div>
       </div>
 
       {/* === PROGRESS BAR === */}
-      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h3 className="text-sm font-semibold text-white">
-              {levelInfo.current.nome} → {levelInfo.next?.nome || 'Máximo'}
-            </h3>
-            <p className="text-xs text-gray-400 mt-1">
-              {isMaxLevel
-                ? '✨ Você atingiu o máximo nível!'
-                : `Faltam ${daysToNextLevel} dias (${XPSystem.formatXP(levelInfo.xpToNextLevel)} XP)`}
-            </p>
-          </div>
+      <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+        <div className="flex items-center justify-between mb-2 text-xs">
+          <h3 className="font-semibold text-white">{levelInfo.current.nome} → {levelInfo.next?.nome || 'Máximo'}</h3>
+          <p className="text-gray-400">{levelInfo.progressPercent}%</p>
         </div>
         
         <div className="w-full bg-black/50 rounded-full h-2 overflow-hidden">
@@ -125,10 +95,6 @@ const DashboardTrilhasSection: React.FC<DashboardTrilhasSectionProps> = ({
             style={{ width: `${levelInfo.progressPercent}%` }}
           />
         </div>
-        
-        <p className="text-xs text-gray-400 mt-2">
-          {XPSystem.formatXP(levelInfo.xpInLevel)} / {XPSystem.formatXP(levelInfo.xpNeededForLevel)}
-        </p>
       </div>
 
       {/* === TRILHAS INSCRITAS === */}

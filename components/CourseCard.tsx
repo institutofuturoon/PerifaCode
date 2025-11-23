@@ -24,17 +24,16 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
-      whileHover={{ y: -8 }}
-      className="bg-[#121214] hover:bg-[#1a1a1e] rounded-2xl overflow-hidden border border-white/10 hover:border-[#8a4add]/40 group flex flex-col text-left transition-all duration-300 transform hover:shadow-2xl hover:shadow-[#8a4add]/20 h-full w-full"
+      className="bg-white/5 hover:bg-white/10 rounded-lg overflow-hidden border border-white/10 flex flex-col text-left transition-colors h-full w-full"
     >
       {/* Image Section */}
-      <div className="overflow-hidden aspect-video relative w-full bg-gradient-to-br from-gray-900 to-black">
+      <div className="overflow-hidden aspect-video relative w-full bg-gray-900">
         <img
-          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="h-full w-full object-cover"
           src={course.imageUrl}
           alt={course.title}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-[#121214]/30 to-transparent opacity-70"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-60"></div>
 
         {/* Status Badge */}
         <div className="absolute top-3 left-3">
@@ -90,7 +89,7 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-bold text-white group-hover:text-[#c4b5fd] transition-colors line-clamp-2 mb-2 flex-grow leading-tight">
+        <h3 className="text-lg font-bold text-white line-clamp-2 mb-2 flex-grow leading-tight">
           {course.title}
         </h3>
 

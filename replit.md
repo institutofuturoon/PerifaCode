@@ -57,7 +57,12 @@ The platform maintains a clear separation between the institutional "SITE" and t
   - ✅ Used autoFocus instead of imperative ref.focus()
   - ✅ Removed unnecessary textareaRef props from RichContentEditor
   - ✅ Cleaned up all console.log debug statements
-  - Add lesson flow completely fixed and tested.
+  - ✅ Add lesson flow completely fixed and tested
+  
+- **UI/UX Simplification (v1.5):**
+  - ✅ **Dashboard Dashboard**: Compact status bar (XP, Level, Streak, Badges) instead of 4 heavy cards
+  - ✅ **Course Cards**: Removed excessive hover effects, animations simplified for cleaner feel
+  - ✅ **Course Editor**: Removed "Resumo" field - focus only on essential content (Objetivo, Conteúdo)
 
 ## Recent Fixes (v1.4) - Micro-Lessons & Interactive Exercises
 

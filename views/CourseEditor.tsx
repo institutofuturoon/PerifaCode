@@ -453,7 +453,6 @@ const CourseEditor: React.FC = () => {
 
           <RichContentEditor label="🎯 Objetivo" value={lesson.objective || ''} onChange={(val) => handleLessonContentChange(val, 'objective', selectedItem.moduleIndex, selectedItem.lessonIndex)} />
           <RichContentEditor label="📖 Conteúdo" value={lesson.mainContent || ''} onChange={(val) => handleLessonContentChange(val, 'mainContent', selectedItem.moduleIndex, selectedItem.lessonIndex)} />
-          <RichContentEditor label="📝 Resumo" value={lesson.summary || ''} onChange={(val) => handleLessonContentChange(val, 'summary', selectedItem.moduleIndex, selectedItem.lessonIndex)} />
         </motion.div>
       );
     }
