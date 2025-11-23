@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import {
-  getUnreadNotifications,
+  listenToUnreadNotifications,
   markAsRead,
   dismissNotification,
   SmartNotification,
@@ -16,21 +16,24 @@ const NotificationBell: React.FC = () => {
   const [notifications, setNotifications] = useState<SmartNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Buscar notificações ao montar
+  // Real-time listener para notificações não lidas
   useEffect(() => {
     if (!user?.id) return;
 
-    const loadNotifications = async () => {
-      const unread = await getUnreadNotifications(user.id);
-      setNotifications(unread);
-      setUnreadCount(unread.length);
-    };
+    // Configurar listener real-time
+    const unsubscribe = listenToUnreadNotifications(
+      user.id,
+      (notifs) => {
+        setNotifications(notifs);
+        setUnreadCount(notifs.length);
+      },
+      (error) => {
+        console.error('Erro no listener de notificações:', error);
+      }
+    );
 
-    loadNotifications();
-
-    // Recarregar a cada 10 segundos (em produção, usar Firestore listener)
-    const interval = setInterval(loadNotifications, 10000);
-    return () => clearInterval(interval);
+    // Cleanup: desinscrever ao desmontar
+    return () => unsubscribe();
   }, [user?.id]);
 
   const handleNotificationClick = async (notif: SmartNotification) => {

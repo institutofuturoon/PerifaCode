@@ -11,6 +11,8 @@ import {
   serverTimestamp,
   deleteDoc,
   Timestamp,
+  onSnapshot,
+  Unsubscribe,
 } from 'firebase/firestore';
 
 export type NotificationType =
@@ -91,6 +93,41 @@ export const getUnreadNotifications = async (userId: string): Promise<SmartNotif
   } catch (error) {
     console.error('❌ Erro ao buscar notificações não lidas:', error);
     return [];
+  }
+};
+
+// ===== REAL-TIME LISTENER PARA NOTIFICAÇÕES NÃO LIDAS =====
+export const listenToUnreadNotifications = (
+  userId: string,
+  onUpdate: (notifications: SmartNotification[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe => {
+  try {
+    const q = query(
+      collection(db, 'smartNotifications'),
+      where('userId', '==', userId),
+      where('isRead', '==', false),
+      where('dismissedAt', '==', null),
+      orderBy('createdAt', 'desc')
+    );
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const notifs = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        } as SmartNotification));
+        onUpdate(notifs);
+      },
+      (error) => {
+        console.error('❌ Erro no listener de notificações:', error);
+        onError?.(error as Error);
+      }
+    );
+  } catch (error) {
+    console.error('❌ Erro ao configurar listener:', error);
+    return () => {}; // Return empty unsubscribe function
   }
 };
 
