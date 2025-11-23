@@ -25,6 +25,7 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 import { getLessonHistoryFromFirebase, syncLocalToFirebase } from '../utils/firebaseHistorySync';
 import DashboardAnalytics from '../components/DashboardAnalytics';
 import NotificationBell from '../components/NotificationBell';
+import CourseJSONManager from '../components/CourseJSONManager';
 
 // --- Shell Components (Local to Dashboard) ---
 
@@ -880,7 +881,15 @@ const StudentsTable = () => (
     const renderContent = () => {
       switch (activeTab) {
           case 'overview': return <Overview />;
-          case 'courses': return <CoursesTable />;
+          case 'courses': return (
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-4">📚 Meus Cursos</h3>
+                <CoursesTable />
+              </div>
+              <CourseJSONManager />
+            </div>
+          );
           case 'blog': return <BlogTable />;
           case 'blog-feed': return <Blog embedded={true} />;
           case 'teamMembers': return <TeamMembersTable />;

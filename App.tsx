@@ -374,7 +374,18 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         try {
             await setDoc(doc(db, "courses", courseToSave.id), courseToSave);
         } catch (error) {
-            console.error("Erro ao salvar curso:", error);
+            console.error("❌ Erro ao salvar no Firebase:", error);
+            showToast("⚠️ Salvando localmente como fallback...");
+            // Fallback: Save to localStorage as JSON
+            try {
+                const allCourses = [courseToSave, ...courses.filter(c => c.id !== courseToSave.id)];
+                localStorage.setItem('courses', JSON.stringify(allCourses, null, 2));
+                localStorage.setItem('courses_fallback_timestamp', new Date().toISOString());
+                showToast("✅ Curso salvo localmente (modo offline)");
+            } catch (localError) {
+                console.error("Falha ao salvar localmente:", localError);
+                showToast("❌ Falha ao salvar. Verifique sua conexão.");
+            }
         }
     };
 

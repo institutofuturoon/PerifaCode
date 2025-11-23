@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface RichContentEditorProps {
   value: string;
   onChange: (value: string) => void;
-  textareaRef: React.RefObject<HTMLTextAreaElement>;
   label?: string;
   rows?: number;
   placeholder?: string;
 }
 
-const RichContentEditor: React.FC<RichContentEditorProps> = ({ value, onChange, textareaRef, label, rows = 8, placeholder = '' }) => {
+const RichContentEditor: React.FC<RichContentEditorProps> = ({ value, onChange, label, rows = 8, placeholder = '' }) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   // Auto-resize textarea to fit content, preventing unnecessary scrolling.
   useEffect(() => {
@@ -18,7 +18,7 @@ const RichContentEditor: React.FC<RichContentEditorProps> = ({ value, onChange, 
       textarea.style.height = 'auto'; // Reset height to recalculate scrollHeight
       textarea.style.height = `${textarea.scrollHeight}px`; // Set height to content height
     }
-  }, [value, textareaRef]);
+  }, [value]);
 
   const insertText = (syntax: { start: string, end?: string, placeholder: string }) => {
     const textarea = textareaRef.current;

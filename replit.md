@@ -57,9 +57,28 @@ The platform maintains a clear separation between the institutional "SITE" and t
   - ✅ Cleaned up all console.log debug statements
   - Add lesson flow completely fixed and tested.
 
+## Recent Fixes (v1.2) - JSON Fallback & useRef Cleanup
+- ✅ **Removed useRef() hooks in RichContentEditor** - Moved ref to local component scope to prevent "Cannot read properties of undefined (reading 'current')" errors
+- ✅ **Firebase Error Handling with JSON Fallback** - When Firebase fails, cursos automatically save to localStorage as JSON
+- ✅ **CourseJSONManager Component** - New interface in Admin Dashboard for:
+  - 📥 Download all courses as JSON backup
+  - 📤 Upload/restore courses from JSON file
+  - 💾 View and manage offline-saved courses
+- ✅ **Automatic Offline Mode** - When Firebase unavailable, shows yellow notification and saves to localStorage
+
+## How to Test JSON Fallback Feature
+1. Go to `/admin` → "Gestão de Cursos"
+2. Scroll down to "⚙️ Backup & Recuperação de Cursos (JSON)"
+3. **Test Options:**
+   - 📥 Download Firebase courses as JSON
+   - 📤 Upload previous JSON backup
+   - 💾 See courses saved in offline mode (if Firebase failed)
+4. When offline, saving shows: "⚠️ Salvando localmente como fallback..." then "✅ Curso salvo localmente (modo offline)"
+
 ## External Dependencies
 - **Firebase:** Firestore (database, real-time updates), Authentication.
 - **Google Gemini 2.5 Flash:** AI Tutor functionality.
 - **EmailJS:** Sending email notifications.
 - **React Icons:** Lucide-react for icons.
 - **framer-motion:** Animation library.
+- **localStorage:** Client-side fallback storage for JSON courses (zero-cost)
