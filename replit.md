@@ -61,11 +61,12 @@ The platform maintains a clear separation between the institutional "SITE" and t
   
 - **UI/UX Simplification (v1.5):**
   - ✅ **Removed Gamification System**: XP, Badges, Streak, Leaderboard completely removed
-  - ✅ **Simplified Dashboard**: No status bars, no analytics cards, clean trilhas section only
+  - ✅ **Simplified Dashboard**: No status bars, no analytics cards, no trilhas section
   - ✅ **Course Cards**: Removed excessive hover effects, animations simplified for cleaner feel
   - ✅ **Course Editor**: Removed "Resumo" field - focus only on essential content (Objetivo, Conteúdo)
   - ✅ **Removed Components**: LevelUpCelebration, BadgeUnlockCelebration, WeeklyChallengeSection, StreakMilestoneModal, LeaderboardView, DashboardAnalytics
-  - ✅ **Student Dashboard**: Focus on "Meus Cursos", "Trilhas", "Fórum", "Blog" - no ranking/points
+  - ✅ **Removed Trilhas Tab**: StudentTrilhasContent and trilhas sidebar menu item removed
+  - ✅ **Student Dashboard**: Focus on "Meus Cursos", "Fórum", "Blog", "Explorar" - ultra clean
 
 ## Recent Fixes (v1.4) - Micro-Lessons & Interactive Exercises
 

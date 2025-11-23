@@ -548,7 +548,6 @@ const ModerationPanel: React.FC = () => {
 
 // TAB TITLE MAPPING
 const tabTitles: Record<string, string> = {
-    'trilhas': 'Trilhas',
     overview: 'Visão Geral',
     myAgenda: 'Minha Agenda',
     myCourses: 'Meus Cursos',
@@ -1129,42 +1128,11 @@ const StudentDashboard: React.FC = () => {
     const renderStudentContent = () => {
         switch(activeTab) {
             case 'myCourses': return <OverviewContent />;
-            case 'trilhas': return <StudentTrilhasContent />;
             case 'explore': return <ExploreCoursesPanel />;
             case 'forum': return <ForumView embedded={true} />;
             case 'blog-feed': return <Blog embedded={true} />;
             default: return <OverviewContent />;
         }
-    }
-
-    const StudentTrilhasContent = () => {
-        const userId = user?.id || '';
-        const { trilhas, projetos, loading } = useTrilhas();
-        const { xp, nivel, streak, badges, enrollTrilha } = useProgresso(userId);
-
-
-        if (loading) {
-            return (
-                <div className="flex items-center justify-center py-20">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500 border-r-2 border-pink-500 mx-auto mb-4" />
-                        <p className="text-gray-400">Carregando trilhas...</p>
-                    </div>
-                </div>
-            );
-        }
-
-        return (
-            <div className="space-y-8">
-                {/* Trilhas */}
-                <DashboardTrilhasSection
-                    userTrilhas={trilhas}
-                    userProjetos={projetos}
-                    enrolledTrilhaIds={user?.enrolledCourseIds || []}
-                    onEnroll={enrollTrilha}
-                />
-            </div>
-        );
     }
 
 
