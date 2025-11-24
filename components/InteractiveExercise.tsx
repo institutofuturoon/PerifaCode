@@ -110,7 +110,7 @@ const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/10 border border-[#8a4add]/30 rounded-xl p-8 text-center"
+        className="bg-[#1a1a2e] border border-gray-700/50 rounded-lg p-8 text-center"
       >
         <motion.div
           initial={{ scale: 0 }}
@@ -118,31 +118,30 @@ const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
           transition={{ delay: 0.2, type: 'spring' }}
         >
           {passed ? (
-            <Award size={48} className="text-green-400 mx-auto mb-4" />
+            <CheckCircle2 size={48} className="text-green-500 mx-auto mb-4" />
           ) : (
-            <Lightbulb size={48} className="text-yellow-400 mx-auto mb-4" />
+            <Lightbulb size={48} className="text-amber-400 mx-auto mb-4" />
           )}
         </motion.div>
 
-        <h2 className="text-2xl font-bold text-white mb-2">
-          {passed ? '🎉 Parabéns!' : '📚 Revise os conceitos'}
+        <h2 className="text-2xl font-bold text-white mb-1">
+          {passed ? 'Excelente!' : 'Revise os conceitos'}
         </h2>
 
-        <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#8a4add] to-[#f27983] my-4">
+        <div className="text-5xl font-bold text-white my-4">
           {percentage}%
         </div>
 
-        <p className="text-gray-300 mb-6">
+        <p className="text-gray-400 text-sm mb-6">
           Você acertou {score} de {questions.length} questões
         </p>
 
         <motion.button
           onClick={handleReset}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="px-6 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-lg hover:shadow-lg hover:shadow-[#8a4add]/50"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="px-6 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-lg hover:shadow-lg hover:shadow-[#8a4add]/30"
         >
-          <RotateCcw size={18} className="inline mr-2" />
           Tentar Novamente
         </motion.button>
       </motion.div>
@@ -153,7 +152,7 @@ const InteractiveExercise: React.FC<InteractiveExerciseProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/10 border border-[#8a4add]/30 rounded-xl p-8 mb-12"
+      className="bg-[#1a1a2e] border border-gray-700/50 rounded-lg p-8 mb-12"
     >
       {/* HEADER COM PROGRESSO */}
       <div className="mb-8">
