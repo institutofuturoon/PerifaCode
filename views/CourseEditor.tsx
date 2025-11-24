@@ -24,6 +24,76 @@ const stringToSlug = (str: string) => {
     .replace(/\s+/g, "-");
 };
 
+const CourseHealthIndicator: React.FC<{ course: Course }> = ({ course }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const health = useMemo(() => {
+        const checks = [
+            { label: "Título do Curso", valid: course.title.length > 5 },
+            { label: "Descrição Curta", valid: course.description.length > 20 },
+            { label: "Imagem de Capa (Personalizada)", valid: !!course.imageUrl && !course.imageUrl.includes("unsplash") },
+            { label: "Pelo menos 1 Módulo", valid: course.modules.length > 0 },
+            { label: "Pelo menos 1 Aula", valid: course.modules.some(m => m.lessons.length > 0) },
+            { label: "Landing Page (Hero)", valid: !!course.heroContent?.titleLine1 },
+            { label: "SEO Configurado", valid: !!course.seo?.metaTitle }
+        ];
+        const completed = checks.filter(c => c.valid).length;
+        return { percentage: Math.round((completed / checks.length) * 100), checks };
+    }, [course]);
+
+    return (
+        <div className="relative">
+            <button 
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group"
+            >
+                <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-wider font-bold group-hover:text-gray-300 transition-colors">Saúde do Curso</span>
+                    <span className={`text-sm font-bold ${health.percentage === 100 ? 'text-green-400' : health.percentage > 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {health.percentage}% Pronto
+                    </span>
+                </div>
+                <div className="w-10 h-10 relative flex items-center justify-center">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                        <path className="text-gray-700" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
+                        <path 
+                            className={`${health.percentage === 100 ? 'text-green-500' : health.percentage > 50 ? 'text-yellow-500' : 'text-red-500'} transition-all duration-1000 ease-out`} 
+                            strokeDasharray={`${health.percentage}, 100`} 
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="4" 
+                        />
+                    </svg>
+                </div>
+            </button>
+
+            {isOpen && (
+                <div className="absolute top-full right-0 mt-2 w-72 bg-[#18181B] border border-white/10 rounded-xl shadow-2xl z-50 p-5 animate-fade-in">
+                    <h4 className="text-sm font-bold text-white mb-3 flex justify-between items-center">
+                        Checklist de Publicação
+                        <button onClick={(e) => { e.stopPropagation(); setIsOpen(false); }} className="text-gray-500 hover:text-white">&times;</button>
+                    </h4>
+                    <ul className="space-y-3">
+                        {health.checks.map((check, idx) => (
+                            <li key={idx} className="flex items-center gap-3 text-xs">
+                                <div className={`w-5 h-5 rounded-full flex items-center justify-center border ${check.valid ? 'border-green-500/30 bg-green-500/10 text-green-400' : 'border-gray-600 bg-transparent text-gray-600'}`}>
+                                    {check.valid ? '✓' : ''}
+                                </div>
+                                <span className={check.valid ? 'text-gray-400 line-through decoration-gray-600' : 'text-white font-medium'}>{check.label}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <div className="mt-4 pt-3 border-t border-white/10 text-center">
+                        <p className="text-[10px] text-gray-500">Complete todos os itens para maximizar o engajamento.</p>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 const CourseEditor: React.FC = () => {
   const { user, instructors, courses, tracks, handleSaveCourse, showToast } = useAppContext();
   const { courseId } = useParams<{ courseId: string }>();
@@ -603,7 +673,7 @@ const CourseEditor: React.FC = () => {
           type="button" 
           onClick={onClick}
           disabled={isLoading}
-          className="flex items-center gap-2 text-xs font-bold bg-[#8a4add]/20 text-[#c4b5fd] px-3 py-1.5 rounded-full hover:bg-[#8a4add]/30 disabled:opacity-50 transition-colors ml-auto"
+          className="flex items-center gap-2 text-xs font-bold bg-[#8a4add]/20 text-[#c4b5fd] px-3 py-1.5 rounded-full hover:bg-[#8a4add]/30 disabled:opacity-50 transition-all hover:shadow-[0_0_10px_rgba(138,74,221,0.3)]"
       >
           {isLoading ? (
               <><svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Gerando...</>
@@ -757,9 +827,25 @@ const CourseEditor: React.FC = () => {
                         <div key={module.id} className={`bg-white/5 p-3 rounded-lg border ${selectedItem.type === 'module' && selectedItem.moduleIndex === mIndex ? 'border-[#8a4add]' : 'border-transparent'}`}>
                             <div className="flex justify-between items-center group">
                                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    <div className="flex flex-col gap-0.5">
-                                        <button type="button" onClick={() => moveModule(mIndex, 'up')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={mIndex === 0}>▲</button>
-                                        <button type="button" onClick={() => moveModule(mIndex, 'down')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={mIndex === course.modules.length - 1}>▼</button>
+                                    <div className="flex flex-col gap-1">
+                                        <button 
+                                            type="button" 
+                                            onClick={() => moveModule(mIndex, 'up')} 
+                                            className="text-gray-500 hover:text-white disabled:opacity-20 transition-colors" 
+                                            disabled={mIndex === 0}
+                                            title="Mover para cima"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => moveModule(mIndex, 'down')} 
+                                            className="text-gray-500 hover:text-white disabled:opacity-20 transition-colors" 
+                                            disabled={mIndex === course.modules.length - 1}
+                                            title="Mover para baixo"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                        </button>
                                     </div>
                                     <h4 
                                         className="font-bold text-white truncate cursor-pointer hover:text-[#c4b5fd] transition-colors flex-1"
@@ -776,15 +862,17 @@ const CourseEditor: React.FC = () => {
                             </div>
                             
                             <div className="mt-2 space-y-1 pl-6 border-l-2 border-white/10">
-                                {module.lessons.map((lesson, lIndex) => (
+                                {module.lessons.map((lesson, lIndex) => {
+                                    const isSelected = selectedItem.type === 'lesson' && selectedItem.moduleIndex === mIndex && selectedItem.lessonIndex === lIndex;
+                                    return (
                                     <div 
                                         key={lesson.id} 
-                                        className={`flex justify-between items-center text-sm group p-1 rounded ${selectedItem.type === 'lesson' && selectedItem.moduleIndex === mIndex && selectedItem.lessonIndex === lIndex ? 'bg-[#8a4add]/20 text-[#c4b5fd]' : 'text-gray-300 hover:bg-white/5'}`}
+                                        className={`flex justify-between items-center text-sm group p-2 rounded-md transition-all ${isSelected ? 'bg-[#8a4add]/20 text-[#c4b5fd] border-l-2 border-[#8a4add]' : 'text-gray-300 hover:bg-white/5 border-l-2 border-transparent'}`}
                                     >
                                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                                            <div className="flex flex-col gap-0 scale-75 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button type="button" onClick={() => moveLesson(mIndex, lIndex, 'up')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={lIndex === 0}>▲</button>
-                                                <button type="button" onClick={() => moveLesson(mIndex, lIndex, 'down')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={lIndex === module.lessons.length - 1}>▼</button>
+                                            <div className="flex flex-col gap-0.5 scale-75 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button type="button" onClick={() => moveLesson(mIndex, lIndex, 'up')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={lIndex === 0}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
+                                                <button type="button" onClick={() => moveLesson(mIndex, lIndex, 'down')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={lIndex === module.lessons.length - 1}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
                                             </div>
                                             <span 
                                                 className="truncate cursor-pointer flex-1"
@@ -797,9 +885,9 @@ const CourseEditor: React.FC = () => {
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
                                     </div>
-                                ))}
+                                )})}
                                 {module.lessons.length === 0 && <p className="text-xs text-gray-500 pl-2 italic">Nenhuma aula.</p>}
-                                <button type="button" onClick={() => addLesson(mIndex)} className="text-xs font-semibold text-[#c4b5fd] hover:text-white mt-2 flex items-center gap-1">
+                                <button type="button" onClick={() => addLesson(mIndex)} className="text-xs font-semibold text-[#c4b5fd] hover:text-white mt-2 flex items-center gap-1 px-2 py-1 hover:bg-white/5 rounded">
                                     + Adicionar Aula
                                 </button>
                             </div>
@@ -826,8 +914,12 @@ const CourseEditor: React.FC = () => {
                             <label htmlFor="modTitle" className={labelClasses}>Título do Módulo</label>
                             <input type="text" name="title" id="modTitle" value={course.modules[selectedItem.moduleIndex].title} onChange={(e) => handleModuleChange(e, selectedItem.moduleIndex)} className={inputClasses} autoFocus />
                         </div>
-                        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-300">
-                            💡 Dica: Módulos agitam o conteúdo. Tente agrupar aulas por temas (ex: "Fundamentos", "Avançado").
+                        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-300 flex items-start gap-3">
+                            <span className="text-xl">💡</span>
+                            <div>
+                                <p className="font-bold">Dica de Estrutura</p>
+                                <p>Agrupe suas aulas por temas lógicos (ex: "Fundamentos", "Mão na Massa", "Projeto Final"). Isso ajuda o aluno a navegar melhor.</p>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -903,9 +995,10 @@ const CourseEditor: React.FC = () => {
                     )}
                 </div>
             </div>
-            <div className="flex gap-4 w-full md:w-auto">
-                <button type="button" onClick={onCancel} className="flex-1 md:flex-none bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">Cancelar</button>
-                <button type="submit" className="flex-1 md:flex-none bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20">Salvar Curso</button>
+            <div className="flex gap-4 w-full md:w-auto items-center">
+                <CourseHealthIndicator course={course} />
+                <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">Cancelar</button>
+                <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20">Salvar Curso</button>
             </div>
         </div>
 
