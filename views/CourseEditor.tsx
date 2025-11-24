@@ -27,6 +27,9 @@ const CourseEditor: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
 
+  // Storage Key for Auto-Save
+  const DRAFT_KEY = `draft_course_${courseId || 'new'}`;
+
   const getNewCourseTemplate = useMemo(() => ({
     id: `course_${Date.now()}`,
     title: '', slug: '', description: '', longDescription: '',
@@ -54,14 +57,61 @@ const CourseEditor: React.FC = () => {
   
   const [course, setCourse] = useState<Course>(existingCourse || getNewCourseTemplate);
   
+  // Auto-Save State
+  const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
+  const [draftFound, setDraftFound] = useState<Course | null>(null);
+
+  // Initial Load Effect
   useEffect(() => {
     if (existingCourse) {
-      // Ensure SEO object exists even for old records
       setCourse({ ...existingCourse, seo: existingCourse.seo || { metaTitle: '', metaDescription: '', keywords: [] } });
     } else if (courseId === 'new') {
       setCourse(getNewCourseTemplate);
     }
   }, [existingCourse, courseId, getNewCourseTemplate]);
+
+  // Check for existing draft on mount
+  useEffect(() => {
+      const savedDraft = localStorage.getItem(DRAFT_KEY);
+      if (savedDraft) {
+          try {
+              const parsedDraft = JSON.parse(savedDraft);
+              // Check if draft is different from current loaded data to avoid unnecessary alerts
+              if (JSON.stringify(parsedDraft) !== JSON.stringify(course)) {
+                  setDraftFound(parsedDraft);
+              }
+          } catch (e) {
+              console.error("Erro ao ler rascunho:", e);
+          }
+      }
+  }, [DRAFT_KEY]); // Run once on key change (mount)
+
+  // Auto-Save Effect (Debounced)
+  useEffect(() => {
+      const timer = setTimeout(() => {
+          // Don't save if it matches the DB version exactly or is empty initially
+          if (JSON.stringify(course) !== JSON.stringify(existingCourse || getNewCourseTemplate)) {
+              localStorage.setItem(DRAFT_KEY, JSON.stringify(course));
+              setLastAutoSave(new Date());
+          }
+      }, 2000); // Save after 2 seconds of inactivity
+
+      return () => clearTimeout(timer);
+  }, [course, DRAFT_KEY, existingCourse, getNewCourseTemplate]);
+
+  const handleRestoreDraft = () => {
+      if (draftFound) {
+          setCourse(draftFound);
+          setDraftFound(null);
+          showToast("📂 Rascunho restaurado com sucesso!");
+      }
+  };
+
+  const handleDiscardDraft = () => {
+      localStorage.removeItem(DRAFT_KEY);
+      setDraftFound(null);
+      showToast("🗑️ Rascunho descartado.");
+  };
 
   
   const [selectedItem, setSelectedItem] = useState<SelectedItem>({ type: 'course' });
@@ -512,6 +562,8 @@ const CourseEditor: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveCourse(course);
+    // Clean up draft after successful save
+    localStorage.removeItem(DRAFT_KEY);
     navigate('/admin');
   };
   
@@ -692,10 +744,53 @@ const CourseEditor: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      
+      {/* Draft Alert Banner */}
+      {draftFound && (
+          <div className="mb-6 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
+              <div className="flex items-center gap-3">
+                  <span className="text-xl">⚠️</span>
+                  <div>
+                      <p className="font-bold text-yellow-200">Rascunho não salvo encontrado!</p>
+                      <p className="text-sm text-yellow-200/70">
+                          Você tem alterações não salvas de uma sessão anterior.
+                      </p>
+                  </div>
+              </div>
+              <div className="flex gap-3">
+                  <button 
+                      onClick={handleDiscardDraft} 
+                      className="text-sm font-semibold text-red-400 hover:text-red-300 px-4 py-2 rounded hover:bg-red-500/10 transition-colors"
+                  >
+                      Descartar
+                  </button>
+                  <button 
+                      onClick={handleRestoreDraft} 
+                      className="text-sm font-semibold bg-yellow-500 text-black px-4 py-2 rounded shadow hover:bg-yellow-400 transition-colors"
+                  >
+                      Restaurar Rascunho
+                  </button>
+              </div>
+          </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="flex justify-between items-start">
-            <div><h1 className="text-4xl font-black text-white">{courseId === 'new' ? 'Novo Curso' : 'Editor de Curso'}</h1><p className="text-gray-400 mt-1">Crie e organize os módulos e aulas do seu curso.</p></div>
-            <div className="flex gap-4"><button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">Cancelar</button><button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all">Salvar Curso</button></div>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 className="text-4xl font-black text-white">{courseId === 'new' ? 'Novo Curso' : 'Editor de Curso'}</h1>
+                <div className="flex items-center gap-2 mt-1">
+                    <p className="text-gray-400">Crie e organize os módulos e aulas do seu curso.</p>
+                    {lastAutoSave && (
+                        <span className="text-xs text-gray-500 ml-2 bg-black/30 px-2 py-1 rounded border border-white/5">
+                            ☁️ Rascunho salvo às {lastAutoSave.toLocaleTimeString()}
+                        </span>
+                    )}
+                </div>
+            </div>
+            <div className="flex gap-4 w-full md:w-auto">
+                <button type="button" onClick={onCancel} className="flex-1 md:flex-none bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">Cancelar</button>
+                <button type="submit" className="flex-1 md:flex-none bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20">Salvar Curso</button>
+            </div>
         </div>
         
         <div className="grid lg:grid-cols-3 gap-8 items-start">
