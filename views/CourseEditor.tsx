@@ -12,6 +12,8 @@ type SelectedItem =
   | { type: 'module'; moduleIndex: number }
   | { type: 'lesson'; moduleIndex: number; lessonIndex: number };
 
+type EditorTab = 'structure' | 'marketing' | 'settings';
+
 const stringToSlug = (str: string) => {
   return str
     .toLowerCase()
@@ -56,6 +58,7 @@ const CourseEditor: React.FC = () => {
   }, [courseId, courses]);
   
   const [course, setCourse] = useState<Course>(existingCourse || getNewCourseTemplate);
+  const [activeTab, setActiveTab] = useState<EditorTab>('structure');
   
   // Auto-Save State
   const [lastAutoSave, setLastAutoSave] = useState<Date | null>(null);
@@ -84,7 +87,7 @@ const CourseEditor: React.FC = () => {
               console.error("Erro ao ler rascunho:", e);
           }
       }
-  }, [DRAFT_KEY]); // Run once on key change (mount)
+  }, [DRAFT_KEY]); 
 
   // Auto-Save Effect (Debounced)
   useEffect(() => {
@@ -259,6 +262,18 @@ const CourseEditor: React.FC = () => {
     }
   };
 
+  const moveModule = (index: number, direction: 'up' | 'down') => {
+      if (direction === 'up' && index === 0) return;
+      if (direction === 'down' && index === course.modules.length - 1) return;
+      
+      setCourse(prev => {
+          const newModules = [...prev.modules];
+          const targetIndex = direction === 'up' ? index - 1 : index + 1;
+          [newModules[index], newModules[targetIndex]] = [newModules[targetIndex], newModules[index]];
+          return { ...prev, modules: newModules };
+      });
+  };
+
   const addLesson = (moduleIndex: number) => {
       const newLesson: Lesson = { id: `les_${Date.now()}`, title: 'Nova Aula', duration: '10 min', type: 'text', xp: 10 };
       setCourse(prev => {
@@ -276,6 +291,20 @@ const CourseEditor: React.FC = () => {
           return { ...prev, modules: newModules };
       });
       setSelectedItem({ type: 'module', moduleIndex });
+  };
+
+  const moveLesson = (moduleIndex: number, lessonIndex: number, direction: 'up' | 'down') => {
+      if (direction === 'up' && lessonIndex === 0) return;
+      if (direction === 'down' && lessonIndex === course.modules[moduleIndex].lessons.length - 1) return;
+
+      setCourse(prev => {
+          const newModules = [...prev.modules];
+          const newLessons = [...newModules[moduleIndex].lessons];
+          const targetIndex = direction === 'up' ? lessonIndex - 1 : lessonIndex + 1;
+          [newLessons[lessonIndex], newLessons[targetIndex]] = [newLessons[targetIndex], newLessons[lessonIndex]];
+          newModules[moduleIndex].lessons = newLessons;
+          return { ...prev, modules: newModules };
+      });
   };
 
 
@@ -562,7 +591,6 @@ const CourseEditor: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSaveCourse(course);
-    // Clean up draft after successful save
     localStorage.removeItem(DRAFT_KEY);
     navigate('/admin');
   };
@@ -585,11 +613,11 @@ const CourseEditor: React.FC = () => {
       </button>
   );
 
-  const renderCourseForm = () => (
-    <div className="space-y-6">
-        <details open className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer">Informações Básicas</summary>
-            <div className="mt-4 space-y-6">
+  const renderSettingsForm = () => (
+    <div className="space-y-6 animate-fade-in">
+        <div className="bg-black/20 p-6 rounded-lg border border-white/10">
+            <h3 className="font-bold text-white mb-4 border-b border-white/10 pb-2">Informações Básicas</h3>
+            <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div><label htmlFor="title" className={labelClasses}>Título do Curso</label><input type="text" name="title" id="title" value={course.title} onChange={handleChange} required className={inputClasses} /></div>
                     <div><label htmlFor="slug" className={labelClasses}>Slug (URL Amigável)</label><input type="text" name="slug" id="slug" value={course.slug || ''} onChange={handleChange} placeholder="ex: curso-de-python-avancado" className={inputClasses} /></div>
@@ -606,14 +634,14 @@ const CourseEditor: React.FC = () => {
                 </div>
                 <div className="flex items-end gap-4"><div className="flex-grow"><label htmlFor="imageUrl" className={labelClasses}>URL da Imagem de Capa</label><input type="text" name="imageUrl" id="imageUrl" value={course.imageUrl} onChange={handleChange} className={inputClasses} /></div><Uploader pathnamePrefix={`courses/${course.id}`} onUploadComplete={handleImageUploadComplete}>{(trigger, loading) => <button type="button" onClick={trigger} disabled={loading} className="py-3 px-4 bg-white/10 rounded-md hover:bg-white/20">{loading ? 'Enviando...' : 'Upload'}</button>}</Uploader></div>
             </div>
-        </details>
+        </div>
         
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
-                <span>SEO & Metadados</span>
+        <div className="bg-black/20 p-6 rounded-lg border border-white/10">
+            <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+                <h3 className="font-bold text-white">SEO & Metadados</h3>
                 <AiButton onClick={handleGenerateSeo} isLoading={isGeneratingSeo} label="Gerar SEO" />
-            </summary>
-            <div className="mt-4 space-y-4">
+            </div>
+            <div className="space-y-4">
                 <div>
                     <label className={labelClasses}>Meta Title (Título na aba do navegador e Google)</label>
                     <input value={course.seo?.metaTitle || ''} onChange={(e) => handleSeoChange('metaTitle', e.target.value)} className={inputClasses} placeholder="Ex: Curso de Python Completo | FuturoOn" maxLength={60} />
@@ -629,117 +657,215 @@ const CourseEditor: React.FC = () => {
                     <input value={course.seo?.keywords?.join(', ') || ''} onChange={(e) => handleSeoChange('keywords', e.target.value)} className={inputClasses} placeholder="python, programação, backend, iniciante" />
                 </div>
             </div>
-        </details>
-
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
-                <span>Página do Curso: Seção Principal (Hero)</span>
-                <AiButton onClick={handleGenerateHeroWithAI} isLoading={isGeneratingHero} />
-            </summary>
-            <div className="mt-4 space-y-4">
-            <div><label className={labelClasses}>Subtítulo</label><input value={course.heroContent?.subtitle || ''} onChange={(e) => handleLandingPageChange('heroContent', 'subtitle', e.target.value)} className={inputClasses} /></div>
-            <div><label className={labelClasses}>Linha de Título 1</label><input value={course.heroContent?.titleLine1 || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleLine1', e.target.value)} className={inputClasses} /></div>
-            <div><label className={labelClasses}>Título em Destaque</label><input value={course.heroContent?.titleAccent || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleAccent', e.target.value)} className={inputClasses} /></div>
-            <div><label className={labelClasses}>Descrição</label><textarea value={course.heroContent?.description || ''} onChange={(e) => handleLandingPageChange('heroContent', 'description', e.target.value)} className={inputClasses} rows={3}></textarea></div>
-        </div></details>
-        
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
-                <span>Página do Curso: Seção de Benefícios</span>
-                <AiButton onClick={handleGenerateBenefitsWithAI} isLoading={isGeneratingBenefits} />
-            </summary>
-            <div className="mt-4 space-y-4">
-            <div><label className={labelClasses}>Título da Seção</label><input value={course.benefitsSection?.title || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'title', e.target.value)} className={inputClasses} /></div>
-            <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.benefitsSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
-            <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
-                {course.benefitsSection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2">Benefício {index + 1}</h4>
-                    <button type="button" onClick={() => deleteBenefit('benefitsSection', index)} className="absolute top-2 right-2 text-red-400">&times;</button>
-                    <div><label className={labelClasses}>Título do Benefício</label><input value={benefit.title} onChange={(e) => handleBenefitChange('benefitsSection', index, 'title', e.target.value)} className={inputClasses} /></div>
-                    <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={benefit.description} onChange={(e) => handleBenefitChange('benefitsSection', index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
-                </div>))}
-                <button type="button" onClick={() => addBenefit('benefitsSection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Benefício</button>
-            </div>
-        </div></details>
-
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
-                <span>Página do Curso: Seção de Currículo</span>
-                <AiButton onClick={handleGenerateCurriculumWithAI} isLoading={isGeneratingCurriculum} />
-            </summary>
-            <div className="mt-4 space-y-4">
-            <div><label className={labelClasses}>Título da Seção</label><input value={course.curriculumSection?.title || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'title', e.target.value)} className={inputClasses} /></div>
-            <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.curriculumSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
-            <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
-                {course.curriculumSection?.items.map((item, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2">Item {index + 1}</h4>
-                    <button type="button" onClick={() => deleteCurriculumItem(index)} className="absolute top-2 right-2 text-red-400">&times;</button>
-                    <div><label className={labelClasses}>Título do Item</label><input value={item.title} onChange={(e) => handleCurriculumItemChange(index, 'title', e.target.value)} className={inputClasses} /></div>
-                    <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={item.description} onChange={(e) => handleCurriculumItemChange(index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
-                </div>))}
-                <button type="button" onClick={addCurriculumItem} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Item ao Currículo</button>
-            </div>
-        </div></details>
-        
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
-                <span>Página do Curso: Seção de Metodologia</span>
-                <AiButton onClick={handleGenerateMethodologyWithAI} isLoading={isGeneratingMethodology} />
-            </summary>
-            <div className="mt-4 space-y-4">
-            <div><label className={labelClasses}>Título da Seção</label><input value={course.methodologySection?.title || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'title', e.target.value)} className={inputClasses} /></div>
-            <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.methodologySection?.subtitle || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'subtitle', e.target.value)} className={inputClasses} /></div>
-            <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
-                {course.methodologySection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2">Item {index + 1}</h4>
-                    <button type="button" onClick={() => deleteBenefit('methodologySection', index)} className="absolute top-2 right-2 text-red-400">&times;</button>
-                    <div><label className={labelClasses}>Título do Item</label><input value={benefit.title} onChange={(e) => handleBenefitChange('methodologySection', index, 'title', e.target.value)} className={inputClasses} /></div>
-                    <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={benefit.description} onChange={(e) => handleBenefitChange('methodologySection', index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
-                </div>))}
-                <button type="button" onClick={() => addBenefit('methodologySection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Item</button>
-            </div>
-        </div></details>
-
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
-                <span>Página do Curso: Chamada para Ação (CTA)</span>
-                <AiButton onClick={handleGenerateCtaWithAI} isLoading={isGeneratingCta} />
-            </summary>
-            <div className="mt-4 space-y-4">
-            <div><label className={labelClasses}>Título</label><input value={course.ctaSection?.title || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'title', e.target.value)} className={inputClasses} /></div>
-            <div><label className={labelClasses}>Descrição</label><textarea value={course.ctaSection?.description || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
-        </div></details>
-
+        </div>
     </div>
   );
 
-  const renderModuleForm = () => {
-    if (selectedItem.type !== 'module') return null;
-    const module = course.modules[selectedItem.moduleIndex];
-    return (
-        <div>
-            <label htmlFor="title" className={labelClasses}>Título do Módulo</label>
-            <input type="text" name="title" id="title" value={module.title} onChange={(e) => handleModuleChange(e, selectedItem.moduleIndex)} className={inputClasses} />
-        </div>
-    );
-  };
-  
-  const renderLessonForm = () => {
-    if (selectedItem.type !== 'lesson') return null;
-    const lesson = course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex];
-    return (
-        <div className="space-y-6">
-            <div><label htmlFor="title" className={labelClasses}>Título da Aula</label><input type="text" name="title" id="title" value={lesson.title} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>
-            <div className="grid grid-cols-3 gap-4">
-                <div><label htmlFor="duration" className={labelClasses}>Duração</label><input type="text" name="duration" id="duration" value={lesson.duration} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>
-                <div><label htmlFor="xp" className={labelClasses}>XP</label><input type="number" name="xp" id="xp" value={lesson.xp} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>
-                <div><label htmlFor="type" className={labelClasses}>Tipo</label><select name="type" id="type" value={lesson.type} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses}><option value="text">Texto</option><option value="video">Vídeo</option></select></div>
+  const renderMarketingForm = () => (
+      <div className="space-y-6 animate-fade-in">
+        <div className="bg-black/20 p-6 rounded-lg border border-white/10">
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Seção Principal (Hero)</h3><AiButton onClick={handleGenerateHeroWithAI} isLoading={isGeneratingHero} /></div>
+            <div className="space-y-4">
+                <div><label className={labelClasses}>Subtítulo</label><input value={course.heroContent?.subtitle || ''} onChange={(e) => handleLandingPageChange('heroContent', 'subtitle', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Linha de Título 1</label><input value={course.heroContent?.titleLine1 || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleLine1', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Título em Destaque</label><input value={course.heroContent?.titleAccent || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleAccent', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Descrição</label><textarea value={course.heroContent?.description || ''} onChange={(e) => handleLandingPageChange('heroContent', 'description', e.target.value)} className={inputClasses} rows={3}></textarea></div>
             </div>
-            {lesson.type === 'video' && <div><label htmlFor="videoUrl" className={labelClasses}>URL do Vídeo (YouTube)</label><input type="text" name="videoUrl" id="videoUrl" value={lesson.videoUrl || ''} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>}
-            
-            <RichContentEditor label="Objetivo da Aula" value={lesson.objective || ''} onChange={(val) => handleLessonContentChange(val, 'objective', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
-            <RichContentEditor label="Conteúdo Principal" value={lesson.mainContent || ''} onChange={(val) => handleLessonContentChange(val, 'mainContent', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
-            <RichContentEditor label="Resumo" value={lesson.summary || ''} onChange={(val) => handleLessonContentChange(val, 'summary', selectedItem.moduleIndex, selectedItem.lessonIndex)} textareaRef={useRef(null)} />
         </div>
-    );
-  };
+
+        <div className="bg-black/20 p-6 rounded-lg border border-white/10">
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Benefícios</h3><AiButton onClick={handleGenerateBenefitsWithAI} isLoading={isGeneratingBenefits} /></div>
+            <div className="space-y-4">
+                <div><label className={labelClasses}>Título</label><input value={course.benefitsSection?.title || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'title', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Subtítulo</label><input value={course.benefitsSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
+                <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
+                    {course.benefitsSection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2 text-sm">Benefício {index + 1}</h4>
+                        <button type="button" onClick={() => deleteBenefit('benefitsSection', index)} className="absolute top-2 right-2 text-red-400 hover:text-red-300">&times;</button>
+                        <div><label className={labelClasses}>Título do Item</label><input value={benefit.title} onChange={(e) => handleBenefitChange('benefitsSection', index, 'title', e.target.value)} className={inputClasses} /></div>
+                        <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={benefit.description} onChange={(e) => handleBenefitChange('benefitsSection', index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+                    </div>))}
+                    <button type="button" onClick={() => addBenefit('benefitsSection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Benefício</button>
+                </div>
+            </div>
+        </div>
+
+        <div className="bg-black/20 p-6 rounded-lg border border-white/10">
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Resumo do Currículo</h3><AiButton onClick={handleGenerateCurriculumWithAI} isLoading={isGeneratingCurriculum} /></div>
+            <div className="space-y-4">
+                <div><label className={labelClasses}>Título</label><input value={course.curriculumSection?.title || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'title', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Subtítulo</label><input value={course.curriculumSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
+                <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
+                    {course.curriculumSection?.items.map((item, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2 text-sm">Item {index + 1}</h4>
+                        <button type="button" onClick={() => deleteCurriculumItem(index)} className="absolute top-2 right-2 text-red-400 hover:text-red-300">&times;</button>
+                        <div><label className={labelClasses}>Título do Item</label><input value={item.title} onChange={(e) => handleCurriculumItemChange(index, 'title', e.target.value)} className={inputClasses} /></div>
+                        <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={item.description} onChange={(e) => handleCurriculumItemChange(index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+                    </div>))}
+                    <button type="button" onClick={addCurriculumItem} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Item ao Currículo</button>
+                </div>
+            </div>
+        </div>
+
+        <div className="bg-black/20 p-6 rounded-lg border border-white/10">
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Metodologia</h3><AiButton onClick={handleGenerateMethodologyWithAI} isLoading={isGeneratingMethodology} /></div>
+            <div className="space-y-4">
+                <div><label className={labelClasses}>Título</label><input value={course.methodologySection?.title || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'title', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Subtítulo</label><input value={course.methodologySection?.subtitle || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'subtitle', e.target.value)} className={inputClasses} /></div>
+                <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
+                    {course.methodologySection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2 text-sm">Item {index + 1}</h4>
+                        <button type="button" onClick={() => deleteBenefit('methodologySection', index)} className="absolute top-2 right-2 text-red-400 hover:text-red-300">&times;</button>
+                        <div><label className={labelClasses}>Título do Item</label><input value={benefit.title} onChange={(e) => handleBenefitChange('methodologySection', index, 'title', e.target.value)} className={inputClasses} /></div>
+                        <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={benefit.description} onChange={(e) => handleBenefitChange('methodologySection', index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+                    </div>))}
+                    <button type="button" onClick={() => addBenefit('methodologySection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Item</button>
+                </div>
+            </div>
+        </div>
+
+        <div className="bg-black/20 p-6 rounded-lg border border-white/10">
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Chamada para Ação (CTA)</h3><AiButton onClick={handleGenerateCtaWithAI} isLoading={isGeneratingCta} /></div>
+            <div className="space-y-4">
+                <div><label className={labelClasses}>Título</label><input value={course.ctaSection?.title || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'title', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Descrição</label><textarea value={course.ctaSection?.description || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
+            </div>
+        </div>
+      </div>
+  );
+
+  const renderStructureEditor = () => (
+      <div className="grid lg:grid-cols-3 gap-8 items-start animate-fade-in">
+            {/* Left Column: Structure Tree */}
+            <div className="lg:col-span-1 bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10 space-y-6 lg:sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-white">Currículo</h2>
+                    <button type="button" onClick={() => setSelectedItem({ type: 'course' })} className="text-xs text-[#c4b5fd] hover:text-white underline">Editar Info</button>
+                </div>
+                
+                <div className="bg-white/5 p-4 rounded-lg border border-white/10">
+                    <h3 className="text-md font-semibold text-[#c4b5fd] mb-2 flex items-center gap-2">
+                        ✨ Gerar com IA
+                    </h3>
+                    <div className="flex gap-2">
+                        <input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="Ex: React para iniciantes" className={`${inputClasses} flex-grow text-xs`} />
+                        <button type="button" onClick={handleGenerateStructureWithAI} disabled={isGeneratingStructure} className="py-2 px-3 bg-[#8a4add] rounded-md hover:bg-[#6d28d9] disabled:opacity-50 text-white">
+                            {isGeneratingStructure ? <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> : 'Gerar'}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    {course.modules.map((module, mIndex) => (
+                        <div key={module.id} className={`bg-white/5 p-3 rounded-lg border ${selectedItem.type === 'module' && selectedItem.moduleIndex === mIndex ? 'border-[#8a4add]' : 'border-transparent'}`}>
+                            <div className="flex justify-between items-center group">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="flex flex-col gap-0.5">
+                                        <button type="button" onClick={() => moveModule(mIndex, 'up')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={mIndex === 0}>▲</button>
+                                        <button type="button" onClick={() => moveModule(mIndex, 'down')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={mIndex === course.modules.length - 1}>▼</button>
+                                    </div>
+                                    <h4 
+                                        className="font-bold text-white truncate cursor-pointer hover:text-[#c4b5fd] transition-colors flex-1"
+                                        onClick={() => setSelectedItem({ type: 'module', moduleIndex: mIndex })}
+                                    >
+                                        {mIndex + 1}. {module.title || 'Sem Título'}
+                                    </h4>
+                                </div>
+                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button type="button" onClick={() => deleteModule(mIndex)} className="text-red-400 hover:text-red-300 p-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div className="mt-2 space-y-1 pl-6 border-l-2 border-white/10">
+                                {module.lessons.map((lesson, lIndex) => (
+                                    <div 
+                                        key={lesson.id} 
+                                        className={`flex justify-between items-center text-sm group p-1 rounded ${selectedItem.type === 'lesson' && selectedItem.moduleIndex === mIndex && selectedItem.lessonIndex === lIndex ? 'bg-[#8a4add]/20 text-[#c4b5fd]' : 'text-gray-300 hover:bg-white/5'}`}
+                                    >
+                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                            <div className="flex flex-col gap-0 scale-75 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button type="button" onClick={() => moveLesson(mIndex, lIndex, 'up')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={lIndex === 0}>▲</button>
+                                                <button type="button" onClick={() => moveLesson(mIndex, lIndex, 'down')} className="text-gray-500 hover:text-white disabled:opacity-20" disabled={lIndex === module.lessons.length - 1}>▼</button>
+                                            </div>
+                                            <span 
+                                                className="truncate cursor-pointer flex-1"
+                                                onClick={() => setSelectedItem({ type: 'lesson', moduleIndex: mIndex, lessonIndex: lIndex })}
+                                            >
+                                                {lesson.title || 'Nova Aula'}
+                                            </span>
+                                        </div>
+                                        <button type="button" onClick={() => deleteLesson(mIndex, lIndex)} className="text-red-400 hover:text-red-300 opacity-0 group-hover:opacity-100 p-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                        </button>
+                                    </div>
+                                ))}
+                                {module.lessons.length === 0 && <p className="text-xs text-gray-500 pl-2 italic">Nenhuma aula.</p>}
+                                <button type="button" onClick={() => addLesson(mIndex)} className="text-xs font-semibold text-[#c4b5fd] hover:text-white mt-2 flex items-center gap-1">
+                                    + Adicionar Aula
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <button type="button" onClick={addModule} className="w-full bg-white/10 text-white font-semibold py-2 rounded-lg hover:bg-white/20 transition-colors border border-white/10 border-dashed">+ Novo Módulo</button>
+            </div>
+
+            {/* Right Column: Editor Panel */}
+            <div className="lg:col-span-2 bg-black/20 backdrop-blur-xl p-8 rounded-lg border border-white/10">
+                {selectedItem.type === 'course' && (
+                    <div className="text-center py-20 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        <p className="text-lg font-medium text-white">Selecione um Módulo ou Aula</p>
+                        <p className="text-sm">Use o menu à esquerda para editar o conteúdo.</p>
+                    </div>
+                )}
+                
+                {selectedItem.type === 'module' && (
+                    <div className="space-y-6 animate-fade-in">
+                        <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">Editar Módulo</h3>
+                        <div>
+                            <label htmlFor="modTitle" className={labelClasses}>Título do Módulo</label>
+                            <input type="text" name="title" id="modTitle" value={course.modules[selectedItem.moduleIndex].title} onChange={(e) => handleModuleChange(e, selectedItem.moduleIndex)} className={inputClasses} autoFocus />
+                        </div>
+                        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg text-sm text-blue-300">
+                            💡 Dica: Módulos agitam o conteúdo. Tente agrupar aulas por temas (ex: "Fundamentos", "Avançado").
+                        </div>
+                    </div>
+                )}
+
+                {selectedItem.type === 'lesson' && (
+                    <div className="space-y-6 animate-fade-in">
+                        <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-4">
+                            Editar Aula: <span className="text-[#c4b5fd]">{course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].title}</span>
+                        </h3>
+                        <div><label htmlFor="lesTitle" className={labelClasses}>Título da Aula</label><input type="text" name="title" id="lesTitle" value={course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].title} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div><label htmlFor="lesDuration" className={labelClasses}>Duração</label><input type="text" name="duration" id="lesDuration" value={course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].duration} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>
+                            <div><label htmlFor="lesXp" className={labelClasses}>XP</label><input type="number" name="xp" id="lesXp" value={course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].xp} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>
+                            <div><label htmlFor="lesType" className={labelClasses}>Tipo</label><select name="type" id="lesType" value={course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].type} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses}><option value="text">Texto</option><option value="video">Vídeo</option></select></div>
+                        </div>
+                        {course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].type === 'video' && 
+                            <div><label htmlFor="videoUrl" className={labelClasses}>URL do Vídeo (YouTube)</label><input type="text" name="videoUrl" id="videoUrl" value={course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].videoUrl || ''} onChange={(e) => handleLessonChange(e, selectedItem.moduleIndex, selectedItem.lessonIndex)} className={inputClasses} /></div>
+                        }
+                        
+                        <RichContentEditor 
+                            label="Objetivo da Aula" 
+                            value={course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].objective || ''} 
+                            onChange={(val) => handleLessonContentChange(val, 'objective', selectedItem.moduleIndex, selectedItem.lessonIndex)} 
+                            textareaRef={useRef(null)} 
+                            rows={3}
+                        />
+                        <RichContentEditor 
+                            label="Conteúdo Principal (Markdown)" 
+                            value={course.modules[selectedItem.moduleIndex].lessons[selectedItem.lessonIndex].mainContent || ''} 
+                            onChange={(val) => handleLessonContentChange(val, 'mainContent', selectedItem.moduleIndex, selectedItem.lessonIndex)} 
+                            textareaRef={useRef(null)} 
+                            rows={15}
+                        />
+                    </div>
+                )}
+            </div>
+      </div>
+  );
 
 
   return (
@@ -758,18 +884,8 @@ const CourseEditor: React.FC = () => {
                   </div>
               </div>
               <div className="flex gap-3">
-                  <button 
-                      onClick={handleDiscardDraft} 
-                      className="text-sm font-semibold text-red-400 hover:text-red-300 px-4 py-2 rounded hover:bg-red-500/10 transition-colors"
-                  >
-                      Descartar
-                  </button>
-                  <button 
-                      onClick={handleRestoreDraft} 
-                      className="text-sm font-semibold bg-yellow-500 text-black px-4 py-2 rounded shadow hover:bg-yellow-400 transition-colors"
-                  >
-                      Restaurar Rascunho
-                  </button>
+                  <button onClick={handleDiscardDraft} className="text-sm font-semibold text-red-400 hover:text-red-300 px-4 py-2 rounded hover:bg-red-500/10 transition-colors">Descartar</button>
+                  <button onClick={handleRestoreDraft} className="text-sm font-semibold bg-yellow-500 text-black px-4 py-2 rounded shadow hover:bg-yellow-400 transition-colors">Restaurar Rascunho</button>
               </div>
           </div>
       )}
@@ -779,10 +895,10 @@ const CourseEditor: React.FC = () => {
             <div>
                 <h1 className="text-4xl font-black text-white">{courseId === 'new' ? 'Novo Curso' : 'Editor de Curso'}</h1>
                 <div className="flex items-center gap-2 mt-1">
-                    <p className="text-gray-400">Crie e organize os módulos e aulas do seu curso.</p>
+                    <p className="text-gray-400">{course.title || 'Sem Título'}</p>
                     {lastAutoSave && (
                         <span className="text-xs text-gray-500 ml-2 bg-black/30 px-2 py-1 rounded border border-white/5">
-                            ☁️ Rascunho salvo às {lastAutoSave.toLocaleTimeString()}
+                            ☁️ Salvo às {lastAutoSave.toLocaleTimeString()}
                         </span>
                     )}
                 </div>
@@ -792,32 +908,39 @@ const CourseEditor: React.FC = () => {
                 <button type="submit" className="flex-1 md:flex-none bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all shadow-lg shadow-[#8a4add]/20">Salvar Curso</button>
             </div>
         </div>
-        
-        <div className="grid lg:grid-cols-3 gap-8 items-start">
-            {/* Left Column: Structure */}
-            <div className="lg:col-span-1 bg-black/20 backdrop-blur-xl p-6 rounded-lg border border-white/10 space-y-6 lg:sticky top-24">
-                <h2 className="text-xl font-bold text-white">Estrutura do Curso</h2>
-                <div className="bg-white/5 p-4 rounded-lg border border-white/10"><h3 className="text-md font-semibold text-[#c4b5fd] mb-2">✨ Gerar estrutura com IA</h3><div className="flex gap-2"><input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder="Ex: React para iniciantes" className={`${inputClasses} flex-grow`} /><button type="button" onClick={handleGenerateStructureWithAI} disabled={isGeneratingStructure} className="py-2 px-3 bg-[#8a4add] rounded-md hover:bg-[#6d28d9] disabled:opacity-50">{isGeneratingStructure ? <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> : 'Gerar'}</button></div></div>
-                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                    {course.modules.map((module, mIndex) => (
-                        <div key={module.id} className="bg-white/5 p-3 rounded-lg"><div className="flex justify-between items-center"><h4 className="font-bold text-white truncate flex-1">{mIndex + 1}. {module.title}</h4><div className="flex gap-2"><button type="button" onClick={() => setSelectedItem({ type: 'module', moduleIndex: mIndex })} className="text-xs text-gray-300 hover:text-white">Editar</button><button type="button" onClick={() => deleteModule(mIndex)} className="text-xs text-red-400 hover:text-red-300">Excluir</button></div></div><div className="mt-2 space-y-1 pl-4 border-l-2 border-white/10">{module.lessons.map((lesson, lIndex) => (<div key={lesson.id} className="flex justify-between items-center text-sm group"><span className="text-gray-300 truncate">{lesson.title}</span><div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button type="button" onClick={() => setSelectedItem({ type: 'lesson', moduleIndex: mIndex, lessonIndex: lIndex })} className="text-xs text-gray-300 hover:text-white">Editar</button><button type="button" onClick={() => deleteLesson(mIndex, lIndex)} className="text-xs text-red-400 hover:text-red-300">Excluir</button></div></div>))}{module.lessons.length === 0 && <p className="text-xs text-gray-500 pl-2">Nenhuma aula neste módulo.</p>}<button type="button" onClick={() => addLesson(mIndex)} className="text-xs font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Aula</button></div></div>
-                    ))}
-                </div>
-                <button type="button" onClick={addModule} className="w-full bg-white/10 text-white font-semibold py-2 rounded-lg hover:bg-white/20 transition-colors">+ Adicionar Módulo</button>
-            </div>
 
-            {/* Right Column: Editor Panel */}
-            <div className="lg:col-span-2 bg-black/20 backdrop-blur-xl p-8 rounded-lg border border-white/10">
-                <div className="flex items-center gap-4 mb-6 pb-4 border-b border-white/10">
-                    <button type="button" onClick={() => setSelectedItem({ type: 'course' })} className={`font-semibold transition-colors ${selectedItem.type === 'course' ? 'text-white' : 'text-gray-400 hover:text-white'}`}>Informações do Curso</button>
-                    {selectedItem.type === 'module' && <><span className="text-gray-500">/</span><button className="font-semibold text-white">Módulo {selectedItem.moduleIndex + 1}</button></>}
-                    {selectedItem.type === 'lesson' && <><span className="text-gray-500">/</span><button onClick={() => setSelectedItem({ type: 'module', moduleIndex: selectedItem.moduleIndex })} className="font-semibold text-gray-400 hover:text-white">Módulo {selectedItem.moduleIndex + 1}</button><span className="text-gray-500">/</span><button className="font-semibold text-white">Aula {selectedItem.lessonIndex + 1}</button></>}
-                </div>
-                {selectedItem.type === 'course' && renderCourseForm()}
-                {selectedItem.type === 'module' && renderModuleForm()}
-                {selectedItem.type === 'lesson' && renderLessonForm()}
-            </div>
+        {/* Tab Navigation */}
+        <div className="flex gap-1 bg-black/30 p-1 rounded-xl border border-white/10 w-fit mx-auto md:mx-0">
+            <button 
+                type="button"
+                onClick={() => setActiveTab('structure')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'structure' ? 'bg-[#8a4add] text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+                📚 Estrutura
+            </button>
+            <button 
+                type="button"
+                onClick={() => setActiveTab('marketing')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'marketing' ? 'bg-[#8a4add] text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+                🎨 Página de Vendas
+            </button>
+            <button 
+                type="button"
+                onClick={() => setActiveTab('settings')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${activeTab === 'settings' ? 'bg-[#8a4add] text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+            >
+                ⚙️ Configurações
+            </button>
         </div>
+        
+        {/* Tab Content */}
+        <div className="min-h-[600px]">
+            {activeTab === 'structure' && renderStructureEditor()}
+            {activeTab === 'marketing' && renderMarketingForm()}
+            {activeTab === 'settings' && renderSettingsForm()}
+        </div>
+
       </form>
     </div>
   );
