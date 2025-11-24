@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Event } from '../types';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
 
 const EventEditor: React.FC = () => {

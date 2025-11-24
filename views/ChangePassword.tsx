@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { updatePassword } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
 import { Logo } from '../assets/Logo';
 
 const ChangePassword = () => {

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Logo } from '../assets/Logo';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
+import { DevMenu } from './DevMenu';
 
 const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode; active?: boolean }> = ({ onClick, children, active }) => (
   <button 
@@ -88,6 +89,9 @@ const Header: React.FC = () => {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-4">
+              {/* DEV MENU - Accessible everywhere */}
+              <DevMenu />
+
               <button 
                 onClick={() => handleNav('/donate')} 
                 className="text-[#c4b5fd] text-xs font-bold uppercase tracking-wider hover:text-white transition-colors mr-2"
@@ -116,7 +120,10 @@ const Header: React.FC = () => {
             </div>
             
             {/* Mobile Hamburger Button */}
-            <div className="md:hidden z-50">
+            <div className="md:hidden z-50 flex items-center gap-2">
+              <div className="mr-2">
+                 <DevMenu />
+              </div>
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)} 
                 className="p-2 text-gray-300 hover:text-white focus:outline-none"

@@ -53,9 +53,6 @@ import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
 import ApiTest from './views/ApiTest';
-import ImageUploadTest from './views/ImageUploadTest';
-import NotificationCenter from './views/NotificationCenter';
-import NotificationAnalyticsDashboard from './components/NotificationAnalyticsDashboard';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -756,8 +753,6 @@ const AppContent: React.FC = () => {
                     <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
                     <Route path="/course/:courseId/certificate" element={<CertificateView />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/notifications" element={<NotificationCenter />} />
-                    <Route path="/notifications/analytics" element={<NotificationAnalyticsDashboard />} />
                     <Route path="/connect" element={<ConnectView />} />
                     <Route path="/blog" element={<Blog />} />
                     <Route path="/article/:articleId" element={<ArticleView />} />
@@ -796,7 +791,6 @@ const AppContent: React.FC = () => {
                     <Route path="/financial-statement" element={<FinancialStatementView />} />
                     <Route path="/upload-test" element={<StudentUploadTest />} />
                     <Route path="/api-test" element={<ApiTest />} />
-                    <Route path="/image-upload-test" element={<ImageUploadTest />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </main>

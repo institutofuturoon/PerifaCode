@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { CommunityPost } from '../types';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
 
 interface ForumPostCardProps {
     post: CommunityPost;

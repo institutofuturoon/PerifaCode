@@ -1,7 +1,7 @@
 
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
 import { User, Event } from '../types';
 import PageLayout from '../components/PageLayout';
 

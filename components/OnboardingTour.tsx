@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
 
 interface OnboardingTourProps {
     onComplete: () => void;

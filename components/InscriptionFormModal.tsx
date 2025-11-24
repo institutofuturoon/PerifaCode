@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 
 interface InscriptionFormModalProps {

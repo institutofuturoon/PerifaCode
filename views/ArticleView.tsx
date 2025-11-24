@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState } from 'react';
-import { useAppContext } from '../contexts/AppContextAdapter';
+import { useAppContext } from '../App';
 import { Article } from '../types';
 import { useParams, useNavigate } from 'react-router-dom';
 import MarkdownRenderer from '../components/MarkdownRenderer';

@@ -17,7 +17,6 @@ export interface User {
   showOnTeamPage?: boolean;
   displayOrder?: number;
   completedLessonIds: string[];
-  enrolledCourseIds?: string[];
   xp: number;
   achievements: string[];
   streak: number;
@@ -92,34 +91,6 @@ export interface Supporter {
     since: string; // Ano de início do apoio
 }
 
-export interface MicroStep {
-  id: string;
-  title: string;
-  content: string;
-  estimatedMinutes: number;
-}
-
-export type QuestionType = 'multipleChoice' | 'dragDrop' | 'fillInBlank' | 'trueOrFalse';
-
-export interface ExerciseQuestion {
-  id: string;
-  type: QuestionType;
-  question: string;
-  options?: string[]; // Para MC e TrueOrFalse
-  correctAnswer?: string | number;
-  items?: string[]; // Para drag-drop
-  placeholder?: string; // Para fill-in-blank
-  explanation?: string;
-}
-
-export interface InteractiveLesson {
-  id: string;
-  title: string;
-  description?: string;
-  estimatedMinutes: number;
-  questions: ExerciseQuestion[];
-}
-
 export interface Lesson {
   id: string;
   title: string;
@@ -132,8 +103,6 @@ export interface Lesson {
   complementaryMaterial?: string;
   summary?: string;
   exerciseId?: string;
-  microSteps?: MicroStep[];
-  exercise?: InteractiveLesson;
 }
 
 export interface Module {
@@ -164,47 +133,6 @@ export interface SeoConfig {
   keywords?: string[];
 }
 
-export interface CourseModality {
-  // ONLINE (100% plataforma)
-  online?: {
-    aiTutorEnabled: boolean;
-    communityForumEnabled: boolean;
-    certificateType: 'digital';
-    prerequisites?: string[];
-    scheduleFlexibility: 'total' | 'partial';
-  };
-  
-  // HÍBRIDO (plataforma + presencial)
-  hybrid?: {
-    onlinePortion: number; // 0-100 (%)
-    presencialPortion: number; // 0-100 (%)
-    presencialDates: string[]; // ['2025-01-15', '2025-02-20']
-    presencialLocation?: string; // Local físico
-    facilitatorId?: string; // ID do facilitador local
-    syncSchedule?: { // Aulas síncronas
-      day: string; // 'segunda', 'quarta'
-      time: string; // '19:00'
-      zoomUrl?: string;
-    }[];
-    certificateType: 'hybrid';
-  };
-  
-  // PRESENCIAL (plataforma como apoio)
-  presencial?: {
-    videoFormat: 'short'; // Vídeos curtos, não lições completas
-    downloadableResources: boolean;
-    syncLives: { // Aulas síncronas (Zoom/etc)
-      day: string;
-      time: string;
-      zoomUrl?: string;
-    }[];
-    presencialLocation: string;
-    instructorId?: string; // Instrutor presencial
-    certificateType: 'presencial';
-    communityWeight: 'low'; // Comunidade tem menos peso
-  };
-}
-
 export interface Course {
   id: string;
   title: string;
@@ -223,7 +151,6 @@ export interface Course {
   projectDescription?: string;
   projectCriteria?: string;
   format: 'online' | 'presencial' | 'hibrido';
-  modality?: CourseModality;
   lessonRelease?: 'sequencial' | 'manual';
   enrollmentStatus?: 'open' | 'closed' | 'soon';
   
@@ -552,59 +479,6 @@ export interface MarketingPost {
     authorId: string;
 }
 
-// --- Chat Bot Types ---
-export interface FAQ {
-  id: string;
-  courseId: string;
-  category: 'tecnico' | 'administrativo' | 'motivacional';
-  keywords: string[];
-  question: string;
-  answer: string;
-  videoUrl?: string;
-  linkToMaterial?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  effectiveness: number;
-  usageCount: number;
-}
-
-export interface ChatMessage {
-  id: string;
-  userId: string;
-  courseId: string;
-  lessonId?: string;
-  message: string;
-  timestamp: Date;
-  sender: 'user' | 'bot' | 'mentor';
-  botResponse?: {
-    type: 'faq_match' | 'faq_match_uncertain' | 'escalated' | 'follow_up';
-    faqId?: string;
-    confidence?: number;
-    mentorId?: string;
-  };
-  mentorResponse?: string;
-  status?: 'pending' | 'answered';
-}
-
-export interface ChatFeedback {
-  id: string;
-  messageId: string;
-  userId: string;
-  rating: 1 | 2 | 3 | 4 | 5;
-  comment?: string;
-  timestamp: Date;
-}
-
-export interface BotMetrics {
-  id: string;
-  courseId: string;
-  date: Date;
-  messagesProcessed: number;
-  resolvedAutomatically: number;
-  escalatedToMentor: number;
-  avgResponseTime: number;
-  helpfulnessRate: number;
-}
 
 export type View = 'home' | 'courses' | 'dashboard' | 'connect' | 'blog' | 'login' | 'register' | 'completeProfile' | 'profile' | 'courseDetail' | 'lesson' | 'admin' | 'courseEditor' | 'certificate' | 'analytics' | 'articleDetail' | 'articleEditor' | 'instructorEditor' | 'studentEditor' | 'instructorCourseDashboard' | 'community' | 'projectDetail' | 'projectEditor' | 'partnerships' | 'eventEditor' | 'privacy' | 'terms' | 'team' | 'teamMemberEditor' | 'donate' | 'about' | 'annualReport' | 'financialStatement' | 'eventDetail' | 'changePassword' | 'courseLanding' | 'transparencyEditor' | 'supporters' | 'partnerDetail';
 
@@ -651,7 +525,6 @@ export interface AppContextType {
   closeBottleneckModal: () => void;
   openInscriptionModal: (course: Course) => void;
   closeInscriptionModal: () => void;
-  handleEnrollUser: (courseId: string) => Promise<void>;
   completeLesson: (lessonId: string) => void;
   handleCompleteOnboarding: () => Promise<void>;
   handleSaveNote: (lessonId: string, note: string) => void;
