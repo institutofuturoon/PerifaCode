@@ -156,19 +156,20 @@ const Courses: React.FC = () => {
 
             <section id="all-courses" className="scroll-mt-24 relative">
                 
-                {/* Filter Bar Sticky - Clean Design (No Tags) */}
+                {/* Filter Bar Sticky */}
                 <div className="sticky top-[72px] z-30 mb-8 transition-all duration-300">
-                    <div className="bg-[#09090B]/80 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-2xl ring-1 ring-white/5">
+                    <div className="bg-[#09090B]/80 backdrop-blur-xl p-4 rounded-2xl border border-white/10 shadow-2xl ring-1 ring-white/5">
+                        
                         <div className="flex items-center gap-3">
                             
-                            {/* Search Input - Now Grows to Fill Space */}
+                            {/* Search Input - Full Width */}
                             <div className="relative flex-grow group">
                                 <input
                                     type="search"
                                     placeholder="Buscar por título, tecnologia ou assunto..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-10 py-2.5 bg-[#18181B] hover:bg-[#202024] rounded-xl border border-white/5 focus:border-[#8a4add]/50 focus:ring-1 focus:ring-[#8a4add]/50 focus:outline-none transition-all text-sm text-white placeholder-gray-500"
+                                    className="w-full pl-10 pr-10 py-3 bg-[#18181B] hover:bg-[#202024] rounded-xl border border-white/5 focus:border-[#8a4add]/50 focus:ring-1 focus:ring-[#8a4add]/50 focus:outline-none transition-all text-sm text-white placeholder-gray-500"
                                 />
                                 <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500 group-focus-within:text-[#8a4add] transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -187,7 +188,7 @@ const Courses: React.FC = () => {
                             {/* Toggle Filters Button */}
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className={`flex-shrink-0 p-2.5 rounded-xl border transition-all duration-200 ${
+                                className={`flex-shrink-0 p-3 rounded-xl border transition-all duration-200 ${
                                     showFilters || (selectedLevel !== 'Todos' || selectedFormat !== 'Todos' || activeTrack !== 'Todos')
                                         ? 'bg-[#8a4add] text-white border-[#8a4add]' 
                                         : 'bg-[#18181B] text-gray-400 border-white/5 hover:bg-[#202024] hover:text-white'
@@ -200,8 +201,8 @@ const Courses: React.FC = () => {
 
                         {/* Advanced Filters Panel */}
                         {showFilters && (
-                            <div className="mt-2 pt-3 border-t border-white/5 grid grid-cols-2 md:flex gap-3 animate-fade-in">
-                                {/* Track Filter (Moved here) */}
+                            <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 md:flex gap-3 animate-fade-in">
+                                {/* Track Filter */}
                                 <div className="relative w-full md:w-auto flex-1">
                                     <select 
                                         value={activeTrack} 

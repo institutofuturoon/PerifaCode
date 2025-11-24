@@ -107,7 +107,7 @@ const ExploreCoursesPanel: React.FC = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
-                <div className="relative w-full md:w-96">
+                <div className="relative w-full md:flex-1">
                     <input 
                         type="search" 
                         placeholder="Buscar curso..." 
@@ -117,16 +117,22 @@ const ExploreCoursesPanel: React.FC = () => {
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>
-                <div className="flex gap-2 overflow-x-auto max-w-full no-scrollbar">
-                    {tracks.map(track => (
-                        <button 
-                            key={track}
-                            onClick={() => setActiveTrack(track)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${activeTrack === track ? 'bg-[#8a4add] text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-                        >
-                            {track}
-                        </button>
-                    ))}
+                
+                <div className="w-full md:w-auto relative">
+                    <select 
+                        value={activeTrack}
+                        onChange={(e) => setActiveTrack(e.target.value)}
+                        className="w-full md:w-48 appearance-none bg-black/30 text-gray-300 py-2 pl-4 pr-10 rounded-lg border border-white/10 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
+                    >
+                        {tracks.map(track => (
+                            <option key={track} value={track}>
+                                {track === 'Todos' ? 'Trilha: Todas' : track}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </div>
                 </div>
             </div>
 
