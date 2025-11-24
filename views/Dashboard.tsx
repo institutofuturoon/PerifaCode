@@ -355,7 +355,7 @@ const Dashboard: React.FC = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-4">
                                             <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-gray-400 hover:text-white transition-colors">Painel</button>
                                             <button onClick={() => handleEditCourse(course.id)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
-                                            <button onClick={() => handleDeleteCourse(course.id)} className="text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">Excluir</button>
+                                            <button onClick={() => handleDeleteCourse(course.id)} className="text-red-500 hover:text-red-400 transition-colors">Excluir</button>
                                         </td>
                                     </tr>
                                 ))

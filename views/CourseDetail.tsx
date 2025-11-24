@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Lesson, Module, Course } from '../types';
+import { Lesson, Module, Course, User } from '../types';
 import { useAppContext } from '../App';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
@@ -18,28 +18,32 @@ const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }
     </div>
 );
 
-const LessonItem: React.FC<{ lesson: Lesson, index: number }> = ({ lesson, index }) => {
+const LessonItem: React.FC<{ lesson: Lesson, index: number, courseId: string }> = ({ lesson, index, courseId }) => {
+    const navigate = useNavigate();
     const icons = {
         video: <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
         text: <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
     };
 
     return (
-        <div className="w-full flex justify-between items-center py-2 px-3 text-left hover:bg-white/5 rounded-md transition-colors group">
+        <button 
+            onClick={() => navigate(`/course/${courseId}/lesson/${lesson.id}`)}
+            className="w-full flex justify-between items-center py-3 px-4 text-left hover:bg-white/10 rounded-lg transition-colors group border border-transparent hover:border-white/5"
+        >
             <div className="flex items-center gap-3">
                 <span className={`text-[#c4b5fd] ${lesson.type === 'video' ? 'opacity-100' : 'opacity-70'}`}>{icons[lesson.type]}</span>
-                <span className="font-medium text-gray-300 text-xs group-hover:text-white transition-colors">{`${index + 1}. ${lesson.title}`}</span>
+                <span className="font-medium text-gray-300 text-sm group-hover:text-white transition-colors">{`${index + 1}. ${lesson.title}`}</span>
             </div>
             <span className="text-[10px] font-mono text-gray-500">{lesson.duration}</span>
-        </div>
+        </button>
     );
 };
 
-const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, index }) => {
+const ModuleAccordion: React.FC<{ module: Module, index: number, courseId: string }> = ({ module, index, courseId }) => {
     const [isOpen, setIsOpen] = useState(index === 0);
 
     return (
-        <div className="border border-white/10 rounded-lg overflow-hidden bg-[#121212] transition-all duration-300 hover:border-white/20">
+        <div className="border border-white/10 rounded-xl overflow-hidden bg-[#121212] transition-all duration-300 hover:border-white/20">
             <button 
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between p-4 text-left bg-white/5 hover:bg-white/10 transition-colors"
@@ -54,7 +58,7 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="p-2 space-y-1">
                     {module.lessons.map((lesson, i) => (
-                        <LessonItem key={lesson.id} lesson={lesson} index={i} />
+                        <LessonItem key={lesson.id} lesson={lesson} index={i} courseId={courseId} />
                     ))}
                 </div>
             </div>
@@ -62,120 +66,160 @@ const ModuleAccordion: React.FC<{ module: Module, index: number }> = ({ module, 
     );
 };
 
+const ClassmateRow: React.FC<{ student: User }> = ({ student }) => (
+    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/5">
+        <img src={student.avatarUrl} alt={student.name} className="w-8 h-8 rounded-full border border-white/10" />
+        <div>
+            <p className="text-xs font-bold text-white">{student.name}</p>
+            <p className="text-[10px] text-gray-500">Aluno Interessado</p>
+        </div>
+    </div>
+)
+
 const CourseDetail: React.FC = () => {
-    const { courses, openInscriptionModal, user, instructors, showToast } = useAppContext();
+    const { courses, openInscriptionModal, user, instructors, users, showToast } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
 
     const course = useMemo(() => courses.find(c => c.slug === courseId || c.id === courseId), [courses, courseId]);
     const instructor = useMemo(() => instructors.find(i => i.id === course?.instructorId), [instructors, course]);
 
+    // Mock logic for "Interested Students" - In a real app, this would filter by a specific field
+    const interestedStudents = useMemo(() => users.filter(u => u.role === 'student').slice(0, 6), [users]);
+
     if (!course) {
         return <div className="text-center py-20">Curso não encontrado.</div>;
     }
 
+    const isOnlineAndOpen = course.format === 'online' && course.enrollmentStatus === 'open';
+    const isPresentialOrWaitlist = !isOnlineAndOpen;
+
     const handleEnroll = () => {
-        if (user) {
+        if (user && isOnlineAndOpen) {
             const firstLesson = course.modules?.[0]?.lessons?.[0];
             if (firstLesson) {
-                // Simular inscrição se necessário (adicionar ID do curso aos cursos do usuário no backend)
-                // Por enquanto, apenas redireciona, assumindo "auto-matrícula" ao clicar.
-                showToast(`🚀 Você está acessando ${course.title}! Bons estudos.`);
                 navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
             } else {
                 showToast("⚠️ Este curso ainda não tem aulas cadastradas.");
             }
         } else {
-            // Se não logado, abre o modal de "interesse" que levará ao registro
             openInscriptionModal(course);
-        }
-    };
-
-    const getStatusBadge = () => {
-        switch(course.enrollmentStatus) {
-            case 'open': return <Badge text="Matrículas Abertas" variant="success" />;
-            case 'closed': return <Badge text="Turma Lotada" variant="danger" />;
-            case 'soon': return <Badge text="Em Breve" variant="warning" />;
-            default: return <Badge text="Curso Online" variant="default" />;
         }
     };
 
     return (
         <div className="bg-[#09090B] min-h-screen">
             <SEO 
-                title={`${course.title} | Curso FuturoOn`}
-                description={course.description}
-                image={course.imageUrl}
+                title={`${course.title} | Workspace`}
+                description={`Área do aluno para o curso ${course.title}.`}
             />
             
-            {/* Hero */}
-            <div className="relative py-20 md:py-24 bg-black/20 overflow-hidden">
-                <div className="absolute inset-0">
-                    <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover opacity-20 blur-sm" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#09090B] via-[#09090B]/80 to-transparent"></div>
-                </div>
-                
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-end">
-                        <div className="flex-1">
-                            {getStatusBadge()}
-                            <h1 className="text-3xl md:text-5xl font-black text-white mb-4 leading-tight">{course.title}</h1>
-                            <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-2xl">{course.description}</p>
-                            
-                            <div className="flex items-center gap-4 mt-6">
-                                <img src={instructor?.avatarUrl || 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/default-avatar.png'} alt={instructor?.name} className="w-10 h-10 rounded-full border border-white/20" />
-                                <div>
-                                    <p className="text-sm font-bold text-white">{instructor?.name || 'Equipe FuturoOn'}</p>
-                                    <p className="text-xs text-gray-400">{instructor?.title || 'Instrutor'}</p>
-                                </div>
+            {/* Workspace Header */}
+            <div className="bg-[#121212] border-b border-white/10 pt-8 pb-8 px-4 md:px-8">
+                <div className="container mx-auto max-w-6xl">
+                    <button onClick={() => navigate('/dashboard')} className="text-sm text-gray-500 hover:text-white mb-6 flex items-center gap-2 transition-colors">
+                        <span>&larr;</span> Voltar ao Painel
+                    </button>
+                    
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border ${isOnlineAndOpen ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
+                                    {isOnlineAndOpen ? 'Em Andamento' : (course.format === 'presencial' ? 'Turma Presencial' : 'Lista de Espera')}
+                                </span>
+                                <span className="text-xs text-gray-500 font-mono">v1.0</span>
                             </div>
-
-                            {/* CTA for Mobile - Improves conversion */}
-                            <div className="mt-8 md:hidden">
-                                 <button 
-                                    onClick={handleEnroll}
-                                    className={`w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg ${user ? 'bg-green-600 text-white shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20'}`}
-                                >
-                                    {user ? 'Acessar Conteúdo' : 'Inscrever-se Grátis'}
-                                </button>
-                            </div>
+                            <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{course.title}</h1>
+                            <p className="text-gray-400 text-sm max-w-2xl">{course.description}</p>
                         </div>
+                        
+                        {isOnlineAndOpen && (
+                            <button 
+                                onClick={handleEnroll}
+                                className="bg-[#8a4add] hover:bg-[#7c3aed] text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-[#8a4add]/20 transition-all flex items-center gap-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" /></svg>
+                                Continuar Aula
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 max-w-6xl">
                 <div className="grid lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                            <h3 className="text-xl font-bold text-white mb-4">Sobre o Curso</h3>
-                            <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{course.longDescription}</p>
-                        </div>
-
-                        <div>
-                            <h3 className="text-xl font-bold text-white mb-4">Conteúdo do Curso</h3>
-                            <div className="space-y-3">
-                                {course.modules.map((module, i) => (
-                                    <ModuleAccordion key={module.id} module={module} index={i} />
-                                ))}
+                    
+                    {/* Left Content Column */}
+                    <div className="lg:col-span-2 space-y-8">
+                        
+                        {/* Scenario 1: Online Course Content */}
+                        {isOnlineAndOpen ? (
+                            <div className="animate-fade-in">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-xl font-bold text-white">Conteúdo do Curso</h3>
+                                    <span className="text-xs text-gray-500">{course.modules.reduce((acc, m) => acc + m.lessons.length, 0)} aulas</span>
+                                </div>
+                                <div className="space-y-3">
+                                    {course.modules.map((module, i) => (
+                                        <ModuleAccordion key={module.id} module={module} index={i} courseId={course.id} />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        ) : (
+                            /* Scenario 2: Waiting List / Class Hub */
+                            <div className="bg-[#121212] border border-white/10 rounded-2xl p-8 text-center animate-fade-in">
+                                <div className="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                                    ⏳
+                                </div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Aguardando Início da Turma</h3>
+                                <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                                    Este é um curso {course.format}. O conteúdo será liberado ou ministrado presencialmente conforme o cronograma da turma. Fique atento ao seu email!
+                                </p>
+                                <div className="bg-black/30 p-4 rounded-xl border border-white/5 text-left max-w-md mx-auto">
+                                    <p className="text-xs text-gray-500 uppercase font-bold mb-3">Status da sua inscrição</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse"></div>
+                                        <span className="text-white font-medium">Pré-inscrição Recebida</span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-2">Nossa equipe entrará em contato em breve para confirmar sua vaga.</p>
+                                </div>
+                            </div>
+                        )}
+
                     </div>
 
+                    {/* Right Sidebar Column */}
                     <div className="space-y-6">
                         <div className="bg-white/5 p-6 rounded-xl border border-white/10 sticky top-24">
                             <div className="space-y-4 mb-6">
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Duração" value={course.duration} />
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>} label="Nível" value={course.skillLevel} />
-                                <InfoCard icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} label="Formato" value={course.format} />
+                                <InfoCard icon="⏱️" label="Duração" value={course.duration} />
+                                <InfoCard icon="📊" label="Nível" value={course.skillLevel} />
+                                <InfoCard icon="📍" label="Formato" value={course.format} />
                             </div>
                             
-                            <button 
-                                onClick={handleEnroll}
-                                className={`w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg hidden md:block ${user ? 'bg-green-600 text-white shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20'}`}
-                            >
-                                {user ? 'Acessar Conteúdo' : 'Inscrever-se Grátis'}
-                            </button>
+                            {instructor && (
+                                <div className="pt-6 border-t border-white/10">
+                                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-3">Instrutor</p>
+                                    <div className="flex items-center gap-3">
+                                        <img src={instructor.avatarUrl} alt={instructor.name} className="w-10 h-10 rounded-full border border-white/20" />
+                                        <div>
+                                            <p className="text-sm font-bold text-white">{instructor.name}</p>
+                                            <p className="text-xs text-gray-400">{instructor.title || 'Professor'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* List of Interested Students (Community Feeling) */}
+                            {isPresentialOrWaitlist && (
+                                <div className="pt-6 mt-6 border-t border-white/10">
+                                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-3">Quem vai estudar com você</p>
+                                    <div className="space-y-2">
+                                        {interestedStudents.map(s => <ClassmateRow key={s.id} student={s} />)}
+                                    </div>
+                                    <p className="text-center text-[10px] text-gray-600 mt-3">+ outros {Math.floor(Math.random() * 20) + 5} alunos interessados</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

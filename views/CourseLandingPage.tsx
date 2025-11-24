@@ -84,9 +84,6 @@ const CourseLandingPage: React.FC = () => {
     // Find course by ID or Slug
     const currentCourse = courses.find(c => c.id === courseId || c.slug === courseId);
     
-    // If course doesn't exist, handle graceful redirect/error state via effect or render
-    // Moving this check inside render to avoid state updates during render phase
-    
     const instructor = instructors.find(i => i.id === currentCourse?.instructorId);
     
     // Fallbacks for Marketing Content
@@ -107,25 +104,44 @@ const CourseLandingPage: React.FC = () => {
 
     const hasRealModules = currentCourse?.modules && currentCourse.modules.length > 0;
 
+    // --- Lógica Central do Botão de Ação (CTA) ---
+    // Separação clara entre Fluxo Institucional e Fluxo Workspace
     const handleCtaClick = () => {
         if (!currentCourse) return;
 
-        if (user) {
-             // Se logado, vai direto para a primeira aula (Workspace)
-             const firstLesson = currentCourse.modules?.[0]?.lessons?.[0];
-             if (firstLesson) {
-                 showToast(`👋 Bem-vindo de volta! Acessando ${currentCourse.title}...`);
-                 navigate(`/course/${currentCourse.id}/lesson/${firstLesson.id}`);
-             } else {
-                 showToast("⚠️ Este curso está em construção. As aulas serão liberadas em breve!");
-                 // Fallback: Vai para o detalhe do curso "interno"
-                 navigate(`/course/${currentCourse.id}`);
-             }
-        } else {
-            // Se não, abre modal de interesse/cadastro
+        const isOnline = currentCourse.format === 'online' || currentCourse.format === 'hibrido';
+        const isOpen = currentCourse.enrollmentStatus === 'open';
+        const isPresential = currentCourse.format === 'presencial';
+        const isSoon = currentCourse.enrollmentStatus === 'soon' || currentCourse.enrollmentStatus === 'closed';
+
+        // Caso 1: Curso Presencial ou "Em Breve" (Sempre abre formulário de interesse, mesmo logado)
+        if (isPresential || isSoon) {
             openInscriptionModal(currentCourse);
+            return;
+        }
+
+        // Caso 2: Curso Online e Aberto
+        if (user) {
+             // Se logado -> Entra no Workspace (Sistema de Aulas)
+             navigate(`/course/${currentCourse.id}`);
+        } else {
+            // Se deslogado -> Vai para Login/Registro (fluxo de onboarding)
+            navigate('/register');
         }
     }
+
+    const getCtaLabel = () => {
+        if (!currentCourse) return "Carregando...";
+        if (currentCourse.enrollmentStatus === 'soon') return "Entrar na Lista de Espera 🔔";
+        if (currentCourse.enrollmentStatus === 'closed') return "Avise-me quando abrir 🔒";
+        
+        if (currentCourse.format === 'presencial') {
+            return user ? "Inscrever-se na Turma 📝" : "Pré-inscrição Gratuita 📝";
+        }
+        
+        // Online e Aberto
+        return user ? "Acessar Sala de Aula 🚀" : "Começar Agora (Grátis) 🔥";
+    };
 
     // Fallback Icons Generator
     const getIconForTitle = (title: string): React.ReactNode => {
@@ -196,9 +212,9 @@ const CourseLandingPage: React.FC = () => {
                     <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={handleCtaClick}
-                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_-10px_rgba(138,74,221,0.5)] text-lg border border-white/10 ${user ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white'}`}
+                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_-10px_rgba(138,74,221,0.5)] text-lg border border-white/10 ${currentCourse.enrollmentStatus === 'open' && currentCourse.format === 'online' ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white'}`}
                         >
-                            {user ? 'Acessar Conteúdo 🚀' : 'Quero Garantir Minha Vaga 🔥'}
+                            {getCtaLabel()}
                         </button>
                         {!user && (
                             <p className="text-xs text-gray-500 mt-2 sm:mt-0">100% Gratuito &bull; Vagas Limitadas</p>
@@ -232,7 +248,7 @@ const CourseLandingPage: React.FC = () => {
                                 </p>
                                 <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mt-2 mb-6">
                                     {curriculumSection?.title || "O que vamos aprender"}
-                                </h2>
+                                </h2 >
                                 <p className="text-gray-400 leading-relaxed mb-8">
                                     Uma jornada estruturada do zero ao avançado. Cada módulo foi desenhado para construir conhecimento sólido e aplicável no mercado de trabalho.
                                 </p>
@@ -290,9 +306,9 @@ const CourseLandingPage: React.FC = () => {
                      </p>
                      <button
                         onClick={handleCtaClick}
-                        className={`w-full sm:w-auto font-bold py-4 px-12 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_50px_-10px_rgba(138,74,221,0.6)] text-lg ${user ? 'bg-green-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                        className={`w-full sm:w-auto font-bold py-4 px-12 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_50px_-10px_rgba(138,74,221,0.6)] text-lg ${currentCourse.enrollmentStatus === 'open' && currentCourse.format === 'online' ? 'bg-green-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
                     >
-                        {user ? 'Ir para a Sala de Aula' : 'Fazer Inscrição Gratuita'}
+                        {getCtaLabel()}
                     </button>
                     <p className="mt-6 text-xs text-gray-500 uppercase tracking-widest font-bold">
                         Junte-se à tropa da FuturoOn

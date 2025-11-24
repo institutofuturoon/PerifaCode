@@ -10,22 +10,10 @@ interface OnsiteCourseCardProps {
 
 const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
     const navigate = useNavigate();
-    const { user, showToast } = useAppContext();
+    const { user } = useAppContext();
 
     const navigateToCourse = (course: Course) => {
-        if (user) {
-            // Se logado, tenta ir para a primeira aula
-            const firstLesson = course.modules?.[0]?.lessons?.[0];
-            if (firstLesson) {
-                navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
-                return;
-            } else {
-                showToast("⚠️ Este curso ainda não tem aulas disponíveis. Fique atento!");
-                return;
-            }
-        }
-        
-        // Se não logado ou sem aulas, fluxo normal de marketing
+        // Sempre redireciona para a página de detalhes/landing para visualização prévia
         if (course.heroContent) {
             navigate(`/course-landing/${course.slug || course.id}`);
         } else {

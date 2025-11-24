@@ -29,7 +29,7 @@ const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => v
             <button
                 className="bg-white text-black font-bold py-3.5 px-8 rounded-lg hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm flex items-center gap-2"
             >
-                Acessar Agora
+                Saiba Mais
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </button>
         </div>
@@ -47,20 +47,9 @@ const Courses: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const handleCourseSelect = (course: Course) => {
-    if (user) {
-        const firstLesson = course.modules?.[0]?.lessons?.[0];
-        if (firstLesson) {
-            navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
-        } else {
-            showToast("⚠️ Este curso ainda não tem aulas disponíveis. Fique atento!");
-        }
-    } else {
-        if (course.heroContent) {
-            navigate(`/course-landing/${course.slug || course.id}`);
-        } else {
-            navigate(`/course/${course.slug || course.id}`);
-        }
-    }
+    // FLUXO INSTITUCIONAL: Sempre redireciona para a Landing Page (Página de Venda/Explicação)
+    // O aluno só entra no Workspace (Sala de Aula) através da Landing Page.
+    navigate(`/course-landing/${course.slug || course.id}`);
   };
 
   const getCourseProgress = (course: Course) => {
