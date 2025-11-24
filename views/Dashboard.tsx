@@ -260,7 +260,8 @@ const Dashboard: React.FC = () => {
     const { 
         user, users, courses, articles, team, events,
         handleDeleteArticle, handleToggleArticleStatus,
-        handleDeleteUser, handleDeleteCourse, handleDeleteEvent
+        handleDeleteUser, handleDeleteCourse, handleDeleteEvent,
+        handleSaveCourse
     } = useAppContext();
     const navigate = useNavigate();
 
@@ -310,6 +311,36 @@ const Dashboard: React.FC = () => {
     const handleCreateCourse = () => navigate('/admin/course-editor/new');
     const handleEditCourse = (id: string) => navigate(`/admin/course-editor/${id}`);
     
+    const handleDuplicateCourse = (originalCourse: Course) => {
+        if (!window.confirm(`Deseja criar uma cópia de "${originalCourse.title}"?`)) return;
+
+        const timestamp = Date.now();
+        
+        const newModules = originalCourse.modules.map(m => ({
+            ...m,
+            id: `mod_${timestamp}_${Math.random().toString(36).substr(2, 5)}`,
+            lessons: m.lessons.map(l => ({
+                ...l,
+                id: `les_${timestamp}_${Math.random().toString(36).substr(2, 5)}`
+            }))
+        }));
+
+        const newCourse: Course = {
+            ...originalCourse,
+            id: `course_${timestamp}`,
+            title: `${originalCourse.title} (Cópia)`,
+            slug: `${originalCourse.slug || originalCourse.id}-copy-${timestamp}`,
+            modules: newModules,
+            enrollmentStatus: 'closed', // Start as closed/draft
+            seo: {
+                ...originalCourse.seo,
+                metaTitle: `${originalCourse.seo?.metaTitle || originalCourse.title} (Cópia)`
+            }
+        };
+
+        handleSaveCourse(newCourse);
+    };
+
     // Renderers
     const renderOverview = () => (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -353,7 +384,8 @@ const Dashboard: React.FC = () => {
                                         <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded border bg-[#8a4add]/10 text-[#c4b5fd] border-[#8a4add]/20">{course.track}</span></td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">{course.modules.reduce((acc, m) => acc + m.lessons.length, 0)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-4">
-                                            <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-gray-400 hover:text-white transition-colors">Painel</button>
+                                            <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-gray-400 hover:text-white transition-colors" title="Ver Painel da Turma">Painel</button>
+                                            <button onClick={() => handleDuplicateCourse(course)} className="text-purple-400 hover:text-purple-300 transition-colors" title="Duplicar Curso">Duplicar</button>
                                             <button onClick={() => handleEditCourse(course.id)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
                                             <button onClick={() => handleDeleteCourse(course.id)} className="text-red-500 hover:text-red-400 transition-colors">Excluir</button>
                                         </td>

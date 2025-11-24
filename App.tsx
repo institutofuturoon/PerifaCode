@@ -889,9 +889,29 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const AppContent: React.FC = () => {
-    const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeBottleneckModal, closeInscriptionModal } = useAppContext();
+    const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeBottleneckModal, closeInscriptionModal, showToast } = useAppContext();
     
     const location = useLocation();
+    const navigate = useNavigate();
+
+    // --- Route Guards ---
+    useEffect(() => {
+        if (user) {
+            // Force password change if flag is set, but only if not already there
+            if (user.mustChangePassword && location.pathname !== '/change-password') {
+                showToast("⚠️ Você precisa alterar sua senha temporária.");
+                navigate('/change-password', { replace: true });
+                return;
+            }
+
+            // Force profile completion if status is incomplete, but only if not already there or changing password
+            if (!user.mustChangePassword && user.profileStatus === 'incomplete' && location.pathname !== '/complete-profile') {
+                showToast("📝 Complete seu perfil para continuar.");
+                navigate('/complete-profile', { replace: true });
+                return;
+            }
+        }
+    }, [user, location.pathname, navigate, showToast]);
     
     // Updated logic: Consider lessons, certificates, dashboard, admin, profile and change password as "Workspace" routes
     // This effectively hides the global Institutional Header/Footer on these pages.
