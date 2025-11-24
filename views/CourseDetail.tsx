@@ -185,7 +185,8 @@ const CourseDetail: React.FC = () => {
                             <motion.button
                                 onClick={handleContinue}
                                 whileHover={{ scale: 1.05 }}
-                                className="hidden md:flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-xs font-bold hover:shadow-lg hover:shadow-[#8a4add]/40 transition-all"
+                                whileTap={{ scale: 0.95 }}
+                                className="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-xs font-bold hover:shadow-lg hover:shadow-[#8a4add]/50 transition-all"
                             >
                                 <span>Continuar</span>
                                 <ChevronRight size={16} />
@@ -218,21 +219,31 @@ const CourseDetail: React.FC = () => {
                             </div>
 
                             {/* CTA for Mobile - Improves conversion */}
-                            <div className="mt-8 md:hidden">
+                            <div className="mt-8 md:hidden flex flex-col gap-3">
                                  {user && isEnrolled ? (
-                                    <button 
+                                    <motion.button 
                                         onClick={handleContinue}
-                                        className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/30"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="w-full font-bold py-4 px-6 rounded-lg hover:shadow-xl shadow-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-[#8a4add]/40 transition-all flex items-center justify-center gap-2"
                                     >
-                                        {progress === 100 ? 'Revisar Curso' : progress === 0 ? 'Começar Agora' : 'Continuar de onde parei'}
-                                    </button>
+                                        <span>{progress === 100 ? 'Revisar Curso' : progress === 0 ? 'Começar Agora' : 'Continuar Aprendendo'}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M8 5v14l11-7z" />
+                                        </svg>
+                                    </motion.button>
                                  ) : (
-                                    <button 
+                                    <motion.button 
                                         onClick={handleEnroll}
-                                        className="w-full font-bold py-3 px-8 rounded-xl hover:opacity-90 transition-all shadow-lg bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/20"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="w-full font-bold py-4 px-6 rounded-lg hover:shadow-xl shadow-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-[#8a4add]/40 transition-all flex items-center justify-center gap-2"
                                     >
-                                        {user ? 'Começar Agora' : 'Inscrever-se Grátis'}
-                                    </button>
+                                        <span>{user ? 'Começar Agora' : 'Inscrever-se Grátis'}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M8 5v14l11-7z" />
+                                        </svg>
+                                    </motion.button>
                                  )}
                             </div>
                         </div>

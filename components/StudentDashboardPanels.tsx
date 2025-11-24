@@ -42,12 +42,17 @@ export const ContinueLearningSection: React.FC<{
         />
       </div>
 
-      <button
+      <motion.button
         onClick={() => navigate(`/course/${latestInProgress.course.id}/lesson/${nextLesson.id}`)}
-        className="w-full bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="w-full bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-4 rounded-lg hover:shadow-lg hover:shadow-[#8a4add]/40 transition-all flex items-center justify-center gap-2"
       >
-        Continuar Aula
-      </button>
+        <span>Continuar Aula</span>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg>
+      </motion.button>
     </motion.div>
   );
 };

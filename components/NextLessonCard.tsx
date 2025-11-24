@@ -27,7 +27,7 @@ const NextLessonCard: React.FC<NextLessonCardProps> = ({
       transition={{ duration: 0.5 }}
       className="mb-12"
     >
-      <div className="rounded-xl bg-gradient-to-r from-[#8a4add]/15 to-[#f27983]/10 border border-white/10 p-6 md:p-8">
+      <div className="rounded-lg bg-[#1a1a2e] border border-gray-700/50 p-6 md:p-8">
         
         {/* HEADER */}
         <div className="mb-5">
@@ -79,10 +79,11 @@ const NextLessonCard: React.FC<NextLessonCardProps> = ({
           {/* CTA Button */}
           <motion.button
             onClick={onContinue}
-            whileHover={{ opacity: 0.9 }}
-            className="w-full mt-4 px-6 py-3 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full mt-4 px-6 py-4 rounded-lg bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold text-sm flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#8a4add]/40 transition-all shadow-lg shadow-[#8a4add]/30"
           >
-            <Play size={16} />
+            <Play size={18} />
             <span>Continuar Agora</span>
           </motion.button>
         </div>

@@ -111,18 +111,25 @@ const PreLessonScreen: React.FC<PreLessonScreenProps> = ({
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <button
+            <motion.button
               onClick={onBack}
-              className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors text-sm"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex-1 px-4 py-3 bg-gray-700/50 hover:bg-gray-600/50 text-white font-semibold rounded-lg transition-all text-sm border border-gray-600/50"
             >
-              Cancelar
-            </button>
-            <button
+              Voltar
+            </motion.button>
+            <motion.button
               onClick={onStart}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:from-[#9a5aed] hover:to-[#ff3a50] text-white font-bold rounded-lg transition-all text-sm shadow-lg shadow-[#8a4add]/30"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-lg transition-all text-sm shadow-lg shadow-[#8a4add]/30 hover:shadow-xl hover:shadow-[#8a4add]/50 flex items-center justify-center gap-2"
             >
-              Iniciar Aula
-            </button>
+              <span>Iniciar Aula</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </motion.button>
           </motion.div>
         </motion.div>
       </div>
