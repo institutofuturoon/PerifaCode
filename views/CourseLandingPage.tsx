@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
-import { Course, CourseBenefit, Module } from '../types';
+import { Course, CourseBenefit, Module, Lesson } from '../types';
 import SEO from '../components/SEO';
 
 // --- Helper Components ---
@@ -17,31 +17,55 @@ const Section: React.FC<{ children: React.ReactNode, className?: string, style?:
 
 const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> = ({ children, subtitle }) => (
     <div className="text-center mb-16 max-w-3xl mx-auto">
-        {subtitle && <p className="font-semibold text-sm text-[#c4b5fd] uppercase tracking-wider">{subtitle}</p>}
-        <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mt-2">{children}</h2>
-        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-6"></div>
+        {subtitle && <p className="font-semibold text-sm text-[#c4b5fd] uppercase tracking-wider mb-2">{subtitle}</p>}
+        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">{children}</h2>
+        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-6 rounded-full"></div>
     </div>
 );
 
 const BenefitCard: React.FC<CourseBenefit & { icon: React.ReactNode }> = ({ icon, title, description }) => (
-    <div className="bg-white/5 p-8 rounded-2xl border border-white/10 text-left h-full flex flex-col">
+    <div className="bg-[#121214] p-8 rounded-2xl border border-white/5 hover:border-[#8a4add]/30 transition-all duration-300 text-left h-full flex flex-col hover:-translate-y-1 shadow-lg hover:shadow-[#8a4add]/10">
         <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-to-br from-[#8a4add] to-[#c4b5fd] text-white mb-6 shadow-lg shadow-[#8a4add]/20">
             {icon}
         </div>
-        <h3 className="text-xl font-bold text-white">{title}</h3>
-        <p className="mt-2 text-sm text-gray-400 flex-grow">{description}</p>
+        <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
+        <p className="text-sm text-gray-400 flex-grow leading-relaxed">{description}</p>
     </div>
 );
 
 const CurriculumItemCard: React.FC<{ title: string, description: string, index: number }> = ({ title, description, index }) => (
-    <div className="flex items-start gap-4 p-6 bg-white/5 rounded-lg border border-transparent hover:border-white/10 transition-colors">
-        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#8a4add]/20 text-[#c4b5fd] font-bold text-lg flex items-center justify-center mt-1">
+    <div className="flex items-start gap-4 p-6 bg-white/5 rounded-xl border border-transparent hover:border-white/10 transition-colors">
+        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-[#8a4add]/10 text-[#c4b5fd] font-bold text-lg flex items-center justify-center mt-1 border border-[#8a4add]/20">
             {index + 1}
         </div>
         <div>
             <h4 className="font-bold text-white text-lg">{title}</h4>
             <p className="text-gray-400 text-sm mt-1">{description}</p>
         </div>
+    </div>
+);
+
+// Fallback component when Marketing Curriculum is missing but Real Modules exist
+const RealModuleList: React.FC<{ modules: Module[] }> = ({ modules }) => (
+    <div className="space-y-4 max-w-3xl mx-auto">
+        {modules.map((module, idx) => (
+            <div key={module.id} className="border border-white/10 rounded-xl overflow-hidden bg-[#121212]">
+                <div className="p-4 bg-white/5 flex justify-between items-center">
+                    <h4 className="font-bold text-white text-sm md:text-base">
+                        <span className="text-[#8a4add] mr-2">Módulo {idx + 1}:</span> {module.title}
+                    </h4>
+                    <span className="text-xs text-gray-500 font-mono">{module.lessons.length} aulas</span>
+                </div>
+                <div className="p-4 grid gap-2">
+                    {module.lessons.map((lesson, lIdx) => (
+                        <div key={lesson.id} className="flex items-center gap-3 text-gray-400 text-sm pl-2 border-l border-white/10">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#8a4add]"></span>
+                            <span>{lesson.title}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        ))}
     </div>
 );
 
@@ -52,21 +76,38 @@ const CourseLandingPage: React.FC = () => {
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
 
-    const currentCourse = courses.find(c => c.id === courseId);
+    // Find course by ID or Slug
+    const currentCourse = courses.find(c => c.id === courseId || c.slug === courseId);
     
+    // If course doesn't exist, return simple error (useEffect will redirect if needed, but we handle it gracefully here)
     if (!currentCourse) {
-        return <div className="text-center py-20">Curso não encontrado.</div>;
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
+                <h2 className="text-2xl font-bold text-white mb-4">Curso não encontrado 😕</h2>
+                <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] hover:underline">Voltar para o catálogo</button>
+            </div>
+        );
     }
     
     const instructor = instructors.find(i => i.id === currentCourse.instructorId);
     
-    if (!currentCourse.heroContent) {
-        // This case should be handled by the router, but as a fallback:
-        navigate(`/course/${courseId}`);
-        return null; // Return null to prevent rendering anything while navigating
-    }
-    
-    const { heroContent, benefitsSection, curriculumSection, methodologySection, ctaSection } = currentCourse;
+    // Destructure marketing content with Fallbacks for robustness
+    const heroContent = currentCourse.heroContent || {
+        subtitle: "Formação Completa",
+        titleLine1: "Domine",
+        titleAccent: currentCourse.title,
+        description: currentCourse.description
+    };
+
+    const benefitsSection = currentCourse.benefitsSection;
+    const curriculumSection = currentCourse.curriculumSection;
+    const methodologySection = currentCourse.methodologySection;
+    const ctaSection = currentCourse.ctaSection || {
+        title: "Comece agora mesmo",
+        description: "Não deixe para depois. Sua carreira em tecnologia começa com um clique."
+    };
+
+    const hasRealModules = currentCourse.modules && currentCourse.modules.length > 0;
 
     const handleCtaClick = () => {
         if (user) {
@@ -76,8 +117,9 @@ const CourseLandingPage: React.FC = () => {
                  showToast(`👋 Bem-vindo de volta! Acessando ${currentCourse.title}...`);
                  navigate(`/course/${currentCourse.id}/lesson/${firstLesson.id}`);
              } else {
-                 showToast("⚠️ Este curso ainda não tem aulas disponíveis.");
-                 navigate(`/dashboard`);
+                 showToast("⚠️ Este curso está em construção. As aulas serão liberadas em breve!");
+                 // Fallback: Vai para o detalhe do curso "interno"
+                 navigate(`/course/${currentCourse.id}`);
              }
         } else {
             // Se não, abre modal de interesse/cadastro
@@ -85,70 +127,84 @@ const CourseLandingPage: React.FC = () => {
         }
     }
 
+    // Fallback Icons Generator
     const getIconForTitle = (title: string): React.ReactNode => {
         const iconProps = { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 1.5 };
-        const iconMap: { [key: string]: React.ReactNode } = {
-            "Mercado Corporativo": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6h1.5m-1.5 3h1.5m-1.5 3h1.5M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" /></svg>,
-            "Além do Backend": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM18 12.75l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 18l-1.035.259a3.375 3.375 0 00-2.456 2.456L18 21.75l-.259-1.035a3.375 3.375 0 00-2.456-2.456L14.25 18l1.035-.259a3.375 3.375 0 002.456-2.456L18 12.75z" /></svg>,
-            "Performance e Segurança": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286z" /></svg>,
-            "Carreira Sólida": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 01-8.614 1.44zM2.25 12l8.75-8.75 8.75 8.75M2.25 12l8.75 8.75 8.75-8.75" /></svg>,
-            "Aulas Presenciais e Online": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V3.545M12.75 21h-3.375" /></svg>,
-            "Instrutores do Mercado": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>,
-            "Projetos para Portfólio": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>,
-            "Comunidade e Suporte": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.056 3 12s4.03 8.25 9 8.25z" /></svg>,
-            "Baixo Custo Inicial": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V6.75" /></svg>,
-            "Alcance Global": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A11.953 11.953 0 0112 16.5c-2.998 0-5.74-1.1-7.843-2.918" /></svg>,
-            "Flexibilidade e Autonomia": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-            "Monetize sua Paixão": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V6.75" /></svg>,
-            "Alta Demanda no Mercado": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 01-8.614 1.44zM2.25 12l8.75-8.75 8.75 8.75M2.25 12l8.75 8.75 8.75-8.75" /></svg>,
-            "Tomada de Decisão Inteligente": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
-            "Versatilidade do Python": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>,
-            "Conte Histórias com Dados": <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V5.25A2.25 2.25 0 0018 3H6A2.25 2.25 0 003.75 5.25v12.75A2.25 2.25 0 006 20.25z" /></svg>,
-        };
-        return iconMap[title] || iconMap["Mercado Corporativo"]; // Fallback icon
+        return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
     };
 
     return (
-        <div className="bg-transparent relative">
+        <div className="bg-[#09090B] min-h-screen relative overflow-x-hidden">
              <SEO 
                 title={currentCourse.seo?.metaTitle || currentCourse.title}
                 description={currentCourse.seo?.metaDescription || currentCourse.description}
                 keywords={currentCourse.seo?.keywords}
                 image={currentCourse.imageUrl}
             />
-             <div className="absolute top-8 left-4 sm:left-6 lg:left-8 z-20">
-                <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group text-sm flex items-center gap-2 bg-black/20 backdrop-blur-sm py-2 px-4 rounded-full border border-white/10 hover:border-white/20">
+             
+             {/* Fixed Navigation Bar for Context */}
+             <div className="absolute top-0 left-0 w-full z-50 p-6 flex justify-between items-center pointer-events-none">
+                <button onClick={() => navigate('/courses')} className="pointer-events-auto text-white/70 hover:text-white font-semibold transition-colors group text-sm flex items-center gap-2 bg-black/20 backdrop-blur-md py-2 px-4 rounded-full border border-white/10 hover:border-white/20">
                     <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span>
-                    Voltar para os cursos
+                    Voltar
                 </button>
+                {!user && (
+                    <button onClick={() => navigate('/login')} className="pointer-events-auto text-sm font-bold text-white bg-white/10 hover:bg-white/20 backdrop-blur-md py-2 px-6 rounded-full transition-colors border border-white/10">
+                        Login
+                    </button>
+                )}
             </div>
 
             {/* Hero Section */}
-            <Section className="py-32 md:py-48 text-center relative z-10 bg-grid-pattern">
-                <div className="max-w-4xl mx-auto">
-                    {heroContent.subtitle && <p className="font-semibold text-sm text-[#c4b5fd] uppercase tracking-wider">{heroContent.subtitle}</p>}
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight mt-4">
-                        {heroContent.titleLine1} <span className="text-[#c4b5fd]">{heroContent.titleAccent}</span>
+            <section className="relative min-h-[90vh] flex items-center justify-center text-center pt-20 pb-20 overflow-hidden">
+                {/* Background Layer */}
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#09090B] to-[#09090B] z-10"></div>
+                    <img src={currentCourse.imageUrl} alt="" className="w-full h-full object-cover opacity-20 blur-sm scale-105" />
+                    <div className="absolute inset-0 bg-grid-pattern opacity-20 z-0"></div>
+                </div>
+
+                <div className="container mx-auto px-4 relative z-20 max-w-5xl">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 mb-8 animate-fade-in backdrop-blur-md">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8a4add] opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8a4add]"></span>
+                        </span>
+                        <span className="text-xs font-bold text-[#c4b5fd] uppercase tracking-wide">{heroContent.subtitle || 'Curso Oficial'}</span>
+                    </div>
+
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none text-white mb-8 drop-shadow-2xl">
+                        {heroContent.titleLine1} <br className="hidden md:block" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8a4add] via-[#c4b5fd] to-[#f27983]">
+                            {heroContent.titleAccent}
+                        </span>
                     </h1>
-                    <p className="mt-6 text-lg md:text-xl text-gray-300 leading-relaxed">
+                    
+                    <p className="mt-6 text-lg md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto font-light">
                         {heroContent.description}
                     </p>
-                    <div className="mt-10">
+                    
+                    <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={handleCtaClick}
-                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg ${user ? 'bg-green-600 text-white hover:bg-green-700 shadow-green-500/20' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white shadow-[#8a4add]/30'}`}
+                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_-10px_rgba(138,74,221,0.5)] text-lg border border-white/10 ${user ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white'}`}
                         >
-                            {user ? 'Acessar Conteúdo Agora' : 'Garanta sua Vaga Grátis'}
+                            {user ? 'Acessar Conteúdo 🚀' : 'Quero Garantir Minha Vaga 🔥'}
                         </button>
+                        {!user && (
+                            <p className="text-xs text-gray-500 mt-2 sm:mt-0">100% Gratuito &bull; Vagas Limitadas</p>
+                        )}
                     </div>
                 </div>
-            </Section>
+            </section>
 
-            {/* Benefits Section */}
-            {benefitsSection && (
-                 <Section className="bg-black/20">
-                    <SectionTitle subtitle={benefitsSection.subtitle}>{benefitsSection.title}</SectionTitle>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Benefits Section (Only if configured in Marketing Tab) */}
+            {benefitsSection && benefitsSection.benefits.length > 0 && (
+                 <Section className="bg-[#0c0c0e] border-y border-white/5">
+                    <SectionTitle subtitle={benefitsSection.subtitle || "Por que este curso?"}>
+                        {benefitsSection.title || "O que você ganha"}
+                    </SectionTitle>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {benefitsSection.benefits.map((benefit, index) => (
                             <BenefitCard key={index} {...benefit} icon={getIconForTitle(benefit.title)} />
                         ))}
@@ -156,79 +212,82 @@ const CourseLandingPage: React.FC = () => {
                 </Section>
             )}
 
-            {/* Curriculum Section */}
-            {curriculumSection && (
+            {/* Curriculum Section - Hybrid (Marketing Summary OR Real Modules) */}
+            {(curriculumSection?.items.length || 0) > 0 || hasRealModules ? (
                 <Section>
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="space-y-4">
-                            {curriculumSection.subtitle && <p className="font-semibold text-sm text-[#c4b5fd] uppercase tracking-wider">{curriculumSection.subtitle}</p>}
-                             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">{curriculumSection.title}</h2>
-                            <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mt-4"></div>
+                    <div className="grid lg:grid-cols-5 gap-16">
+                        <div className="lg:col-span-2 space-y-6">
+                            <div className="sticky top-24">
+                                <p className="font-semibold text-sm text-[#c4b5fd] uppercase tracking-wider">
+                                    {curriculumSection?.subtitle || "Ementa Detalhada"}
+                                </p>
+                                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mt-2 mb-6">
+                                    {curriculumSection?.title || "O que vamos aprender"}
+                                </h2>
+                                <p className="text-gray-400 leading-relaxed mb-8">
+                                    Uma jornada estruturada do zero ao avançado. Cada módulo foi desenhado para construir conhecimento sólido e aplicável no mercado de trabalho.
+                                </p>
+                                {instructor && (
+                                    <div className="bg-white/5 p-6 rounded-2xl border border-white/10 flex items-center gap-4">
+                                        <img src={instructor.avatarUrl} alt={instructor.name} className="w-16 h-16 rounded-full object-cover border-2 border-[#8a4add]" />
+                                        <div>
+                                            <p className="text-xs text-gray-400 uppercase font-bold">Seu Instrutor</p>
+                                            <p className="font-bold text-white text-lg">{instructor.name}</p>
+                                            <p className="text-xs text-[#c4b5fd]">{instructor.title}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div className="space-y-4">
-                            {curriculumSection.items.map((item, index) => (
-                                <CurriculumItemCard key={index} {...item} index={index} />
-                            ))}
+                        <div className="lg:col-span-3 space-y-4">
+                            {/* Priority to Marketing Highlights if available, else show real modules */}
+                            {(curriculumSection?.items.length || 0) > 0 ? (
+                                curriculumSection!.items.map((item, index) => (
+                                    <CurriculumItemCard key={index} {...item} index={index} />
+                                ))
+                            ) : (
+                                <RealModuleList modules={currentCourse.modules} />
+                            )}
                         </div>
                     </div>
                 </Section>
-            )}
+            ) : null}
             
             {/* Methodology Section */}
-            {methodologySection && (
-                 <Section className="bg-black/20">
+            {methodologySection && methodologySection.benefits.length > 0 && (
+                 <Section className="bg-[#0c0c0e] relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-grid-pattern opacity-5 pointer-events-none"></div>
                     <SectionTitle subtitle={methodologySection.subtitle}>{methodologySection.title}</SectionTitle>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {methodologySection.benefits.map((benefit, index) => (
-                            <BenefitCard key={index} {...benefit} icon={getIconForTitle(benefit.title)} />
+                            <div key={index} className="text-center p-6">
+                                <h3 className="text-xl font-bold text-white mb-2">{benefit.title}</h3>
+                                <p className="text-gray-400 text-sm leading-relaxed">{benefit.description}</p>
+                            </div>
                         ))}
                     </div>
                 </Section>
             )}
             
-            {/* Instructor Section */}
-            {instructor && (
-                <Section>
-                    <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 items-center bg-white/5 p-8 rounded-2xl border border-white/10">
-                         <div className="flex justify-center">
-                            <img src={instructor.avatarUrl} alt={instructor.name} className="w-48 h-48 rounded-full object-cover border-4 border-[#8a4add]" />
-                        </div>
-                        <div className="md:col-span-2 text-center md:text-left">
-                            <h3 className="text-3xl font-bold text-white">Conheça seu Instrutor</h3>
-                            <p className="mt-1 text-xl font-semibold text-[#c4b5fd]">{instructor.name}</p>
-                            <p className="mt-4 text-gray-300 leading-relaxed">{instructor.bio}</p>
-                            <div className="mt-4">
-                                <button onClick={() => openProfileModal(instructor)} className="text-sm font-semibold text-white hover:text-[#c4b5fd]">
-                                    Ver perfil completo &rarr;
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </Section>
-            )}
-            
-            {/* CTA Section */}
-            {ctaSection && (
-                <Section className="bg-black/20 text-center" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
-                     <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">{ctaSection.title}</h2>
-                     <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">{ctaSection.description}</p>
-                     <div className="mt-10">
-                        <button
-                            onClick={handleCtaClick}
-                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg text-lg ${user ? 'bg-green-600 text-white hover:bg-green-700 shadow-green-500/20' : 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-[#8a4add]/30'}`}
-                        >
-                            {user ? 'Acessar Conteúdo Agora' : 'Garanta seu Interesse Agora'}
-                        </button>
-                    </div>
-                </Section>
-            )}
-
-            <Section className="py-12 md:py-16">
-                <div className="text-center">
-                    <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group text-lg flex items-center gap-2 mx-auto">
-                        <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span>
-                        Voltar para os cursos
+            {/* CTA Final */}
+            <Section className="text-center relative overflow-hidden">
+                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1a1033]/50 pointer-events-none"></div>
+                 <div className="relative z-10 max-w-3xl mx-auto">
+                     <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white mb-6">
+                        {ctaSection.title}
+                     </h2>
+                     <p className="text-lg text-gray-300 mb-10 leading-relaxed">
+                        {ctaSection.description}
+                     </p>
+                     <button
+                        onClick={handleCtaClick}
+                        className={`w-full sm:w-auto font-bold py-4 px-12 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_50px_-10px_rgba(138,74,221,0.6)] text-lg ${user ? 'bg-green-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                    >
+                        {user ? 'Ir para a Sala de Aula' : 'Fazer Inscrição Gratuita'}
                     </button>
+                    <p className="mt-6 text-xs text-gray-500 uppercase tracking-widest font-bold">
+                        Junte-se à tropa da FuturoOn
+                    </p>
                 </div>
             </Section>
         </div>
