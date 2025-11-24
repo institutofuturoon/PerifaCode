@@ -24,14 +24,15 @@ const stringToSlug = (str: string) => {
     .replace(/\s+/g, "-");
 };
 
-// Helper to clean AI JSON response
+// Helper to clean AI JSON response (handles markdown blocks)
 const cleanAndParseJSON = (text: string) => {
     try {
-        const jsonString = text.replace(/```json\n?|\n?```/g, '').trim();
+        // Remove markdown code blocks like ```json ... ```
+        const jsonString = text.replace(/```json\n?|```/g, '').trim();
         return JSON.parse(jsonString);
     } catch (e) {
         console.error("Failed to parse JSON from AI:", text);
-        throw new Error("Falha ao processar resposta da IA.");
+        throw new Error("A IA retornou um formato inválido. Tente novamente.");
     }
 };
 
@@ -382,16 +383,18 @@ const CourseEditor: React.FC = () => {
       setIsGeneratingStructure(true);
       try {
           const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-          const prompt = `Você é um designer instrucional sênior. Crie uma estrutura de curso completa para o tema: "${topic}". 
-          O público são jovens da periferia iniciando em tecnologia. A estrutura deve ser prática, motivadora e com linguagem acessível.
+          const prompt = `Você é um designer instrucional sênior da FuturoOn.
+          Crie uma ementa estruturada de curso para o tema: "${topic}".
+          Público: Jovens da periferia iniciando em tecnologia.
+          Estilo: Prático, direto, motivador.
           
-          Retorne APENAS um objeto JSON seguindo EXATAMENTE este formato:
+          Retorne APENAS um JSON válido (sem markdown) com esta estrutura:
           {
             "modules": [
                 {
-                    "title": "Nome do Módulo",
+                    "title": "Título do Módulo",
                     "lessons": [
-                        { "title": "Nome da Aula", "duration": "15 min", "xp": 20 }
+                        { "title": "Título da Aula", "duration": "15 min", "xp": 20 }
                     ]
                 }
             ]
@@ -446,7 +449,7 @@ const CourseEditor: React.FC = () => {
           
           Conteúdo: ${courseContext}
           
-          Retorne apenas o JSON com chaves: metaTitle, metaDescription, keywords (array).`;
+          Retorne apenas o JSON (sem markdown) com chaves: metaTitle, metaDescription, keywords (array).`;
 
           const response = await ai.models.generateContent({
               model: "gemini-2.5-flash",
@@ -484,11 +487,11 @@ const CourseEditor: React.FC = () => {
           const fullPrompt = `Você é um Copywriter Sênior da FuturoOn.
           Curso: "${course.title}".
           Descrição: "${course.description}".
-          Público: Jovens da periferia, linguagem moderna e inspiradora.
+          Público: Jovens da periferia, linguagem moderna, inclusiva e inspiradora.
           
           ${prompt}
           
-          Retorne APENAS o JSON válido.`;
+          Retorne APENAS o JSON válido (sem markdown).`;
 
           const response = await ai.models.generateContent({
               model: "gemini-2.5-flash",
@@ -507,40 +510,40 @@ const CourseEditor: React.FC = () => {
   };
 
   const handleGenerateHeroWithAI = () => {
-      const prompt = `Gere o conteúdo para a seção Hero (Topo).
-      Formato JSON: {"subtitle": "...", "titleLine1": "...", "titleAccent": "...", "description": "..."}`;
+      const prompt = `Gere o conteúdo para a seção Hero (Topo) da Landing Page.
+      Formato JSON esperado: {"subtitle": "Frase curta de impacto", "titleLine1": "Primeira parte do título", "titleAccent": "Parte colorida do título", "description": "Descrição persuasiva de 2 frases"}`;
       generateSectionCommon(prompt, setIsGeneratingHero, (res) => {
           setCourse(prev => ({ ...prev, heroContent: res }));
       });
   };
 
   const handleGenerateBenefitsWithAI = () => {
-      const prompt = `Liste 4 benefícios.
-      Formato JSON: {"title": "...", "subtitle": "...", "benefits": [{"title": "...", "description": "..."}]}`;
+      const prompt = `Liste 4 principais benefícios ou diferenciais deste curso.
+      Formato JSON esperado: {"title": "Título da Seção", "subtitle": "Subtítulo curto", "benefits": [{"title": "Benefício", "description": "Explicação curta"}]}`;
       generateSectionCommon(prompt, setIsGeneratingBenefits, (res) => {
           setCourse(prev => ({ ...prev, benefitsSection: res }));
       });
   };
 
   const handleGenerateCurriculumWithAI = () => {
-      const prompt = `Crie um resumo do currículo em 4 tópicos macro.
-      Formato JSON: {"title": "...", "subtitle": "...", "items": [{"title": "...", "description": "..."}]}`;
+      const prompt = `Crie um resumo do currículo em 4 tópicos macro (pilares do aprendizado).
+      Formato JSON esperado: {"title": "Título da Seção", "subtitle": "Subtítulo curto", "items": [{"title": "Nome do Pilar", "description": "O que será aprendido"}]}`;
       generateSectionCommon(prompt, setIsGeneratingCurriculum, (res) => {
           setCourse(prev => ({ ...prev, curriculumSection: res }));
       });
   };
 
   const handleGenerateMethodologyWithAI = () => {
-      const prompt = `Descreva a metodologia em 3 pontos.
-      Formato JSON: {"title": "...", "subtitle": "...", "benefits": [{"title": "...", "description": "..."}]}`;
+      const prompt = `Descreva a metodologia de ensino em 3 pontos (ex: Prática, Mentoria, Projetos).
+      Formato JSON esperado: {"title": "Como Ensinamos", "subtitle": "Nosso Método", "benefits": [{"title": "Ponto do Método", "description": "Explicação"}]}`;
       generateSectionCommon(prompt, setIsGeneratingMethodology, (res) => {
           setCourse(prev => ({ ...prev, methodologySection: res }));
       });
   };
 
   const handleGenerateCtaWithAI = () => {
-      const prompt = `Crie uma chamada para ação (CTA) final.
-      Formato JSON: {"title": "...", "description": "..."}`;
+      const prompt = `Crie uma chamada para ação (CTA) final irresistível.
+      Formato JSON esperado: {"title": "Título da Chamada", "description": "Texto de apoio motivador"}`;
       generateSectionCommon(prompt, setIsGeneratingCta, (res) => {
           setCourse(prev => ({ ...prev, ctaSection: res }));
       });
@@ -620,38 +623,39 @@ const CourseEditor: React.FC = () => {
             <span className="text-lg">🎨</span>
             <div>
                 <p className="font-bold text-[#c4b5fd]">Editor de Landing Page</p>
-                <p>Use a IA para gerar textos persuasivos para a página de vendas do curso.</p>
+                <p>Use a IA para gerar textos persuasivos para a página de vendas do curso. Os dados gerados aqui alimentam a página pública do curso.</p>
             </div>
         </div>
 
         <div className="bg-black/20 p-6 rounded-lg border border-white/10">
-            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Hero</h3><AiButton onClick={handleGenerateHeroWithAI} isLoading={isGeneratingHero} /></div>
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Hero (Topo da Página)</h3><AiButton onClick={handleGenerateHeroWithAI} isLoading={isGeneratingHero} /></div>
             <div className="space-y-4">
-                <div><label className={labelClasses}>Subtítulo</label><input value={course.heroContent?.subtitle || ''} onChange={(e) => handleLandingPageChange('heroContent', 'subtitle', e.target.value)} className={inputClasses} /></div>
-                <div><label className={labelClasses}>Título Principal</label><input value={course.heroContent?.titleLine1 || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleLine1', e.target.value)} className={inputClasses} /></div>
-                <div><label className={labelClasses}>Título Destaque (Cor)</label><input value={course.heroContent?.titleAccent || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleAccent', e.target.value)} className={inputClasses} /></div>
-                <div><label className={labelClasses}>Descrição</label><textarea value={course.heroContent?.description || ''} onChange={(e) => handleLandingPageChange('heroContent', 'description', e.target.value)} className={inputClasses} rows={3}></textarea></div>
+                <div><label className={labelClasses}>Subtítulo (Tag)</label><input value={course.heroContent?.subtitle || ''} onChange={(e) => handleLandingPageChange('heroContent', 'subtitle', e.target.value)} className={inputClasses} placeholder="Ex: Curso Oficial" /></div>
+                <div><label className={labelClasses}>Título Principal</label><input value={course.heroContent?.titleLine1 || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleLine1', e.target.value)} className={inputClasses} placeholder="Ex: Domine o React" /></div>
+                <div><label className={labelClasses}>Título Destaque (Colorido)</label><input value={course.heroContent?.titleAccent || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleAccent', e.target.value)} className={inputClasses} placeholder="Ex: do zero ao pro" /></div>
+                <div><label className={labelClasses}>Descrição</label><textarea value={course.heroContent?.description || ''} onChange={(e) => handleLandingPageChange('heroContent', 'description', e.target.value)} className={inputClasses} rows={3} placeholder="Texto de apoio que aparece abaixo do título..."></textarea></div>
             </div>
         </div>
 
         <div className="bg-black/20 p-6 rounded-lg border border-white/10">
             <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Benefícios</h3><AiButton onClick={handleGenerateBenefitsWithAI} isLoading={isGeneratingBenefits} /></div>
             <div className="space-y-4">
-                <div><label className={labelClasses}>Título</label><input value={course.benefitsSection?.title || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'title', e.target.value)} className={inputClasses} /></div>
+                <div><label className={labelClasses}>Título da Seção</label><input value={course.benefitsSection?.title || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'title', e.target.value)} className={inputClasses} /></div>
                 <div><label className={labelClasses}>Subtítulo</label><input value={course.benefitsSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
                 <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
-                    {course.benefitsSection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2 text-sm">Item {index + 1}</h4>
+                    {course.benefitsSection?.benefits.map((benefit, index) => (<div key={index} className="bg-black/30 p-4 rounded-md relative"><h4 className="font-bold mb-2 text-sm">Benefício {index + 1}</h4>
                         <button type="button" onClick={() => deleteBenefit('benefitsSection', index)} className="absolute top-2 right-2 text-red-400 hover:text-red-300">&times;</button>
                         <div><label className={labelClasses}>Título</label><input value={benefit.title} onChange={(e) => handleBenefitChange('benefitsSection', index, 'title', e.target.value)} className={inputClasses} /></div>
                         <div className="mt-2"><label className={labelClasses}>Descrição</label><textarea value={benefit.description} onChange={(e) => handleBenefitChange('benefitsSection', index, 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
                     </div>))}
-                    <button type="button" onClick={() => addBenefit('benefitsSection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar</button>
+                    <button type="button" onClick={() => addBenefit('benefitsSection')} className="text-sm font-semibold text-[#c4b5fd] hover:text-white mt-2">+ Adicionar Benefício</button>
                 </div>
             </div>
         </div>
 
         <div className="bg-black/20 p-6 rounded-lg border border-white/10">
-            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Resumo Currículo</h3><AiButton onClick={handleGenerateCurriculumWithAI} isLoading={isGeneratingCurriculum} /></div>
+            <div className="flex justify-between items-center mb-4"><h3 className="font-bold text-white">Resumo do Currículo (Marketing)</h3><AiButton onClick={handleGenerateCurriculumWithAI} isLoading={isGeneratingCurriculum} /></div>
+            <p className="text-xs text-gray-500 mb-4">Se esta seção estiver vazia, a Landing Page exibirá automaticamente a lista real de módulos e aulas cadastradas na aba "Estrutura".</p>
             <div className="space-y-4">
                 <div><label className={labelClasses}>Título</label><input value={course.curriculumSection?.title || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'title', e.target.value)} className={inputClasses} /></div>
                 <div><label className={labelClasses}>Subtítulo</label><input value={course.curriculumSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
@@ -688,7 +692,7 @@ const CourseEditor: React.FC = () => {
                     <h3 className="text-md font-bold text-[#c4b5fd] mb-2 flex items-center gap-2">
                         ✨ IA Generator
                     </h3>
-                    <p className="text-xs text-gray-400 mb-3">Digite o tema para gerar a estrutura.</p>
+                    <p className="text-xs text-gray-400 mb-3">Digite o tema para gerar a estrutura completa de módulos e aulas.</p>
                     <div className="flex gap-2">
                         <input type="text" value={aiTopic} onChange={(e) => setAiTopic(e.target.value)} placeholder={course.title || "Ex: React Hooks"} className={`${inputClasses} flex-grow text-xs py-2`} />
                         <button type="button" onClick={handleGenerateStructureWithAI} disabled={isGeneratingStructure} className="py-2 px-3 bg-[#8a4add] rounded-md hover:bg-[#6d28d9] disabled:opacity-50 text-white shadow-lg transition-all">

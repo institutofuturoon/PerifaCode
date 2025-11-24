@@ -48,21 +48,26 @@ const CurriculumItemCard: React.FC<{ title: string, description: string, index: 
 // Fallback component when Marketing Curriculum is missing but Real Modules exist
 const RealModuleList: React.FC<{ modules: Module[] }> = ({ modules }) => (
     <div className="space-y-4 max-w-3xl mx-auto">
+        <div className="mb-6 text-center">
+            <p className="text-sm text-gray-400 italic">Conteúdo Programático Completo</p>
+        </div>
         {modules.map((module, idx) => (
-            <div key={module.id} className="border border-white/10 rounded-xl overflow-hidden bg-[#121212]">
-                <div className="p-4 bg-white/5 flex justify-between items-center">
+            <div key={module.id} className="border border-white/10 rounded-xl overflow-hidden bg-[#121212] hover:border-[#8a4add]/30 transition-colors">
+                <div className="p-4 bg-white/5 flex justify-between items-center border-b border-white/5">
                     <h4 className="font-bold text-white text-sm md:text-base">
-                        <span className="text-[#8a4add] mr-2">Módulo {idx + 1}:</span> {module.title}
+                        <span className="text-[#8a4add] mr-2 uppercase text-xs tracking-wider">Módulo {idx + 1}</span> 
+                        {module.title}
                     </h4>
-                    <span className="text-xs text-gray-500 font-mono">{module.lessons.length} aulas</span>
+                    <span className="text-xs text-gray-500 font-mono bg-black/30 px-2 py-1 rounded">{module.lessons.length} aulas</span>
                 </div>
                 <div className="p-4 grid gap-2">
                     {module.lessons.map((lesson, lIdx) => (
-                        <div key={lesson.id} className="flex items-center gap-3 text-gray-400 text-sm pl-2 border-l border-white/10">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#8a4add]"></span>
+                        <div key={lesson.id} className="flex items-center gap-3 text-gray-400 text-sm pl-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#8a4add]/50"></span>
                             <span>{lesson.title}</span>
                         </div>
                     ))}
+                    {module.lessons.length === 0 && <p className="text-xs text-gray-600 italic pl-2">Aulas em breve...</p>}
                 </div>
             </div>
         ))}
@@ -79,37 +84,32 @@ const CourseLandingPage: React.FC = () => {
     // Find course by ID or Slug
     const currentCourse = courses.find(c => c.id === courseId || c.slug === courseId);
     
-    // If course doesn't exist, return simple error (useEffect will redirect if needed, but we handle it gracefully here)
-    if (!currentCourse) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
-                <h2 className="text-2xl font-bold text-white mb-4">Curso não encontrado 😕</h2>
-                <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] hover:underline">Voltar para o catálogo</button>
-            </div>
-        );
-    }
+    // If course doesn't exist, handle graceful redirect/error state via effect or render
+    // Moving this check inside render to avoid state updates during render phase
     
-    const instructor = instructors.find(i => i.id === currentCourse.instructorId);
+    const instructor = instructors.find(i => i.id === currentCourse?.instructorId);
     
-    // Destructure marketing content with Fallbacks for robustness
-    const heroContent = currentCourse.heroContent || {
-        subtitle: "Formação Completa",
-        titleLine1: "Domine",
-        titleAccent: currentCourse.title,
-        description: currentCourse.description
+    // Fallbacks for Marketing Content
+    const heroContent = currentCourse?.heroContent || {
+        subtitle: "Curso Oficial",
+        titleLine1: currentCourse?.title || "Curso",
+        titleAccent: "",
+        description: currentCourse?.description || "Junte-se a nós nesta jornada de aprendizado."
     };
 
-    const benefitsSection = currentCourse.benefitsSection;
-    const curriculumSection = currentCourse.curriculumSection;
-    const methodologySection = currentCourse.methodologySection;
-    const ctaSection = currentCourse.ctaSection || {
+    const benefitsSection = currentCourse?.benefitsSection;
+    const curriculumSection = currentCourse?.curriculumSection;
+    const methodologySection = currentCourse?.methodologySection;
+    const ctaSection = currentCourse?.ctaSection || {
         title: "Comece agora mesmo",
         description: "Não deixe para depois. Sua carreira em tecnologia começa com um clique."
     };
 
-    const hasRealModules = currentCourse.modules && currentCourse.modules.length > 0;
+    const hasRealModules = currentCourse?.modules && currentCourse.modules.length > 0;
 
     const handleCtaClick = () => {
+        if (!currentCourse) return;
+
         if (user) {
              // Se logado, vai direto para a primeira aula (Workspace)
              const firstLesson = currentCourse.modules?.[0]?.lessons?.[0];
@@ -132,6 +132,15 @@ const CourseLandingPage: React.FC = () => {
         const iconProps = { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 1.5 };
         return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
     };
+
+    if (!currentCourse) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-[#09090B] text-white">
+                <h2 className="text-2xl font-bold mb-4">Curso não encontrado 😕</h2>
+                <button onClick={() => navigate('/courses')} className="text-[#c4b5fd] hover:underline">Voltar para o catálogo</button>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-[#09090B] min-h-screen relative overflow-x-hidden">
@@ -219,7 +228,7 @@ const CourseLandingPage: React.FC = () => {
                         <div className="lg:col-span-2 space-y-6">
                             <div className="sticky top-24">
                                 <p className="font-semibold text-sm text-[#c4b5fd] uppercase tracking-wider">
-                                    {curriculumSection?.subtitle || "Ementa Detalhada"}
+                                    {curriculumSection?.subtitle || "Ementa do Curso"}
                                 </p>
                                 <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mt-2 mb-6">
                                     {curriculumSection?.title || "O que vamos aprender"}
@@ -240,7 +249,7 @@ const CourseLandingPage: React.FC = () => {
                             </div>
                         </div>
                         <div className="lg:col-span-3 space-y-4">
-                            {/* Priority to Marketing Highlights if available, else show real modules */}
+                            {/* FALLBACK LOGIC: Priority to Marketing Highlights if available, else show real modules */}
                             {(curriculumSection?.items.length || 0) > 0 ? (
                                 curriculumSection!.items.map((item, index) => (
                                     <CurriculumItemCard key={index} {...item} index={index} />
