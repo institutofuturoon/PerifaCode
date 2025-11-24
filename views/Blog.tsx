@@ -130,7 +130,7 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
   const handleArticleSelect = (article: Article) => {
-    navigate(`/article/${article.id}`);
+    navigate(`/article/${article.slug || article.id}`);
   };
 
   const publishedArticles = useMemo(() => 

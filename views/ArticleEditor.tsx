@@ -1,9 +1,20 @@
+
 import React, { useState, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
+
+const stringToSlug = (str: string) => {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+};
 
 const ArticleEditor: React.FC = () => {
   const { articles, handleSaveArticle, user } = useAppContext();
@@ -16,6 +27,7 @@ const ArticleEditor: React.FC = () => {
     }
     return {
         id: `article_${Date.now()}`,
+        slug: '',
         title: '', subtitle: '', author: user?.name || '',
         date: new Date().toLocaleDateString('pt-BR'),
         summary: '', imageUrl: user?.avatarUrl || '', authorAvatarUrl: user?.avatarUrl || '',
@@ -24,7 +36,7 @@ const ArticleEditor: React.FC = () => {
   }, [articleId, articles, user]);
 
   const [article, setArticle] = useState<Article>(initialArticle || {
-    id: `article_${Date.now()}`, title: '', subtitle: '', author: user?.name || '',
+    id: `article_${Date.now()}`, slug: '', title: '', subtitle: '', author: user?.name || '',
     date: new Date().toLocaleDateString('pt-BR'), summary: '', imageUrl: user?.avatarUrl || '',
     // FIX: Explicitly cast properties to match the 'Article' type to resolve type error.
     authorAvatarUrl: user?.avatarUrl || '', category: 'Dicas' as Article['category'], content: '', status: 'draft' as Article['status'], tags: []
@@ -42,7 +54,14 @@ const ArticleEditor: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setArticle(prev => ({ ...prev, [name]: value }));
+    setArticle(prev => {
+        const updates: any = { [name]: value };
+        // Auto-generate slug
+        if (name === 'title' && (!prev.slug || articleId === 'new')) {
+            updates.slug = stringToSlug(value);
+        }
+        return { ...prev, ...updates };
+    });
   };
   
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +110,12 @@ const ArticleEditor: React.FC = () => {
           });
 
           const result = JSON.parse(response.text);
-          setArticle(prev => ({ ...prev, title: result.title, subtitle: result.subtitle }));
+          setArticle(prev => ({ 
+              ...prev, 
+              title: result.title, 
+              subtitle: result.subtitle,
+              slug: prev.slug || stringToSlug(result.title)
+          }));
 
       } catch (error) {
           console.error("Erro ao gerar títulos com IA:", error);
@@ -185,12 +209,18 @@ ${article.content}
         </div>
 
         <div className="p-8 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 space-y-6">
-            <div>
-                <div className="flex justify-between items-center mb-2">
-                    <label htmlFor="title" className={labelClasses}>Título Principal</label>
-                    <AiButton onClick={handleGenerateTitles} isLoading={isGeneratingTitles}>Sugerir Títulos</AiButton>
+            <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                    <div className="flex justify-between items-center mb-2">
+                        <label htmlFor="title" className={labelClasses}>Título Principal</label>
+                        <AiButton onClick={handleGenerateTitles} isLoading={isGeneratingTitles}>Sugerir Títulos</AiButton>
+                    </div>
+                    <input id="title" name="title" value={article.title} onChange={handleChange} placeholder="Como consegui meu primeiro emprego em tech..." required className={inputClasses} />
                 </div>
-                <input id="title" name="title" value={article.title} onChange={handleChange} placeholder="Como consegui meu primeiro emprego em tech..." required className={inputClasses} />
+                <div>
+                    <label htmlFor="slug" className={labelClasses}>Slug (URL Amigável)</label>
+                    <input id="slug" name="slug" value={article.slug || ''} onChange={handleChange} placeholder="como-consegui-primeiro-emprego" className={inputClasses} />
+                </div>
             </div>
             <div>
                 <label htmlFor="subtitle" className={labelClasses}>Subtítulo</label>

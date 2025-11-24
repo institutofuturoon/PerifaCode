@@ -14,6 +14,15 @@ type SelectedItem =
 
 type AiAction = 'create' | 'improve' | 'summarize' | 'create_code';
 
+const stringToSlug = (str: string) => {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+};
 
 const CourseEditor: React.FC = () => {
   const { user, instructors, courses, tracks, handleSaveCourse, showToast } = useAppContext();
@@ -22,7 +31,7 @@ const CourseEditor: React.FC = () => {
 
   const getNewCourseTemplate = useMemo(() => ({
     id: `course_${Date.now()}`,
-    title: '', description: '', longDescription: '',
+    title: '', slug: '', description: '', longDescription: '',
     track: tracks[0]?.name || '', imageUrl: 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
     duration: '',
     skillLevel: 'Iniciante' as Course['skillLevel'], instructorId: user?.id || '',
@@ -67,7 +76,14 @@ const CourseEditor: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setCourse(prev => ({ ...prev, [name]: value }));
+    setCourse(prev => {
+        const updates: any = { [name]: value };
+        // Auto-generate slug from title if it's a new course or slug is empty
+        if (name === 'title' && (!prev.slug || courseId === 'new')) {
+            updates.slug = stringToSlug(value);
+        }
+        return { ...prev, ...updates };
+    });
   };
 
   const handleModuleChange = (e: React.ChangeEvent<HTMLInputElement>, moduleIndex: number) => {
@@ -265,7 +281,15 @@ const CourseEditor: React.FC = () => {
               }))
           }));
 
-          setCourse(prev => ({...prev, modules: newModules, title: prev.title || aiTopic }));
+          setCourse(prev => {
+              const newTitle = prev.title || aiTopic;
+              return {
+                  ...prev, 
+                  modules: newModules, 
+                  title: newTitle,
+                  slug: prev.slug || stringToSlug(newTitle)
+              }
+          });
           showToast("✅ Estrutura do curso gerada!");
 
       } catch (error) {
@@ -347,7 +371,10 @@ const CourseEditor: React.FC = () => {
         <details open className="bg-black/20 p-4 rounded-lg border border-white/10">
             <summary className="font-semibold text-white cursor-pointer">Informações Básicas</summary>
             <div className="mt-4 space-y-6">
-                <div><label htmlFor="title" className={labelClasses}>Título do Curso</label><input type="text" name="title" id="title" value={course.title} onChange={handleChange} required className={inputClasses} /></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label htmlFor="title" className={labelClasses}>Título do Curso</label><input type="text" name="title" id="title" value={course.title} onChange={handleChange} required className={inputClasses} /></div>
+                    <div><label htmlFor="slug" className={labelClasses}>Slug (URL Amigável)</label><input type="text" name="slug" id="slug" value={course.slug || ''} onChange={handleChange} placeholder="ex: curso-de-python-avancado" className={inputClasses} /></div>
+                </div>
                 <div><label htmlFor="description" className={labelClasses}>Descrição Curta (para cards)</label><input type="text" name="description" id="description" value={course.description} onChange={handleChange} required className={inputClasses} /></div>
                 <div><label htmlFor="longDescription" className={labelClasses}>Descrição Longa (para página do curso)</label><textarea name="longDescription" id="longDescription" value={course.longDescription} onChange={handleChange} required className={inputClasses} rows={4} /></div>
                 <div className="grid grid-cols-2 gap-6">

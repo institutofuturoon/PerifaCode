@@ -135,6 +135,7 @@ export interface SeoConfig {
 
 export interface Course {
   id: string;
+  slug?: string; // URL amigável
   title: string;
   description: string;
   longDescription: string;
@@ -187,6 +188,7 @@ export interface Course {
 
 export interface Article {
   id: string;
+  slug?: string; // URL amigável
   title: string;
   subtitle: string;
   author: string;

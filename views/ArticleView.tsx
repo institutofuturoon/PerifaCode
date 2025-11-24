@@ -22,7 +22,7 @@ const ArticleView: React.FC = () => {
   const [shareButtonText, setShareButtonText] = useState('Compartilhar');
 
 
-  const article = useMemo(() => articles.find(a => a.id === articleId), [articles, articleId]);
+  const article = useMemo(() => articles.find(a => a.slug === articleId || a.id === articleId), [articles, articleId]);
   
   const author = useMemo(() => {
     if (!article) return null;
@@ -191,7 +191,7 @@ const ArticleView: React.FC = () => {
               <SectionTitle>Leia a Seguir</SectionTitle>
               <div className="grid md:grid-cols-2 gap-8">
                 {relatedArticles.map(related => (
-                  <ArticleCard key={related.id} article={related} onArticleSelect={(a) => navigate(`/article/${a.id}`)} layout="horizontal" />
+                  <ArticleCard key={related.id} article={related} onArticleSelect={(a) => navigate(`/article/${a.slug || a.id}`)} layout="horizontal" />
                 ))}
               </div>
             </section>

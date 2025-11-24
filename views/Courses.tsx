@@ -60,9 +60,9 @@ const Courses: React.FC = () => {
     } else {
         // Se não logado, fluxo de marketing
         if (course.heroContent) {
-            navigate(`/course-landing/${course.id}`);
+            navigate(`/course-landing/${course.slug || course.id}`);
         } else {
-            navigate(`/course/${course.id}`);
+            navigate(`/course/${course.slug || course.id}`);
         }
     }
   };
@@ -185,11 +185,25 @@ const Courses: React.FC = () => {
                                 )}
                             </div>
 
+                            {/* Track Selector */}
+                            <div className="relative w-48 hidden md:block">
+                                <select 
+                                    value={activeTrack} 
+                                    onChange={e => setActiveTrack(e.target.value)} 
+                                    className="w-full appearance-none bg-[#18181B] hover:bg-[#202024] text-gray-300 py-3 pl-4 pr-10 rounded-xl border border-white/5 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
+                                >
+                                    {tracks.map(track => <option key={track} value={track}>{track === 'Todos' ? 'Trilha: Todas' : track}</option>)}
+                                </select>
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                            </div>
+
                             {/* Toggle Filters Button */}
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
                                 className={`flex-shrink-0 p-3 rounded-xl border transition-all duration-200 ${
-                                    showFilters || (selectedLevel !== 'Todos' || selectedFormat !== 'Todos' || activeTrack !== 'Todos')
+                                    showFilters || (selectedLevel !== 'Todos' || selectedFormat !== 'Todos')
                                         ? 'bg-[#8a4add] text-white border-[#8a4add]' 
                                         : 'bg-[#18181B] text-gray-400 border-white/5 hover:bg-[#202024] hover:text-white'
                                 }`}
@@ -202,16 +216,16 @@ const Courses: React.FC = () => {
                         {/* Advanced Filters Panel */}
                         {showFilters && (
                             <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 md:flex gap-3 animate-fade-in">
-                                {/* Track Filter */}
-                                <div className="relative w-full md:w-auto flex-1">
-                                    <select 
+                                {/* Mobile Track Filter (only visible on small screens if needed, logic handled by hidden above) */}
+                                <div className="relative w-full md:w-auto flex-1 md:hidden">
+                                     <select 
                                         value={activeTrack} 
                                         onChange={e => setActiveTrack(e.target.value)} 
                                         className="w-full appearance-none bg-[#18181B] hover:bg-[#202024] text-gray-300 py-2 pl-4 pr-10 rounded-lg border border-white/5 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
                                     >
                                         {tracks.map(track => <option key={track} value={track}>{track === 'Todos' ? 'Trilha: Todas' : track}</option>)}
                                     </select>
-                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                                     </div>
                                 </div>

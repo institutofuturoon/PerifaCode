@@ -27,9 +27,9 @@ const OnsiteCourseCard: React.FC<OnsiteCourseCardProps> = ({ course }) => {
         
         // Se não logado ou sem aulas, fluxo normal de marketing
         if (course.heroContent) {
-            navigate(`/course-landing/${course.id}`);
+            navigate(`/course-landing/${course.slug || course.id}`);
         } else {
-            navigate(`/course/${course.id}`);
+            navigate(`/course/${course.slug || course.id}`);
         }
     };
 

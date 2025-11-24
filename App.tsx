@@ -721,8 +721,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
-    // --- Transparency Handlers ---
-
     const handleSaveFinancialStatement = async (statement: FinancialStatement) => {
         const isNew = !financialStatements.some(s => s.id === statement.id);
         setFinancialStatements(prev => isNew ? [statement, ...prev] : prev.map(s => s.id === statement.id ? statement : s));
@@ -896,6 +894,7 @@ const AppContent: React.FC = () => {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />
+                    {/* Support both ID and Slug in routes */}
                     <Route path="/course/:courseId" element={<CourseDetail />} />
                     <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
                     <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
@@ -903,6 +902,7 @@ const AppContent: React.FC = () => {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/connect" element={<ConnectView />} />
                     <Route path="/blog" element={<Blog />} />
+                    {/* Support both ID and Slug in article routes */}
                     <Route path="/article/:articleId" element={<ArticleView />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />

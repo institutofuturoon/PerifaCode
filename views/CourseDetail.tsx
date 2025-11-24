@@ -67,7 +67,7 @@ const CourseDetail: React.FC = () => {
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
 
-    const course = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
+    const course = useMemo(() => courses.find(c => c.slug === courseId || c.id === courseId), [courses, courseId]);
     const instructor = useMemo(() => instructors.find(i => i.id === course?.instructorId), [instructors, course]);
 
     if (!course) {
