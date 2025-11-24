@@ -44,6 +44,7 @@ const Courses: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<string>('Todos');
   const [selectedFormat, setSelectedFormat] = useState<string>('Todos');
+  const [showFilters, setShowFilters] = useState(false);
 
   const handleCourseSelect = (course: Course) => {
     if (user) {
@@ -89,12 +90,20 @@ const Courses: React.FC = () => {
   const formats = useMemo(() => ['Todos', ...Array.from(new Set(courses.map(c => c.format)))].sort(), [courses]);
   
   const filteredCourses = useMemo(() => courses.filter(course => 
-    (course.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (course.title.toLowerCase().includes(searchTerm.toLowerCase()) || course.description.toLowerCase().includes(searchTerm.toLowerCase()) || (course.tags && course.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase())))) &&
     (selectedLevel === 'Todos' || course.skillLevel === selectedLevel) &&
     (selectedFormat === 'Todos' || course.format === selectedFormat) &&
     (activeTrack === 'Todos' || course.track === activeTrack)
   ), [courses, searchTerm, selectedLevel, selectedFormat, activeTrack]);
   
+  const hasActiveFilters = searchTerm !== '' || activeTrack !== 'Todos' || selectedLevel !== 'Todos' || selectedFormat !== 'Todos';
+
+  const clearFilters = () => {
+      setSearchTerm('');
+      setActiveTrack('Todos');
+      setSelectedLevel('Todos');
+      setSelectedFormat('Todos');
+  };
 
   return (
     <div className="bg-[#09090B] min-h-screen">
@@ -145,59 +154,111 @@ const Courses: React.FC = () => {
                 </section>
             )}
 
-            <section id="all-courses" className="scroll-mt-24">
-                <div className="flex items-center gap-3 mb-6">
-                    <span className="bg-[#8a4add]/20 text-[#c4b5fd] p-1.5 rounded-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                    </span>
-                    <h2 className="text-xl font-bold text-white">Biblioteca Completa</h2>
-                </div>
-
-                {/* Filter Bar Sticky */}
-                <div className="sticky top-20 z-30 mb-8">
-                    <div className="bg-[#09090B]/90 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-2xl">
-                        <div className="flex flex-col md:flex-row gap-4 p-2">
-                            {/* Search */}
-                            <div className="relative flex-grow w-full md:w-auto">
+            <section id="all-courses" className="scroll-mt-24 relative">
+                
+                {/* Filter Bar Sticky - Clean Design (No Tags) */}
+                <div className="sticky top-[72px] z-30 mb-8 transition-all duration-300">
+                    <div className="bg-[#09090B]/80 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-2xl ring-1 ring-white/5">
+                        <div className="flex items-center gap-3">
+                            
+                            {/* Search Input - Now Grows to Fill Space */}
+                            <div className="relative flex-grow group">
                                 <input
                                     type="search"
-                                    placeholder="O que você quer aprender hoje?"
+                                    placeholder="Buscar por título, tecnologia ou assunto..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 bg-white/5 rounded-xl border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors text-sm text-white placeholder-gray-500"
+                                    className="w-full pl-10 pr-10 py-2.5 bg-[#18181B] hover:bg-[#202024] rounded-xl border border-white/5 focus:border-[#8a4add]/50 focus:ring-1 focus:ring-[#8a4add]/50 focus:outline-none transition-all text-sm text-white placeholder-gray-500"
                                 />
-                                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500 group-focus-within:text-[#8a4add] transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 </div>
+                                {searchTerm && (
+                                    <button 
+                                        onClick={() => setSearchTerm('')}
+                                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-white transition-colors"
+                                        aria-label="Limpar busca"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                )}
                             </div>
 
-                            {/* Secondary Filters */}
-                            <div className="flex gap-2 w-full md:w-auto">
-                                <select value={selectedLevel} onChange={e => setSelectedLevel(e.target.value)} className="flex-1 md:w-32 bg-white/5 text-gray-300 p-3 rounded-xl border border-white/10 text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-white/10 transition-colors focus:outline-none focus:border-[#8a4add]">
-                                    {levels.map(level => <option key={level} value={level}>{level === 'Todos' ? 'Nível' : level}</option>)}
-                                </select>
-                                <select value={selectedFormat} onChange={e => setSelectedFormat(e.target.value)} className="flex-1 md:w-32 bg-white/5 text-gray-300 p-3 rounded-xl border border-white/10 text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-white/10 transition-colors focus:outline-none focus:border-[#8a4add]">
-                                    {formats.map(format => <option key={format} value={format}>{format === 'Todos' ? 'Formato' : format}</option>)}
-                                </select>
-                            </div>
+                            {/* Toggle Filters Button */}
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`flex-shrink-0 p-2.5 rounded-xl border transition-all duration-200 ${
+                                    showFilters || (selectedLevel !== 'Todos' || selectedFormat !== 'Todos' || activeTrack !== 'Todos')
+                                        ? 'bg-[#8a4add] text-white border-[#8a4add]' 
+                                        : 'bg-[#18181B] text-gray-400 border-white/5 hover:bg-[#202024] hover:text-white'
+                                }`}
+                                title="Filtros avançados"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
+                            </button>
                         </div>
 
-                        {/* Horizontal Scroll Tracks */}
-                        <div className="flex gap-2 overflow-x-auto px-2 pb-2 no-scrollbar">
-                            {tracks.map(track => (
-                                <button
-                                    key={track}
-                                    onClick={() => setActiveTrack(track)}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-300 border ${
-                                    activeTrack === track
-                                        ? 'bg-[#8a4add] text-white border-[#8a4add] shadow-md shadow-[#8a4add]/20'
-                                        : 'bg-white/5 text-gray-400 border-transparent hover:bg-white/10 hover:text-white'
-                                    }`}
-                                >
-                                    {track}
-                                </button>
-                            ))}
-                        </div>
+                        {/* Advanced Filters Panel */}
+                        {showFilters && (
+                            <div className="mt-2 pt-3 border-t border-white/5 grid grid-cols-2 md:flex gap-3 animate-fade-in">
+                                {/* Track Filter (Moved here) */}
+                                <div className="relative w-full md:w-auto flex-1">
+                                    <select 
+                                        value={activeTrack} 
+                                        onChange={e => setActiveTrack(e.target.value)} 
+                                        className="w-full appearance-none bg-[#18181B] hover:bg-[#202024] text-gray-300 py-2 pl-4 pr-10 rounded-lg border border-white/5 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
+                                    >
+                                        {tracks.map(track => <option key={track} value={track}>{track === 'Todos' ? 'Trilha: Todas' : track}</option>)}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                </div>
+
+                                {/* Level Filter */}
+                                <div className="relative w-full md:w-auto flex-1">
+                                    <select 
+                                        value={selectedLevel} 
+                                        onChange={e => setSelectedLevel(e.target.value)} 
+                                        className="w-full appearance-none bg-[#18181B] hover:bg-[#202024] text-gray-300 py-2 pl-4 pr-10 rounded-lg border border-white/5 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
+                                    >
+                                        {levels.map(level => <option key={level} value={level}>{level === 'Todos' ? 'Nível: Todos' : level}</option>)}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                </div>
+
+                                {/* Format Filter */}
+                                <div className="relative w-full md:w-auto flex-1">
+                                    <select 
+                                        value={selectedFormat} 
+                                        onChange={e => setSelectedFormat(e.target.value)} 
+                                        className="w-full appearance-none bg-[#18181B] hover:bg-[#202024] text-gray-300 py-2 pl-4 pr-10 rounded-lg border border-white/5 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
+                                    >
+                                        {formats.map(format => <option key={format} value={format}>{format === 'Todos' ? 'Formato: Todos' : format}</option>)}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                    </div>
+                                </div>
+                                
+                                {hasActiveFilters && (
+                                    <button 
+                                        onClick={clearFilters} 
+                                        className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap flex items-center gap-2 justify-center"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                        Limpar
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    <div className="text-right px-2 mt-2">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                            {filteredCourses.length} {filteredCourses.length === 1 ? 'Curso encontrado' : 'Cursos encontrados'}
+                        </p>
                     </div>
                 </div>
 
@@ -223,7 +284,7 @@ const Courses: React.FC = () => {
                         </div>
                         <p className="text-gray-300 font-medium">Nenhum curso encontrado com os filtros atuais.</p>
                         <p className="text-gray-500 text-sm mt-1">Tente buscar por outro termo ou categoria.</p>
-                        <button onClick={() => {setSearchTerm(''); setActiveTrack('Todos'); setSelectedLevel('Todos'); setSelectedFormat('Todos');}} className="mt-6 px-6 py-2 bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20 rounded-full hover:bg-[#8a4add]/20 transition-colors font-semibold text-sm">
+                        <button onClick={clearFilters} className="mt-6 px-6 py-2 bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20 rounded-full hover:bg-[#8a4add]/20 transition-colors font-semibold text-sm">
                             Limpar Filtros
                         </button>
                     </div>
