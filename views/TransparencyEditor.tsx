@@ -4,6 +4,94 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { FinancialStatement, AnnualReport, FinancialItem, Testimonial } from '../types';
 
+// Styles moved outside
+const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
+const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
+
+// --- Financial Helper Component (Defined Outside) ---
+const FinancialListEditor: React.FC<{ 
+    items: FinancialItem[], 
+    onChange: (items: FinancialItem[]) => void, 
+    title: string 
+}> = ({ items, onChange, title }) => {
+    const addItem = () => {
+        onChange([...items, { label: '', value: '', percentage: 0, color: 'bg-gray-500' }]);
+    };
+    const removeItem = (index: number) => {
+        onChange(items.filter((_, i) => i !== index));
+    };
+    const updateItem = (index: number, field: keyof FinancialItem, value: any) => {
+        const newItems = [...items];
+        newItems[index] = { ...newItems[index], [field]: value };
+        onChange(newItems);
+    };
+
+    return (
+        <div className="bg-white/5 p-4 rounded-lg border border-white/10 mt-4">
+            <h4 className="text-white font-bold mb-4">{title}</h4>
+            <div className="space-y-3">
+                {items.map((item, index) => (
+                    <div key={index} className="flex gap-2 items-center">
+                        <input placeholder="Rótulo (ex: Doações)" value={item.label} onChange={e => updateItem(index, 'label', e.target.value)} className={`${inputClasses} flex-[2]`} />
+                        <input placeholder="Valor (ex: R$ 5k)" value={item.value} onChange={e => updateItem(index, 'value', e.target.value)} className={`${inputClasses} flex-[1]`} />
+                        <input type="number" placeholder="%" value={item.percentage} onChange={e => updateItem(index, 'percentage', Number(e.target.value))} className={`${inputClasses} w-20`} />
+                        <select value={item.color} onChange={e => updateItem(index, 'color', e.target.value)} className={`${inputClasses} w-32`}>
+                            <option value="bg-sky-500">Azul</option>
+                            <option value="bg-green-500">Verde</option>
+                            <option value="bg-red-500">Vermelho</option>
+                            <option value="bg-yellow-500">Amarelo</option>
+                            <option value="bg-purple-500">Roxo</option>
+                            <option value="bg-pink-500">Rosa</option>
+                            <option value="bg-orange-500">Laranja</option>
+                            <option value="bg-gray-500">Cinza</option>
+                        </select>
+                        <button type="button" onClick={() => removeItem(index)} className="text-red-400 hover:text-red-300 p-2">&times;</button>
+                    </div>
+                ))}
+            </div>
+            <button type="button" onClick={addItem} className="mt-2 text-sm text-[#c4b5fd] hover:text-white">+ Adicionar Item</button>
+        </div>
+    );
+};
+
+// --- Report Helper Component (Defined Outside) ---
+const TestimonialListEditor: React.FC<{
+    testimonials: Testimonial[],
+    onChange: (items: Testimonial[]) => void
+}> = ({ testimonials, onChange }) => {
+     const addItem = () => {
+        onChange([...testimonials, { name: '', quote: '', role: 'Aluno(a)', avatarUrl: 'https://placehold.co/100' }]);
+    };
+    const removeItem = (index: number) => {
+        onChange(testimonials.filter((_, i) => i !== index));
+    };
+    const updateItem = (index: number, field: keyof Testimonial, value: any) => {
+        const newItems = [...testimonials];
+        newItems[index] = { ...newItems[index], [field]: value };
+        onChange(newItems);
+    };
+
+    return (
+        <div className="bg-white/5 p-4 rounded-lg border border-white/10 mt-4">
+            <h4 className="text-white font-bold mb-4">Depoimentos</h4>
+            <div className="space-y-4">
+                {testimonials.map((t, index) => (
+                    <div key={index} className="bg-black/20 p-3 rounded border border-white/10">
+                        <div className="flex justify-between mb-2"><span className="text-xs text-gray-400">Depoimento {index + 1}</span> <button type="button" onClick={() => removeItem(index)} className="text-red-400">&times;</button></div>
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                            <input placeholder="Nome" value={t.name} onChange={e => updateItem(index, 'name', e.target.value)} className={inputClasses} />
+                            <input placeholder="Papel (ex: Aluno de Python)" value={t.role} onChange={e => updateItem(index, 'role', e.target.value)} className={inputClasses} />
+                        </div>
+                         <textarea placeholder="Citação..." value={t.quote} onChange={e => updateItem(index, 'quote', e.target.value)} className={inputClasses} rows={2} />
+                         <div className="mt-2"><label className="text-xs text-gray-400">URL do Avatar</label><input value={t.avatarUrl} onChange={e => updateItem(index, 'avatarUrl', e.target.value)} className={inputClasses} /></div>
+                    </div>
+                ))}
+            </div>
+            <button type="button" onClick={addItem} className="mt-2 text-sm text-[#c4b5fd] hover:text-white">+ Adicionar Depoimento</button>
+        </div>
+    );
+}
+
 const TransparencyEditor: React.FC = () => {
     const { type, id } = useParams<{ type: string, id: string }>();
     const { financialStatements, annualReports, handleSaveFinancialStatement, handleSaveAnnualReport, user } = useAppContext();
@@ -81,94 +169,6 @@ const TransparencyEditor: React.FC = () => {
         }
         navigate('/admin');
     };
-
-    const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
-    const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
-
-    // --- Financial Helper Components ---
-    const FinancialListEditor: React.FC<{ 
-        items: FinancialItem[], 
-        onChange: (items: FinancialItem[]) => void, 
-        title: string 
-    }> = ({ items, onChange, title }) => {
-        const addItem = () => {
-            onChange([...items, { label: '', value: '', percentage: 0, color: 'bg-gray-500' }]);
-        };
-        const removeItem = (index: number) => {
-            onChange(items.filter((_, i) => i !== index));
-        };
-        const updateItem = (index: number, field: keyof FinancialItem, value: any) => {
-            const newItems = [...items];
-            newItems[index] = { ...newItems[index], [field]: value };
-            onChange(newItems);
-        };
-
-        return (
-            <div className="bg-white/5 p-4 rounded-lg border border-white/10 mt-4">
-                <h4 className="text-white font-bold mb-4">{title}</h4>
-                <div className="space-y-3">
-                    {items.map((item, index) => (
-                        <div key={index} className="flex gap-2 items-center">
-                            <input placeholder="Rótulo (ex: Doações)" value={item.label} onChange={e => updateItem(index, 'label', e.target.value)} className={`${inputClasses} flex-[2]`} />
-                            <input placeholder="Valor (ex: R$ 5k)" value={item.value} onChange={e => updateItem(index, 'value', e.target.value)} className={`${inputClasses} flex-[1]`} />
-                            <input type="number" placeholder="%" value={item.percentage} onChange={e => updateItem(index, 'percentage', Number(e.target.value))} className={`${inputClasses} w-20`} />
-                            <select value={item.color} onChange={e => updateItem(index, 'color', e.target.value)} className={`${inputClasses} w-32`}>
-                                <option value="bg-sky-500">Azul</option>
-                                <option value="bg-green-500">Verde</option>
-                                <option value="bg-red-500">Vermelho</option>
-                                <option value="bg-yellow-500">Amarelo</option>
-                                <option value="bg-purple-500">Roxo</option>
-                                <option value="bg-pink-500">Rosa</option>
-                                <option value="bg-orange-500">Laranja</option>
-                                <option value="bg-gray-500">Cinza</option>
-                            </select>
-                            <button type="button" onClick={() => removeItem(index)} className="text-red-400 hover:text-red-300 p-2">&times;</button>
-                        </div>
-                    ))}
-                </div>
-                <button type="button" onClick={addItem} className="mt-2 text-sm text-[#c4b5fd] hover:text-white">+ Adicionar Item</button>
-            </div>
-        );
-    };
-
-    // --- Report Helper Components ---
-    const TestimonialListEditor: React.FC<{
-        testimonials: Testimonial[],
-        onChange: (items: Testimonial[]) => void
-    }> = ({ testimonials, onChange }) => {
-         const addItem = () => {
-            onChange([...testimonials, { name: '', quote: '', role: 'Aluno(a)', avatarUrl: 'https://placehold.co/100' }]);
-        };
-        const removeItem = (index: number) => {
-            onChange(testimonials.filter((_, i) => i !== index));
-        };
-        const updateItem = (index: number, field: keyof Testimonial, value: any) => {
-            const newItems = [...testimonials];
-            newItems[index] = { ...newItems[index], [field]: value };
-            onChange(newItems);
-        };
-
-        return (
-            <div className="bg-white/5 p-4 rounded-lg border border-white/10 mt-4">
-                <h4 className="text-white font-bold mb-4">Depoimentos</h4>
-                <div className="space-y-4">
-                    {testimonials.map((t, index) => (
-                        <div key={index} className="bg-black/20 p-3 rounded border border-white/10">
-                            <div className="flex justify-between mb-2"><span className="text-xs text-gray-400">Depoimento {index + 1}</span> <button type="button" onClick={() => removeItem(index)} className="text-red-400">&times;</button></div>
-                            <div className="grid grid-cols-2 gap-2 mb-2">
-                                <input placeholder="Nome" value={t.name} onChange={e => updateItem(index, 'name', e.target.value)} className={inputClasses} />
-                                <input placeholder="Papel (ex: Aluno de Python)" value={t.role} onChange={e => updateItem(index, 'role', e.target.value)} className={inputClasses} />
-                            </div>
-                             <textarea placeholder="Citação..." value={t.quote} onChange={e => updateItem(index, 'quote', e.target.value)} className={inputClasses} rows={2} />
-                             <div className="mt-2"><label className="text-xs text-gray-400">URL do Avatar</label><input value={t.avatarUrl} onChange={e => updateItem(index, 'avatarUrl', e.target.value)} className={inputClasses} /></div>
-                        </div>
-                    ))}
-                </div>
-                <button type="button" onClick={addItem} className="mt-2 text-sm text-[#c4b5fd] hover:text-white">+ Adicionar Depoimento</button>
-            </div>
-        );
-    }
-
 
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">

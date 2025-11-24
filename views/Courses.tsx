@@ -48,17 +48,13 @@ const Courses: React.FC = () => {
 
   const handleCourseSelect = (course: Course) => {
     if (user) {
-        // Se logado, tenta ir para a primeira aula (Workspace)
         const firstLesson = course.modules?.[0]?.lessons?.[0];
         if (firstLesson) {
             navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
         } else {
-            // Se não há aulas, não joga para a página institucional.
-            // Mostra um aviso de que o curso está em breve/manutenção.
             showToast("⚠️ Este curso ainda não tem aulas disponíveis. Fique atento!");
         }
     } else {
-        // Se não logado, fluxo de marketing
         if (course.heroContent) {
             navigate(`/course-landing/${course.slug || course.id}`);
         } else {
@@ -67,7 +63,6 @@ const Courses: React.FC = () => {
     }
   };
 
-  // Helper to calculate progress for the card
   const getCourseProgress = (course: Course) => {
       if (!user) return { progress: 0, isEnrolled: false };
       
@@ -75,7 +70,7 @@ const Courses: React.FC = () => {
       if (courseLessonIds.length === 0) return { progress: 0, isEnrolled: false };
 
       const completedInCourse = user.completedLessonIds.filter(id => courseLessonIds.includes(id));
-      const isEnrolled = completedInCourse.length > 0 || (user.completedLessonIds && user.completedLessonIds.some(id => courseLessonIds.includes(id))); // Basic check if they started any lesson
+      const isEnrolled = completedInCourse.length > 0 || (user.completedLessonIds && user.completedLessonIds.some(id => courseLessonIds.includes(id)));
       
       const progress = Math.round((completedInCourse.length / courseLessonIds.length) * 100);
       
@@ -105,6 +100,8 @@ const Courses: React.FC = () => {
       setSelectedFormat('Todos');
   };
 
+  const canCreateCourse = user?.role === 'admin' || user?.role === 'instructor';
+
   return (
     <div className="bg-[#09090B] min-h-screen">
         <SEO 
@@ -113,7 +110,6 @@ const Courses: React.FC = () => {
             keywords={['cursos de programação', 'curso grátis tecnologia', 'python', 'react', 'são gonçalo', 'robótica', 'educação digital']}
         />
         
-        {/* Hero Section Padronizada com a Home (py-20 md:py-32) */}
         <section className="relative py-20 md:py-32 overflow-hidden text-center">
              <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none"></div>
              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#8a4add]/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -132,7 +128,19 @@ const Courses: React.FC = () => {
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-24 relative z-20">
             
-            {featuredCourse && (
+            {canCreateCourse && (
+                <div className="flex justify-end mb-8 animate-fade-in">
+                    <button 
+                        onClick={() => navigate('/admin/course-editor/new')}
+                        className="flex items-center gap-2 bg-white text-black font-bold py-3 px-6 rounded-xl hover:bg-[#c4b5fd] transition-all shadow-lg transform hover:scale-105"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        Criar Novo Curso
+                    </button>
+                </div>
+            )}
+
+            {featuredCourse && courses.length > 0 && (
                  <section className="mb-16 animate-fade-in">
                     <FeaturedCourse course={featuredCourse} onSelect={handleCourseSelect} />
                 </section>
@@ -155,14 +163,9 @@ const Courses: React.FC = () => {
             )}
 
             <section id="all-courses" className="scroll-mt-24 relative">
-                
-                {/* Filter Bar Sticky */}
                 <div className="sticky top-[72px] z-30 mb-8 transition-all duration-300">
                     <div className="bg-[#09090B]/80 backdrop-blur-xl p-4 rounded-2xl border border-white/10 shadow-2xl ring-1 ring-white/5">
-                        
                         <div className="flex items-center gap-3">
-                            
-                            {/* Search Input - Full Width */}
                             <div className="relative flex-grow group">
                                 <input
                                     type="search"
@@ -174,18 +177,8 @@ const Courses: React.FC = () => {
                                 <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500 group-focus-within:text-[#8a4add] transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 </div>
-                                {searchTerm && (
-                                    <button 
-                                        onClick={() => setSearchTerm('')}
-                                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-white transition-colors"
-                                        aria-label="Limpar busca"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                    </button>
-                                )}
                             </div>
 
-                            {/* Track Selector */}
                             <div className="relative w-48 hidden md:block">
                                 <select 
                                     value={activeTrack} 
@@ -199,7 +192,6 @@ const Courses: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Toggle Filters Button */}
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
                                 className={`flex-shrink-0 p-3 rounded-xl border transition-all duration-200 ${
@@ -213,10 +205,8 @@ const Courses: React.FC = () => {
                             </button>
                         </div>
 
-                        {/* Advanced Filters Panel */}
                         {showFilters && (
                             <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 md:flex gap-3 animate-fade-in">
-                                {/* Mobile Track Filter (only visible on small screens if needed, logic handled by hidden above) */}
                                 <div className="relative w-full md:w-auto flex-1 md:hidden">
                                      <select 
                                         value={activeTrack} 
@@ -230,7 +220,6 @@ const Courses: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Level Filter */}
                                 <div className="relative w-full md:w-auto flex-1">
                                     <select 
                                         value={selectedLevel} 
@@ -244,7 +233,6 @@ const Courses: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* Format Filter */}
                                 <div className="relative w-full md:w-auto flex-1">
                                     <select 
                                         value={selectedFormat} 
@@ -298,10 +286,19 @@ const Courses: React.FC = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <p className="text-gray-300 font-medium">Nenhum curso encontrado com os filtros atuais.</p>
-                        <p className="text-gray-500 text-sm mt-1">Tente buscar por outro termo ou categoria.</p>
-                        <button onClick={clearFilters} className="mt-6 px-6 py-2 bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20 rounded-full hover:bg-[#8a4add]/20 transition-colors font-semibold text-sm">
-                            Limpar Filtros
-                        </button>
+                        
+                        {canCreateCourse ? (
+                            <button 
+                                onClick={() => navigate('/admin/course-editor/new')}
+                                className="mt-6 px-6 py-2 bg-[#8a4add] text-white rounded-full hover:bg-[#7c3aed] transition-colors font-bold text-sm shadow-lg"
+                            >
+                                Criar o Primeiro Curso
+                            </button>
+                        ) : (
+                            <button onClick={clearFilters} className="mt-6 px-6 py-2 bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20 rounded-full hover:bg-[#8a4add]/20 transition-colors font-semibold text-sm">
+                                Limpar Filtros
+                            </button>
+                        )}
                     </div>
                 )}
             </section>

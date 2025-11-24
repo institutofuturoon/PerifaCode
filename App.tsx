@@ -863,7 +863,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const closeInscriptionModal = () => { setIsInscriptionModalOpen(false); setSelectedCourseForInscription(null); };
 
 
-  const value = {
+  const value = useMemo(() => ({
     user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
@@ -875,7 +875,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
     handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport,
     handleSaveMarketingPost, handleDeleteMarketingPost
-  };
+  }), [
+    user, users, courses, articles, projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
+    courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
+    instructors, mentors, loading
+  ]);
 
   return (
     <AppContext.Provider value={value}>
