@@ -1,5 +1,5 @@
 
-import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession, AnalyticsData, CommunityPost, Supporter } from './types';
+import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession, AnalyticsData, CommunityPost, Supporter, FinancialStatement, AnnualReport } from './types';
 
 export const ARTICLES: Article[] = [
   {
@@ -606,3 +606,59 @@ export const MOCK_ANALYTICS_DATA_V2: AnalyticsData = {
     atRiskStudents: [],
   },
 };
+
+export const MOCK_FINANCIAL_STATEMENTS: FinancialStatement[] = [
+    {
+        id: 'fin_2023',
+        year: 2023,
+        totalRevenue: 'R$ 450.000,00',
+        totalExpenses: 'R$ 410.000,00',
+        reinvested: 'R$ 40.000,00',
+        revenueBreakdown: [
+            { label: 'Parcerias Corporativas', value: 'R$ 250k', percentage: 55, color: 'bg-purple-500' },
+            { label: 'Doações Individuais', value: 'R$ 100k', percentage: 22, color: 'bg-pink-500' },
+            { label: 'Editais e Fomento', value: 'R$ 80k', percentage: 18, color: 'bg-sky-500' },
+            { label: 'Outros', value: 'R$ 20k', percentage: 5, color: 'bg-gray-500' }
+        ],
+        expensesBreakdown: [
+            { label: 'Educação (Salários/Bolsas)', value: 'R$ 200k', percentage: 48, color: 'bg-green-500' },
+            { label: 'Infraestrutura e Tecnologia', value: 'R$ 120k', percentage: 29, color: 'bg-blue-500' },
+            { label: 'Alimentação e Transporte', value: 'R$ 60k', percentage: 15, color: 'bg-yellow-500' },
+            { label: 'Administrativo', value: 'R$ 30k', percentage: 8, color: 'bg-red-500' }
+        ],
+        documentsUrl: '#'
+    }
+];
+
+export const MOCK_ANNUAL_REPORTS: AnnualReport[] = [
+    {
+        id: 'rep_2023',
+        year: 2023,
+        stats: [
+            { label: 'Alunos Formados', value: '312', color: 'text-purple-400' },
+            { label: 'Taxa de Empregabilidade', value: '78%', color: 'text-green-400' },
+            { label: 'Mulheres na Tech', value: '45%', color: 'text-pink-400' },
+            { label: 'Projetos Entregues', value: '89', color: 'text-amber-400' }
+        ],
+        coordinationLetter: {
+            text: "2023 foi um ano de consolidação para o Instituto FuturoOn. Expandimos nossa atuação física no Complexo da Coruja e fortalecemos nossa plataforma digital, alcançando jovens que antes não tinham perspectiva de entrar no mercado de tecnologia. Nossa metodologia 'mão na massa' provou ser eficaz, com uma taxa de retenção recorde. Agradeço a cada parceiro, voluntário e aluno que acreditou nesse sonho.",
+            authorName: "Thaís Santana",
+            authorRole: "Fundadora e Diretora Executiva",
+            authorAvatarUrl: "https://randomuser.me/api/portraits/women/68.jpg"
+        },
+        testimonials: [
+            {
+                name: "Lucas Mendes",
+                quote: "O FuturoOn mudou minha vida. Antes eu trabalhava como entregador, hoje sou Desenvolvedor Júnior em uma grande fintech. A comunidade e o apoio dos mentores fizeram toda a diferença.",
+                role: "Ex-aluno, Dev Fullstack",
+                avatarUrl: "https://randomuser.me/api/portraits/men/45.jpg"
+            },
+            {
+                name: "Beatriz Costa",
+                quote: "Eu achava que programação não era pra mim. Aqui descobri que posso criar qualquer coisa. O ambiente acolhedor me deu confiança para seguir em frente.",
+                role: "Aluna de Python",
+                avatarUrl: "https://randomuser.me/api/portraits/women/22.jpg"
+            }
+        ]
+    }
+];

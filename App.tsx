@@ -50,7 +50,7 @@ import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
-import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS } from './constants';
+import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
 import PageLayout from './components/PageLayout';
 import StudentUploadTest from './views/StudentUploadTest';
@@ -171,12 +171,24 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
              const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as Supporter).id));
              dataFromDb = [...MOCK_SUPPORTERS, ...additional];
         }
+        
+        if (collectionName === 'financialStatements') {
+             const mockIds = new Set(MOCK_FINANCIAL_STATEMENTS.map(s => s.id));
+             const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as FinancialStatement).id));
+             dataFromDb = [...MOCK_FINANCIAL_STATEMENTS, ...additional];
+        }
+
+        if (collectionName === 'annualReports') {
+             const mockIds = new Set(MOCK_ANNUAL_REPORTS.map(s => s.id));
+             const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as AnnualReport).id));
+             dataFromDb = [...MOCK_ANNUAL_REPORTS, ...additional];
+        }
 
         setData(dataFromDb);
       } catch (error) {
         console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
         // Allow fetching empty collections for new features without fallback mocks
-        if (collectionName !== 'financialStatements' && collectionName !== 'annualReports' && collectionName !== 'marketingPosts') {
+        if (collectionName !== 'marketingPosts') {
            showToast(`❌ Erro ao carregar ${collectionName}.`);
         }
 
@@ -192,6 +204,10 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setData(MOCK_EVENTS);
         } else if (collectionName === 'supporters') {
             setData(MOCK_SUPPORTERS);
+        } else if (collectionName === 'financialStatements') {
+            setData(MOCK_FINANCIAL_STATEMENTS);
+        } else if (collectionName === 'annualReports') {
+            setData(MOCK_ANNUAL_REPORTS);
         }
         else {
             setData([]);
