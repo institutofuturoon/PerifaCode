@@ -12,8 +12,6 @@ type SelectedItem =
   | { type: 'module'; moduleIndex: number }
   | { type: 'lesson'; moduleIndex: number; lessonIndex: number };
 
-type AiAction = 'create' | 'improve' | 'summarize' | 'create_code';
-
 const stringToSlug = (str: string) => {
   return str
     .toLowerCase()
@@ -70,6 +68,13 @@ const CourseEditor: React.FC = () => {
   const [aiTopic, setAiTopic] = useState('');
   const [isGeneratingStructure, setIsGeneratingStructure] = useState(false);
   const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
+  
+  // AI Loading States for Landing Page Sections
+  const [isGeneratingHero, setIsGeneratingHero] = useState(false);
+  const [isGeneratingBenefits, setIsGeneratingBenefits] = useState(false);
+  const [isGeneratingCurriculum, setIsGeneratingCurriculum] = useState(false);
+  const [isGeneratingMethodology, setIsGeneratingMethodology] = useState(false);
+  const [isGeneratingCta, setIsGeneratingCta] = useState(false);
 
   // Handlers
   const onCancel = () => navigate('/admin');
@@ -352,6 +357,153 @@ const CourseEditor: React.FC = () => {
       }
   };
 
+  // --- AI Handlers for Landing Page Sections ---
+
+  const generateSectionCommon = async (prompt: string, schema: any, setLoading: (l: boolean) => void, onSuccess: (result: any) => void) => {
+      if (!course.title) {
+          showToast("⚠️ Preencha o Título do Curso primeiro para dar contexto à IA.");
+          return;
+      }
+      setLoading(true);
+      try {
+          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const fullPrompt = `Curso: "${course.title}".
+          Descrição Breve: "${course.description}".
+          Público: Jovens da periferia, linguagem acessível e moderna (estilo Rocketseat).
+          
+          ${prompt}`;
+
+          const response = await ai.models.generateContent({
+              model: "gemini-2.5-flash",
+              contents: fullPrompt,
+              config: {
+                  responseMimeType: "application/json",
+                  responseSchema: schema
+              }
+          });
+          
+          const result = JSON.parse(response.text);
+          onSuccess(result);
+          showToast("✨ Conteúdo gerado com sucesso!");
+      } catch (error) {
+          console.error("Erro na geração IA:", error);
+          showToast("❌ Erro ao gerar conteúdo.");
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  const handleGenerateHeroWithAI = () => {
+      const prompt = "Gere o conteúdo para a seção Hero (Topo) da Landing Page. Precisa ser impactante e convidativo.";
+      const schema = {
+          type: Type.OBJECT,
+          properties: {
+              subtitle: { type: Type.STRING, description: "Ex: Formação Completa" },
+              titleLine1: { type: Type.STRING, description: "Primeira linha do título principal" },
+              titleAccent: { type: Type.STRING, description: "Palavras destacadas no título (cor diferente)" },
+              description: { type: Type.STRING, description: "Parágrafo curto de venda do curso" }
+          },
+          required: ["subtitle", "titleLine1", "titleAccent", "description"]
+      };
+      generateSectionCommon(prompt, schema, setIsGeneratingHero, (res) => {
+          setCourse(prev => ({ ...prev, heroContent: res }));
+      });
+  };
+
+  const handleGenerateBenefitsWithAI = () => {
+      const prompt = "Liste 4 benefícios principais de fazer este curso. Foco em carreira e aprendizado prático.";
+      const schema = {
+          type: Type.OBJECT,
+          properties: {
+              title: { type: Type.STRING, description: "Título da seção (Ex: Por que aprender isso?)" },
+              subtitle: { type: Type.STRING, description: "Subtítulo curto" },
+              benefits: {
+                  type: Type.ARRAY,
+                  items: {
+                      type: Type.OBJECT,
+                      properties: {
+                          title: { type: Type.STRING },
+                          description: { type: Type.STRING }
+                      },
+                      required: ["title", "description"]
+                  }
+              }
+          },
+          required: ["title", "subtitle", "benefits"]
+      };
+      generateSectionCommon(prompt, schema, setIsGeneratingBenefits, (res) => {
+          setCourse(prev => ({ ...prev, benefitsSection: res }));
+      });
+  };
+
+  const handleGenerateCurriculumWithAI = () => {
+      const prompt = "Crie um resumo do currículo em 4 pontos principais (tópicos macro).";
+      const schema = {
+          type: Type.OBJECT,
+          properties: {
+              title: { type: Type.STRING, description: "Título da seção (Ex: O que você vai aprender)" },
+              subtitle: { type: Type.STRING },
+              items: {
+                  type: Type.ARRAY,
+                  items: {
+                      type: Type.OBJECT,
+                      properties: {
+                          title: { type: Type.STRING },
+                          description: { type: Type.STRING }
+                      },
+                      required: ["title", "description"]
+                  }
+              }
+          },
+          required: ["title", "subtitle", "items"]
+      };
+      generateSectionCommon(prompt, schema, setIsGeneratingCurriculum, (res) => {
+          setCourse(prev => ({ ...prev, curriculumSection: res }));
+      });
+  };
+
+  const handleGenerateMethodologyWithAI = () => {
+      const prompt = "Descreva a metodologia de ensino (foco em prática, projetos reais, mentoria). Crie 3 pontos.";
+      const schema = {
+          type: Type.OBJECT,
+          properties: {
+              title: { type: Type.STRING, description: "Título da seção (Ex: Como ensinamos)" },
+              subtitle: { type: Type.STRING },
+              benefits: {
+                  type: Type.ARRAY,
+                  items: {
+                      type: Type.OBJECT,
+                      properties: {
+                          title: { type: Type.STRING },
+                          description: { type: Type.STRING }
+                      },
+                      required: ["title", "description"]
+                  }
+              }
+          },
+          required: ["title", "subtitle", "benefits"]
+      };
+      generateSectionCommon(prompt, schema, setIsGeneratingMethodology, (res) => {
+          setCourse(prev => ({ ...prev, methodologySection: res }));
+      });
+  };
+
+  const handleGenerateCtaWithAI = () => {
+      const prompt = "Crie uma chamada para ação (CTA) final forte e motivadora para inscrição.";
+      const schema = {
+          type: Type.OBJECT,
+          properties: {
+              title: { type: Type.STRING, description: "Título chamativo (Ex: Comece sua jornada)" },
+              description: { type: Type.STRING, description: "Texto de apoio curto" }
+          },
+          required: ["title", "description"]
+      };
+      generateSectionCommon(prompt, schema, setIsGeneratingCta, (res) => {
+          setCourse(prev => ({ ...prev, ctaSection: res }));
+      });
+  };
+
+
   const handleImageUploadComplete = (url: string) => {
     setCourse(prev => ({...prev, imageUrl: url}));
     showToast('✅ Imagem do curso salva!');
@@ -366,6 +518,21 @@ const CourseEditor: React.FC = () => {
   const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
   const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
   
+  const AiButton: React.FC<{ onClick: () => void; isLoading: boolean; label?: string }> = ({ onClick, isLoading, label = "Gerar com IA" }) => (
+      <button 
+          type="button" 
+          onClick={onClick}
+          disabled={isLoading}
+          className="flex items-center gap-2 text-xs font-bold bg-[#8a4add]/20 text-[#c4b5fd] px-3 py-1.5 rounded-full hover:bg-[#8a4add]/30 disabled:opacity-50 transition-colors ml-auto"
+      >
+          {isLoading ? (
+              <><svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Gerando...</>
+          ) : (
+              <>✨ {label}</>
+          )}
+      </button>
+  );
+
   const renderCourseForm = () => (
     <div className="space-y-6">
         <details open className="bg-black/20 p-4 rounded-lg border border-white/10">
@@ -390,22 +557,11 @@ const CourseEditor: React.FC = () => {
         </details>
         
         <details className="bg-black/20 p-4 rounded-lg border border-white/10">
-            <summary className="font-semibold text-white cursor-pointer">SEO & Metadados</summary>
+            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
+                <span>SEO & Metadados</span>
+                <AiButton onClick={handleGenerateSeo} isLoading={isGeneratingSeo} label="Gerar SEO" />
+            </summary>
             <div className="mt-4 space-y-4">
-                <div className="flex justify-end">
-                    <button 
-                        type="button" 
-                        onClick={handleGenerateSeo}
-                        disabled={isGeneratingSeo}
-                        className="flex items-center gap-2 text-xs font-bold bg-[#8a4add]/20 text-[#c4b5fd] px-3 py-1.5 rounded-full hover:bg-[#8a4add]/30 disabled:opacity-50 transition-colors"
-                    >
-                        {isGeneratingSeo ? (
-                            <><svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Gerando...</>
-                        ) : (
-                            <>✨ Gerar Sugestões com IA</>
-                        )}
-                    </button>
-                </div>
                 <div>
                     <label className={labelClasses}>Meta Title (Título na aba do navegador e Google)</label>
                     <input value={course.seo?.metaTitle || ''} onChange={(e) => handleSeoChange('metaTitle', e.target.value)} className={inputClasses} placeholder="Ex: Curso de Python Completo | FuturoOn" maxLength={60} />
@@ -423,14 +579,24 @@ const CourseEditor: React.FC = () => {
             </div>
         </details>
 
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção Principal (Hero)</summary><div className="mt-4 space-y-4">
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
+                <span>Página do Curso: Seção Principal (Hero)</span>
+                <AiButton onClick={handleGenerateHeroWithAI} isLoading={isGeneratingHero} />
+            </summary>
+            <div className="mt-4 space-y-4">
             <div><label className={labelClasses}>Subtítulo</label><input value={course.heroContent?.subtitle || ''} onChange={(e) => handleLandingPageChange('heroContent', 'subtitle', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Linha de Título 1</label><input value={course.heroContent?.titleLine1 || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleLine1', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Título em Destaque</label><input value={course.heroContent?.titleAccent || ''} onChange={(e) => handleLandingPageChange('heroContent', 'titleAccent', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Descrição</label><textarea value={course.heroContent?.description || ''} onChange={(e) => handleLandingPageChange('heroContent', 'description', e.target.value)} className={inputClasses} rows={3}></textarea></div>
         </div></details>
         
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção de Benefícios</summary><div className="mt-4 space-y-4">
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
+                <span>Página do Curso: Seção de Benefícios</span>
+                <AiButton onClick={handleGenerateBenefitsWithAI} isLoading={isGeneratingBenefits} />
+            </summary>
+            <div className="mt-4 space-y-4">
             <div><label className={labelClasses}>Título da Seção</label><input value={course.benefitsSection?.title || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'title', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.benefitsSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('benefitsSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
             <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
@@ -443,7 +609,12 @@ const CourseEditor: React.FC = () => {
             </div>
         </div></details>
 
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção de Currículo</summary><div className="mt-4 space-y-4">
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
+                <span>Página do Curso: Seção de Currículo</span>
+                <AiButton onClick={handleGenerateCurriculumWithAI} isLoading={isGeneratingCurriculum} />
+            </summary>
+            <div className="mt-4 space-y-4">
             <div><label className={labelClasses}>Título da Seção</label><input value={course.curriculumSection?.title || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'title', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.curriculumSection?.subtitle || ''} onChange={(e) => handleLandingPageChange('curriculumSection', 'subtitle', e.target.value)} className={inputClasses} /></div>
             <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
@@ -456,7 +627,12 @@ const CourseEditor: React.FC = () => {
             </div>
         </div></details>
         
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Seção de Metodologia</summary><div className="mt-4 space-y-4">
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
+                <span>Página do Curso: Seção de Metodologia</span>
+                <AiButton onClick={handleGenerateMethodologyWithAI} isLoading={isGeneratingMethodology} />
+            </summary>
+            <div className="mt-4 space-y-4">
             <div><label className={labelClasses}>Título da Seção</label><input value={course.methodologySection?.title || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'title', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Subtítulo da Seção</label><input value={course.methodologySection?.subtitle || ''} onChange={(e) => handleLandingPageChange('methodologySection', 'subtitle', e.target.value)} className={inputClasses} /></div>
             <div className="space-y-4 border-t border-white/10 pt-4 mt-4">
@@ -469,7 +645,12 @@ const CourseEditor: React.FC = () => {
             </div>
         </div></details>
 
-        <details className="bg-black/20 p-4 rounded-lg border border-white/10"><summary className="font-semibold text-white cursor-pointer">Página do Curso: Chamada para Ação (CTA)</summary><div className="mt-4 space-y-4">
+        <details className="bg-black/20 p-4 rounded-lg border border-white/10">
+            <summary className="font-semibold text-white cursor-pointer flex justify-between items-center">
+                <span>Página do Curso: Chamada para Ação (CTA)</span>
+                <AiButton onClick={handleGenerateCtaWithAI} isLoading={isGeneratingCta} />
+            </summary>
+            <div className="mt-4 space-y-4">
             <div><label className={labelClasses}>Título</label><input value={course.ctaSection?.title || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'title', e.target.value)} className={inputClasses} /></div>
             <div><label className={labelClasses}>Descrição</label><textarea value={course.ctaSection?.description || ''} onChange={(e) => handleLandingPageChange('ctaSection', 'description', e.target.value)} className={inputClasses} rows={2}></textarea></div>
         </div></details>
