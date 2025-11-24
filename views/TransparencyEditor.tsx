@@ -1,13 +1,12 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { FinancialStatement, AnnualReport, FinancialItem, Testimonial } from '../types';
-import Uploader from '../components/Uploader';
 
 const TransparencyEditor: React.FC = () => {
     const { type, id } = useParams<{ type: string, id: string }>();
-    const { financialStatements, annualReports, handleSaveFinancialStatement, handleSaveAnnualReport, user, showToast } = useAppContext();
+    const { financialStatements, annualReports, handleSaveFinancialStatement, handleSaveAnnualReport, user } = useAppContext();
     const navigate = useNavigate();
 
     // Determine edit mode and object type
@@ -42,7 +41,7 @@ const TransparencyEditor: React.FC = () => {
             authorRole: 'Coordenação',
             authorAvatarUrl: user?.avatarUrl || ''
         },
-        testimonials: []
+        testimonials: [],
     };
 
     // --- State Management ---

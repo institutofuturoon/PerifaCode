@@ -1,7 +1,8 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
+import { FinancialItem } from '../types';
 
 // Reusable components for this view
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
@@ -32,20 +33,68 @@ const FinancialCard: React.FC<{ value: string, label: string, icon: React.ReactN
     </div>
 );
 
-const BreakdownBar: React.FC<{ label: string, value: string, percentage: number, color: string }> = ({ label, value, percentage, color }) => (
-    <div>
-        <div className="flex justify-between mb-1 text-sm">
-            <span className="font-semibold text-gray-300">{label}</span>
-            <span className="font-bold text-white">{value}</span>
+// --- IMPROVEMENT: Interactive Donut Chart Component ---
+const DonutChart: React.FC<{ items: FinancialItem[], title: string }> = ({ items, title }) => {
+    // Map tailwind class names to hex codes for the gradient
+    const colorMap: Record<string, string> = {
+        'bg-sky-500': '#0ea5e9',
+        'bg-green-500': '#22c55e',
+        'bg-red-500': '#ef4444',
+        'bg-yellow-500': '#eab308',
+        'bg-purple-500': '#a855f7',
+        'bg-pink-500': '#ec4899',
+        'bg-orange-500': '#f97316',
+        'bg-gray-500': '#6b7280',
+    };
+
+    // Calculate gradient string
+    let currentAngle = 0;
+    const gradientParts = items.map(item => {
+        const start = currentAngle;
+        const end = currentAngle + (item.percentage * 3.6); // 3.6 degrees per 1%
+        currentAngle = end;
+        const hexColor = colorMap[item.color] || '#ccc';
+        return `${hexColor} ${start}deg ${end}deg`;
+    });
+    const gradientString = `conic-gradient(${gradientParts.join(', ')})`;
+
+    return (
+        <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="relative w-64 h-64 flex-shrink-0">
+                {/* Chart */}
+                <div 
+                    className="w-full h-full rounded-full"
+                    style={{ background: gradientString }}
+                ></div>
+                {/* Hollow center */}
+                <div className="absolute inset-4 bg-[#18181b] rounded-full flex items-center justify-center">
+                    <div className="text-center">
+                        <p className="text-gray-400 text-xs uppercase tracking-wider font-bold mb-1">{title}</p>
+                        <p className="text-white font-black text-xl">100%</p>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Legend */}
+            <div className="flex-1 w-full">
+                <div className="space-y-3">
+                    {items.map((item, idx) => (
+                        <div key={idx} className="flex items-center justify-between group">
+                            <div className="flex items-center gap-3">
+                                <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
+                                <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{item.label}</span>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="text-xs font-mono text-gray-500">{item.value}</span>
+                                <span className="text-sm font-bold text-white">{item.percentage}%</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
-        <div className="w-full bg-black/30 rounded-full h-4 border border-white/10">
-            <div
-                className={`h-full rounded-full transition-all duration-500 ease-out ${color}`}
-                style={{ width: `${percentage}%` }}
-            ></div>
-        </div>
-    </div>
-);
+    );
+};
 
 
 const FinancialStatementView: React.FC = () => {
@@ -93,21 +142,17 @@ const FinancialStatementView: React.FC = () => {
                 </div>
             </Section>
             
-            {/* Breakdown */}
+            {/* Breakdown with Charts */}
             <Section>
                 <SectionTitle>Detalhamento Financeiro</SectionTitle>
-                <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
-                    <div className="bg-white/5 p-8 rounded-lg border border-white/10">
-                        <h3 className="text-2xl font-bold text-white mb-6">De onde vieram os recursos?</h3>
-                        <div className="space-y-6">
-                            {latestStatement.revenueBreakdown.map((item, index) => <BreakdownBar key={index} label={item.label} value={item.value} percentage={item.percentage} color={item.color} />)}
-                        </div>
+                <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12">
+                    <div className="bg-[#18181b] p-8 rounded-2xl border border-white/10">
+                        <h3 className="text-2xl font-bold text-white mb-8 text-center lg:text-left">Origem dos Recursos</h3>
+                        <DonutChart items={latestStatement.revenueBreakdown} title="Receitas" />
                     </div>
-                     <div className="bg-white/5 p-8 rounded-lg border border-white/10">
-                        <h3 className="text-2xl font-bold text-white mb-6">Como investimos na nossa missão?</h3>
-                        <div className="space-y-6">
-                            {latestStatement.expensesBreakdown.map((item, index) => <BreakdownBar key={index} label={item.label} value={item.value} percentage={item.percentage} color={item.color} />)}
-                        </div>
+                     <div className="bg-[#18181b] p-8 rounded-2xl border border-white/10">
+                        <h3 className="text-2xl font-bold text-white mb-8 text-center lg:text-left">Aplicação dos Recursos</h3>
+                        <DonutChart items={latestStatement.expensesBreakdown} title="Despesas" />
                     </div>
                 </div>
             </Section>
