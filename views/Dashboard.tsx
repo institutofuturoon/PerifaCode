@@ -402,7 +402,7 @@ const TracksManagementPanel: React.FC = () => {
                         ) : (
                             <div>
                                 <p className="font-medium text-white text-sm">{track.name}</p>
-                                <p className="text-[10px] text-gray-500">{courses.filter(c => c.track === track.name).length} cursos</p>
+                                <p className="text-sm text-gray-500">{courses.filter(c => c.track === track.name).length} cursos</p>
                             </div>
                         )}
                         <div className="flex gap-3 items-center">
@@ -421,7 +421,7 @@ const TracksManagementPanel: React.FC = () => {
 
 // --- Student Overview Component (NEW) ---
 const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
-    const { courses, courseProgress, events, showToast } = useAppContext();
+    const { courses, courseProgress, events, mentorSessions, showToast, users } = useAppContext();
     const navigate = useNavigate();
 
     // 1. Get Current Course (Last active or most progress)
@@ -430,11 +430,49 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
         return courseProgress.inProgressCourses.sort((a, b) => b.progress - a.progress)[0];
     }, [courseProgress]);
 
-    // 2. Get Next Upcoming Event
+    // 2. Get Next Upcoming Mentorship
+    const nextMentorship = useMemo(() => {
+        const mySessions = mentorSessions.filter(s => s.studentId === user.id && s.isBooked);
+        // Filter for future sessions
+        const now = new Date();
+        const futureSessions = mySessions.filter(s => new Date(`${s.date}T${s.time}`) > now);
+        // Sort by date
+        return futureSessions.sort((a, b) => new Date(`${a.date}T${a.time}`).getTime() - new Date(`${b.date}T${b.time}`).getTime())[0];
+    }, [mentorSessions, user.id]);
+
+    // 3. Get Next Upcoming Event
     const nextEvent = useMemo(() => {
-        // Simplified logic: grab first event that is NOT in the past (mock logic)
         return events.find(e => !e.date.includes('2023')) || events[0];
     }, [events]);
+
+    // Determine what to show in the "Agenda" card
+    const agendaItem = useMemo(() => {
+        if (nextMentorship) {
+            const mentor = users.find(u => u.id === nextMentorship.mentorId);
+            return {
+                type: 'mentorship',
+                title: `Mentoria com ${mentor?.name || 'Mentor'}`,
+                date: nextMentorship.date,
+                time: nextMentorship.time,
+                description: 'Prepare suas dúvidas e boa aula!',
+                image: mentor?.avatarUrl || '',
+                link: nextMentorship.googleMeetUrl,
+                isMentorship: true
+            };
+        } else if (nextEvent) {
+            return {
+                type: 'event',
+                title: nextEvent.title,
+                date: nextEvent.date,
+                time: nextEvent.time,
+                description: nextEvent.description,
+                image: nextEvent.imageUrl,
+                link: `/event/${nextEvent.id}`,
+                isMentorship: false
+            };
+        }
+        return null;
+    }, [nextMentorship, nextEvent, users]);
 
     const handleContinue = () => {
         if (currentActive) {
@@ -512,27 +550,41 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
                 {/* 2. Next Event / Agenda */}
                 <div className="bg-[#121212] rounded-2xl border border-white/10 p-6 flex flex-col">
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-bold text-white">Próximo Evento</h3>
+                        <h3 className="text-lg font-bold text-white">
+                            {agendaItem?.isMentorship ? 'Próxima Mentoria' : 'Próximo Evento'}
+                        </h3>
                         <button onClick={() => navigate('/connect')} className="text-xs text-[#c4b5fd] hover:text-white font-semibold">Ver Agenda</button>
                     </div>
                     
-                    {nextEvent ? (
+                    {agendaItem ? (
                         <div className="flex-1 flex flex-col justify-center">
-                            <div className="aspect-video rounded-lg overflow-hidden relative mb-4 group cursor-pointer" onClick={() => navigate(`/event/${nextEvent.id}`)}>
-                                <img src={nextEvent.imageUrl} alt={nextEvent.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" />
+                            <div className="aspect-video rounded-lg overflow-hidden relative mb-4 group cursor-pointer" onClick={() => agendaItem.link && !agendaItem.isMentorship ? navigate(agendaItem.link) : null}>
+                                <img src={agendaItem.image || 'https://via.placeholder.com/300x150'} alt={agendaItem.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" />
                                 <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10">
-                                    {nextEvent.date} • {nextEvent.time}
+                                    {agendaItem.date} • {agendaItem.time}
                                 </div>
                             </div>
-                            <h4 className="text-white font-bold text-sm line-clamp-1 mb-1">{nextEvent.title}</h4>
-                            <p className="text-gray-500 text-xs mb-4 line-clamp-2">{nextEvent.description}</p>
-                            <button onClick={() => navigate(`/event/${nextEvent.id}`)} className="w-full py-2 rounded-lg border border-white/10 hover:bg-white/5 text-gray-300 text-xs font-bold transition-colors">
-                                Detalhes
-                            </button>
+                            <h4 className="text-white font-bold text-sm line-clamp-1 mb-1">{agendaItem.title}</h4>
+                            <p className="text-gray-500 text-xs mb-4 line-clamp-2">{agendaItem.description}</p>
+                            
+                            {agendaItem.isMentorship ? (
+                                <a 
+                                    href={agendaItem.link || '#'} 
+                                    target="_blank" 
+                                    rel="noreferrer"
+                                    className="w-full py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-xs font-bold transition-colors text-center block"
+                                >
+                                    Acessar Sala (Meet)
+                                </a>
+                            ) : (
+                                <button onClick={() => navigate(agendaItem.link!)} className="w-full py-2 rounded-lg border border-white/10 hover:bg-white/5 text-gray-300 text-xs font-bold transition-colors">
+                                    Ver Detalhes
+                                </button>
+                            )}
                         </div>
                     ) : (
                         <div className="flex-1 flex items-center justify-center text-center text-gray-500 text-xs">
-                            Nenhum evento agendado.
+                            Nenhum compromisso agendado.
                         </div>
                     )}
                 </div>
@@ -576,6 +628,153 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
         </div>
     );
 };
+
+// --- Teacher Overview Component (NEW) ---
+const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
+    const { courses, mentorSessions, communityPosts, navigate, users } = useAppContext();
+
+    const myCourses = useMemo(() => courses.filter(c => c.instructorId === user.id), [courses, user.id]);
+    const mySessions = useMemo(() => mentorSessions.filter(s => s.mentorId === user.id && !s.isBooked), [mentorSessions, user.id]); // Upcoming free slots
+    const bookedSessions = useMemo(() => mentorSessions.filter(s => s.mentorId === user.id && s.isBooked), [mentorSessions, user.id]);
+    
+    // Calc stats
+    const totalStudents = useMemo(() => {
+        // Mock: In real app, fetch enrollments. Here we sum distinct students from mock analytics or fallback
+        return 120; // Mock value for UI demo
+    }, []);
+
+    const pendingQuestions = useMemo(() => {
+        return communityPosts.filter(p => p.type === 'question' && !p.isSolved).slice(0, 3);
+    }, [communityPosts]);
+
+    const atRiskStudents = useMemo(() => MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.slice(0, 4), []);
+
+    return (
+        <div className="space-y-8 animate-fade-in">
+            
+            {/* 1. Hero: Next Appointment */}
+            <div className="bg-gradient-to-r from-[#121212] to-[#1a1a1d] rounded-2xl border border-white/10 p-8 relative overflow-hidden shadow-xl">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#8a4add]/10 rounded-full blur-[80px] pointer-events-none"></div>
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div>
+                        <h2 className="text-3xl font-black text-white mb-2">Olá, Professor {user.name.split(' ')[0]}!</h2>
+                        <p className="text-gray-400">Próximo compromisso na agenda:</p>
+                    </div>
+                    
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 p-4 rounded-xl flex items-center gap-4 w-full md:w-auto">
+                        <div className="bg-[#8a4add] p-3 rounded-lg text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <div>
+                            <p className="text-xs text-[#c4b5fd] font-bold uppercase">Mentoria Individual</p>
+                            <p className="text-white font-bold">Hoje, 15:00</p>
+                            <p className="text-xs text-gray-400">com João Silva</p>
+                        </div>
+                        <button className="ml-4 bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors">
+                            Entrar na Sala
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* 2. KPIs */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard title="Meus Alunos" value={totalStudents} icon="👨‍🎓" color="text-white" />
+                <StatCard title="Pendências" value="5" icon="📝" color="text-yellow-400" />
+                <StatCard title="Dúvidas" value={pendingQuestions.length} icon="💬" color="text-orange-400" />
+                <StatCard title="Nota Média" value="4.8" icon="⭐" color="text-[#c4b5fd]" />
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* 3. Centro de Atenção (Left - 2 cols) */}
+                <div className="lg:col-span-2 space-y-8">
+                    
+                    {/* At Risk Students */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                <span className="bg-red-500/10 text-red-400 p-1 rounded">🚨</span> Alunos em Risco
+                            </h3>
+                            <button className="text-xs text-[#c4b5fd] hover:underline">Ver todos</button>
+                        </div>
+                        <div className="space-y-3">
+                            {atRiskStudents.map(student => (
+                                <div key={student.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <img src={student.avatarUrl} className="h-10 w-10 rounded-full border border-white/10" alt={student.name} />
+                                        <div>
+                                            <p className="text-sm font-bold text-white">{student.name}</p>
+                                            <p className="text-xs text-red-400">Ausente há {student.lastLoginDaysAgo} dias</p>
+                                        </div>
+                                    </div>
+                                    <button className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors">
+                                        Contatar
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Recent Forum Questions */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <span className="bg-orange-500/10 text-orange-400 p-1 rounded">💬</span> Dúvidas Recentes
+                        </h3>
+                        {pendingQuestions.length > 0 ? (
+                            <div className="space-y-3">
+                                {pendingQuestions.map(post => (
+                                    <div key={post.id} className="p-3 rounded-lg bg-white/5 border border-white/5 hover:border-white/20 transition-colors cursor-pointer" onClick={() => navigate(`/community/post/${post.id}`)}>
+                                        <p className="text-sm font-medium text-white line-clamp-1">{post.title}</p>
+                                        <p className="text-xs text-gray-500 mt-1 line-clamp-1">{post.content}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-500 italic">Nenhuma dúvida pendente. Bom trabalho!</p>
+                        )}
+                    </div>
+
+                </div>
+
+                {/* 4. Sidebar (Right - 1 col) */}
+                <div className="space-y-6">
+                    
+                    {/* My Courses Shortcuts */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <h3 className="text-lg font-bold text-white mb-4">Meus Cursos</h3>
+                        <div className="space-y-3">
+                            {myCourses.length > 0 ? myCourses.map(course => (
+                                <div key={course.id} className="group relative overflow-hidden rounded-xl aspect-video bg-gray-800 cursor-pointer" onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)}>
+                                    <img src={course.imageUrl} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" alt={course.title} />
+                                    <div className="absolute inset-0 p-4 flex flex-col justify-end">
+                                        <p className="text-white font-bold text-sm leading-tight">{course.title}</p>
+                                        <p className="text-[10px] text-gray-300 mt-1">Gerenciar Turma &rarr;</p>
+                                    </div>
+                                </div>
+                            )) : (
+                                <p className="text-sm text-gray-500">Você não tem cursos atribuídos.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Ações Rápidas</h3>
+                        <div className="space-y-2">
+                            <button onClick={() => navigate('/myAgenda')} className="w-full text-left p-2 text-sm text-white hover:bg-white/5 rounded transition-colors flex items-center gap-2">
+                                📅 Gerenciar Agenda
+                            </button>
+                            <button onClick={() => navigate('/admin/course-editor/new')} className="w-full text-left p-2 text-sm text-white hover:bg-white/5 rounded transition-colors flex items-center gap-2">
+                                ➕ Criar Novo Conteúdo
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    );
+}
 
 
 // --- Main Dashboard Component ---
@@ -677,11 +876,61 @@ const Dashboard: React.FC = () => {
 
     // Renderers
     const renderAdminOverview = () => (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard title="Meus Cursos" value={coursesForUser.length} icon="📚" />
-            <StatCard title="Alunos Ativos" value={MOCK_ANALYTICS_DATA_V2.totalStudents} icon="👥" />
-            <StatCard title="Engajamento" value={`${MOCK_ANALYTICS_DATA_V2.weeklyEngagement}%`} icon="🔥" />
-            <StatCard title="Artigos" value={articlesForUser.length} icon="✍️" />
+        <div className="space-y-8 animate-fade-in">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard title="Total de Alunos" value={MOCK_ANALYTICS_DATA_V2.totalStudents.toLocaleString('pt-BR')} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} />
+                <StatCard title="Novos Alunos (30d)" value={`+${MOCK_ANALYTICS_DATA_V2.newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
+                <StatCard title="Taxa de Conclusão" value={`${MOCK_ANALYTICS_DATA_V2.avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
+                <StatCard title="Engajamento" value={`${MOCK_ANALYTICS_DATA_V2.weeklyEngagement}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>} />
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+                {/* Recent Activity / Quick Actions */}
+                <div className="lg:col-span-2 bg-[#121212] border border-white/10 rounded-2xl p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg font-bold text-white">Atividades Recentes</h3>
+                        <button onClick={() => navigate('/analytics')} className="text-xs text-[#c4b5fd] hover:text-white font-bold uppercase">Ver Relatório Completo</button>
+                    </div>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4 bg-white/5 p-4 rounded-lg">
+                            <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">🎉</div>
+                            <div>
+                                <p className="text-sm font-bold text-white">Novo Curso Publicado</p>
+                                <p className="text-xs text-gray-400">Curso "React Avançado" está disponível.</p>
+                            </div>
+                            <span className="ml-auto text-xs text-gray-500">2h atrás</span>
+                        </div>
+                        <div className="flex items-center gap-4 bg-white/5 p-4 rounded-lg">
+                            <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">👤</div>
+                            <div>
+                                <p className="text-sm font-bold text-white">5 Novos Alunos</p>
+                                <p className="text-xs text-gray-400">Matrículas confirmadas na trilha Backend.</p>
+                            </div>
+                            <span className="ml-auto text-xs text-gray-500">5h atrás</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* At Risk Students Mini-Widget */}
+                <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                    <h3 className="text-lg font-bold text-white mb-4">⚠️ Atenção Necessária</h3>
+                    <p className="text-xs text-gray-400 mb-4">Alunos sem acesso há mais de 10 dias.</p>
+                    <ul className="space-y-3">
+                        {MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.slice(0, 3).map(student => (
+                            <li key={student.id} className="flex items-center gap-3">
+                                <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full opacity-60" />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-white truncate">{student.name}</p>
+                                    <p className="text-xs text-red-400">{student.lastLoginDaysAgo} dias off</p>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                    <button onClick={() => navigate('/analytics')} className="w-full mt-6 py-2 text-xs font-bold text-center text-gray-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        Ver Lista Completa
+                    </button>
+                </div>
+            </div>
         </div>
     );
 
@@ -736,7 +985,10 @@ const Dashboard: React.FC = () => {
     const renderStudentCourses = () => {
         if (!user) return null;
         const myCourseIds = user.completedLessonIds; 
-        const myCourses = courses.filter(c => c.modules.some(m => m.lessons.some(l => myCourseIds.includes(l.id))));
+        const myCourses = courses.filter(c => c.modules.some(m => m.lessons.some(l => l.id && myCourseIds.includes(l.id)))) || [];
+        
+        // Fallback: if user has completed lessons but we can't match courses efficiently or array is empty, show active enrollments logic if available.
+        // For MVP: simple logic
         
         return (
             <div className="space-y-6">
@@ -761,6 +1013,12 @@ const Dashboard: React.FC = () => {
     // Only return null here, AFTER all hooks have run.
     if (!user) return null;
 
+    const renderOverview = () => {
+        if (user.role === 'student') return <StudentOverview user={user} />;
+        if (user.role === 'instructor') return <TeacherOverview user={user} />;
+        return renderAdminOverview();
+    };
+
     return (
         <div className="min-h-screen bg-[#09090B] flex">
             <DashboardSidebar 
@@ -777,9 +1035,7 @@ const Dashboard: React.FC = () => {
                 <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
                     <div className="max-w-7xl mx-auto animate-fade-in">
                         {/* CONDITIONAL OVERVIEW */}
-                        {activeTab === 'overview' && (
-                            user.role === 'student' ? <StudentOverview user={user} /> : renderAdminOverview()
-                        )}
+                        {activeTab === 'overview' && renderOverview()}
                         
                         {activeTab === 'courses' && renderCoursesManagement()}
                         {activeTab === 'myCourses' && renderStudentCourses()}

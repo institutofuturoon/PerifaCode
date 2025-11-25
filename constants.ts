@@ -590,21 +590,42 @@ export const MOCK_SUPPORTERS: Supporter[] = [
 ];
 
 export const MOCK_ANALYTICS_DATA_V2: AnalyticsData = {
-  totalStudents: 0,
-  newStudentsLast30d: 0,
-  avgCompletionRate: 0,
-  weeklyEngagement: 0,
-  coursePerformance: [],
-  lessonPerformance: {},
+  totalStudents: 452,
+  newStudentsLast30d: 38,
+  avgCompletionRate: 68,
+  weeklyEngagement: 85,
+  coursePerformance: [
+    { courseId: 'csharp-backend-essential', enrolled: 120, completionRate: 45, avgTime: 42, satisfaction: 4.8, dropOffRate: 15 },
+    { courseId: 'frontend-react', enrolled: 180, completionRate: 72, avgTime: 35, satisfaction: 4.9, dropOffRate: 8 },
+    { courseId: 'intro-python', enrolled: 95, completionRate: 85, avgTime: 20, satisfaction: 4.7, dropOffRate: 5 }
+  ],
+  lessonPerformance: {
+    'csharp-backend-essential': [
+        { lessonId: 'lesson_csharp_hello', title: 'Hello World e Variáveis', studentsCompleted: 115 },
+        { lessonId: 'lesson_csharp_condicionais', title: 'Tomando Decisões (If/Else)', studentsCompleted: 98 }, // Queda
+        { lessonId: 'lesson_csharp_classes', title: 'Classes e Objetos: A Fábrica de Pizzas', studentsCompleted: 70 }, // Grande Queda (Bottleneck)
+        { lessonId: 'lesson_csharp_api_concept', title: 'O que é uma API?', studentsCompleted: 65 },
+    ]
+  },
   studentRetention: {
-    average: 0,
-    trend: 0,
-    dailyData: [],
+    average: 78.5,
+    trend: 4.2,
+    dailyData: [65, 68, 72, 75, 78, 82, 80, 85, 88, 86, 89, 92, 90, 88, 85, 82, 80, 78, 75, 78, 80, 82, 85, 88, 90, 92, 95, 93, 94, 95]
   },
   studentEngagement: {
-    topStudents: [],
-    atRiskStudents: [],
-  },
+    topStudents: [
+        { id: 'u1', name: 'Ana Souza', avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg', xp: 2450 },
+        { id: 'u2', name: 'Carlos Oliveira', avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg', xp: 2100 },
+        { id: 'u3', name: 'Beatriz Lima', avatarUrl: 'https://randomuser.me/api/portraits/women/68.jpg', xp: 1950 },
+        { id: 'u4', name: 'João Pedro', avatarUrl: 'https://randomuser.me/api/portraits/men/85.jpg', xp: 1800 },
+        { id: 'u5', name: 'Fernanda Costa', avatarUrl: 'https://randomuser.me/api/portraits/women/22.jpg', xp: 1750 }
+    ],
+    atRiskStudents: [
+        { id: 'u6', name: 'Marcos Silva', avatarUrl: 'https://randomuser.me/api/portraits/men/12.jpg', lastLoginDaysAgo: 15 },
+        { id: 'u7', name: 'Julia Santos', avatarUrl: 'https://randomuser.me/api/portraits/women/65.jpg', lastLoginDaysAgo: 12 },
+        { id: 'u8', name: 'Rafael Dias', avatarUrl: 'https://randomuser.me/api/portraits/men/45.jpg', lastLoginDaysAgo: 10 }
+    ]
+  }
 };
 
 export const MOCK_FINANCIAL_STATEMENTS: FinancialStatement[] = [

@@ -1,13 +1,23 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { User, Event } from '../types';
 import PageLayout from '../components/PageLayout';
+import BookingModal from '../components/BookingModal';
 
-const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
+const MentorCard: React.FC<{ mentor: User, onSchedule: (mentor: User) => void }> = ({ mentor, onSchedule }) => {
     const { user } = useAppContext();
     const navigate = useNavigate();
+    
+    const handleAction = () => {
+        if (user) {
+            onSchedule(mentor);
+        } else {
+            navigate('/login');
+        }
+    };
+
     return (
         <div className="bg-[#18181B] border border-purple-500/30 rounded-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 transform hover:-translate-y-1 group">
             <div className="relative mb-4">
@@ -18,10 +28,10 @@ const MentorCard: React.FC<{ mentor: User }> = ({ mentor }) => {
             <p className="text-purple-400 font-semibold text-sm">{mentor.title}</p>
             <p className="mt-3 text-gray-400 text-sm flex-grow">{mentor.bio}</p>
             <button
-                onClick={() => user ? alert(`Funcionalidade de agendamento com ${mentor.name} em breve!`) : navigate('/login')}
-                className="mt-6 w-full bg-gray-700/50 text-gray-300 font-semibold py-3 px-4 rounded-lg hover:bg-gray-600/60 hover:text-white transition-colors"
+                onClick={handleAction}
+                className="mt-6 w-full bg-gray-700/50 text-gray-300 font-semibold py-3 px-4 rounded-lg hover:bg-[#8a4add] hover:text-white transition-colors"
             >
-                {user ? 'Ver agenda' : 'Faça login para ver a agenda'}
+                {user ? 'Ver agenda disponível' : 'Faça login para ver a agenda'}
             </button>
         </div>
     );
@@ -77,6 +87,7 @@ const EventCard: React.FC<{ event: Event, host?: User }> = ({ event, host }) => 
 
 const ConnectView: React.FC = () => {
     const { events, instructors, mentors } = useAppContext();
+    const [selectedMentor, setSelectedMentor] = useState<User | null>(null);
 
     const sortedEvents = useMemo(() => {
         const monthMap: { [key: string]: number } = {
@@ -102,8 +113,6 @@ const ConnectView: React.FC = () => {
                     let year = now.getFullYear();
                     const eventDate = new Date(year, monthMap[monthCode], day);
                     
-                    // Lógica simples: se a data for muito no passado, assume ano que vem (opcional)
-                    // Aqui vamos apenas usar o valor do timestamp do ano corrente para ordenação
                     return eventDate.getTime();
                 }
             }
@@ -135,7 +144,11 @@ const ConnectView: React.FC = () => {
                     <h2 className="text-3xl font-bold text-white mb-8">Mentorias Individuais</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {mentors.filter(mentor => mentor.isMentor).map(mentor => (
-                            <MentorCard key={mentor.id} mentor={mentor} />
+                            <MentorCard 
+                                key={mentor.id} 
+                                mentor={mentor} 
+                                onSchedule={(m) => setSelectedMentor(m)} 
+                            />
                         ))}
                     </div>
                 </section>
@@ -150,6 +163,14 @@ const ConnectView: React.FC = () => {
                         })}
                     </div>
                 </section>
+
+                {/* Modal de Agendamento */}
+                {selectedMentor && (
+                    <BookingModal 
+                        mentor={selectedMentor} 
+                        onClose={() => setSelectedMentor(null)} 
+                    />
+                )}
             </div>
         </PageLayout>
     );

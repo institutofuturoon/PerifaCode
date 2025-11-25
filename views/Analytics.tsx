@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Course } from '../types';
 import { MOCK_ANALYTICS_DATA_V2 as MOCK_ANALYTICS_DATA } from '../constants';
