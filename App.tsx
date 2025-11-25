@@ -1,11 +1,11 @@
 
-import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
+import React, { useState, useEffect, createContext, useContext, useMemo } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
-import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost } from './types';
+import { User, Course, Lesson, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -18,7 +18,6 @@ import CompleteProfile from './views/CompleteProfile';
 import Profile from './views/Profile';
 import CourseDetail from './views/CourseDetail';
 import LessonView from './views/LessonView';
-import Admin from './views/Admin';
 import CourseEditor from './views/CourseEditor';
 import CertificateView from './views/CertificateView';
 import Analytics from './views/Analytics';
@@ -52,7 +51,6 @@ import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
-import PageLayout from './components/PageLayout';
 import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
@@ -83,9 +81,8 @@ const calculateReadingTime = (content: string): number => {
 
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Initial Auth loading
+  const [loading, setLoading] = useState(true);
 
-  // Data States
   const [users, setUsers] = useState<User[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
@@ -100,16 +97,15 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [annualReports, setAnnualReports] = useState<AnnualReport[]>([]);
   const [marketingPosts, setMarketingPosts] = useState<MarketingPost[]>([]);
 
-  // Lazy Loading State Tracker
-  const [loadedResources, setLoadedResources] = useState<Set<string>>(new Set());
-
-  // UI States
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
+  
   const [isBottleneckModalOpen, setIsBottleneckModalOpen] = useState(false);
   const [selectedBottleneck, setSelectedBottleneck] = useState<{ lesson: Lesson, students: User[] } | null>(null);
+
   const [isInscriptionModalOpen, setIsInscriptionModalOpen] = useState(false);
   const [selectedCourseForInscription, setSelectedCourseForInscription] = useState<Course | null>(null);
+
   const [toast, setToast] = useState<string | null>(null);
   
   const showToast = (message: string) => {
@@ -128,8 +124,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         if (collectionName === 'courses') {
             const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
             const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
-            // Note: This fetch only gets the "light" version of courses if they were saved via the new system
-            // The full content is lazy loaded.
             dataFromDb = [...MOCK_COURSES, ...additionalDbCourses];
         }
         
@@ -206,75 +200,47 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setData([]);
         }
       }
-  };
+    };
 
-  // --- LAZY LOADING IMPLEMENTATION ---
-  const loadData = useCallback(async (resources: string[]) => {
-      const promises: Promise<void>[] = [];
-      const newLoadedResources = new Set(loadedResources);
-      let hasNew = false;
 
-      resources.forEach(resource => {
-          if (!loadedResources.has(resource)) {
-              hasNew = true;
-              newLoadedResources.add(resource);
-              
-              switch (resource) {
-                  case 'users': promises.push(fetchAndPopulateCollection('users', setUsers)); break;
-                  case 'courses': promises.push(fetchAndPopulateCollection('courses', setCourses)); break;
-                  case 'articles': promises.push(fetchAndPopulateCollection('articles', setArticles)); break;
-                  case 'projects': promises.push(fetchAndPopulateCollection('projects', setProjects)); break;
-                  case 'communityPosts': promises.push(fetchAndPopulateCollection('communityPosts', setCommunityPosts)); break;
-                  case 'partners': promises.push(fetchAndPopulateCollection('partners', setPartners)); break;
-                  case 'supporters': promises.push(fetchAndPopulateCollection('supporters', setSupporters)); break;
-                  case 'events': promises.push(fetchAndPopulateCollection('events', setEvents)); break;
-                  case 'mentorSessions': promises.push(fetchAndPopulateCollection('mentorSessions', setMentorSessions)); break;
-                  case 'tracks': promises.push(fetchAndPopulateCollection('tracks', setTracks)); break;
-                  case 'financialStatements': promises.push(fetchAndPopulateCollection('financialStatements', setFinancialStatements)); break;
-                  case 'annualReports': promises.push(fetchAndPopulateCollection('annualReports', setAnnualReports)); break;
-                  case 'marketingPosts': promises.push(fetchAndPopulateCollection('marketingPosts', setMarketingPosts)); break;
-              }
-          }
-      });
+  useEffect(() => {
+    // OPTIMIZATION: Load essential data only. 
+    // In a real production app, this should be moved to specific views using React Query.
+    const fetchData = async () => {
+      setLoading(true);
+      
+      // Core data needed for public navigation
+      const corePromises = [
+          fetchAndPopulateCollection('courses', setCourses),
+          fetchAndPopulateCollection('articles', setArticles),
+          fetchAndPopulateCollection('partners', setPartners),
+          fetchAndPopulateCollection('supporters', setSupporters),
+          fetchAndPopulateCollection('events', setEvents),
+          fetchAndPopulateCollection('annualReports', setAnnualReports) // For transparency footer
+      ];
 
-      if (hasNew) {
-          await Promise.all(promises);
-          setLoadedResources(newLoadedResources);
-      }
-  }, [loadedResources]);
+      // Data that could be lazy loaded, but kept here for simplicity in this demo version
+      const secondaryPromises = [
+          fetchAndPopulateCollection('projects', setProjects),
+          fetchAndPopulateCollection('communityPosts', setCommunityPosts),
+          fetchAndPopulateCollection('tracks', setTracks),
+          fetchAndPopulateCollection('financialStatements', setFinancialStatements),
+          fetchAndPopulateCollection('marketingPosts', setMarketingPosts)
+      ];
 
-  // --- FETCH SPECIFIC LESSON CONTENT ---
-  const fetchLessonContent = async (courseId: string, lessonId: string): Promise<Lesson | null> => {
-      try {
-          // 1. Check if it's a mock course first
-          const mockCourse = MOCK_COURSES.find(c => c.id === courseId);
-          if (mockCourse) {
-              const lesson = mockCourse.modules.flatMap(m => m.lessons).find(l => l.id === lessonId);
-              return lesson || null;
-          }
+      // Users collection is heavy. Ideally should be fetched only by Admin or on demand.
+      // Kept here to maintain existing functionality for Instructor Dashboard
+      const heavyPromises = [
+          fetchAndPopulateCollection('users', setUsers),
+          fetchAndPopulateCollection('mentorSessions', setMentorSessions),
+      ];
 
-          // 2. Fetch from Firestore Sub-collection
-          const lessonRef = doc(db, "courses", courseId, "lessons", lessonId);
-          const lessonDoc = await getDoc(lessonRef);
+      await Promise.all([...corePromises, ...secondaryPromises, ...heavyPromises]);
+      setLoading(false);
+    };
 
-          if (lessonDoc.exists()) {
-              return { id: lessonDoc.id, ...lessonDoc.data() } as Lesson;
-          }
-
-          // 3. Fallback: Check if it exists in the main course object (legacy structure)
-          const course = courses.find(c => c.id === courseId);
-          if (course) {
-              const lesson = course.modules.flatMap(m => m.lessons).find(l => l.id === lessonId);
-              return lesson || null;
-          }
-
-          return null;
-      } catch (error) {
-          console.error("Error fetching lesson content:", error);
-          return null;
-      }
-  };
-
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -309,7 +275,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
               hasCompletedOnboardingTour: false,
               accountStatus: 'active',
-              notes: {}, // Initialize empty notes object
             };
             try {
                 await setDoc(doc(db, "users", firebaseUser.uid), newUser);
@@ -397,20 +362,23 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         try {
             const batch = writeBatch(db);
             
+            // Sanitize the whole course object to remove undefined values which Firestore rejects
+            const safeCourse = JSON.parse(JSON.stringify(courseToSave));
+
             // 1. Prepare the Course Document (stripped of heavy content)
-            const courseRef = doc(db, "courses", courseToSave.id);
+            const courseRef = doc(db, "courses", safeCourse.id);
             const courseDataLight = {
-                ...courseToSave,
-                modules: courseToSave.modules.map(m => ({
+                ...safeCourse,
+                modules: safeCourse.modules.map((m: any) => ({
                     ...m,
-                    lessons: m.lessons.map(l => ({
+                    lessons: m.lessons.map((l: any) => ({
                         // Keep metadata, strip content
                         id: l.id,
                         title: l.title,
                         duration: l.duration,
                         type: l.type,
                         xp: l.xp,
-                        videoUrl: l.videoUrl, // Optional: keep or move
+                        videoUrl: l.videoUrl || null, // Explicit null for Firestore if needed
                         // mainContent: REMOVED
                     }))
                 }))
@@ -419,10 +387,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             batch.set(courseRef, courseDataLight);
 
             // 2. Save Individual Lessons to Sub-collection
-            courseToSave.modules.forEach(module => {
-                module.lessons.forEach(lesson => {
-                    const lessonRef = doc(db, "courses", courseToSave.id, "lessons", lesson.id);
-                    batch.set(lessonRef, lesson); // Save full lesson object
+            // Use safeCourse here too to ensure undefined fields are stripped/handled
+            safeCourse.modules.forEach((module: any) => {
+                module.lessons.forEach((lesson: any) => {
+                    const lessonRef = doc(db, "courses", safeCourse.id, "lessons", lesson.id);
+                    // No need to re-stringify as safeCourse is already clean, but good for safety if we modified lesson loop variable
+                    batch.set(lessonRef, lesson); 
                 });
             });
 
@@ -915,6 +885,49 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             } catch (error) {
                 console.error("Erro ao completar onboarding:", error);
             }
+        }
+    };
+
+    const loadData = async (resources: string[]) => {
+        const promises = resources.map(async (resource) => {
+            switch(resource) {
+                case 'users': await fetchAndPopulateCollection('users', setUsers); break;
+                case 'courses': await fetchAndPopulateCollection('courses', setCourses); break;
+                case 'articles': await fetchAndPopulateCollection('articles', setArticles); break;
+                case 'projects': await fetchAndPopulateCollection('projects', setProjects); break;
+                case 'communityPosts': await fetchAndPopulateCollection('communityPosts', setCommunityPosts); break;
+                case 'partners': await fetchAndPopulateCollection('partners', setPartners); break;
+                case 'supporters': await fetchAndPopulateCollection('supporters', setSupporters); break;
+                case 'events': await fetchAndPopulateCollection('events', setEvents); break;
+                case 'mentorSessions': await fetchAndPopulateCollection('mentorSessions', setMentorSessions); break;
+                case 'tracks': await fetchAndPopulateCollection('tracks', setTracks); break;
+                case 'financialStatements': await fetchAndPopulateCollection('financialStatements', setFinancialStatements); break;
+                case 'annualReports': await fetchAndPopulateCollection('annualReports', setAnnualReports); break;
+                case 'marketingPosts': await fetchAndPopulateCollection('marketingPosts', setMarketingPosts); break;
+            }
+        });
+        await Promise.all(promises);
+    };
+
+    const fetchLessonContent = async (courseId: string, lessonId: string): Promise<Lesson | null> => {
+        try {
+            const docRef = doc(db, "courses", courseId, "lessons", lessonId);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                return { id: docSnap.id, ...docSnap.data() } as Lesson;
+            }
+            
+            // Fallback for mock data or if not found in subcollection
+            const course = courses.find(c => c.id === courseId);
+            if (course) {
+                const lesson = course.modules.flatMap(m => m.lessons).find(l => l.id === lessonId);
+                if (lesson) return lesson;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error fetching lesson content:", error);
+            return null;
         }
     };
 

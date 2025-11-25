@@ -916,7 +916,8 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
 
 // --- Teacher Overview Component (NEW) ---
 const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
-    const { courses, mentorSessions, communityPosts, navigate, users } = useAppContext();
+    const { courses, mentorSessions, communityPosts, users } = useAppContext();
+    const navigate = useNavigate();
 
     const myCourses = useMemo(() => courses.filter(c => c.instructorId === user.id), [courses, user.id]);
     const mySessions = useMemo(() => mentorSessions.filter(s => s.mentorId === user.id && !s.isBooked), [mentorSessions, user.id]); // Upcoming free slots

@@ -351,21 +351,65 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
   
+    // --- OPTIMIZED SAVE COURSE WITH SUB-COLLECTIONS ---
     const handleSaveCourse = async (courseToSave: Course) => {
         const isNew = !courses.some(c => c.id === courseToSave.id);
+        
+        // Update local state immediately (with full content for seamless UX)
         setCourses(prev => isNew ? [...prev, courseToSave] : prev.map(c => c.id === courseToSave.id ? courseToSave : c));
         showToast("✅ Curso salvo com sucesso!");
 
         try {
-            await setDoc(doc(db, "courses", courseToSave.id), courseToSave);
+            const batch = writeBatch(db);
+            
+            // Sanitize the whole course object to remove undefined values which Firestore rejects
+            const safeCourse = JSON.parse(JSON.stringify(courseToSave));
+
+            // 1. Prepare the Course Document (stripped of heavy content)
+            const courseRef = doc(db, "courses", safeCourse.id);
+            const courseDataLight = {
+                ...safeCourse,
+                modules: safeCourse.modules.map((m: any) => ({
+                    ...m,
+                    lessons: m.lessons.map((l: any) => ({
+                        // Keep metadata, strip content
+                        id: l.id,
+                        title: l.title,
+                        duration: l.duration,
+                        type: l.type,
+                        xp: l.xp,
+                        videoUrl: l.videoUrl || null, // Explicit null for Firestore if needed
+                        // mainContent: REMOVED
+                    }))
+                }))
+            };
+            
+            batch.set(courseRef, courseDataLight);
+
+            // 2. Save Individual Lessons to Sub-collection
+            // Use safeCourse here too to ensure undefined fields are stripped/handled
+            safeCourse.modules.forEach((module: any) => {
+                module.lessons.forEach((lesson: any) => {
+                    const lessonRef = doc(db, "courses", safeCourse.id, "lessons", lesson.id);
+                    // No need to re-stringify as safeCourse is already clean, but good for safety if we modified lesson loop variable
+                    batch.set(lessonRef, lesson); 
+                });
+            });
+
+            await batch.commit();
+
         } catch (error) {
-            console.error("Erro ao salvar curso:", error);
+            console.error("Erro ao salvar curso e aulas:", error);
+            showToast("❌ Erro ao salvar no banco.");
         }
     };
 
     const handleDeleteCourse = async (courseId: string): Promise<boolean> => {
       if(window.confirm("Tem certeza que deseja excluir este curso?")) {
         try {
+             // Note: Deleting a document does not delete sub-collections in Firestore!
+             // To do this properly, you'd need a Cloud Function or manual deletion of sub-collections.
+             // For this frontend-only implementation, we delete the main doc.
              await deleteDoc(doc(db, "courses", courseId));
              setCourses(prev => prev.filter(c => c.id !== courseId));
              showToast("✅ Curso excluído com sucesso!");
@@ -844,6 +888,49 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const loadData = async (resources: string[]) => {
+        const promises = resources.map(async (resource) => {
+            switch(resource) {
+                case 'users': await fetchAndPopulateCollection('users', setUsers); break;
+                case 'courses': await fetchAndPopulateCollection('courses', setCourses); break;
+                case 'articles': await fetchAndPopulateCollection('articles', setArticles); break;
+                case 'projects': await fetchAndPopulateCollection('projects', setProjects); break;
+                case 'communityPosts': await fetchAndPopulateCollection('communityPosts', setCommunityPosts); break;
+                case 'partners': await fetchAndPopulateCollection('partners', setPartners); break;
+                case 'supporters': await fetchAndPopulateCollection('supporters', setSupporters); break;
+                case 'events': await fetchAndPopulateCollection('events', setEvents); break;
+                case 'mentorSessions': await fetchAndPopulateCollection('mentorSessions', setMentorSessions); break;
+                case 'tracks': await fetchAndPopulateCollection('tracks', setTracks); break;
+                case 'financialStatements': await fetchAndPopulateCollection('financialStatements', setFinancialStatements); break;
+                case 'annualReports': await fetchAndPopulateCollection('annualReports', setAnnualReports); break;
+                case 'marketingPosts': await fetchAndPopulateCollection('marketingPosts', setMarketingPosts); break;
+            }
+        });
+        await Promise.all(promises);
+    };
+
+    const fetchLessonContent = async (courseId: string, lessonId: string): Promise<Lesson | null> => {
+        try {
+            const docRef = doc(db, "courses", courseId, "lessons", lessonId);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                return { id: docSnap.id, ...docSnap.data() } as Lesson;
+            }
+            
+            // Fallback for mock data or if not found in subcollection
+            const course = courses.find(c => c.id === courseId);
+            if (course) {
+                const lesson = course.modules.flatMap(m => m.lessons).find(l => l.id === lessonId);
+                if (lesson) return lesson;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error fetching lesson content:", error);
+            return null;
+        }
+    };
+
     // --- Memoized Derived Data ---
     const instructors = useMemo(() => users.filter(u => u.role === 'instructor' || u.role === 'admin'), [users]);
     const mentors = useMemo(() => users.filter(u => u.isMentor), [users]);
@@ -887,6 +974,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
+    loadData, // Expose lazy loader
+    fetchLessonContent, // Expose lesson content fetcher
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
     completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
@@ -898,7 +987,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }), [
     user, users, courses, articles, projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
-    instructors, mentors, loading
+    instructors, mentors, loading, loadData
   ]);
 
   return (

@@ -23,6 +23,16 @@ const stringToSlug = (str: string) => {
 
 const cleanAndParseJSON = (text: string) => {
     try {
+        // Find the first occurrence of { and the last occurrence of }
+        const startIndex = text.indexOf('{');
+        const endIndex = text.lastIndexOf('}');
+        
+        if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+            const jsonString = text.substring(startIndex, endIndex + 1);
+            return JSON.parse(jsonString);
+        }
+        
+        // Fallback: try parsing the whole text (cleaned)
         const jsonString = text.replace(/```json\n?|```/g, '').trim();
         return JSON.parse(jsonString);
     } catch (e) {
