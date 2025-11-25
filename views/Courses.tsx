@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CourseCard from '../components/CourseCard';
 import { useAppContext } from '../App';
@@ -7,6 +7,8 @@ import { Course } from '../types';
 import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
+
+const ITEMS_PER_PAGE = 8;
 
 const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => void }> = ({ course, onSelect }) => (
     <div 
@@ -45,6 +47,12 @@ const Courses: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>('Todos');
   const [selectedFormat, setSelectedFormat] = useState<string>('Todos');
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, activeTrack, selectedLevel, selectedFormat]);
 
   const handleCourseSelect = (course: Course) => {
     // FLUXO INSTITUCIONAL: Sempre redireciona para a Landing Page (Página de Venda/Explicação)
@@ -80,6 +88,19 @@ const Courses: React.FC = () => {
     (activeTrack === 'Todos' || course.track === activeTrack)
   ), [courses, searchTerm, selectedLevel, selectedFormat, activeTrack]);
   
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
+  const currentCourses = filteredCourses.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (page: number) => {
+      setCurrentPage(page);
+      // Smooth scroll to top of list
+      document.getElementById('all-courses')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const hasActiveFilters = searchTerm !== '' || activeTrack !== 'Todos' || selectedLevel !== 'Todos' || selectedFormat !== 'Todos';
 
   const clearFilters = () => {
@@ -249,26 +270,69 @@ const Courses: React.FC = () => {
                     </div>
                     <div className="text-right px-2 mt-2">
                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                            {filteredCourses.length} {filteredCourses.length === 1 ? 'Curso encontrado' : 'Cursos encontrados'}
+                            Mostrando {currentCourses.length} de {filteredCourses.length} {filteredCourses.length === 1 ? 'curso' : 'cursos'}
                         </p>
                     </div>
                 </div>
 
                 {filteredCourses.length > 0 ? (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
-                        {filteredCourses.map(course => {
-                            const { progress, isEnrolled } = getCourseProgress(course);
-                            return (
-                                <CourseCard 
-                                    key={course.id} 
-                                    course={course} 
-                                    onCourseSelect={handleCourseSelect}
-                                    progress={progress}
-                                    isEnrolled={isEnrolled}
-                                />
-                            );
-                        })}
-                    </div>
+                    <>
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
+                            {currentCourses.map(course => {
+                                const { progress, isEnrolled } = getCourseProgress(course);
+                                return (
+                                    <CourseCard 
+                                        key={course.id} 
+                                        course={course} 
+                                        onCourseSelect={handleCourseSelect}
+                                        progress={progress}
+                                        isEnrolled={isEnrolled}
+                                    />
+                                );
+                            })}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-2 mt-16 animate-fade-in">
+                                <button
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="w-10 h-10 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white/5"
+                                    aria-label="Página Anterior"
+                                >
+                                    &larr;
+                                </button>
+                                
+                                {Array.from({ length: totalPages }).map((_, i) => {
+                                    const page = i + 1;
+                                    // Logic to show limited page numbers (e.g., 1, 2, ..., 5) could be added here for very large lists
+                                    return (
+                                        <button
+                                            key={page}
+                                            onClick={() => handlePageChange(page)}
+                                            className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all border ${
+                                                currentPage === page 
+                                                ? 'bg-[#8a4add] text-white border-[#8a4add] shadow-lg shadow-[#8a4add]/20' 
+                                                : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
+                                            }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    );
+                                })}
+
+                                <button
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className="w-10 h-10 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white/5"
+                                    aria-label="Próxima Página"
+                                >
+                                    &rarr;
+                                </button>
+                            </div>
+                        )}
+                    </>
                 ) : (
                     <div className="text-center py-20 bg-white/5 rounded-xl border border-white/10 border-dashed flex flex-col items-center">
                         <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
