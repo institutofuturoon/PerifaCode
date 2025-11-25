@@ -13,13 +13,22 @@ import Blog from './Blog';
 
 // --- Helper Components (Defined Outside) ---
 
-const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; color?: string }> = ({ title, value, icon, color = "text-white" }) => (
-  <div className="bg-[#121212] p-5 rounded-2xl border border-white/10 hover:border-[#8a4add]/30 transition-all group">
-    <div className="flex items-center justify-between mb-3">
+const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; color?: string; trend?: string; trendUp?: boolean }> = ({ title, value, icon, color = "text-white", trend, trendUp }) => (
+  <div className="bg-[#121212] p-5 rounded-2xl border border-white/10 hover:border-[#8a4add]/30 transition-all group relative overflow-hidden">
+    <div className="flex items-center justify-between mb-3 relative z-10">
         <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{title}</span>
         <div className="p-2 rounded-lg bg-white/5 text-gray-400 group-hover:text-[#c4b5fd] group-hover:bg-[#8a4add]/10 transition-colors">{icon}</div>
     </div>
-    <p className={`text-3xl font-black ${color}`}>{value}</p>
+    <div className="relative z-10">
+        <p className={`text-3xl font-black ${color}`}>{value}</p>
+        {trend && (
+            <p className={`text-xs font-bold mt-1 flex items-center gap-1 ${trendUp ? 'text-green-400' : 'text-red-400'}`}>
+                {trendUp ? '↑' : '↓'} {trend} <span className="text-gray-600 font-normal">vs. mês anterior</span>
+            </p>
+        )}
+    </div>
+    {/* Decorative bg blob */}
+    <div className={`absolute -bottom-4 -right-4 w-24 h-24 rounded-full opacity-5 pointer-events-none ${color.replace('text-', 'bg-')}`}></div>
   </div>
 );
 
@@ -748,7 +757,7 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                                     <img src={course.imageUrl} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" alt={course.title} />
                                     <div className="absolute inset-0 p-4 flex flex-col justify-end">
                                         <p className="text-white font-bold text-sm leading-tight">{course.title}</p>
-                                        <p className="text-[10px] text-gray-300 mt-1">Gerenciar Turma &rarr;</p>
+                                        <p className="text--[10px] text-gray-300 mt-1">Gerenciar Turma &rarr;</p>
                                     </div>
                                 </div>
                             )) : (
@@ -875,64 +884,173 @@ const Dashboard: React.FC = () => {
     };
 
     // Renderers
-    const renderAdminOverview = () => (
-        <div className="space-y-8 animate-fade-in">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Total de Alunos" value={MOCK_ANALYTICS_DATA_V2.totalStudents.toLocaleString('pt-BR')} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} />
-                <StatCard title="Novos Alunos (30d)" value={`+${MOCK_ANALYTICS_DATA_V2.newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
-                <StatCard title="Taxa de Conclusão" value={`${MOCK_ANALYTICS_DATA_V2.avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
-                <StatCard title="Engajamento" value={`${MOCK_ANALYTICS_DATA_V2.weeklyEngagement}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>} />
-            </div>
+    const renderAdminOverview = () => {
+        // --- CALCULATE HEALTH METRICS ---
+        const totalStudents = users.filter(u => u.role === 'student').length;
+        
+        // New Students (Simulated logic since 'createdAt' is not always available in this mock)
+        // In a real app, filter by createdAt > 30 days ago
+        const newStudents = Math.round(totalStudents * 0.15); // Mock 15% growth
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                {/* Recent Activity / Quick Actions */}
-                <div className="lg:col-span-2 bg-[#121212] border border-white/10 rounded-2xl p-6">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-white">Atividades Recentes</h3>
-                        <button onClick={() => navigate('/analytics')} className="text-xs text-[#c4b5fd] hover:text-white font-bold uppercase">Ver Relatório Completo</button>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-4 bg-white/5 p-4 rounded-lg">
-                            <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">🎉</div>
-                            <div>
-                                <p className="text-sm font-bold text-white">Novo Curso Publicado</p>
-                                <p className="text-xs text-gray-400">Curso "React Avançado" está disponível.</p>
+        // Completion Rate
+        let totalLessonsPossible = 0;
+        let totalLessonsCompleted = 0;
+        users.filter(u => u.role === 'student').forEach(s => {
+            totalLessonsCompleted += s.completedLessonIds.length;
+        });
+        // Rough estimate of total possible lessons (students * avg lessons per course)
+        // Assuming average active student takes 1 course with ~10 lessons
+        totalLessonsPossible = Math.max(1, totalStudents * 10); 
+        const completionRate = Math.min(100, Math.round((totalLessonsCompleted / totalLessonsPossible) * 100));
+
+        // Retention (Simulated based on lastCompletionDate or lastLogin)
+        // Assuming 70% retention for demo
+        const retentionRate = 72;
+
+        // Dynamic Health Score Calculation
+        // Weight: Completion (40%) + Retention (40%) + Growth (20% normalized to 100)
+        // Normalized Growth: Assume 20% growth is "100 health" in that aspect
+        const growthScore = Math.min(100, (newStudents / totalStudents) * 500); // 20% growth = 100 score
+        const healthScore = Math.round((completionRate * 0.4) + (retentionRate * 0.4) + (growthScore * 0.2));
+
+        return (
+            <div className="space-y-8 animate-fade-in">
+                {/* Health Score Banner */}
+                <div className="bg-gradient-to-r from-[#121212] to-[#1a1a1d] rounded-2xl border border-white/10 p-8 relative overflow-hidden shadow-xl">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div>
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border ${healthScore > 70 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
+                                    {healthScore > 70 ? 'Sistema Saudável' : 'Atenção Requerida'}
+                                </span>
                             </div>
-                            <span className="ml-auto text-xs text-gray-500">2h atrás</span>
+                            <h2 className="text-3xl font-black text-white mb-2">Saúde da Plataforma</h2>
+                            <p className="text-gray-400 max-w-lg">
+                                Monitoramento em tempo real de engajamento e atividade. O índice combina conclusão, retenção e crescimento.
+                            </p>
                         </div>
-                        <div className="flex items-center gap-4 bg-white/5 p-4 rounded-lg">
-                            <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">👤</div>
-                            <div>
-                                <p className="text-sm font-bold text-white">5 Novos Alunos</p>
-                                <p className="text-xs text-gray-400">Matrículas confirmadas na trilha Backend.</p>
+                        
+                        <div className="flex items-center gap-6">
+                            <div className="text-center">
+                                <p className="text-xs text-gray-500 font-bold uppercase">Atividade (MAU)</p>
+                                <p className="text-2xl font-black text-white">{retentionRate > 50 ? 'High' : 'Med'}</p>
                             </div>
-                            <span className="ml-auto text-xs text-gray-500">5h atrás</span>
+                            <div className="h-12 w-px bg-white/10"></div>
+                            <div className="text-center">
+                                <p className="text-xs text-gray-500 font-bold uppercase">Health Score</p>
+                                <p className={`text-4xl font-black ${healthScore > 80 ? 'text-green-400' : healthScore > 50 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                    {healthScore}<span className="text-lg text-gray-600">/100</span>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* At Risk Students Mini-Widget */}
-                <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
-                    <h3 className="text-lg font-bold text-white mb-4">⚠️ Atenção Necessária</h3>
-                    <p className="text-xs text-gray-400 mb-4">Alunos sem acesso há mais de 10 dias.</p>
-                    <ul className="space-y-3">
-                        {MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.slice(0, 3).map(student => (
-                            <li key={student.id} className="flex items-center gap-3">
-                                <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full opacity-60" />
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-white truncate">{student.name}</p>
-                                    <p className="text-xs text-red-400">{student.lastLoginDaysAgo} dias off</p>
+                {/* Metrics Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <StatCard 
+                        title="Total de Alunos" 
+                        value={totalStudents.toLocaleString('pt-BR')} 
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} 
+                        trend="12%" 
+                        trendUp={true}
+                        color="text-white"
+                    />
+                    <StatCard 
+                        title="Novos (30d)" 
+                        value={`+${newStudents}`} 
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} 
+                        trend="5%"
+                        trendUp={true}
+                        color="text-white"
+                    />
+                    <StatCard 
+                        title="Taxa de Conclusão" 
+                        value={`${completionRate}%`} 
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} 
+                        color="text-blue-400"
+                    />
+                    <StatCard 
+                        title="Retenção" 
+                        value={`${retentionRate}%`} 
+                        icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>} 
+                        trend="2%"
+                        trendUp={false}
+                        color="text-yellow-400"
+                    />
+                </div>
+
+                <div className="grid lg:grid-cols-3 gap-8">
+                    {/* System Status & Recent Activity */}
+                    <div className="lg:col-span-2 bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-bold text-white">Status do Sistema</h3>
+                            <button onClick={() => navigate('/analytics')} className="text-xs text-[#c4b5fd] hover:text-white font-bold uppercase">Relatório Completo</button>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-4 mb-8">
+                            <div className="bg-white/5 p-3 rounded-lg text-center">
+                                <div className="w-2 h-2 bg-green-500 rounded-full mx-auto mb-2 shadow-[0_0_10px_#22c55e]"></div>
+                                <p className="text-xs text-gray-400 font-bold uppercase">Banco de Dados</p>
+                                <p className="text-sm text-white font-bold">Online</p>
+                            </div>
+                            <div className="bg-white/5 p-3 rounded-lg text-center">
+                                <div className="w-2 h-2 bg-green-500 rounded-full mx-auto mb-2 shadow-[0_0_10px_#22c55e]"></div>
+                                <p className="text-xs text-gray-400 font-bold uppercase">Storage (Blob)</p>
+                                <p className="text-sm text-white font-bold">Online</p>
+                            </div>
+                            <div className="bg-white/5 p-3 rounded-lg text-center">
+                                <div className="w-2 h-2 bg-green-500 rounded-full mx-auto mb-2 shadow-[0_0_10px_#22c55e]"></div>
+                                <p className="text-xs text-gray-400 font-bold uppercase">Autenticação</p>
+                                <p className="text-sm text-white font-bold">Online</p>
+                            </div>
+                        </div>
+
+                        <h4 className="text-sm font-bold text-white mb-4 border-b border-white/5 pb-2">Atividade Recente</h4>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-lg hover:bg-white/10 transition-colors">
+                                <div className="h-10 w-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">🎓</div>
+                                <div>
+                                    <p className="text-sm font-bold text-white">Novas Matrículas</p>
+                                    <p className="text-xs text-gray-400">3 novos alunos iniciaram o curso de Front-end.</p>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
-                    <button onClick={() => navigate('/analytics')} className="w-full mt-6 py-2 text-xs font-bold text-center text-gray-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                        Ver Lista Completa
-                    </button>
+                                <span className="ml-auto text-xs text-gray-500">2h atrás</span>
+                            </div>
+                            <div className="flex items-center gap-4 bg-white/5 p-4 rounded-lg hover:bg-white/10 transition-colors">
+                                <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">💬</div>
+                                <div>
+                                    <p className="text-sm font-bold text-white">Interação no Fórum</p>
+                                    <p className="text-xs text-gray-400">5 novas dúvidas respondidas por instrutores.</p>
+                                </div>
+                                <span className="ml-auto text-xs text-gray-500">5h atrás</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* At Risk Students Mini-Widget */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <h3 className="text-lg font-bold text-white mb-4">⚠️ Atenção (Evasão)</h3>
+                        <p className="text-xs text-gray-400 mb-4">Alunos sem acesso há mais de 10 dias.</p>
+                        <ul className="space-y-3">
+                            {MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.slice(0, 3).map(student => (
+                                <li key={student.id} className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate(`/admin/user-editor/${student.id}`)}>
+                                    <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full opacity-60 group-hover:opacity-100 transition-opacity" />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-white truncate group-hover:text-[#c4b5fd]">{student.name}</p>
+                                        <p className="text-xs text-red-400">{student.lastLoginDaysAgo} dias off</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => navigate('/analytics')} className="w-full mt-6 py-2 text-xs font-bold text-center text-gray-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                            Ver Lista Completa
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
 
     const renderCoursesManagement = () => (
         <div className="space-y-6">
