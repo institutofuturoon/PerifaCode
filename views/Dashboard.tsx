@@ -1029,11 +1029,35 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                         <h3 className="text-lg font-bold text-white mb-4">Meus Cursos</h3>
                         <div className="space-y-3">
                             {myCourses.length > 0 ? myCourses.map(course => (
-                                <div key={course.id} className="group relative overflow-hidden rounded-xl aspect-video bg-gray-800 cursor-pointer" onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)}>
-                                    <img src={course.imageUrl} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" alt={course.title} />
-                                    <div className="absolute inset-0 p-4 flex flex-col justify-end">
-                                        <p className="text-white font-bold text-sm leading-tight">{course.title}</p>
-                                        <p className="text--[10px] text-gray-300 mt-1">Gerenciar Turma &rarr;</p>
+                                <div 
+                                    key={course.id} 
+                                    className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#8a4add]/30 rounded-xl p-3 transition-all duration-300 cursor-pointer flex gap-4 items-center"
+                                    onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)}
+                                >
+                                    {/* Thumbnail */}
+                                    <div className="h-16 w-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+                                        <img src={course.imageUrl} className="w-full h-full object-cover" alt={course.title} />
+                                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                                    </div>
+                                    
+                                    {/* Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between items-start">
+                                            <h4 className="text-white font-bold text-sm truncate pr-2">{course.title}</h4>
+                                        </div>
+                                        
+                                        {/* Stats Row */}
+                                        <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
+                                            <span className="flex items-center gap-1" title="Módulos">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg> 
+                                                {course.modules.length} Módulos
+                                            </span>
+                                        </div>
+
+                                        {/* CTA */}
+                                        <div className="mt-2 text-[#c4b5fd] text-[10px] font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                            Gerenciar Turma <span>→</span>
+                                        </div>
                                     </div>
                                 </div>
                             )) : (
