@@ -2,6 +2,14 @@
 // FIX: Add React import to resolve 'Cannot find namespace' error.
 import type * as React from 'react';
 
+export interface SystemSettings {
+  siteName: string;
+  primaryColor: string;
+  secondaryColor: string;
+  backgroundColor: string;
+  surfaceColor: string; // Para cartões e painéis
+}
+
 export interface User {
   id: string;
   name: string;
@@ -507,6 +515,11 @@ export interface AppContextType {
   financialStatements: FinancialStatement[];
   annualReports: AnnualReport[];
   marketingPosts: MarketingPost[];
+  
+  // --- System Settings ---
+  settings: SystemSettings;
+  updateSettings: (newSettings: Partial<SystemSettings>) => void;
+
   toast: string | null;
   courseProgress: CourseProgress;
   isProfileModalOpen: boolean;

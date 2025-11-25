@@ -5,7 +5,7 @@ import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-import { User, Course, Lesson, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost } from './types';
+import { User, Course, Lesson, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost, SystemSettings } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -78,10 +78,40 @@ const calculateReadingTime = (content: string): number => {
     return Math.ceil(words / wordsPerMinute);
 };
 
+// Default settings
+const DEFAULT_SETTINGS: SystemSettings = {
+    siteName: 'FuturoOn',
+    primaryColor: '#8a4add',
+    secondaryColor: '#f27983',
+    backgroundColor: '#09090B',
+    surfaceColor: '#121212'
+};
 
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // System Settings State
+  const [settings, setSettingsState] = useState<SystemSettings>(() => {
+      const saved = localStorage.getItem('futuro_settings');
+      return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+  });
+
+  // Apply CSS Variables whenever settings change
+  useEffect(() => {
+      const root = document.documentElement;
+      root.style.setProperty('--color-primary', settings.primaryColor);
+      root.style.setProperty('--color-secondary', settings.secondaryColor);
+      root.style.setProperty('--color-background', settings.backgroundColor);
+      root.style.setProperty('--color-surface', settings.surfaceColor);
+      
+      // Save to localStorage for persistence in this demo
+      localStorage.setItem('futuro_settings', JSON.stringify(settings));
+  }, [settings]);
+
+  const updateSettings = (newSettings: Partial<SystemSettings>) => {
+      setSettingsState(prev => ({ ...prev, ...newSettings }));
+  };
 
   const [users, setUsers] = useState<User[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -974,6 +1004,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
+    settings, updateSettings, // New settings context
     loadData, // Expose lazy loader
     fetchLessonContent, // Expose lesson content fetcher
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
@@ -987,7 +1018,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }), [
     user, users, courses, articles, projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
-    instructors, mentors, loading, loadData
+    instructors, mentors, loading, loadData, settings // Add settings dependency
   ]);
 
   return (
@@ -1034,7 +1065,7 @@ const AppContent: React.FC = () => {
     }, [user, location.pathname, navigate, showToast, isWorkspaceRoute]);
     
     return (
-        <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
+        <div className="flex flex-col min-h-screen bg-[#09090B] bg-[var(--color-background)] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
             <ScrollToTop />
             {!isWorkspaceRoute && <Header />}
             {/* Componente de Tracking do Google Analytics */}

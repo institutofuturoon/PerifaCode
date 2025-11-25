@@ -6,13 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FuturoOn - Transforme seu futuro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: 'var(--color-primary)',
+              secondary: 'var(--color-secondary)',
+              background: 'var(--color-background)',
+              surface: 'var(--color-surface)',
+            }
+          }
+        }
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --color-primary: #8a4add;
+        --color-secondary: #f27983;
+        --color-background: #09090B;
+        --color-surface: #121212;
+      }
       body {
         font-family: 'Inter', sans-serif;
         overflow-x: hidden; /* Prevent horizontal scroll from background effects */
+        background-color: var(--color-background);
+        color: #e5e7eb;
       }
       /* Estilos para o conteúdo renderizado pelo Markdown */
       .prose p {
@@ -43,16 +65,16 @@
         margin-bottom: 0.2em;
       }
       .prose a {
-        color: #c4b5fd;
+        color: var(--color-primary);
         text-decoration: none;
         transition: color 0.2s;
       }
       .prose a:hover {
-        color: #8a4add;
+        color: #a78bfa;
         text-decoration: underline;
       }
       .prose blockquote {
-        border-left-color: #8a4add;
+        border-left-color: var(--color-primary);
         color: #d1d5db;
         font-weight: 500;
         font-size: 1rem;
@@ -74,7 +96,7 @@
       .prose code {
         font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
         background-color: rgba(138, 74, 221, 0.15); /* Fundo roxo sutil */
-        color: #c4b5fd; /* Texto roxo claro */
+        color: var(--color-primary); /* Texto roxo claro */
         padding: 0.1em 0.3em;
         border-radius: 3px;
         font-size: 90%;
@@ -119,7 +141,7 @@
       }
       
       .aurora-background {
-        background-color: #09090B;
+        background-color: var(--color-background);
         position: relative;
         overflow: clip; /* Fix for preventing background from causing extra space */
       }
@@ -132,7 +154,7 @@
         width: 150%;
         padding-bottom: 150%;
         border-radius: 50%;
-        background-image: radial-gradient(circle at center, #8a4add20 0%, #4c1d9530 30%, #09090B 70%);
+        background-image: radial-gradient(circle at center, rgba(138, 74, 221, 0.2) 0%, rgba(76, 29, 149, 0.3) 30%, var(--color-background) 70%);
         transform: translate(-50%, -50%);
         animation: aurora-spin 20s linear infinite;
         z-index: 0;
@@ -255,7 +277,7 @@
         -webkit-backdrop-filter: blur(5px);
         border: 1px solid rgba(138, 74, 221, 0.5);
         border-radius: 50%;
-        color: #c4b5fd;
+        color: var(--color-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -284,7 +306,7 @@
 
       #game-over-modal > div {
         background-color: #111827;
-        border: 1px solid #8a4add;
+        border: 1px solid var(--color-primary);
         border-radius: 1rem;
         padding: 1.5rem;
         text-align: center;
@@ -345,7 +367,7 @@
 }
 </script>
 </head>
-  <body class="bg-[#09090B] text-gray-300 text-base">
+  <body class="bg-background text-gray-300 text-base">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

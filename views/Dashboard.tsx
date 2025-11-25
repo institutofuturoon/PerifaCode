@@ -16,10 +16,10 @@ import { db } from '../firebaseConfig';
 // --- Helper Components (Defined Outside) ---
 
 const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; color?: string; trend?: string; trendUp?: boolean }> = ({ title, value, icon, color = "text-white", trend, trendUp }) => (
-  <div className="bg-[#121212] p-5 rounded-2xl border border-white/10 hover:border-[#8a4add]/30 transition-all group relative overflow-hidden">
+  <div className="bg-[#121212] p-5 rounded-2xl border border-white/10 hover:border-primary/30 transition-all group relative overflow-hidden">
     <div className="flex items-center justify-between mb-3 relative z-10">
         <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{title}</span>
-        <div className="p-2 rounded-lg bg-white/5 text-gray-400 group-hover:text-[#c4b5fd] group-hover:bg-[#8a4add]/10 transition-colors">{icon}</div>
+        <div className="p-2 rounded-lg bg-white/5 text-gray-400 group-hover:text-primary group-hover:bg-primary/10 transition-colors">{icon}</div>
     </div>
     <div className="relative z-10">
         <p className={`text-3xl font-black ${color}`}>{value}</p>
@@ -52,7 +52,7 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
     if (!user) return null;
 
     return (
-        <header className="h-16 bg-[#09090B] border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-30 bg-opacity-90 backdrop-blur-md">
+        <header className="h-16 bg-background border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-30 bg-opacity-90 backdrop-blur-md">
             <div className="flex items-center gap-4">
                 <button onClick={toggleSidebar} className="md:hidden text-gray-400 hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
@@ -70,7 +70,7 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-bold" title="Ofensiva">
                         <span>🔥</span> {user.streak}
                     </div>
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 text-[#c4b5fd] text-xs font-bold" title="XP Total">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold" title="XP Total">
                         <span>⚡</span> {user.xp}
                     </div>
                 </div>
@@ -101,7 +101,10 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
 // --- Tab Components ---
 
 const SystemSettingsPanel: React.FC = () => {
-    const { showToast } = useAppContext();
+    const { showToast, settings, updateSettings } = useAppContext();
+    const [activeTab, setActiveTab] = useState<'branding' | 'backup'>('branding');
+    
+    // Backup States
     const [isBackingUp, setIsBackingUp] = useState(false);
     const [isRestoring, setIsRestoring] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -130,6 +133,7 @@ const SystemSettingsPanel: React.FC = () => {
         );
     };
 
+    // --- Backup Functions ---
     const handleBackup = async () => {
         if (selectedCollections.length === 0) {
             showToast("⚠️ Selecione pelo menos uma coleção.");
@@ -301,131 +305,242 @@ const SystemSettingsPanel: React.FC = () => {
         }
     };
 
+    // --- Color Picker Component ---
+    const ColorInput: React.FC<{ label: string, value: string, onChange: (v: string) => void }> = ({ label, value, onChange }) => (
+        <div className="flex items-center justify-between bg-white/5 p-4 rounded-lg border border-white/10">
+            <span className="text-sm font-medium text-gray-300">{label}</span>
+            <div className="flex items-center gap-3">
+                <input 
+                    type="text" 
+                    value={value} 
+                    onChange={(e) => onChange(e.target.value)}
+                    className="w-24 bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-primary"
+                />
+                <input 
+                    type="color" 
+                    value={value} 
+                    onChange={(e) => onChange(e.target.value)}
+                    className="w-8 h-8 rounded cursor-pointer border-none p-0 bg-transparent"
+                />
+            </div>
+        </div>
+    );
+
     return (
         <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
-            <div>
-                <h2 className="text-2xl font-bold text-white">Backup & Restauração</h2>
-                <p className="text-gray-400 mt-1">Gerencie a segurança dos dados da plataforma com ferramentas avançadas.</p>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-8">
-                {/* BACKUP SECTION */}
-                <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 flex flex-col h-full">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-2xl border border-blue-500/20">💾</div>
-                        <div>
-                            <h3 className="text-lg font-bold text-white">Exportar Dados (Backup)</h3>
-                            <p className="text-xs text-gray-400">Selecione as coleções para salvar em JSON.</p>
-                        </div>
-                    </div>
-
-                    <div className="flex-1 mb-6">
-                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Coleções Disponíveis</label>
-                        <div className="grid grid-cols-2 gap-2">
-                            {availableCollections.map(col => (
-                                <label key={col.id} className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${selectedCollections.includes(col.id) ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white/5 border-transparent hover:border-white/10'}`}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={selectedCollections.includes(col.id)} 
-                                        onChange={() => toggleCollection(col.id)}
-                                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
-                                    />
-                                    <span className={`text-sm ${selectedCollections.includes(col.id) ? 'text-white font-medium' : 'text-gray-400'}`}>{col.label}</span>
-                                </label>
-                            ))}
-                        </div>
-                        <div className="mt-3 flex gap-2">
-                            <button onClick={() => setSelectedCollections(availableCollections.map(c => c.id))} className="text-xs text-blue-400 hover:underline">Marcar Todos</button>
-                            <span className="text-gray-600 text-xs">|</span>
-                            <button onClick={() => setSelectedCollections([])} className="text-xs text-gray-400 hover:text-white hover:underline">Desmarcar Todos</button>
-                        </div>
-                    </div>
-
-                    {isBackingUp && (
-                        <div className="mb-4 bg-black/30 p-3 rounded-lg border border-white/5">
-                            <div className="flex justify-between text-xs text-gray-300 mb-1">
-                                <span>Progresso</span>
-                                <span>{progress}%</span>
-                            </div>
-                            <div className="w-full bg-gray-800 rounded-full h-1.5 mb-2">
-                                <div className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
-                            </div>
-                            <p className="text-[10px] text-gray-500 font-mono">{statusLog}</p>
-                        </div>
-                    )}
-
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-white">Configurações do Sistema</h2>
+                    <p className="text-gray-400 mt-1">Personalize a aparência e gerencie os dados da plataforma.</p>
+                </div>
+                
+                {/* Tabs */}
+                <div className="flex bg-white/5 p-1 rounded-lg">
                     <button 
-                        onClick={handleBackup}
-                        disabled={isBackingUp || selectedCollections.length === 0}
-                        className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
+                        onClick={() => setActiveTab('branding')}
+                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'branding' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                     >
-                        {isBackingUp ? 'Processando...' : 'Baixar Backup Selecionado'}
+                        Identidade Visual
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('backup')}
+                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'backup' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        Backup & Dados
                     </button>
                 </div>
+            </div>
 
-                {/* RESTORE SECTION */}
-                <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 flex flex-col h-full">
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-2xl border border-red-500/20">♻️</div>
-                        <div>
-                            <h3 className="text-lg font-bold text-white">Importar Dados (Restore)</h3>
-                            <p className="text-xs text-gray-400">Recupere dados de um arquivo JSON.</p>
+            {activeTab === 'branding' && (
+                <div className="grid lg:grid-cols-2 gap-8 animate-fade-in">
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-2xl border border-primary/20">🎨</div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Cores da Marca (Whitelabel)</h3>
+                                <p className="text-xs text-gray-400">Defina a paleta de cores global do sistema.</p>
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <ColorInput 
+                                label="Cor Primária (Destaque)" 
+                                value={settings.primaryColor} 
+                                onChange={(v) => updateSettings({ primaryColor: v })} 
+                            />
+                            <ColorInput 
+                                label="Cor Secundária (Gradientes)" 
+                                value={settings.secondaryColor} 
+                                onChange={(v) => updateSettings({ secondaryColor: v })} 
+                            />
+                            <ColorInput 
+                                label="Cor de Fundo (Background)" 
+                                value={settings.backgroundColor} 
+                                onChange={(v) => updateSettings({ backgroundColor: v })} 
+                            />
+                            <ColorInput 
+                                label="Cor de Superfície (Cards)" 
+                                value={settings.surfaceColor} 
+                                onChange={(v) => updateSettings({ surfaceColor: v })} 
+                            />
+                        </div>
+
+                        <div className="mt-6 p-4 bg-black/30 rounded-lg border border-white/5">
+                            <p className="text-xs text-gray-500 mb-2">Preview de Botões:</p>
+                            <div className="flex gap-3">
+                                <button className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold">Botão Primário</button>
+                                <button className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-bold border border-white/10 hover:bg-white/20">Botão Secundário</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex-1 mb-6">
-                        {!restorePreview ? (
-                            <div className="h-full border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center p-8 text-center bg-white/[0.02]">
-                                <p className="text-sm text-gray-400 mb-4">Selecione um arquivo .json válido para iniciar a análise.</p>
-                                <input 
-                                    type="file" 
-                                    ref={fileInputRef} 
-                                    onChange={handleFileAnalysis} 
-                                    accept=".json" 
-                                    className="hidden" 
-                                />
-                                <button 
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-semibold transition-colors"
-                                >
-                                    Selecionar Arquivo
-                                </button>
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-2xl border border-white/10">🏢</div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Informações Gerais</h3>
+                                <p className="text-xs text-gray-400">Nome do site e configurações básicas.</p>
                             </div>
-                        ) : (
-                            <div className="bg-white/5 rounded-xl p-4 border border-white/10 h-full flex flex-col">
-                                <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
-                                    <h4 className="text-sm font-bold text-white">Pré-visualização do Arquivo</h4>
-                                    <button onClick={() => { setRestorePreview(null); setImportedData(null); setStatusLog(''); }} className="text-xs text-red-400 hover:underline">Cancelar</button>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Nome da Plataforma</label>
+                                <input 
+                                    type="text" 
+                                    value={settings.siteName}
+                                    onChange={(e) => updateSettings({ siteName: e.target.value })}
+                                    className="w-full p-3 bg-white/5 rounded-lg border border-white/10 focus:ring-1 focus:ring-primary focus:outline-none text-white text-sm"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-300">
+                            <p><strong>Nota:</strong> As alterações de cor são aplicadas instantaneamente para você visualizar, mas recomendamos atualizar a página após salvar para garantir consistência total em todos os componentes.</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'backup' && (
+                <div className="grid lg:grid-cols-2 gap-8 animate-fade-in">
+                    {/* BACKUP SECTION */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 flex flex-col h-full">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-2xl border border-blue-500/20">💾</div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Exportar Dados (Backup)</h3>
+                                <p className="text-xs text-gray-400">Selecione as coleções para salvar em JSON.</p>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 mb-6">
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Coleções Disponíveis</label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {availableCollections.map(col => (
+                                    <label key={col.id} className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${selectedCollections.includes(col.id) ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white/5 border-transparent hover:border-white/10'}`}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={selectedCollections.includes(col.id)} 
+                                            onChange={() => toggleCollection(col.id)}
+                                            className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                                        />
+                                        <span className={`text-sm ${selectedCollections.includes(col.id) ? 'text-white font-medium' : 'text-gray-400'}`}>{col.label}</span>
+                                    </label>
+                                ))}
+                            </div>
+                            <div className="mt-3 flex gap-2">
+                                <button onClick={() => setSelectedCollections(availableCollections.map(c => c.id))} className="text-xs text-blue-400 hover:underline">Marcar Todos</button>
+                                <span className="text-gray-600 text-xs">|</span>
+                                <button onClick={() => setSelectedCollections([])} className="text-xs text-gray-400 hover:text-white hover:underline">Desmarcar Todos</button>
+                            </div>
+                        </div>
+
+                        {isBackingUp && (
+                            <div className="mb-4 bg-black/30 p-3 rounded-lg border border-white/5">
+                                <div className="flex justify-between text-xs text-gray-300 mb-1">
+                                    <span>Progresso</span>
+                                    <span>{progress}%</span>
                                 </div>
-                                <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-48">
-                                    {Object.entries(restorePreview).map(([key, count]) => (
-                                        <div key={key} className="flex justify-between text-sm bg-black/20 p-2 rounded">
-                                            <span className="text-gray-400 capitalize">{key}</span>
-                                            <span className="text-white font-mono font-bold">{count} itens</span>
-                                        </div>
-                                    ))}
+                                <div className="w-full bg-gray-800 rounded-full h-1.5 mb-2">
+                                    <div className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
                                 </div>
-                                {isRestoring && (
-                                    <div className="mt-4">
-                                        <div className="w-full bg-gray-800 rounded-full h-1.5 mb-2">
-                                            <div className="bg-red-500 h-1.5 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 font-mono">{statusLog}</p>
-                                    </div>
-                                )}
+                                <p className="text-[10px] text-gray-500 font-mono">{statusLog}</p>
                             </div>
                         )}
+
+                        <button 
+                            onClick={handleBackup}
+                            disabled={isBackingUp || selectedCollections.length === 0}
+                            className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
+                        >
+                            {isBackingUp ? 'Processando...' : 'Baixar Backup Selecionado'}
+                        </button>
                     </div>
 
-                    <button 
-                        onClick={executeRestore}
-                        disabled={!restorePreview || isRestoring}
-                        className={`w-full py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${!restorePreview ? 'bg-gray-700 text-gray-400' : 'bg-red-600 hover:bg-red-500 text-white shadow-red-900/20'}`}
-                    >
-                        {isRestoring ? 'Restaurando...' : 'Confirmar Importação'}
-                    </button>
+                    {/* RESTORE SECTION */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 flex flex-col h-full">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-2xl border border-red-500/20">♻️</div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Importar Dados (Restore)</h3>
+                                <p className="text-xs text-gray-400">Recupere dados de um arquivo JSON.</p>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 mb-6">
+                            {!restorePreview ? (
+                                <div className="h-full border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center p-8 text-center bg-white/[0.02]">
+                                    <p className="text-sm text-gray-400 mb-4">Selecione um arquivo .json válido para iniciar a análise.</p>
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        onChange={handleFileAnalysis} 
+                                        accept=".json" 
+                                        className="hidden" 
+                                    />
+                                    <button 
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-semibold transition-colors"
+                                    >
+                                        Selecionar Arquivo
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="bg-white/5 rounded-xl p-4 border border-white/10 h-full flex flex-col">
+                                    <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
+                                        <h4 className="text-sm font-bold text-white">Pré-visualização do Arquivo</h4>
+                                        <button onClick={() => { setRestorePreview(null); setImportedData(null); setStatusLog(''); }} className="text-xs text-red-400 hover:underline">Cancelar</button>
+                                    </div>
+                                    <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-48">
+                                        {Object.entries(restorePreview).map(([key, count]) => (
+                                            <div key={key} className="flex justify-between text-sm bg-black/20 p-2 rounded">
+                                                <span className="text-gray-400 capitalize">{key}</span>
+                                                <span className="text-white font-mono font-bold">{count} itens</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {isRestoring && (
+                                        <div className="mt-4">
+                                            <div className="w-full bg-gray-800 rounded-full h-1.5 mb-2">
+                                                <div className="bg-red-500 h-1.5 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 font-mono">{statusLog}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        <button 
+                            onClick={executeRestore}
+                            disabled={!restorePreview || isRestoring}
+                            className={`w-full py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${!restorePreview ? 'bg-gray-700 text-gray-400' : 'bg-red-600 hover:bg-red-500 text-white shadow-red-900/20'}`}
+                        >
+                            {isRestoring ? 'Restaurando...' : 'Confirmar Importação'}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
@@ -468,7 +583,7 @@ const TeamManagementPanel: React.FC = () => {
                 </div>
                 <button 
                     onClick={() => navigate('/admin/teammember-editor/new')}
-                    className="bg-[#8a4add] hover:bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-[#8a4add]/20"
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-primary/20"
                 >
                     <span>+</span> Novo Membro
                 </button>
@@ -481,7 +596,7 @@ const TeamManagementPanel: React.FC = () => {
                     placeholder="Buscar membro por nome ou email..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white transition-colors"
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-primary focus:outline-none text-sm text-white transition-colors"
                 />
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
@@ -562,7 +677,7 @@ const BlogManagementPanel: React.FC = () => {
                 </div>
                 <button 
                     onClick={() => navigate('/admin/article-editor/new')}
-                    className="bg-[#8a4add] hover:bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-[#8a4add]/20"
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-primary/20"
                 >
                     <span>+</span> Novo Artigo
                 </button>
@@ -575,7 +690,7 @@ const BlogManagementPanel: React.FC = () => {
                     placeholder="Buscar artigo por título, autor ou categoria..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white transition-colors"
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-primary focus:outline-none text-sm text-white transition-colors"
                 />
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
@@ -727,7 +842,7 @@ const StudentsPanel: React.FC = () => {
                 </div>
                 <button 
                     onClick={() => navigate('/admin/user-editor/new')}
-                    className="bg-[#8a4add] hover:bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-[#8a4add]/20"
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-primary/20"
                 >
                     <span>+</span> Matricular Aluno
                 </button>
@@ -740,7 +855,7 @@ const StudentsPanel: React.FC = () => {
                     placeholder="Buscar aluno por nome ou email..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white transition-colors"
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-primary focus:outline-none text-sm text-white transition-colors"
                 />
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
@@ -768,7 +883,7 @@ const StudentsPanel: React.FC = () => {
                                                 {student.accountStatus === 'active' ? 'Ativo' : 'Inativo'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-[#c4b5fd] font-bold">{student.xp.toLocaleString('pt-BR')} XP</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-primary font-bold">{student.xp.toLocaleString('pt-BR')} XP</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
                                             <button onClick={() => navigate(`/admin/user-editor/${student.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
                                             {user?.role === 'admin' && (
@@ -849,7 +964,7 @@ const ExploreCoursesPanel: React.FC = () => {
                         placeholder="Buscar curso..." 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white"
+                        className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg focus:ring-1 focus:ring-primary focus:outline-none text-sm text-white"
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>
@@ -858,7 +973,7 @@ const ExploreCoursesPanel: React.FC = () => {
                     <select 
                         value={activeTrack}
                         onChange={(e) => setActiveTrack(e.target.value)}
-                        className="w-full md:w-48 appearance-none bg-black/30 text-gray-300 py-2 pl-4 pr-10 rounded-lg border border-white/10 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
+                        className="w-full md:w-48 appearance-none bg-black/30 text-gray-300 py-2 pl-4 pr-10 rounded-lg border border-white/10 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-primary focus:text-white"
                     >
                         {tracks.map(track => (
                             <option key={track} value={track}>{track === 'Todos' ? 'Trilha: Todas' : track}</option>
@@ -915,7 +1030,7 @@ const ExploreCoursesPanel: React.FC = () => {
                                 onClick={() => handlePageChange(page)}
                                 className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all border ${
                                     currentPage === page 
-                                    ? 'bg-[#8a4add] text-white border-[#8a4add] shadow-lg shadow-[#8a4add]/20' 
+                                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' 
                                     : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
                                 }`}
                             >
@@ -1006,15 +1121,15 @@ const TracksManagementPanel: React.FC = () => {
         <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
              <h3 className="text-sm font-bold text-white mb-6 uppercase tracking-wider">Gestão de Trilhas</h3>
              <div className="flex gap-3 mb-8">
-                <input type="text" value={newTrackName} onChange={(e) => setNewTrackName(e.target.value)} placeholder="Nome da nova trilha..." className="flex-grow p-2.5 bg-black/20 rounded-md border border-white/10 focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white" />
-                <button onClick={handleCreate} className="font-semibold py-2 px-6 rounded-md bg-[#8a4add] text-white hover:bg-[#7c3aed] text-sm">Adicionar</button>
+                <input type="text" value={newTrackName} onChange={(e) => setNewTrackName(e.target.value)} placeholder="Nome da nova trilha..." className="flex-grow p-2.5 bg-black/20 rounded-md border border-white/10 focus:ring-1 focus:ring-primary focus:outline-none text-sm text-white" />
+                <button onClick={handleCreate} className="font-semibold py-2 px-6 rounded-md bg-primary text-white hover:bg-primary/90 text-sm">Adicionar</button>
             </div>
              <div className="grid gap-3">
                 {tracks.map(track => (
                     <div key={track.id} className="bg-white/5 p-3 rounded-lg border border-white/5 flex justify-between items-center hover:border-white/10 transition-colors">
                         {editingTrack?.id === track.id ? (
                             <div className="flex gap-2 w-full mr-4">
-                                <input type="text" value={editingName} onChange={(e) => setEditingName(e.target.value)} className="flex-grow p-1.5 bg-black/30 rounded border border-[#8a4add] focus:outline-none text-sm text-white" autoFocus />
+                                <input type="text" value={editingName} onChange={(e) => setEditingName(e.target.value)} className="flex-grow p-1.5 bg-black/30 rounded border border-primary focus:outline-none text-sm text-white" autoFocus />
                             </div>
                         ) : (
                             <div>
@@ -1117,7 +1232,7 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
             <div className="grid lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-gradient-to-r from-[#121212] to-[#1a1a1d] rounded-2xl border border-white/10 p-8 relative overflow-hidden shadow-2xl">
                     {/* Abstract Background */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#8a4add]/10 rounded-full blur-[80px] pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
                     
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-4">
@@ -1138,7 +1253,7 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
                         <div className="flex items-center gap-4">
                             <button 
                                 onClick={handleContinue}
-                                className="bg-[#8a4add] hover:bg-[#7c3aed] text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-[#8a4add]/20 transition-all transform hover:scale-105 flex items-center gap-2"
+                                className="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/20 transition-all transform hover:scale-105 flex items-center gap-2"
                             >
                                 {currentActive ? (
                                     <>
@@ -1156,7 +1271,7 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
                                         <span className="text-white font-bold">{currentActive.progress}%</span>
                                     </div>
                                     <div className="w-full bg-black/40 rounded-full h-2 border border-white/5">
-                                        <div className="bg-gradient-to-r from-[#8a4add] to-[#f27983] h-2 rounded-full transition-all duration-500" style={{width: `${currentActive.progress}%`}}></div>
+                                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all duration-500" style={{width: `${currentActive.progress}%`}}></div>
                                     </div>
                                 </div>
                             )}
@@ -1219,22 +1334,22 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
             <div>
                 <h3 className="text-lg font-bold text-white mb-4">Acesso Rápido</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <button onClick={() => navigate('/community')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                    <button onClick={() => navigate('/community')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-primary/30 transition-all text-left group">
                         <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">💬</span>
                         <span className="text-sm font-bold text-white block">Comunidade</span>
                         <span className="text-xs text-gray-500">Tire dúvidas no fórum</span>
                     </button>
-                    <button onClick={() => showToast("Certificados disponíveis na página do curso!")} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                    <button onClick={() => showToast("Certificados disponíveis na página do curso!")} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-primary/30 transition-all text-left group">
                         <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">📜</span>
                         <span className="text-sm font-bold text-white block">Certificados</span>
                         <span className="text-xs text-gray-500">Suas conquistas</span>
                     </button>
-                    <button onClick={() => navigate('/profile')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                    <button onClick={() => navigate('/profile')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-primary/30 transition-all text-left group">
                         <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">👤</span>
                         <span className="text-sm font-bold text-white block">Meu Perfil</span>
                         <span className="text-xs text-gray-500">Editar dados</span>
                     </button>
-                    <button onClick={() => navigate('/connect')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                    <button onClick={() => navigate('/connect')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-primary/30 transition-all text-left group">
                         <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">🤝</span>
                         <span className="text-sm font-bold text-white block">Mentorias</span>
                         <span className="text-xs text-gray-500">Fale com experts</span>
@@ -1272,7 +1387,7 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
             
             {/* 1. Hero: Next Appointment */}
             <div className="bg-gradient-to-r from-[#121212] to-[#1a1a1d] rounded-2xl border border-white/10 p-8 relative overflow-hidden shadow-xl">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#8a4add]/10 rounded-full blur-[80px] pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
                 <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
                         <h2 className="text-3xl font-black text-white mb-2">Olá, Professor {user.name.split(' ')[0]}!</h2>
@@ -1280,7 +1395,7 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                     </div>
                     
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 p-4 rounded-xl flex items-center gap-4 w-full md:w-auto">
-                        <div className="bg-[#8a4add] p-3 rounded-lg text-white">
+                        <div className="bg-primary p-3 rounded-lg text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <div>
@@ -1364,7 +1479,7 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                             {myCourses.length > 0 ? myCourses.map(course => (
                                 <div 
                                     key={course.id} 
-                                    className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#8a4add]/30 rounded-xl p-3 transition-all duration-300 cursor-pointer flex gap-4 items-center"
+                                    className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 rounded-xl p-3 transition-all duration-300 cursor-pointer flex gap-4 items-center"
                                     onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)}
                                 >
                                     {/* Thumbnail */}
@@ -1518,14 +1633,12 @@ const Dashboard: React.FC = () => {
         handleSaveCourse(newCourse);
     };
 
-    // Renderers
     const renderAdminOverview = () => {
         // --- CALCULATE HEALTH METRICS ---
         const totalStudents = users.filter(u => u.role === 'student').length;
         
         // New Students (Simulated logic since 'createdAt' is not always available in this mock)
-        // In a real app, filter by createdAt > 30 days ago
-        const newStudents = Math.round(totalStudents * 0.15); // Mock 15% growth
+        const newStudents = Math.round(totalStudents * 0.15); 
 
         // Completion Rate
         let totalLessonsPossible = 0;
@@ -1533,19 +1646,14 @@ const Dashboard: React.FC = () => {
         users.filter(u => u.role === 'student').forEach(s => {
             totalLessonsCompleted += s.completedLessonIds.length;
         });
-        // Rough estimate of total possible lessons (students * avg lessons per course)
-        // Assuming average active student takes 1 course with ~10 lessons
         totalLessonsPossible = Math.max(1, totalStudents * 10); 
         const completionRate = Math.min(100, Math.round((totalLessonsCompleted / totalLessonsPossible) * 100));
 
-        // Retention (Simulated based on lastCompletionDate or lastLogin)
-        // Assuming 70% retention for demo
+        // Retention
         const retentionRate = 72;
 
         // Dynamic Health Score Calculation
-        // Weight: Completion (40%) + Retention (40%) + Growth (20% normalized to 100)
-        // Normalized Growth: Assume 20% growth is "100 health" in that aspect
-        const growthScore = Math.min(100, (newStudents / totalStudents) * 500); // 20% growth = 100 score
+        const growthScore = Math.min(100, (newStudents / totalStudents) * 500); 
         const healthScore = Math.round((completionRate * 0.4) + (retentionRate * 0.4) + (growthScore * 0.2));
 
         return (
@@ -1691,7 +1799,7 @@ const Dashboard: React.FC = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold text-white">Gerenciar Cursos</h2>
-                <button onClick={handleCreateCourse} className="bg-[#8a4add] hover:bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
+                <button onClick={handleCreateCourse} className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
                     <span>+</span> Novo Curso
                 </button>
             </div>
@@ -1717,7 +1825,7 @@ const Dashboard: React.FC = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded border bg-[#8a4add]/10 text-[#c4b5fd] border-[#8a4add]/20">{course.track}</span></td>
+                                        <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded border bg-primary/10 text-primary border-primary/20">{course.track}</span></td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">{course.modules.reduce((acc, m) => acc + m.lessons.length, 0)}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-4">
                                             <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-gray-400 hover:text-white transition-colors" title="Ver Painel da Turma">Painel</button>
@@ -1739,9 +1847,6 @@ const Dashboard: React.FC = () => {
         if (!user) return null;
         const myCourseIds = user.completedLessonIds; 
         const myCourses = courses.filter(c => c.modules.some(m => m.lessons.some(l => l.id && myCourseIds.includes(l.id)))) || [];
-        
-        // Fallback: if user has completed lessons but we can't match courses efficiently or array is empty, show active enrollments logic if available.
-        // For MVP: simple logic
         
         return (
             <div className="space-y-6">
@@ -1773,7 +1878,7 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#09090B] flex">
+        <div className="min-h-screen bg-[#09090B] bg-background flex">
             <DashboardSidebar 
                 activeTab={activeTab} 
                 onTabChange={setActiveTab} 
