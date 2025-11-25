@@ -51,6 +51,12 @@ const Register: React.FC = () => {
         return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        setError('Por favor, insira um email válido.');
+        return;
+    }
+
     if (password.length < 6) {
         setError('A senha deve ter pelo menos 6 caracteres.');
         return;

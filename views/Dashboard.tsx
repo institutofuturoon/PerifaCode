@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport, Project } from '../types';
 import ProgressBar from '../components/ProgressBar';
@@ -164,6 +164,15 @@ const ExploreCoursesPanel: React.FC = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTrack, setActiveTrack] = useState('Todos');
+    
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 8;
+
+    // Reset page when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, activeTrack]);
 
     const tracks = useMemo(() => ['Todos', ...Array.from(new Set(courses.map(c => c.track)))].sort(), [courses]);
 
@@ -171,6 +180,19 @@ const ExploreCoursesPanel: React.FC = () => {
         (course.title.toLowerCase().includes(searchTerm.toLowerCase())) &&
         (activeTrack === 'Todos' || course.track === activeTrack)
     ), [courses, searchTerm, activeTrack]);
+
+    // Pagination Logic
+    const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
+    const currentCourses = filteredCourses.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        // Scroll suave para o topo da lista
+        document.getElementById('workspace-catalog')?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     const handleCourseClick = (course: Course) => {
         const firstLesson = course.modules?.[0]?.lessons?.[0];
@@ -192,7 +214,7 @@ const ExploreCoursesPanel: React.FC = () => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" id="workspace-catalog">
             <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
                 <div className="relative w-full md:flex-1">
                     <input 
@@ -218,8 +240,16 @@ const ExploreCoursesPanel: React.FC = () => {
                 </div>
             </div>
 
+            {/* Header info */}
+            <div className="flex justify-between items-center px-2">
+                <h2 className="text-xl font-bold text-white">Catálogo de Cursos</h2>
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    {filteredCourses.length} resultados
+                </p>
+            </div>
+
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredCourses.map(course => {
+                {currentCourses.map(course => {
                     const { progress, isEnrolled } = getCourseProgress(course);
                     return (
                         <CourseCard 
@@ -232,6 +262,51 @@ const ExploreCoursesPanel: React.FC = () => {
                     );
                 })}
             </div>
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-10 pb-4">
+                    <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="w-10 h-10 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        &larr;
+                    </button>
+                    
+                    {Array.from({ length: totalPages }).map((_, i) => {
+                        const page = i + 1;
+                        // Logic to show limited pages (simplified for dashboard)
+                        if (totalPages > 7 && (page < currentPage - 1 || page > currentPage + 1) && page !== 1 && page !== totalPages) {
+                            if (page === currentPage - 2 || page === currentPage + 2) return <span key={page} className="text-gray-600">...</span>;
+                            return null;
+                        }
+
+                        return (
+                            <button
+                                key={page}
+                                onClick={() => handlePageChange(page)}
+                                className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all border ${
+                                    currentPage === page 
+                                    ? 'bg-[#8a4add] text-white border-[#8a4add] shadow-lg shadow-[#8a4add]/20' 
+                                    : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
+                                }`}
+                            >
+                                {page}
+                            </button>
+                        );
+                    })}
+
+                    <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="w-10 h-10 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        &rarr;
+                    </button>
+                </div>
+            )}
+
             {filteredCourses.length === 0 && <div className="text-center py-20 text-gray-500">Nenhum curso encontrado.</div>}
         </div>
     );

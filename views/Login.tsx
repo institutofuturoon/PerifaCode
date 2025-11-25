@@ -29,6 +29,13 @@ const Login: React.FC = () => {
 
   const handleEmailLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        setError('Por favor, insira um email válido.');
+        return;
+    }
+
     setLoading(true);
     setError(null);
     signInWithEmailAndPassword(auth, email, password)
@@ -109,8 +116,9 @@ const Login: React.FC = () => {
 
   const handleResetPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      setError('Digite seu email para receber o link de recuperação.');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Digite um email válido para receber o link de recuperação.');
       return;
     }
 

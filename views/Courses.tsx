@@ -47,6 +47,8 @@ const Courses: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>('Todos');
   const [selectedFormat, setSelectedFormat] = useState<string>('Todos');
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
 
   // Reset page when filters change
@@ -99,6 +101,25 @@ const Courses: React.FC = () => {
       setCurrentPage(page);
       // Smooth scroll to top of list
       document.getElementById('all-courses')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Generate smart pagination numbers (e.g., 1, ..., 4, 5, 6, ..., 10)
+  const getPageNumbers = () => {
+      const pages = [];
+      const maxVisibleButtons = 5;
+
+      if (totalPages <= maxVisibleButtons) {
+          for (let i = 1; i <= totalPages; i++) pages.push(i);
+      } else {
+          if (currentPage <= 3) {
+              pages.push(1, 2, 3, 4, '...', totalPages);
+          } else if (currentPage >= totalPages - 2) {
+              pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+          } else {
+              pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+          }
+      }
+      return pages;
   };
 
   const hasActiveFilters = searchTerm !== '' || activeTrack !== 'Todos' || selectedLevel !== 'Todos' || selectedFormat !== 'Todos';
@@ -268,10 +289,15 @@ const Courses: React.FC = () => {
                             </div>
                         )}
                     </div>
-                    <div className="text-right px-2 mt-2">
+                    <div className="text-right px-2 mt-2 flex justify-between items-center">
                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                            Mostrando {currentCourses.length} de {filteredCourses.length} {filteredCourses.length === 1 ? 'curso' : 'cursos'}
+                            Mostrando {currentCourses.length} de {filteredCourses.length} cursos
                         </p>
+                        {totalPages > 1 && (
+                            <p className="text-[10px] font-bold text-[#8a4add] uppercase tracking-widest">
+                                Página {currentPage} de {totalPages}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -292,7 +318,7 @@ const Courses: React.FC = () => {
                             })}
                         </div>
 
-                        {/* Pagination Controls */}
+                        {/* Smart Pagination Controls */}
                         {totalPages > 1 && (
                             <div className="flex justify-center items-center gap-2 mt-16 animate-fade-in">
                                 <button
@@ -304,23 +330,24 @@ const Courses: React.FC = () => {
                                     &larr;
                                 </button>
                                 
-                                {Array.from({ length: totalPages }).map((_, i) => {
-                                    const page = i + 1;
-                                    // Logic to show limited page numbers (e.g., 1, 2, ..., 5) could be added here for very large lists
-                                    return (
-                                        <button
-                                            key={page}
-                                            onClick={() => handlePageChange(page)}
-                                            className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all border ${
-                                                currentPage === page 
-                                                ? 'bg-[#8a4add] text-white border-[#8a4add] shadow-lg shadow-[#8a4add]/20' 
-                                                : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
-                                            }`}
-                                        >
-                                            {page}
-                                        </button>
-                                    );
-                                })}
+                                {getPageNumbers().map((page, i) => (
+                                    <React.Fragment key={i}>
+                                        {page === '...' ? (
+                                            <span className="w-10 h-10 flex items-center justify-center text-gray-600">...</span>
+                                        ) : (
+                                            <button
+                                                onClick={() => handlePageChange(page as number)}
+                                                className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold transition-all border ${
+                                                    currentPage === page 
+                                                    ? 'bg-[#8a4add] text-white border-[#8a4add] shadow-lg shadow-[#8a4add]/20' 
+                                                    : 'bg-white/5 text-gray-400 border-white/10 hover:bg-white/10 hover:text-white'
+                                                }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        )}
+                                    </React.Fragment>
+                                ))}
 
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
