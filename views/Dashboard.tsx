@@ -98,6 +98,282 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
 
 // --- Tab Components ---
 
+const TeamManagementPanel: React.FC = () => {
+    const { users, handleSaveTeamOrder, handleDeleteUser, user } = useAppContext();
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // Filter team members (admin/instructor)
+    const teamMembers = useMemo(() => 
+        users.filter(u => u.role === 'admin' || u.role === 'instructor')
+             .sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999))
+    , [users]);
+
+    const filteredTeam = useMemo(() => teamMembers.filter(u => 
+        u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        u.email.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [teamMembers, searchTerm]);
+
+    const moveMember = (index: number, direction: 'up' | 'down') => {
+        if (direction === 'up' && index === 0) return;
+        if (direction === 'down' && index === teamMembers.length - 1) return;
+        
+        const newOrder = [...teamMembers];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+        
+        // Swap
+        [newOrder[index], newOrder[targetIndex]] = [newOrder[targetIndex], newOrder[index]];
+        
+        handleSaveTeamOrder(newOrder);
+    };
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-xl font-bold text-white">Gestão da Equipe</h2>
+                    <p className="text-xs text-gray-400 mt-1">Total: {teamMembers.length} membros (Instrutores e Admins)</p>
+                </div>
+                <button 
+                    onClick={() => navigate('/admin/teammember-editor/new')}
+                    className="bg-[#8a4add] hover:bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-[#8a4add]/20"
+                >
+                    <span>+</span> Novo Membro
+                </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative">
+                <input 
+                    type="search" 
+                    placeholder="Buscar membro por nome ou email..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white transition-colors"
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+
+            {/* Table */}
+            <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                        <TableHeader cols={['Ordem', 'Membro', 'Função', 'Status', 'Ações']} />
+                        <tbody className="divide-y divide-white/5">
+                            {filteredTeam.length === 0 ? (
+                                <tr><td colSpan={5} className="text-center py-8 text-gray-500 text-sm">Nenhum membro encontrado.</td></tr>
+                            ) : (
+                                filteredTeam.map((member, index) => (
+                                    <tr key={member.id} className="hover:bg-white/5 transition-colors group">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex flex-col gap-1">
+                                                <button onClick={() => moveMember(index, 'up')} className={`text-gray-500 hover:text-white text-xs ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}`} disabled={index === 0}>▲</button>
+                                                <button onClick={() => moveMember(index, 'down')} className={`text-gray-500 hover:text-white text-xs ${index === filteredTeam.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}`} disabled={index === filteredTeam.length - 1}>▼</button>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-3">
+                                                <img src={member.avatarUrl} className="h-8 w-8 rounded-full border border-white/10 object-cover" alt={member.name} />
+                                                <div>
+                                                    <div className="text-sm font-medium text-white">{member.name}</div>
+                                                    <div className="text-xs text-gray-500">{member.email}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex flex-col">
+                                                <span className={`px-2 py-0.5 inline-flex w-fit text-[10px] font-bold uppercase tracking-wider rounded border ${member.role === 'admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
+                                                    {member.role === 'admin' ? 'Admin' : 'Instrutor'}
+                                                </span>
+                                                {member.title && <span className="text-[10px] text-gray-500 mt-1">{member.title}</span>}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded border ${member.accountStatus === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
+                                                {member.accountStatus === 'active' ? 'Ativo' : 'Inativo'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
+                                            <button onClick={() => navigate(`/admin/teammember-editor/${member.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                                            {user?.role === 'admin' && member.id !== user.id && (
+                                                <button onClick={() => handleDeleteUser(member.id)} className="text-red-500 hover:text-red-400 transition-colors">Desativar</button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const BlogManagementPanel: React.FC = () => {
+    const { articles, handleDeleteArticle, handleToggleArticleStatus } = useAppContext();
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredArticles = useMemo(() => articles.filter(article => 
+        article.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        article.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.category.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [articles, searchTerm]);
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-xl font-bold text-white">Gerenciar Blog</h2>
+                    <p className="text-xs text-gray-400 mt-1">Total: {articles.length} artigos</p>
+                </div>
+                <button 
+                    onClick={() => navigate('/admin/article-editor/new')}
+                    className="bg-[#8a4add] hover:bg-[#7c3aed] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-[#8a4add]/20"
+                >
+                    <span>+</span> Novo Artigo
+                </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative">
+                <input 
+                    type="search" 
+                    placeholder="Buscar artigo por título, autor ou categoria..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white transition-colors"
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+
+            {/* Table */}
+            <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                        <TableHeader cols={['Título', 'Autor', 'Categoria', 'Status', 'Ações']} />
+                        <tbody className="divide-y divide-white/5">
+                            {filteredArticles.length === 0 ? (
+                                <tr><td colSpan={5} className="text-center py-8 text-gray-500 text-sm">Nenhum artigo encontrado.</td></tr>
+                            ) : (
+                                filteredArticles.map((article) => (
+                                    <tr key={article.id} className="hover:bg-white/5 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <img src={article.imageUrl} className="h-10 w-16 object-cover rounded border border-white/10" alt={article.title} />
+                                                <div className="max-w-xs">
+                                                    <div className="text-sm font-medium text-white line-clamp-1">{article.title}</div>
+                                                    <div className="text-xs text-gray-500">{article.date}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                            <div className="flex items-center gap-2">
+                                                <img src={article.authorAvatarUrl} alt={article.author} className="w-5 h-5 rounded-full"/>
+                                                {article.author}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className="px-2 py-1 text-[10px] font-semibold rounded bg-white/5 text-gray-300 border border-white/10">
+                                                {article.category}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded border ${article.status === 'published' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'}`}>
+                                                {article.status === 'published' ? 'Publicado' : 'Rascunho'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
+                                            <button 
+                                                onClick={() => handleToggleArticleStatus(article.id)} 
+                                                className={`${article.status === 'published' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'} transition-colors`}
+                                                title={article.status === 'published' ? 'Mover para Rascunho' : 'Publicar'}
+                                            >
+                                                {article.status === 'published' ? 'Despublicar' : 'Publicar'}
+                                            </button>
+                                            <button onClick={() => navigate(`/admin/article-editor/${article.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                                            <button onClick={() => handleDeleteArticle(article.id)} className="text-red-500 hover:text-red-400 transition-colors">Excluir</button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const ModerationPanel: React.FC = () => {
+    const { projects, handleApproveProject, handleRejectProject, users } = useAppContext();
+    
+    const pendingProjects = useMemo(() => projects.filter(p => p.status === 'pending'), [projects]);
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            <div>
+                <h2 className="text-xl font-bold text-white">Moderação de Conteúdo</h2>
+                <p className="text-xs text-gray-400 mt-1">Projetos aguardando aprovação para o showcase da comunidade.</p>
+            </div>
+
+            <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                        <TableHeader cols={['Projeto', 'Aluno', 'Data', 'Ações']} />
+                        <tbody className="divide-y divide-white/5">
+                            {pendingProjects.length === 0 ? (
+                                <tr><td colSpan={4} className="text-center py-8 text-gray-500 text-sm">Nenhum projeto pendente.</td></tr>
+                            ) : (
+                                pendingProjects.map((project) => {
+                                    const author = users.find(u => u.id === project.authorId);
+                                    return (
+                                        <tr key={project.id} className="hover:bg-white/5 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <img src={project.imageUrl} className="h-10 w-16 object-cover rounded border border-white/10" alt={project.title} />
+                                                    <div className="max-w-xs">
+                                                        <div className="text-sm font-medium text-white line-clamp-1">{project.title}</div>
+                                                        <a href={project.liveUrl} target="_blank" rel="noreferrer" className="text-xs text-[#c4b5fd] hover:underline">Ver Projeto</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                                <div className="flex items-center gap-2">
+                                                    <img src={author?.avatarUrl} alt={author?.name} className="w-5 h-5 rounded-full"/>
+                                                    {author?.name || 'Desconhecido'}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {project.createdAt}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
+                                                <button 
+                                                    onClick={() => handleApproveProject(project.id)} 
+                                                    className="text-green-400 hover:text-green-300 transition-colors bg-green-500/10 px-3 py-1 rounded border border-green-500/20"
+                                                >
+                                                    Aprovar
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleRejectProject(project.id)} 
+                                                    className="text-red-500 hover:text-red-400 transition-colors bg-red-500/10 px-3 py-1 rounded border border-red-500/20"
+                                                >
+                                                    Rejeitar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const StudentsPanel: React.FC = () => {
     const { users, handleDeleteUser, user } = useAppContext();
     const navigate = useNavigate();
@@ -983,7 +1259,7 @@ const Dashboard: React.FC = () => {
 
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* System Status & Recent Activity */}
-                    <div className="lg:col-span-2 bg-[#121212] border border-white/10 rounded-2xl p-6">
+                    <div className="lg:col-span-2 bg-[#121212] border border border-white/10 rounded-2xl p-6">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-lg font-bold text-white">Status do Sistema</h3>
                             <button onClick={() => navigate('/analytics')} className="text-xs text-[#c4b5fd] hover:text-white font-bold uppercase">Relatório Completo</button>
@@ -1160,14 +1436,16 @@ const Dashboard: React.FC = () => {
                         {activeTab === 'explore' && <ExploreCoursesPanel />}
                         {activeTab === 'forum' && <ForumView embedded />}
                         {activeTab === 'marketing' && <MarketingGeneratorView />}
-                        {activeTab === 'blog' && <div className="text-gray-400">Gestão de Blog (Use a tabela antiga se necessário ou crie componente separado)</div>}
+                        {activeTab === 'blog' && <BlogManagementPanel />}
                         {activeTab === 'blog-feed' && <Blog embedded />}
                         {activeTab === 'myAgenda' && <MyAgendaPanel user={user} />}
                         {activeTab === 'tracks' && <TracksManagementPanel />}
                         {activeTab === 'students' && <StudentsPanel />}
+                        {activeTab === 'teamMembers' && <TeamManagementPanel />}
+                        {activeTab === 'moderation' && <ModerationPanel />}
                         
                         {/* Fallback for other tabs */}
-                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students'].includes(activeTab) && (
+                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation'].includes(activeTab) && (
                             <div className="text-center py-20 text-gray-500">Funcionalidade em desenvolvimento: {tabTitles[activeTab]}</div>
                         )}
                     </div>
