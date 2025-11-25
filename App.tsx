@@ -128,6 +128,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         if (collectionName === 'courses') {
             const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
             const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
+            // Note: This fetch only gets the "light" version of courses if they were saved via the new system
+            // The full content is lazy loaded.
             dataFromDb = [...MOCK_COURSES, ...additionalDbCourses];
         }
         
@@ -241,6 +243,38 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       }
   }, [loadedResources]);
 
+  // --- FETCH SPECIFIC LESSON CONTENT ---
+  const fetchLessonContent = async (courseId: string, lessonId: string): Promise<Lesson | null> => {
+      try {
+          // 1. Check if it's a mock course first
+          const mockCourse = MOCK_COURSES.find(c => c.id === courseId);
+          if (mockCourse) {
+              const lesson = mockCourse.modules.flatMap(m => m.lessons).find(l => l.id === lessonId);
+              return lesson || null;
+          }
+
+          // 2. Fetch from Firestore Sub-collection
+          const lessonRef = doc(db, "courses", courseId, "lessons", lessonId);
+          const lessonDoc = await getDoc(lessonRef);
+
+          if (lessonDoc.exists()) {
+              return { id: lessonDoc.id, ...lessonDoc.data() } as Lesson;
+          }
+
+          // 3. Fallback: Check if it exists in the main course object (legacy structure)
+          const course = courses.find(c => c.id === courseId);
+          if (course) {
+              const lesson = course.modules.flatMap(m => m.lessons).find(l => l.id === lessonId);
+              return lesson || null;
+          }
+
+          return null;
+      } catch (error) {
+          console.error("Error fetching lesson content:", error);
+          return null;
+      }
+  };
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -275,6 +309,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               completedLessonIds: [], xp: 0, achievements: [], streak: 0, lastCompletionDate: '',
               hasCompletedOnboardingTour: false,
               accountStatus: 'active',
+              notes: {}, // Initialize empty notes object
             };
             try {
                 await setDoc(doc(db, "users", firebaseUser.uid), newUser);
@@ -351,21 +386,60 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
   
+    // --- OPTIMIZED SAVE COURSE WITH SUB-COLLECTIONS ---
     const handleSaveCourse = async (courseToSave: Course) => {
         const isNew = !courses.some(c => c.id === courseToSave.id);
+        
+        // Update local state immediately (with full content for seamless UX)
         setCourses(prev => isNew ? [...prev, courseToSave] : prev.map(c => c.id === courseToSave.id ? courseToSave : c));
         showToast("✅ Curso salvo com sucesso!");
 
         try {
-            await setDoc(doc(db, "courses", courseToSave.id), courseToSave);
+            const batch = writeBatch(db);
+            
+            // 1. Prepare the Course Document (stripped of heavy content)
+            const courseRef = doc(db, "courses", courseToSave.id);
+            const courseDataLight = {
+                ...courseToSave,
+                modules: courseToSave.modules.map(m => ({
+                    ...m,
+                    lessons: m.lessons.map(l => ({
+                        // Keep metadata, strip content
+                        id: l.id,
+                        title: l.title,
+                        duration: l.duration,
+                        type: l.type,
+                        xp: l.xp,
+                        videoUrl: l.videoUrl, // Optional: keep or move
+                        // mainContent: REMOVED
+                    }))
+                }))
+            };
+            
+            batch.set(courseRef, courseDataLight);
+
+            // 2. Save Individual Lessons to Sub-collection
+            courseToSave.modules.forEach(module => {
+                module.lessons.forEach(lesson => {
+                    const lessonRef = doc(db, "courses", courseToSave.id, "lessons", lesson.id);
+                    batch.set(lessonRef, lesson); // Save full lesson object
+                });
+            });
+
+            await batch.commit();
+
         } catch (error) {
-            console.error("Erro ao salvar curso:", error);
+            console.error("Erro ao salvar curso e aulas:", error);
+            showToast("❌ Erro ao salvar no banco.");
         }
     };
 
     const handleDeleteCourse = async (courseId: string): Promise<boolean> => {
       if(window.confirm("Tem certeza que deseja excluir este curso?")) {
         try {
+             // Note: Deleting a document does not delete sub-collections in Firestore!
+             // To do this properly, you'd need a Cloud Function or manual deletion of sub-collections.
+             // For this frontend-only implementation, we delete the main doc.
              await deleteDoc(doc(db, "courses", courseId));
              setCourses(prev => prev.filter(c => c.id !== courseId));
              showToast("✅ Curso excluído com sucesso!");
@@ -888,6 +962,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
     loadData, // Expose lazy loader
+    fetchLessonContent, // Expose lesson content fetcher
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
     completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,

@@ -71,7 +71,7 @@ export interface User {
   location?: string; // Ex: "Cidade, Estado" ou "Bairro, Cidade"
   educationLevel?: 'Ensino Fundamental' | 'Ensino Médio Incompleto' | 'Ensino Médio Completo' | 'Ensino Superior Incompleto' | 'Ensino Superior Completo' | 'Outro';
   motivation?: string; // Campo para o aluno descrever seus objetivos
-  notes?: { [lessonId: string]: string }; // Notas pessoais por aula
+  notes?: { [lessonId: string]: string }; // Notas pessoais por aula: Objeto onde chave=lessonId e valor=texto
   githubUrl?: string;
   linkedinUrl?: string;
   notificationPreferences?: {
@@ -452,6 +452,7 @@ export interface Testimonial {
   quote: string;
   role: string;
   avatarUrl: string;
+  // FIX: Removed description to match usages
 }
 
 export interface AnnualReport {
@@ -521,6 +522,9 @@ export interface AppContextType {
 
   // Data Loading Action (Lazy Loading)
   loadData: (resources: string[]) => Promise<void>;
+  
+  // Lesson Content Loading (Sub-collection)
+  fetchLessonContent: (courseId: string, lessonId: string) => Promise<Lesson | null>;
 
   // Actions
   handleLogout: () => void;
@@ -532,7 +536,7 @@ export interface AppContextType {
   closeInscriptionModal: () => void;
   completeLesson: (lessonId: string) => void;
   handleCompleteOnboarding: () => Promise<void>;
-  handleSaveNote: (lessonId: string, note: string) => void;
+  handleSaveNote: (lessonId: string, note: string) => void; // Implementação da função de salvar notas
   showToast: (message: string) => void;
   
   // Data Management

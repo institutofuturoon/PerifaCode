@@ -13,13 +13,13 @@ import Blog from './Blog';
 
 // --- Helper Components (Defined Outside) ---
 
-const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode }> = ({ title, value, icon }) => (
-  <div className="bg-white/[0.02] p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
-    <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{title}</span>
-        <div className="text-gray-400">{icon}</div>
+const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; color?: string }> = ({ title, value, icon, color = "text-white" }) => (
+  <div className="bg-[#121212] p-5 rounded-2xl border border-white/10 hover:border-[#8a4add]/30 transition-all group">
+    <div className="flex items-center justify-between mb-3">
+        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{title}</span>
+        <div className="p-2 rounded-lg bg-white/5 text-gray-400 group-hover:text-[#c4b5fd] group-hover:bg-[#8a4add]/10 transition-colors">{icon}</div>
     </div>
-    <p className="text-2xl font-bold text-white">{value}</p>
+    <p className={`text-3xl font-black ${color}`}>{value}</p>
   </div>
 );
 
@@ -54,11 +54,21 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
             </div>
 
             <div className="flex items-center gap-4">
+                {/* Gamification Badges (Visible on Desktop) */}
+                <div className="hidden md:flex items-center gap-3 mr-4">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-bold" title="Ofensiva">
+                        <span>🔥</span> {user.streak}
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 text-[#c4b5fd] text-xs font-bold" title="XP Total">
+                        <span>⚡</span> {user.xp}
+                    </div>
+                </div>
+
                 <div className="relative">
                     <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex items-center gap-3 hover:bg-white/5 py-1.5 px-2 rounded-full transition-colors">
                         <div className="text-right hidden sm:block">
                             <p className="text-xs font-bold text-white">{user.name}</p>
-                            <p className="text-[10px] text-gray-500 capitalize">{user.role}</p>
+                            <p className="text-[10px] text-gray-500 capitalize">{user.role === 'student' ? 'Aluno' : user.role === 'instructor' ? 'Instrutor' : 'Admin'}</p>
                         </div>
                         <img src={user.avatarUrl} alt={user.name} className="h-8 w-8 rounded-full border border-white/10" />
                     </button>
@@ -243,7 +253,7 @@ const ExploreCoursesPanel: React.FC = () => {
             {/* Header info */}
             <div className="flex justify-between items-center px-2">
                 <h2 className="text-xl font-bold text-white">Catálogo de Cursos</h2>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                <p className="text--[10px] font-bold text-gray-500 uppercase tracking-widest">
                     {filteredCourses.length} resultados
                 </p>
             </div>
@@ -409,6 +419,165 @@ const TracksManagementPanel: React.FC = () => {
     );
 };
 
+// --- Student Overview Component (NEW) ---
+const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
+    const { courses, courseProgress, events, showToast } = useAppContext();
+    const navigate = useNavigate();
+
+    // 1. Get Current Course (Last active or most progress)
+    const currentActive = useMemo(() => {
+        if (courseProgress.inProgressCourses.length === 0) return null;
+        return courseProgress.inProgressCourses.sort((a, b) => b.progress - a.progress)[0];
+    }, [courseProgress]);
+
+    // 2. Get Next Upcoming Event
+    const nextEvent = useMemo(() => {
+        // Simplified logic: grab first event that is NOT in the past (mock logic)
+        return events.find(e => !e.date.includes('2023')) || events[0];
+    }, [events]);
+
+    const handleContinue = () => {
+        if (currentActive) {
+            // Find first incomplete lesson
+            const course = currentActive.course;
+            const allLessons = course.modules.flatMap(m => m.lessons);
+            const firstUnfinished = allLessons.find(l => !user.completedLessonIds.includes(l.id));
+            
+            if (firstUnfinished) {
+                navigate(`/course/${course.id}/lesson/${firstUnfinished.id}`);
+            } else {
+                // Course finished? Go to detail
+                navigate(`/course/${course.id}`);
+            }
+        } else {
+            // No active course, go to catalog
+            navigate('/courses'); // Or explore tab
+        }
+    };
+
+    return (
+        <div className="space-y-8 animate-fade-in">
+            
+            {/* 1. Hero / Continue Learning */}
+            <div className="grid lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-gradient-to-r from-[#121212] to-[#1a1a1d] rounded-2xl border border-white/10 p-8 relative overflow-hidden shadow-2xl">
+                    {/* Abstract Background */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#8a4add]/10 rounded-full blur-[80px] pointer-events-none"></div>
+                    
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-widest border border-white/5">
+                                {currentActive ? 'Em Andamento' : 'Comece Agora'}
+                            </span>
+                        </div>
+                        
+                        <h2 className="text-3xl md:text-4xl font-black text-white mb-2 leading-tight">
+                            {currentActive ? currentActive.course.title : 'Sua jornada começa aqui'}
+                        </h2>
+                        <p className="text-gray-400 mb-8 text-sm md:text-base max-w-lg">
+                            {currentActive 
+                                ? `Você completou ${currentActive.progress}% deste curso. Continue de onde parou para manter o ritmo!` 
+                                : 'Escolha uma trilha e dê o primeiro passo para transformar seu futuro.'}
+                        </p>
+
+                        <div className="flex items-center gap-4">
+                            <button 
+                                onClick={handleContinue}
+                                className="bg-[#8a4add] hover:bg-[#7c3aed] text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-[#8a4add]/20 transition-all transform hover:scale-105 flex items-center gap-2"
+                            >
+                                {currentActive ? (
+                                    <>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" /></svg>
+                                        Continuar Aula
+                                    </>
+                                ) : (
+                                    <>Explorar Cursos</>
+                                )}
+                            </button>
+                            {currentActive && (
+                                <div className="flex-1 max-w-[200px]">
+                                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Progresso</span>
+                                        <span className="text-white font-bold">{currentActive.progress}%</span>
+                                    </div>
+                                    <div className="w-full bg-black/40 rounded-full h-2 border border-white/5">
+                                        <div className="bg-gradient-to-r from-[#8a4add] to-[#f27983] h-2 rounded-full transition-all duration-500" style={{width: `${currentActive.progress}%`}}></div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. Next Event / Agenda */}
+                <div className="bg-[#121212] rounded-2xl border border-white/10 p-6 flex flex-col">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-lg font-bold text-white">Próximo Evento</h3>
+                        <button onClick={() => navigate('/connect')} className="text-xs text-[#c4b5fd] hover:text-white font-semibold">Ver Agenda</button>
+                    </div>
+                    
+                    {nextEvent ? (
+                        <div className="flex-1 flex flex-col justify-center">
+                            <div className="aspect-video rounded-lg overflow-hidden relative mb-4 group cursor-pointer" onClick={() => navigate(`/event/${nextEvent.id}`)}>
+                                <img src={nextEvent.imageUrl} alt={nextEvent.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" />
+                                <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10">
+                                    {nextEvent.date} • {nextEvent.time}
+                                </div>
+                            </div>
+                            <h4 className="text-white font-bold text-sm line-clamp-1 mb-1">{nextEvent.title}</h4>
+                            <p className="text-gray-500 text-xs mb-4 line-clamp-2">{nextEvent.description}</p>
+                            <button onClick={() => navigate(`/event/${nextEvent.id}`)} className="w-full py-2 rounded-lg border border-white/10 hover:bg-white/5 text-gray-300 text-xs font-bold transition-colors">
+                                Detalhes
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex-1 flex items-center justify-center text-center text-gray-500 text-xs">
+                            Nenhum evento agendado.
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* 3. Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard title="Nível" value="Iniciado" icon="🌱" color="text-green-400" />
+                <StatCard title="XP Total" value={user.xp} icon="⚡" color="text-yellow-400" />
+                <StatCard title="Ofensiva" value={`${user.streak} dias`} icon="🔥" color="text-orange-500" />
+                <StatCard title="Concluídos" value={courseProgress.completedCourses.length} icon="🏆" color="text-[#c4b5fd]" />
+            </div>
+
+            {/* 4. Quick Access Grid */}
+            <div>
+                <h3 className="text-lg font-bold text-white mb-4">Acesso Rápido</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onClick={() => navigate('/community')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                        <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">💬</span>
+                        <span className="text-sm font-bold text-white block">Comunidade</span>
+                        <span className="text-xs text-gray-500">Tire dúvidas no fórum</span>
+                    </button>
+                    <button onClick={() => showToast("Certificados disponíveis na página do curso!")} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                        <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">📜</span>
+                        <span className="text-sm font-bold text-white block">Certificados</span>
+                        <span className="text-xs text-gray-500">Suas conquistas</span>
+                    </button>
+                    <button onClick={() => navigate('/profile')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                        <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">👤</span>
+                        <span className="text-sm font-bold text-white block">Meu Perfil</span>
+                        <span className="text-xs text-gray-500">Editar dados</span>
+                    </button>
+                    <button onClick={() => navigate('/connect')} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 hover:border-[#8a4add]/30 transition-all text-left group">
+                        <span className="text-2xl mb-2 block group-hover:scale-110 transition-transform">🤝</span>
+                        <span className="text-sm font-bold text-white block">Mentorias</span>
+                        <span className="text-xs text-gray-500">Fale com experts</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    );
+};
+
+
 // --- Main Dashboard Component ---
 
 const Dashboard: React.FC = () => {
@@ -507,7 +676,7 @@ const Dashboard: React.FC = () => {
     };
 
     // Renderers
-    const renderOverview = () => (
+    const renderAdminOverview = () => (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard title="Meus Cursos" value={coursesForUser.length} icon="📚" />
             <StatCard title="Alunos Ativos" value={MOCK_ANALYTICS_DATA_V2.totalStudents} icon="👥" />
@@ -607,7 +776,11 @@ const Dashboard: React.FC = () => {
                 
                 <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
                     <div className="max-w-7xl mx-auto animate-fade-in">
-                        {activeTab === 'overview' && renderOverview()}
+                        {/* CONDITIONAL OVERVIEW */}
+                        {activeTab === 'overview' && (
+                            user.role === 'student' ? <StudentOverview user={user} /> : renderAdminOverview()
+                        )}
+                        
                         {activeTab === 'courses' && renderCoursesManagement()}
                         {activeTab === 'myCourses' && renderStudentCourses()}
                         {activeTab === 'explore' && <ExploreCoursesPanel />}

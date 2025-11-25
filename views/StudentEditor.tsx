@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
+// @ts-ignore
 import { initializeApp, getApps, deleteApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -11,7 +12,7 @@ import { db } from '../firebaseConfig';
 
 // Recriamos a config aqui para usar na instância secundária
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyCfmYEpGNC1gTDtm-7X0OIWP3W3eQGXXYQ",
+  apiKey: "AIzaSyCfmYEpGNC1gTDtm-7X0OIWP3W3eQGXXYQ",
   authDomain: "perifacode-fc132.firebaseapp.com",
   projectId: "perifacode-fc132",
   storageBucket: "perifacode-fc132.appspot.com",
@@ -109,7 +110,7 @@ const StudentEditor: React.FC = () => {
       
       // 1. Inicializa um app secundário do Firebase
       const secondaryAppName = "SecondaryApp";
-      let secondaryApp = getApps().find(app => app.name === secondaryAppName);
+      let secondaryApp = getApps().find((app: any) => app.name === secondaryAppName);
       if (!secondaryApp) {
           secondaryApp = initializeApp(firebaseConfig, secondaryAppName);
       }
@@ -290,3 +291,4 @@ const StudentEditor: React.FC = () => {
 };
 
 export default StudentEditor;
+    

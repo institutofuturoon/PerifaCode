@@ -151,12 +151,7 @@ const LessonSidebar: React.FC<{
 };
 
 // --- AI Tutor Component ---
-const AITutor: React.FC = () => {
-  const { courses } = useAppContext();
-  const { courseId, lessonId } = useParams<{ courseId: string, lessonId: string }>();
-  const currentCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
-  const currentLesson = useMemo(() => currentCourse?.modules.flatMap(m => m.lessons).find(l => l.id === lessonId), [currentCourse, lessonId]);
-
+const AITutor: React.FC<{ course: Course, lesson: Lesson }> = ({ course, lesson }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -167,13 +162,11 @@ const AITutor: React.FC = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  if (!currentCourse || !currentLesson) return null;
-
   const toggleChat = () => {
     setIsOpen(!isOpen);
     if (!isOpen && messages.length === 0) {
       setMessages([
-        { role: 'model', text: `Olá! Eu sou seu Tutor IA. Estou aqui para te ajudar com qualquer dúvida sobre a aula "${currentLesson.title}". O que você gostaria de saber?` }
+        { role: 'model', text: `Olá! Eu sou seu Tutor IA. Estou aqui para te ajudar com qualquer dúvida sobre a aula "${lesson.title}". O que você gostaria de saber?` }
       ]);
     }
   };
@@ -191,12 +184,12 @@ const AITutor: React.FC = () => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const prompt = `Você é o "Tutor IA" da FuturoOn, uma plataforma de cursos de tecnologia para jovens da periferia. Sua personalidade é amigável, encorajadora e didática, como um parceiro de estudos. Use uma linguagem acessível e evite jargões complexos. Sempre formate suas respostas com quebras de linha para melhor legibilidade e use markdown simples como **negrito** e \`código\`.
 
-O aluno está estudando o curso "${currentCourse.title}".
-A aula atual é "${currentLesson.title}".
-O objetivo desta aula é: "${currentLesson.objective}".
+O aluno está estudando o curso "${course.title}".
+A aula atual é "${lesson.title}".
+O objetivo desta aula é: "${lesson.objective || 'Não especificado'}".
 O conteúdo principal da aula é:
 ---
-${currentLesson.mainContent}
+${lesson.mainContent || 'O conteúdo desta aula é prático ou em vídeo.'}
 ---
 
 Baseado neste contexto, responda à seguinte dúvida do aluno de forma clara e simples:
@@ -426,24 +419,50 @@ const Forum: React.FC<{
 };
 
 const LessonView: React.FC = () => {
-  const { user, courses, completeLesson, handleSaveNote } = useAppContext();
+  const { user, courses, completeLesson, handleSaveNote, fetchLessonContent } = useAppContext();
   const { courseId, lessonId } = useParams<{ courseId: string, lessonId: string }>();
   const navigate = useNavigate();
 
   const currentCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
-  const currentLesson = useMemo(() => currentCourse?.modules.flatMap(m => m.lessons).find(l => l.id === lessonId), [currentCourse, lessonId]);
+  
+  // Initially, this might be the "light" version from the course object
+  const initialLessonData = useMemo(() => currentCourse?.modules.flatMap(m => m.lessons).find(l => l.id === lessonId), [currentCourse, lessonId]);
+  
+  // State to hold full lesson content (fetched lazily)
+  const [currentLesson, setCurrentLesson] = useState<Lesson | null>(initialLessonData || null);
+  const [isLoadingContent, setIsLoadingContent] = useState(true);
 
   const [activeTab, setActiveTab] = useState<'content' | 'notes' | 'forum' | 'exercise'>('content');
   const [note, setNote] = useState('');
   const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default open on desktop
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Check screen size on mount to auto-close sidebar on mobile
+  // Check screen size on mount
   useEffect(() => {
       if (window.innerWidth < 1024) {
           setIsSidebarOpen(false);
       }
   }, []);
+
+  // --- CRITICAL: Fetch Content on Lesson Change ---
+  useEffect(() => {
+      const loadContent = async () => {
+          if (!courseId || !lessonId) return;
+          setIsLoadingContent(true);
+          
+          const fullLesson = await fetchLessonContent(courseId, lessonId);
+          if (fullLesson) {
+              setCurrentLesson(fullLesson);
+          } else {
+              // Fallback to initial if fetch fails (e.g. legacy course structure)
+              setCurrentLesson(initialLessonData || null);
+          }
+          setIsLoadingContent(false);
+      };
+
+      loadContent();
+  }, [courseId, lessonId, fetchLessonContent, initialLessonData]);
+
 
   const exercise = EXERCISES.find(ex => ex.id === currentLesson?.exerciseId);
   const isCompleted = user?.completedLessonIds.includes(currentLesson?.id || '') || false;
@@ -559,37 +578,48 @@ const LessonView: React.FC = () => {
                     <div className="mt-8">
                         {activeTab === 'content' && (
                             <div className="animate-fade-in">
-                                {/* Video Placeholder if type is video */}
-                                {currentLesson.type === 'video' && (
-                                    <div className="aspect-video bg-black rounded-xl overflow-hidden border border-white/10 mb-8 relative group shadow-2xl">
-                                        {currentLesson.videoUrl ? (
-                                            <iframe 
-                                                src={currentLesson.videoUrl.replace('watch?v=', 'embed/')} 
-                                                title={currentLesson.title}
-                                                className="w-full h-full"
-                                                allowFullScreen
-                                            />
-                                        ) : (
-                                            <div className="absolute inset-0 flex items-center justify-center text-gray-500 flex-col gap-4 bg-white/[0.02]">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                <span>Vídeo não disponível na demo</span>
+                                {isLoadingContent ? (
+                                    <div className="flex flex-col space-y-4 animate-pulse">
+                                        <div className="h-64 bg-white/5 rounded-xl"></div>
+                                        <div className="h-4 bg-white/5 rounded w-3/4"></div>
+                                        <div className="h-4 bg-white/5 rounded w-1/2"></div>
+                                        <div className="h-4 bg-white/5 rounded w-full"></div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Video Placeholder if type is video */}
+                                        {currentLesson.type === 'video' && (
+                                            <div className="aspect-video bg-black rounded-xl overflow-hidden border border-white/10 mb-8 relative group shadow-2xl">
+                                                {currentLesson.videoUrl ? (
+                                                    <iframe 
+                                                        src={currentLesson.videoUrl.replace('watch?v=', 'embed/')} 
+                                                        title={currentLesson.title}
+                                                        className="w-full h-full"
+                                                        allowFullScreen
+                                                    />
+                                                ) : (
+                                                    <div className="absolute inset-0 flex items-center justify-center text-gray-500 flex-col gap-4 bg-white/[0.02]">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span>Vídeo não disponível na demo</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
-                                    </div>
-                                )}
 
-                                {currentLesson.objective && (
-                                    <div className="bg-white/5 border-l-4 border-[#8a4add] p-6 rounded-r-lg mb-8">
-                                        <h3 className="text-sm font-bold text-[#c4b5fd] uppercase tracking-wider mb-2">Objetivo da Aula</h3>
-                                        <div className="prose prose-invert prose-sm max-w-none text-gray-300">
-                                            <MarkdownRenderer content={currentLesson.objective} />
+                                        {currentLesson.objective && (
+                                            <div className="bg-white/5 border-l-4 border-[#8a4add] p-6 rounded-r-lg mb-8">
+                                                <h3 className="text-sm font-bold text-[#c4b5fd] uppercase tracking-wider mb-2">Objetivo da Aula</h3>
+                                                <div className="prose prose-invert prose-sm max-w-none text-gray-300">
+                                                    <MarkdownRenderer content={currentLesson.objective} />
+                                                </div>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="prose prose-invert prose-lg max-w-none text-gray-300 leading-relaxed">
+                                            <MarkdownRenderer content={currentLesson.mainContent} />
                                         </div>
-                                    </div>
+                                    </>
                                 )}
-                                
-                                <div className="prose prose-invert prose-lg max-w-none text-gray-300 leading-relaxed">
-                                    <MarkdownRenderer content={currentLesson.mainContent} />
-                                </div>
                             </div>
                         )}
 
@@ -656,7 +686,8 @@ const LessonView: React.FC = () => {
             </div>
         </main>
 
-        <AITutor />
+        {/* Use the latest lesson state for the tutor context */}
+        <AITutor course={currentCourse} lesson={currentLesson} />
     </div>
   );
 };
