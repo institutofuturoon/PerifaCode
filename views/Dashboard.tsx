@@ -10,6 +10,8 @@ import DashboardSidebar from '../components/DashboardSidebar';
 import ForumView from './ForumView';
 import MarketingGeneratorView from './MarketingGeneratorView';
 import Blog from './Blog';
+import { collection, getDocs, writeBatch, doc, setDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
 
 // --- Helper Components (Defined Outside) ---
 
@@ -97,6 +99,336 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
 };
 
 // --- Tab Components ---
+
+const SystemSettingsPanel: React.FC = () => {
+    const { showToast } = useAppContext();
+    const [isBackingUp, setIsBackingUp] = useState(false);
+    const [isRestoring, setIsRestoring] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [statusLog, setStatusLog] = useState<string>('');
+    const [restorePreview, setRestorePreview] = useState<Record<string, number> | null>(null);
+    const [importedData, setImportedData] = useState<any>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const availableCollections = [
+        { id: 'users', label: 'Usuários & Alunos' },
+        { id: 'courses', label: 'Cursos & Aulas' },
+        { id: 'articles', label: 'Blog & Artigos' },
+        { id: 'projects', label: 'Projetos da Comunidade' },
+        { id: 'communityPosts', label: 'Fórum' },
+        { id: 'events', label: 'Eventos' },
+        { id: 'mentorSessions', label: 'Agendamentos' },
+        { id: 'partners', label: 'Parceiros' },
+        { id: 'marketingPosts', label: 'Marketing' }
+    ];
+
+    const [selectedCollections, setSelectedCollections] = useState<string[]>(availableCollections.map(c => c.id));
+
+    const toggleCollection = (id: string) => {
+        setSelectedCollections(prev => 
+            prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+        );
+    };
+
+    const handleBackup = async () => {
+        if (selectedCollections.length === 0) {
+            showToast("⚠️ Selecione pelo menos uma coleção.");
+            return;
+        }
+
+        setIsBackingUp(true);
+        setProgress(0);
+        setStatusLog("Iniciando backup...");
+        
+        try {
+            const backupData: any = {};
+            const total = selectedCollections.length;
+            
+            for (let i = 0; i < total; i++) {
+                const colName = selectedCollections[i];
+                setStatusLog(`Lendo coleção: ${colName}...`);
+                
+                const snapshot = await getDocs(collection(db, colName));
+                backupData[colName] = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+
+                // Special handling for Courses sub-collections (lessons)
+                if (colName === 'courses') {
+                    for (let j = 0; j < backupData['courses'].length; j++) {
+                        const course = backupData['courses'][j];
+                        const lessonsSnapshot = await getDocs(collection(db, 'courses', course.id, 'lessons'));
+                        if (!lessonsSnapshot.empty) {
+                            course._sub_lessons = lessonsSnapshot.docs.map(l => ({ ...l.data(), id: l.id }));
+                        }
+                    }
+                }
+
+                setProgress(Math.round(((i + 1) / total) * 100));
+            }
+
+            setStatusLog("Gerando arquivo JSON...");
+            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `futuroon-backup-${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            setStatusLog("✅ Backup concluído com sucesso!");
+            showToast("✅ Backup gerado com sucesso!");
+        } catch (error) {
+            console.error("Backup error:", error);
+            setStatusLog("❌ Erro durante o backup.");
+            showToast("❌ Erro ao gerar backup.");
+        } finally {
+            setTimeout(() => {
+                setIsBackingUp(false);
+                setProgress(0);
+            }, 2000);
+        }
+    };
+
+    const handleFileAnalysis = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            if (e.target?.result) {
+                try {
+                    const json = JSON.parse(e.target.result as string);
+                    setImportedData(json);
+                    
+                    // Analyze content
+                    const preview: Record<string, number> = {};
+                    Object.keys(json).forEach(key => {
+                        if (Array.isArray(json[key])) {
+                            preview[key] = json[key].length;
+                        }
+                    });
+                    setRestorePreview(preview);
+                    setStatusLog("Arquivo analisado. Pronto para restaurar.");
+                } catch (error) {
+                    console.error("Restore parse error:", error);
+                    showToast("❌ Arquivo inválido (não é JSON).");
+                    setImportedData(null);
+                    setRestorePreview(null);
+                }
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = ''; 
+    };
+
+    const executeRestore = async () => {
+        if (!importedData) return;
+        
+        if (!window.confirm("⚠️ ATENÇÃO: Isso irá sobrescrever os dados existentes. Recomenda-se fazer um backup antes. Continuar?")) {
+            return;
+        }
+
+        setIsRestoring(true);
+        setProgress(0);
+        setStatusLog("Iniciando restauração em lote...");
+
+        try {
+            const collections = Object.keys(importedData);
+            const totalSteps = collections.reduce((acc, key) => acc + importedData[key].length, 0);
+            let processed = 0;
+
+            // Batch Processing Logic
+            let batch = writeBatch(db);
+            let batchCount = 0;
+            const BATCH_LIMIT = 450; // Safe limit below 500
+
+            const commitBatch = async () => {
+                await batch.commit();
+                batch = writeBatch(db);
+                batchCount = 0;
+            };
+
+            for (const colName of collections) {
+                const items = importedData[colName];
+                setStatusLog(`Restaurando ${colName}...`);
+
+                if (Array.isArray(items)) {
+                    for (const item of items) {
+                        const { id, _sub_lessons, ...docData } = item;
+                        if (!id) continue;
+
+                        // Add to batch
+                        const docRef = doc(db, colName, id);
+                        batch.set(docRef, docData);
+                        batchCount++;
+
+                        // Restore sub-lessons if course
+                        if (colName === 'courses' && _sub_lessons && Array.isArray(_sub_lessons)) {
+                            for (const lesson of _sub_lessons) {
+                                const { id: lId, ...lData } = lesson;
+                                const lessonRef = doc(db, 'courses', id, 'lessons', lId);
+                                batch.set(lessonRef, lData);
+                                batchCount++;
+                                
+                                if (batchCount >= BATCH_LIMIT) await commitBatch();
+                            }
+                        }
+
+                        if (batchCount >= BATCH_LIMIT) await commitBatch();
+
+                        processed++;
+                        setProgress(Math.min(99, Math.round((processed / totalSteps) * 100)));
+                    }
+                }
+            }
+
+            // Final commit for remaining items
+            if (batchCount > 0) await commitBatch();
+
+            setProgress(100);
+            setStatusLog("✅ Restauração concluída! Recarregando...");
+            showToast(`✅ Restauração finalizada!`);
+            setTimeout(() => window.location.reload(), 2000);
+
+        } catch (error) {
+            console.error("Restore db error:", error);
+            setStatusLog("❌ Falha crítica ao escrever no banco.");
+            showToast("❌ Erro durante a restauração.");
+        } finally {
+            setIsRestoring(false);
+        }
+    };
+
+    return (
+        <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
+            <div>
+                <h2 className="text-2xl font-bold text-white">Backup & Restauração</h2>
+                <p className="text-gray-400 mt-1">Gerencie a segurança dos dados da plataforma com ferramentas avançadas.</p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+                {/* BACKUP SECTION */}
+                <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-2xl border border-blue-500/20">💾</div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white">Exportar Dados (Backup)</h3>
+                            <p className="text-xs text-gray-400">Selecione as coleções para salvar em JSON.</p>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 mb-6">
+                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">Coleções Disponíveis</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            {availableCollections.map(col => (
+                                <label key={col.id} className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${selectedCollections.includes(col.id) ? 'bg-blue-500/10 border-blue-500/30' : 'bg-white/5 border-transparent hover:border-white/10'}`}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedCollections.includes(col.id)} 
+                                        onChange={() => toggleCollection(col.id)}
+                                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                                    />
+                                    <span className={`text-sm ${selectedCollections.includes(col.id) ? 'text-white font-medium' : 'text-gray-400'}`}>{col.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                        <div className="mt-3 flex gap-2">
+                            <button onClick={() => setSelectedCollections(availableCollections.map(c => c.id))} className="text-xs text-blue-400 hover:underline">Marcar Todos</button>
+                            <span className="text-gray-600 text-xs">|</span>
+                            <button onClick={() => setSelectedCollections([])} className="text-xs text-gray-400 hover:text-white hover:underline">Desmarcar Todos</button>
+                        </div>
+                    </div>
+
+                    {isBackingUp && (
+                        <div className="mb-4 bg-black/30 p-3 rounded-lg border border-white/5">
+                            <div className="flex justify-between text-xs text-gray-300 mb-1">
+                                <span>Progresso</span>
+                                <span>{progress}%</span>
+                            </div>
+                            <div className="w-full bg-gray-800 rounded-full h-1.5 mb-2">
+                                <div className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
+                            </div>
+                            <p className="text-[10px] text-gray-500 font-mono">{statusLog}</p>
+                        </div>
+                    )}
+
+                    <button 
+                        onClick={handleBackup}
+                        disabled={isBackingUp || selectedCollections.length === 0}
+                        className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
+                    >
+                        {isBackingUp ? 'Processando...' : 'Baixar Backup Selecionado'}
+                    </button>
+                </div>
+
+                {/* RESTORE SECTION */}
+                <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 flex flex-col h-full">
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-2xl border border-red-500/20">♻️</div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white">Importar Dados (Restore)</h3>
+                            <p className="text-xs text-gray-400">Recupere dados de um arquivo JSON.</p>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 mb-6">
+                        {!restorePreview ? (
+                            <div className="h-full border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center p-8 text-center bg-white/[0.02]">
+                                <p className="text-sm text-gray-400 mb-4">Selecione um arquivo .json válido para iniciar a análise.</p>
+                                <input 
+                                    type="file" 
+                                    ref={fileInputRef} 
+                                    onChange={handleFileAnalysis} 
+                                    accept=".json" 
+                                    className="hidden" 
+                                />
+                                <button 
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-semibold transition-colors"
+                                >
+                                    Selecionar Arquivo
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="bg-white/5 rounded-xl p-4 border border-white/10 h-full flex flex-col">
+                                <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-2">
+                                    <h4 className="text-sm font-bold text-white">Pré-visualização do Arquivo</h4>
+                                    <button onClick={() => { setRestorePreview(null); setImportedData(null); setStatusLog(''); }} className="text-xs text-red-400 hover:underline">Cancelar</button>
+                                </div>
+                                <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-48">
+                                    {Object.entries(restorePreview).map(([key, count]) => (
+                                        <div key={key} className="flex justify-between text-sm bg-black/20 p-2 rounded">
+                                            <span className="text-gray-400 capitalize">{key}</span>
+                                            <span className="text-white font-mono font-bold">{count} itens</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                {isRestoring && (
+                                    <div className="mt-4">
+                                        <div className="w-full bg-gray-800 rounded-full h-1.5 mb-2">
+                                            <div className="bg-red-500 h-1.5 rounded-full transition-all duration-300" style={{width: `${progress}%`}}></div>
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 font-mono">{statusLog}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    <button 
+                        onClick={executeRestore}
+                        disabled={!restorePreview || isRestoring}
+                        className={`w-full py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${!restorePreview ? 'bg-gray-700 text-gray-400' : 'bg-red-600 hover:bg-red-500 text-white shadow-red-900/20'}`}
+                    >
+                        {isRestoring ? 'Restaurando...' : 'Confirmar Importação'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const TeamManagementPanel: React.FC = () => {
     const { users, handleSaveTeamOrder, handleDeleteUser, user } = useAppContext();
@@ -1106,7 +1438,8 @@ const Dashboard: React.FC = () => {
         if (user) {
             loadData([
                 'users', 'courses', 'articles', 'projects', 'communityPosts', 
-                'events', 'mentorSessions', 'tracks', 'marketingPosts'
+                'events', 'mentorSessions', 'tracks', 'marketingPosts',
+                'partners', 'supporters', 'financialStatements', 'annualReports'
             ]);
         }
     }, [user, loadData]);
@@ -1147,7 +1480,8 @@ const Dashboard: React.FC = () => {
         teamMembers: 'Equipe',
         transparency: 'Transparência',
         forum: 'Fórum de Dúvidas',
-        marketing: 'Marketing Studio'
+        marketing: 'Marketing Studio',
+        'system-settings': 'Configurações do Sistema'
     };
 
     // Handlers
@@ -1468,9 +1802,10 @@ const Dashboard: React.FC = () => {
                         {activeTab === 'students' && <StudentsPanel />}
                         {activeTab === 'teamMembers' && <TeamManagementPanel />}
                         {activeTab === 'moderation' && <ModerationPanel />}
+                        {activeTab === 'system-settings' && <SystemSettingsPanel />}
                         
                         {/* Fallback for other tabs */}
-                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation'].includes(activeTab) && (
+                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation', 'system-settings'].includes(activeTab) && (
                             <div className="text-center py-20 text-gray-500">Funcionalidade em desenvolvimento: {tabTitles[activeTab]}</div>
                         )}
                     </div>
