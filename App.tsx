@@ -125,10 +125,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const fetchAndPopulateCollection = async (collectionName: string, setData: React.Dispatch<React.SetStateAction<any[]>>) => {
       try {
+        // Try to fetch from Firestore
         const collRef = collection(db, collectionName);
         const snapshot = await getDocs(collRef);
         let dataFromDb = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         
+        // Fallback/Merge logic for demo data
         if (collectionName === 'courses') {
             const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
             const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
@@ -149,8 +151,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             const mockProjectIds = new Set(MOCK_PROJECTS.map(c => c.id));
             const additionalDbProjects = dataFromDb.filter(dbProject => !mockProjectIds.has((dbProject as Project).id));
             dataFromDb = [...MOCK_PROJECTS, ...additionalDbProjects];
-            
-            // Ensure existing mocks have status
             dataFromDb = dataFromDb.map(p => ({...p, status: (p as Project).status || 'approved'}));
         }
 
@@ -187,11 +187,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         setData(dataFromDb);
       } catch (error) {
         console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
-        // Allow fetching empty collections for new features without fallback mocks
-        if (collectionName !== 'marketingPosts') {
-           showToast(`❌ Erro ao carregar ${collectionName}.`);
-        }
-
+        
+        // Use mock data on error
         if (collectionName === 'courses') {
             setData(MOCK_COURSES);
         } else if (collectionName === 'articles') {
@@ -247,7 +244,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         let userDoc = await getDoc(userDocRef);
 
         if (!userDoc.exists()) {
-            console.warn("Documento do usuário não encontrado. Tentando novamente em 1.5s para lidar com possível race condition de registro...");
+            // Retry logic for creation race condition
             await new Promise(resolve => setTimeout(resolve, 1500));
             userDoc = await getDoc(userDocRef);
         }
@@ -255,14 +252,13 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         if (userDoc.exists()) {
             const userData = userDoc.data() as User;
             if (userData.accountStatus === 'inactive') {
-                console.warn(`Tentativa de login do usuário desativado: ${userData.id}. Desconectando.`);
                 await signOut(auth);
                 setUser(null);
             } else {
                 setUser(userData);
             }
         } else {
-            console.warn("Documento do usuário não existe no Firestore. Criando perfil de fallback para garantir o fluxo de onboarding e corrigir inconsistência.");
+            // Create fallback user if document missing
             const newUser: User = {
               id: firebaseUser.uid,
               name: firebaseUser.displayName || 'Novo Aluno',
@@ -278,15 +274,24 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             try {
                 await setDoc(doc(db, "users", firebaseUser.uid), newUser);
                 setUser(newUser);
-                console.log("Perfil de fallback criado com sucesso no Firestore.");
             } catch (error) {
-                console.error("Falha crítica ao criar documento de fallback no Firestore:", error);
+                console.error("Erro ao criar doc de usuário:", error);
                 await signOut(auth);
                 setUser(null);
             }
         }
       } else {
-        setUser(null);
+        // CHECK FOR LOCAL STORAGE MOCK USER (Fallback for unauthorized-domain error)
+        const storedMock = localStorage.getItem('futuro_mock_user');
+        if (storedMock) {
+            try {
+                setUser(JSON.parse(storedMock));
+            } catch (e) {
+                setUser(null);
+            }
+        } else {
+            setUser(null);
+        }
       }
       setLoading(false);
     });
@@ -295,6 +300,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
 
   const handleLogout = () => {
+    localStorage.removeItem('futuro_mock_user'); // Clear mock user
     signOut(auth).then(() => {
       setUser(null);
     });
@@ -310,6 +316,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const updatedUser = { ...user, completedLessonIds: updatedCompletedIds, xp: newXp };
         setUser(updatedUser);
         showToast(`✨ Aula concluída! +${lesson?.xp || 0} XP`);
+
+        // Skip Firestore write if mock user
+        if (user.id === 'mock-google-user') return;
 
         try {
             await updateDoc(doc(db, "users", user.id), {
@@ -327,6 +336,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const updatedUser = { ...user, notes: updatedNotes };
         setUser(updatedUser);
         showToast("📝 Anotação salva!");
+
+        if (user.id === 'mock-google-user') return;
 
         try {
             await updateDoc(doc(db, "users", user.id), { notes: updatedNotes });
@@ -348,7 +359,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
 
     const handleDeleteCourse = async (courseId: string): Promise<boolean> => {
-      if(window.confirm("Tem certeza que deseja excluir este curso? Esta ação é irreversível e excluirá todos os módulos e aulas associados.")) {
+      if(window.confirm("Tem certeza que deseja excluir este curso?")) {
         try {
              await deleteDoc(doc(db, "courses", courseId));
              setCourses(prev => prev.filter(c => c.id !== courseId));
@@ -441,6 +452,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setUser(userToUpdate);
         }
         setUsers(prev => prev.map(u => u.id === userToUpdate.id ? userToUpdate : u));
+        
+        if (userToUpdate.id === 'mock-google-user') return;
+
         try {
             await setDoc(doc(db, "users", userToUpdate.id), userToUpdate);
         } catch(error) {
@@ -816,6 +830,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         if (user) {
             const updatedUser = { ...user, hasCompletedOnboardingTour: true };
             setUser(updatedUser);
+            if (user.id === 'mock-google-user') return;
             try {
                 await updateDoc(doc(db, "users", user.id), { hasCompletedOnboardingTour: true });
             } catch (error) {
@@ -894,6 +909,16 @@ const AppContent: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    // Updated logic: Consider lessons, certificates, dashboard, admin, profile and change password as "Workspace" routes
+    // This effectively hides the global Institutional Header/Footer on these pages.
+    const isWorkspaceRoute = 
+        location.pathname.startsWith('/dashboard') || 
+        location.pathname.startsWith('/admin') || 
+        location.pathname.includes('/lesson/') || 
+        location.pathname.includes('/certificate') ||
+        location.pathname.includes('/profile') ||
+        location.pathname.includes('/change-password');
+
     // --- Route Guards ---
     useEffect(() => {
         if (user) {
@@ -904,24 +929,15 @@ const AppContent: React.FC = () => {
                 return;
             }
 
-            // Force profile completion if status is incomplete, but only if not already there or changing password
-            if (!user.mustChangePassword && user.profileStatus === 'incomplete' && location.pathname !== '/complete-profile') {
-                showToast("📝 Complete seu perfil para continuar.");
+            // Force profile completion ONLY if attempting to access Workspace routes
+            // This allows "Window Shopping" in the catalog but protects the educational content.
+            if (!user.mustChangePassword && user.profileStatus === 'incomplete' && location.pathname !== '/complete-profile' && isWorkspaceRoute) {
+                showToast("📝 Complete seu perfil para acessar o painel.");
                 navigate('/complete-profile', { replace: true });
                 return;
             }
         }
-    }, [user, location.pathname, navigate, showToast]);
-    
-    // Updated logic: Consider lessons, certificates, dashboard, admin, profile and change password as "Workspace" routes
-    // This effectively hides the global Institutional Header/Footer on these pages.
-    const isWorkspaceRoute = 
-        location.pathname.startsWith('/dashboard') || 
-        location.pathname.startsWith('/admin') || 
-        location.pathname.includes('/lesson/') || 
-        location.pathname.includes('/certificate') ||
-        location.pathname.includes('/profile') ||
-        location.pathname.includes('/change-password');
+    }, [user, location.pathname, navigate, showToast, isWorkspaceRoute]);
     
     return (
         <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">

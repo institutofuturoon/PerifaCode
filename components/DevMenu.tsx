@@ -29,6 +29,7 @@ export const DevMenu: React.FC = () => {
           navigate('/dashboard');
       } catch (error: any) {
           // 2. Se falhar (usuário não existe ou erro de credencial), tenta criar a conta
+          // Nota: 'invalid-credential' é o erro genérico moderno para proteger enumeração de email
           if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
               try {
                   setStatusMsg("Criando conta...");
@@ -60,14 +61,19 @@ export const DevMenu: React.FC = () => {
                   navigate('/dashboard');
 
               } catch (createError: any) {
-                  console.error("Erro ao criar conta de teste:", createError);
+                  // Se a criação falhar com email-already-in-use, significa que:
+                  // 1. O login falhou (provavelmente senha incorreta, já que o email existe).
+                  // 2. A criação falhou (email existe).
+                  // Conclusão: A conta existe mas a senha do array testAccounts não bate com a do banco.
                   if (createError.code === 'auth/email-already-in-use') {
-                      setStatusMsg("Erro: Email em uso/Senha incorreta");
+                      setStatusMsg("Senha incorreta p/ conta existente.");
                   } else {
+                      console.error("Erro ao criar conta de teste:", createError);
                       setStatusMsg(`Erro: ${createError.message}`);
                   }
               }
           } else {
+              console.error("DevMenu login error:", error);
               setStatusMsg(`Erro: ${error.message}`);
           }
       } finally {

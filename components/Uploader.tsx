@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { useAppContext } from '../App';
 
@@ -32,12 +33,12 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
 
     setIsUploading(true);
     try {
+        // --- PRODUCTION SECURITY WARNING ---
+        // In a real production environment, DO NOT use a client-side token like below.
+        // Instead, call your backend API (e.g., /api/upload) to get a presigned URL or handle the upload.
+        // The direct use of BLOB_READ_WRITE_TOKEN here is for demonstration/MVP purposes only.
         const pathname = `${pathnamePrefix}-${Date.now()}-${file.name}`;
-        
-        // --- AVISO DE SEGURANÇA ---
-        // A chave abaixo NUNCA deve ser exposta no frontend em produção.
-        // Esta é uma configuração APENAS PARA TESTES para bypassar a API.
-        const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc';
+        const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc'; 
 
         const response = await fetch(
             `https://blob.vercel-storage.com/${pathname}`,
@@ -58,7 +59,6 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
         }
 
         onUploadComplete(newBlob.url);
-        // O componente pai será responsável por exibir o toast de sucesso.
 
     } catch (err: any) {
         console.error(`Erro detalhado no upload:`, err);

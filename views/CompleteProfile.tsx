@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { useAppContext } from '../App';
 import { User } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 const ProgressBar: React.FC<{ progress: number }> = ({ progress }) => (
     <div className="w-full bg-black/30 rounded-full h-2.5 border border-white/10 my-4">
@@ -69,10 +71,13 @@ const Step3: React.FC<{ formData: Partial<User>, handleChange: (e: any) => void,
     
     return (
         <div className="space-y-4 animate-fade-in">
+            <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-lg mb-4">
+                <p className="text-sm text-yellow-400 font-medium">⚠️ Estes dados são obrigatórios para a Ficha Socioeconômica da ONG.</p>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label htmlFor="familyIncome" className={labelClasses}>Renda Familiar Mensal</label>
-                    <select name="familyIncome" id="familyIncome" value={formData.familyIncome || ''} onChange={handleChange} className={inputClasses}>
+                    <label htmlFor="familyIncome" className={labelClasses}>Renda Familiar Mensal*</label>
+                    <select name="familyIncome" id="familyIncome" value={formData.familyIncome || ''} onChange={handleChange} className={inputClasses} required>
                         <option value="">Selecione...</option>
                         <option value="Até 1 salário mínimo">Até 1 salário mínimo</option>
                         <option value="Entre 1 e 2 salários mínimos">Entre 1 e 2 salários mínimos</option>
@@ -83,17 +88,17 @@ const Step3: React.FC<{ formData: Partial<User>, handleChange: (e: any) => void,
                 <div><label htmlFor="residentsInHome" className={labelClasses}>Pessoas na residência*</label><input type="number" name="residentsInHome" id="residentsInHome" value={formData.residentsInHome || ''} onChange={handleChange} required className={inputClasses} /></div>
             </div>
             <div>
-                <label htmlFor="educationLevel" className={labelClasses}>Nível de Escolaridade</label>
-                <select id="educationLevel" name="educationLevel" value={formData.educationLevel || ''} onChange={handleChange} className={inputClasses}>
-                    <option value="">Não informado</option>
+                <label htmlFor="educationLevel" className={labelClasses}>Nível de Escolaridade*</label>
+                <select id="educationLevel" name="educationLevel" value={formData.educationLevel || ''} onChange={handleChange} className={inputClasses} required>
+                    <option value="">Selecione...</option>
                     {educationLevels.map(level => (
                         <option key={level} value={level}>{level}</option>
                     ))}
                 </select>
             </div>
             <div>
-                <label htmlFor="motivation" className={labelClasses}>Qual seu maior objetivo ao aprender tecnologia?</label>
-                <textarea name="motivation" id="motivation" rows={4} className={inputClasses} onChange={handleChange} value={formData.motivation || ''} placeholder="Ex: Conseguir meu primeiro emprego, criar um app para minha comunidade, mudar de carreira..."></textarea>
+                <label htmlFor="motivation" className={labelClasses}>Qual seu maior objetivo ao aprender tecnologia?*</label>
+                <textarea name="motivation" id="motivation" rows={4} className={inputClasses} onChange={handleChange} value={formData.motivation || ''} placeholder="Ex: Conseguir meu primeiro emprego, criar um app para minha comunidade, mudar de carreira..." required></textarea>
             </div>
         </div>
     );
@@ -102,6 +107,7 @@ const Step3: React.FC<{ formData: Partial<User>, handleChange: (e: any) => void,
 
 const CompleteProfile: React.FC = () => {
   const { user, handleUpdateUserProfile, showToast } = useAppContext();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Partial<User>>({ ...user });
   const [loading, setLoading] = useState(false);
@@ -157,11 +163,13 @@ const CompleteProfile: React.FC = () => {
     await handleUpdateUserProfile(finalData);
     showToast('✅ Perfil completo! Bem-vindo(a) à FuturoOn.');
     setLoading(false);
-    // The App component will handle navigation away from this view
+    
+    // Redireciona para o dashboard do aluno após completar o perfil
+    navigate('/dashboard');
   };
 
   const renderStepContent = () => {
-    const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 placeholder-gray-500 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm";
+    const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 placeholder-gray-500 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
     const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
 
     switch(step) {
@@ -174,8 +182,9 @@ const CompleteProfile: React.FC = () => {
 
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-8rem)] py-12 px-4 sm:px-6 lg:px-8 aurora-background">
-      <div className="w-full max-w-2xl space-y-8 bg-black/20 backdrop-blur-xl p-6 sm:p-10 rounded-2xl border border-white/10 shadow-2xl shadow-[#8a4add]/10">
+    // AJUSTE DE LAYOUT: Padding aumentado para evitar colisão com header
+    <div className="flex justify-center min-h-screen pt-40 pb-12 px-4 sm:px-6 lg:px-8 aurora-background md:pt-48">
+      <div className="w-full max-w-2xl space-y-8 bg-black/20 backdrop-blur-xl p-6 sm:p-10 rounded-2xl border border-white/10 shadow-2xl shadow-[#8a4add]/10 h-fit">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-white">Quase lá! Vamos completar seu perfil.</h2>
           <p className="mt-2 text-sm text-gray-400">

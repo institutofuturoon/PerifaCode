@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useEffect, createContext, useContext, useMemo } from 'react';
+
+import React, { useState, useEffect, createContext, useContext, useMemo } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
-import { Routes, Route, Navigate, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-import { User, View, Course, Lesson, Achievement, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track } from './types';
+import { User, Course, Lesson, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './views/Home';
@@ -17,7 +18,6 @@ import CompleteProfile from './views/CompleteProfile';
 import Profile from './views/Profile';
 import CourseDetail from './views/CourseDetail';
 import LessonView from './views/LessonView';
-import Admin from './views/Admin';
 import CourseEditor from './views/CourseEditor';
 import CertificateView from './views/CertificateView';
 import Analytics from './views/Analytics';
@@ -26,6 +26,7 @@ import ArticleEditor from './views/ArticleEditor';
 import StudentEditor from './views/StudentEditor';
 import InstructorCourseDashboard from './views/InstructorCourseDashboard';
 import CommunityView from './views/CommunityView';
+import ForumView from './views/ForumView';
 import ProjectDetailView from './views/ProjectDetailView';
 import ProjectEditor from './views/ProjectEditor';
 import PartnershipsView from './views/PartnershipsView';
@@ -46,13 +47,17 @@ import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
-import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS } from './constants';
+import SupportersView from './views/SupportersView';
+import PartnerDetailView from './views/PartnerDetailView';
+import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
-import PageLayout from './components/PageLayout';
 import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
 import ApiTest from './views/ApiTest';
+import ScrollToTop from './components/ScrollToTop';
+import TransparencyEditor from './views/TransparencyEditor';
+import AnalyticsTracker from './components/AnalyticsTracker';
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -80,20 +85,18 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const [users, setUsers] = useState<User[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
-  
   const [articles, setArticles] = useState<Article[]>([]);
-  
   const [projects, setProjects] = useState<Project[]>([]);
-
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
-  
   const [partners, setPartners] = useState<Partner[]>([]);
+  const [supporters, setSupporters] = useState<Supporter[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  
   const [mentorSessions, setMentorSessions] = useState<MentorSession[]>([]);
-
   const [tracks, setTracks] = useState<Track[]>([]);
-  
+  const [financialStatements, setFinancialStatements] = useState<FinancialStatement[]>([]);
+  const [annualReports, setAnnualReports] = useState<AnnualReport[]>([]);
+  const [marketingPosts, setMarketingPosts] = useState<MarketingPost[]>([]);
+
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
   
@@ -112,10 +115,12 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const fetchAndPopulateCollection = async (collectionName: string, setData: React.Dispatch<React.SetStateAction<any[]>>) => {
       try {
+        // Try to fetch from Firestore
         const collRef = collection(db, collectionName);
         const snapshot = await getDocs(collRef);
         let dataFromDb = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         
+        // Fallback/Merge logic for demo data
         if (collectionName === 'courses') {
             const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
             const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
@@ -136,6 +141,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             const mockProjectIds = new Set(MOCK_PROJECTS.map(c => c.id));
             const additionalDbProjects = dataFromDb.filter(dbProject => !mockProjectIds.has((dbProject as Project).id));
             dataFromDb = [...MOCK_PROJECTS, ...additionalDbProjects];
+            dataFromDb = dataFromDb.map(p => ({...p, status: (p as Project).status || 'approved'}));
         }
 
         if (collectionName === 'communityPosts') {
@@ -149,21 +155,46 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
              const additionalDbEvents = dataFromDb.filter(dbEvent => !mockEventIds.has((dbEvent as Event).id));
              dataFromDb = [...MOCK_EVENTS, ...additionalDbEvents];
         }
+        
+        if (collectionName === 'supporters') {
+             const mockIds = new Set(MOCK_SUPPORTERS.map(s => s.id));
+             const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as Supporter).id));
+             dataFromDb = [...MOCK_SUPPORTERS, ...additional];
+        }
+        
+        if (collectionName === 'financialStatements') {
+             const mockIds = new Set(MOCK_FINANCIAL_STATEMENTS.map(s => s.id));
+             const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as FinancialStatement).id));
+             dataFromDb = [...MOCK_FINANCIAL_STATEMENTS, ...additional];
+        }
+
+        if (collectionName === 'annualReports') {
+             const mockIds = new Set(MOCK_ANNUAL_REPORTS.map(s => s.id));
+             const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as AnnualReport).id));
+             dataFromDb = [...MOCK_ANNUAL_REPORTS, ...additional];
+        }
 
         setData(dataFromDb);
       } catch (error) {
         console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
-        showToast(`❌ Erro ao carregar ${collectionName}.`);
+        
+        // Use mock data on error
         if (collectionName === 'courses') {
             setData(MOCK_COURSES);
         } else if (collectionName === 'articles') {
             setData(ARTICLES.map(article => ({ ...article, readingTime: calculateReadingTime(article.content) })));
         } else if (collectionName === 'projects') {
-            setData(MOCK_PROJECTS);
+            setData(MOCK_PROJECTS.map(p => ({...p, status: 'approved'})));
         } else if (collectionName === 'communityPosts') {
             setData(MOCK_COMMUNITY_POSTS);
         } else if (collectionName === 'events') {
             setData(MOCK_EVENTS);
+        } else if (collectionName === 'supporters') {
+            setData(MOCK_SUPPORTERS);
+        } else if (collectionName === 'financialStatements') {
+            setData(MOCK_FINANCIAL_STATEMENTS);
+        } else if (collectionName === 'annualReports') {
+            setData(MOCK_ANNUAL_REPORTS);
         }
         else {
             setData([]);
@@ -173,19 +204,38 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
   useEffect(() => {
+    // OPTIMIZATION: Load essential data only. 
+    // In a real production app, this should be moved to specific views using React Query.
     const fetchData = async () => {
       setLoading(true);
-      await Promise.all([
-          fetchAndPopulateCollection('users', setUsers),
+      
+      // Core data needed for public navigation
+      const corePromises = [
           fetchAndPopulateCollection('courses', setCourses),
           fetchAndPopulateCollection('articles', setArticles),
+          fetchAndPopulateCollection('partners', setPartners),
+          fetchAndPopulateCollection('supporters', setSupporters),
+          fetchAndPopulateCollection('events', setEvents),
+          fetchAndPopulateCollection('annualReports', setAnnualReports) // For transparency footer
+      ];
+
+      // Data that could be lazy loaded, but kept here for simplicity in this demo version
+      const secondaryPromises = [
           fetchAndPopulateCollection('projects', setProjects),
           fetchAndPopulateCollection('communityPosts', setCommunityPosts),
-          fetchAndPopulateCollection('partners', setPartners),
-          fetchAndPopulateCollection('events', setEvents),
+          fetchAndPopulateCollection('tracks', setTracks),
+          fetchAndPopulateCollection('financialStatements', setFinancialStatements),
+          fetchAndPopulateCollection('marketingPosts', setMarketingPosts)
+      ];
+
+      // Users collection is heavy. Ideally should be fetched only by Admin or on demand.
+      // Kept here to maintain existing functionality for Instructor Dashboard
+      const heavyPromises = [
+          fetchAndPopulateCollection('users', setUsers),
           fetchAndPopulateCollection('mentorSessions', setMentorSessions),
-          fetchAndPopulateCollection('tracks', setTracks)
-      ]);
+      ];
+
+      await Promise.all([...corePromises, ...secondaryPromises, ...heavyPromises]);
       setLoading(false);
     };
 
@@ -199,7 +249,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         let userDoc = await getDoc(userDocRef);
 
         if (!userDoc.exists()) {
-            console.warn("Documento do usuário não encontrado. Tentando novamente em 1.5s para lidar com possível race condition de registro...");
+            // Retry logic for creation race condition
             await new Promise(resolve => setTimeout(resolve, 1500));
             userDoc = await getDoc(userDocRef);
         }
@@ -207,14 +257,13 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         if (userDoc.exists()) {
             const userData = userDoc.data() as User;
             if (userData.accountStatus === 'inactive') {
-                console.warn(`Tentativa de login do usuário desativado: ${userData.id}. Desconectando.`);
                 await signOut(auth);
                 setUser(null);
             } else {
                 setUser(userData);
             }
         } else {
-            console.warn("Documento do usuário não existe no Firestore. Criando perfil de fallback para garantir o fluxo de onboarding e corrigir inconsistência.");
+            // Create fallback user if document missing
             const newUser: User = {
               id: firebaseUser.uid,
               name: firebaseUser.displayName || 'Novo Aluno',
@@ -230,15 +279,24 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             try {
                 await setDoc(doc(db, "users", firebaseUser.uid), newUser);
                 setUser(newUser);
-                console.log("Perfil de fallback criado com sucesso no Firestore.");
             } catch (error) {
-                console.error("Falha crítica ao criar documento de fallback no Firestore:", error);
+                console.error("Erro ao criar doc de usuário:", error);
                 await signOut(auth);
                 setUser(null);
             }
         }
       } else {
-        setUser(null);
+        // CHECK FOR LOCAL STORAGE MOCK USER (Fallback for unauthorized-domain error)
+        const storedMock = localStorage.getItem('futuro_mock_user');
+        if (storedMock) {
+            try {
+                setUser(JSON.parse(storedMock));
+            } catch (e) {
+                setUser(null);
+            }
+        } else {
+            setUser(null);
+        }
       }
       setLoading(false);
     });
@@ -247,6 +305,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   
 
   const handleLogout = () => {
+    localStorage.removeItem('futuro_mock_user'); // Clear mock user
     signOut(auth).then(() => {
       setUser(null);
     });
@@ -262,6 +321,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const updatedUser = { ...user, completedLessonIds: updatedCompletedIds, xp: newXp };
         setUser(updatedUser);
         showToast(`✨ Aula concluída! +${lesson?.xp || 0} XP`);
+
+        // Skip Firestore write if mock user
+        if (user.id === 'mock-google-user') return;
 
         try {
             await updateDoc(doc(db, "users", user.id), {
@@ -279,6 +341,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const updatedUser = { ...user, notes: updatedNotes };
         setUser(updatedUser);
         showToast("📝 Anotação salva!");
+
+        if (user.id === 'mock-google-user') return;
 
         try {
             await updateDoc(doc(db, "users", user.id), { notes: updatedNotes });
@@ -300,7 +364,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     };
 
     const handleDeleteCourse = async (courseId: string): Promise<boolean> => {
-      if(window.confirm("Tem certeza que deseja excluir este curso? Esta ação é irreversível e excluirá todos os módulos e aulas associados.")) {
+      if(window.confirm("Tem certeza que deseja excluir este curso?")) {
         try {
              await deleteDoc(doc(db, "courses", courseId));
              setCourses(prev => prev.filter(c => c.id !== courseId));
@@ -393,6 +457,9 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setUser(userToUpdate);
         }
         setUsers(prev => prev.map(u => u.id === userToUpdate.id ? userToUpdate : u));
+        
+        if (userToUpdate.id === 'mock-google-user') return;
+
         try {
             await setDoc(doc(db, "users", userToUpdate.id), userToUpdate);
         } catch(error) {
@@ -423,6 +490,28 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
          } catch(error) {
               console.error("Erro ao salvar projeto:", error);
          }
+    };
+
+    const handleApproveProject = async (projectId: string) => {
+        setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: 'approved' } : p));
+        showToast("✅ Projeto aprovado!");
+        try {
+            await updateDoc(doc(db, "projects", projectId), { status: 'approved' });
+        } catch(error) {
+            console.error("Erro ao aprovar projeto:", error);
+        }
+    };
+
+    const handleRejectProject = async (projectId: string) => {
+        if(window.confirm("Tem certeza que deseja rejeitar este projeto?")) {
+             setProjects(prev => prev.map(p => p.id === projectId ? { ...p, status: 'rejected' } : p));
+             showToast("🚫 Projeto rejeitado.");
+             try {
+                 await updateDoc(doc(db, "projects", projectId), { status: 'rejected' });
+             } catch(error) {
+                 console.error("Erro ao rejeitar projeto:", error);
+             }
+        }
     };
 
     const handleAddClap = async (projectId: string) => {
@@ -667,10 +756,86 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handleSaveFinancialStatement = async (statement: FinancialStatement) => {
+        const isNew = !financialStatements.some(s => s.id === statement.id);
+        setFinancialStatements(prev => isNew ? [statement, ...prev] : prev.map(s => s.id === statement.id ? statement : s));
+        showToast("✅ Relatório Financeiro salvo!");
+        try {
+            await setDoc(doc(db, "financialStatements", statement.id), statement);
+        } catch (error) {
+            console.error("Erro ao salvar relatório financeiro:", error);
+            showToast("❌ Erro ao salvar no banco de dados.");
+        }
+    };
+
+    const handleDeleteFinancialStatement = async (id: string) => {
+        if(window.confirm("Tem certeza que deseja excluir este relatório financeiro?")) {
+             setFinancialStatements(prev => prev.filter(s => s.id !== id));
+             showToast("🗑️ Relatório excluído.");
+             try {
+                 await deleteDoc(doc(db, "financialStatements", id));
+             } catch (error) {
+                 console.error("Erro ao excluir relatório financeiro:", error);
+             }
+        }
+    };
+
+    const handleSaveAnnualReport = async (report: AnnualReport) => {
+        const isNew = !annualReports.some(r => r.id === report.id);
+        setAnnualReports(prev => isNew ? [report, ...prev] : prev.map(r => r.id === report.id ? report : r));
+        showToast("✅ Relatório Anual salvo!");
+        try {
+            await setDoc(doc(db, "annualReports", report.id), report);
+        } catch (error) {
+            console.error("Erro ao salvar relatório anual:", error);
+            showToast("❌ Erro ao salvar no banco de dados.");
+        }
+    };
+
+    const handleDeleteAnnualReport = async (id: string) => {
+         if(window.confirm("Tem certeza que deseja excluir este relatório anual?")) {
+             setAnnualReports(prev => prev.filter(r => r.id !== id));
+             showToast("🗑️ Relatório excluído.");
+             try {
+                 await deleteDoc(doc(db, "annualReports", id));
+             } catch (error) {
+                 console.error("Erro ao excluir relatório anual:", error);
+             }
+        }
+    };
+
+    const handleSaveMarketingPost = async (post: MarketingPost) => {
+        const isNew = !marketingPosts.some(p => p.id === post.id);
+        setMarketingPosts(prev => isNew ? [post, ...prev] : prev.map(p => p.id === post.id ? post : p));
+        
+        const message = post.status === 'published' ? "✅ Post publicado com sucesso!" : "💾 Rascunho salvo!";
+        showToast(message);
+
+        try {
+            await setDoc(doc(db, "marketingPosts", post.id), post);
+        } catch (error) {
+            console.error("Erro ao salvar post de marketing:", error);
+            showToast("❌ Erro ao salvar no banco de dados.");
+        }
+    };
+
+    const handleDeleteMarketingPost = async (postId: string) => {
+        if(window.confirm("Tem certeza que deseja excluir este post?")) {
+            setMarketingPosts(prev => prev.filter(p => p.id !== postId));
+            showToast("🗑️ Post excluído.");
+            try {
+                await deleteDoc(doc(db, "marketingPosts", postId));
+            } catch (error) {
+                console.error("Erro ao excluir post de marketing:", error);
+            }
+        }
+    };
+
     const handleCompleteOnboarding = async () => {
         if (user) {
             const updatedUser = { ...user, hasCompletedOnboardingTour: true };
             setUser(updatedUser);
+            if (user.id === 'mock-google-user') return;
             try {
                 await updateDoc(doc(db, "users", user.id), { hasCompletedOnboardingTour: true });
             } catch (error) {
@@ -718,17 +883,23 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const closeInscriptionModal = () => { setIsInscriptionModalOpen(false); setSelectedCourseForInscription(null); };
 
 
-  const value = {
-    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, events, mentorSessions, tracks, toast,
+  const value = useMemo(() => ({
+    user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
     completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
-    handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleAddClap, handleAddComment,
+    handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
     handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
-    handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack
-  };
+    handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
+    handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport,
+    handleSaveMarketingPost, handleDeleteMarketingPost
+  }), [
+    user, users, courses, articles, projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
+    courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
+    instructors, mentors, loading
+  ]);
 
   return (
     <AppContext.Provider value={value}>
@@ -738,16 +909,53 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const AppContent: React.FC = () => {
-    const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding } = useAppContext();
+    const { user, toast, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription, handleCompleteOnboarding, closeProfileModal, closeBottleneckModal, closeInscriptionModal, showToast } = useAppContext();
+    
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    // Updated logic: Consider lessons, certificates, dashboard, admin, profile and change password as "Workspace" routes
+    // This effectively hides the global Institutional Header/Footer on these pages.
+    const isWorkspaceRoute = 
+        location.pathname.startsWith('/dashboard') || 
+        location.pathname.startsWith('/admin') || 
+        location.pathname.includes('/lesson/') || 
+        location.pathname.includes('/certificate') ||
+        location.pathname.includes('/profile') ||
+        location.pathname.includes('/change-password');
+
+    // --- Route Guards ---
+    useEffect(() => {
+        if (user) {
+            // Force password change if flag is set, but only if not already there
+            if (user.mustChangePassword && location.pathname !== '/change-password') {
+                showToast("⚠️ Você precisa alterar sua senha temporária.");
+                navigate('/change-password', { replace: true });
+                return;
+            }
+
+            // Force profile completion ONLY if attempting to access Workspace routes
+            // This allows "Window Shopping" in the catalog but protects the educational content.
+            if (!user.mustChangePassword && user.profileStatus === 'incomplete' && location.pathname !== '/complete-profile' && isWorkspaceRoute) {
+                showToast("📝 Complete seu perfil para acessar o painel.");
+                navigate('/complete-profile', { replace: true });
+                return;
+            }
+        }
+    }, [user, location.pathname, navigate, showToast, isWorkspaceRoute]);
     
     return (
         <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white overflow-x-hidden">
-            <Header />
+            <ScrollToTop />
+            {!isWorkspaceRoute && <Header />}
+            {/* Componente de Tracking do Google Analytics */}
+            <AnalyticsTracker />
             <main className="flex-grow relative">
-                <ScrollSpaceship />
+                {!isWorkspaceRoute && <ScrollSpaceship />}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />
+                    {/* Support both ID and Slug in routes */}
                     <Route path="/course/:courseId" element={<CourseDetail />} />
                     <Route path="/course-landing/:courseId" element={<CourseLandingPage />} />
                     <Route path="/course/:courseId/lesson/:lessonId" element={<LessonView />} />
@@ -755,6 +963,7 @@ const AppContent: React.FC = () => {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/connect" element={<ConnectView />} />
                     <Route path="/blog" element={<Blog />} />
+                    {/* Support both ID and Slug in article routes */}
                     <Route path="/article/:articleId" element={<ArticleView />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
@@ -771,14 +980,19 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/teammember-editor/new" element={<TeamMemberEditor />} />
                     <Route path="/admin/teammember-editor/:userId" element={<TeamMemberEditor />} />
                     <Route path="/admin/instructor-dashboard/:courseId" element={<InstructorCourseDashboard />} />
+                    <Route path="/admin/transparency-editor" element={<TransparencyEditor />} />
+                    <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
                     <Route path="/analytics" element={<Analytics />} />
                     <Route path="/community" element={<CommunityView />} />
+                    <Route path="/forum" element={<ForumView />} />
                     <Route path="/project/:projectId" element={<ProjectDetailView />} />
                     <Route path="/project/edit" element={<ProjectEditor />} />
                     <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
                     <Route path="/community/post/new" element={<ForumPostEditor />} />
                     <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
                     <Route path="/partnerships" element={<PartnershipsView />} />
+                    <Route path="/supporters" element={<SupportersView />} />
+                    <Route path="/supporter/:partnerId" element={<PartnerDetailView />} />
                     <Route path="/event/new" element={<EventEditor />} />
                     <Route path="/event/edit/:eventId" element={<EventEditor />} />
                     <Route path="/event/:eventId" element={<EventDetailView />} />
@@ -794,12 +1008,12 @@ const AppContent: React.FC = () => {
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </main>
-            <Footer />
+            {!isWorkspaceRoute && <Footer />}
 
             {/* Modals */}
-            {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={() => { /* handled via context */ }} />}
-            {isBottleneckModalOpen && selectedBottleneck && <BottleneckAnalysisModal isOpen={isBottleneckModalOpen} onClose={() => { /* handled via context */ }} lesson={selectedBottleneck.lesson} students={selectedBottleneck.students} />}
-            {isInscriptionModalOpen && <InscriptionFormModal isOpen={isInscriptionModalOpen} onClose={() => { /* handled via context */ }} courseName={selectedCourseForInscription?.title} />}
+            {isProfileModalOpen && selectedProfile && <ProfileModal member={selectedProfile} onClose={closeProfileModal} />}
+            {isBottleneckModalOpen && selectedBottleneck && <BottleneckAnalysisModal isOpen={isBottleneckModalOpen} onClose={closeBottleneckModal} lesson={selectedBottleneck.lesson} students={selectedBottleneck.students} />}
+            {isInscriptionModalOpen && <InscriptionFormModal isOpen={isInscriptionModalOpen} onClose={closeInscriptionModal} courseName={selectedCourseForInscription?.title} />}
             
             {/* Onboarding Tour */}
             {user && !user.hasCompletedOnboardingTour && user.profileStatus === 'complete' && (

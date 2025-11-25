@@ -147,10 +147,10 @@ const StudentEditor: React.FC = () => {
           navigate('/admin');
 
       } catch (error: any) {
-          console.error("Erro ao criar aluno:", error);
           if (error.code === 'auth/email-already-in-use') {
-              showToast("❌ Este email já está sendo usado.");
+              showToast("❌ Este email já está sendo usado por outro aluno.");
           } else {
+              console.error("Erro ao criar aluno:", error);
               showToast(`❌ Erro: ${error.message}`);
           }
       } finally {

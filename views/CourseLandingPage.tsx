@@ -122,7 +122,13 @@ const CourseLandingPage: React.FC = () => {
 
         // Caso 2: Curso Online e Aberto
         if (user) {
-             // Se logado -> Entra no Workspace (Sistema de Aulas)
+             // Validação de Perfil Incompleto (Ficha Socioeconômica)
+             if (user.profileStatus === 'incomplete') {
+                 showToast("⚠️ Para efetivar sua matrícula, precisamos que complete a Ficha Socioeconômica.");
+                 navigate('/complete-profile');
+                 return;
+             }
+             // Se logado e perfil completo -> Entra no Workspace (Sistema de Aulas)
              navigate(`/course/${currentCourse.id}`);
         } else {
             // Se deslogado -> Vai para Login/Registro (fluxo de onboarding)
