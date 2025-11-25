@@ -83,39 +83,33 @@ const calculateReadingTime = (content: string): number => {
 
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Initial Auth loading
 
+  // Data States
   const [users, setUsers] = useState<User[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
-  
   const [articles, setArticles] = useState<Article[]>([]);
-  
   const [projects, setProjects] = useState<Project[]>([]);
-
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>([]);
-  
   const [partners, setPartners] = useState<Partner[]>([]);
   const [supporters, setSupporters] = useState<Supporter[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  
   const [mentorSessions, setMentorSessions] = useState<MentorSession[]>([]);
-
   const [tracks, setTracks] = useState<Track[]>([]);
-  
   const [financialStatements, setFinancialStatements] = useState<FinancialStatement[]>([]);
   const [annualReports, setAnnualReports] = useState<AnnualReport[]>([]);
-  
   const [marketingPosts, setMarketingPosts] = useState<MarketingPost[]>([]);
 
+  // Lazy Loading State Tracker
+  const [loadedResources, setLoadedResources] = useState<Set<string>>(new Set());
+
+  // UI States
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
-  
   const [isBottleneckModalOpen, setIsBottleneckModalOpen] = useState(false);
   const [selectedBottleneck, setSelectedBottleneck] = useState<{ lesson: Lesson, students: User[] } | null>(null);
-
   const [isInscriptionModalOpen, setIsInscriptionModalOpen] = useState(false);
   const [selectedCourseForInscription, setSelectedCourseForInscription] = useState<Course | null>(null);
-
   const [toast, setToast] = useState<string | null>(null);
   
   const showToast = (message: string) => {
@@ -210,32 +204,43 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setData([]);
         }
       }
-    };
+  };
 
+  // --- LAZY LOADING IMPLEMENTATION ---
+  const loadData = useCallback(async (resources: string[]) => {
+      const promises: Promise<void>[] = [];
+      const newLoadedResources = new Set(loadedResources);
+      let hasNew = false;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await Promise.all([
-          fetchAndPopulateCollection('users', setUsers),
-          fetchAndPopulateCollection('courses', setCourses),
-          fetchAndPopulateCollection('articles', setArticles),
-          fetchAndPopulateCollection('projects', setProjects),
-          fetchAndPopulateCollection('communityPosts', setCommunityPosts),
-          fetchAndPopulateCollection('partners', setPartners),
-          fetchAndPopulateCollection('supporters', setSupporters),
-          fetchAndPopulateCollection('events', setEvents),
-          fetchAndPopulateCollection('mentorSessions', setMentorSessions),
-          fetchAndPopulateCollection('tracks', setTracks),
-          fetchAndPopulateCollection('financialStatements', setFinancialStatements),
-          fetchAndPopulateCollection('annualReports', setAnnualReports),
-          fetchAndPopulateCollection('marketingPosts', setMarketingPosts)
-      ]);
-      setLoading(false);
-    };
+      resources.forEach(resource => {
+          if (!loadedResources.has(resource)) {
+              hasNew = true;
+              newLoadedResources.add(resource);
+              
+              switch (resource) {
+                  case 'users': promises.push(fetchAndPopulateCollection('users', setUsers)); break;
+                  case 'courses': promises.push(fetchAndPopulateCollection('courses', setCourses)); break;
+                  case 'articles': promises.push(fetchAndPopulateCollection('articles', setArticles)); break;
+                  case 'projects': promises.push(fetchAndPopulateCollection('projects', setProjects)); break;
+                  case 'communityPosts': promises.push(fetchAndPopulateCollection('communityPosts', setCommunityPosts)); break;
+                  case 'partners': promises.push(fetchAndPopulateCollection('partners', setPartners)); break;
+                  case 'supporters': promises.push(fetchAndPopulateCollection('supporters', setSupporters)); break;
+                  case 'events': promises.push(fetchAndPopulateCollection('events', setEvents)); break;
+                  case 'mentorSessions': promises.push(fetchAndPopulateCollection('mentorSessions', setMentorSessions)); break;
+                  case 'tracks': promises.push(fetchAndPopulateCollection('tracks', setTracks)); break;
+                  case 'financialStatements': promises.push(fetchAndPopulateCollection('financialStatements', setFinancialStatements)); break;
+                  case 'annualReports': promises.push(fetchAndPopulateCollection('annualReports', setAnnualReports)); break;
+                  case 'marketingPosts': promises.push(fetchAndPopulateCollection('marketingPosts', setMarketingPosts)); break;
+              }
+          }
+      });
 
-    fetchData();
-  }, []);
+      if (hasNew) {
+          await Promise.all(promises);
+          setLoadedResources(newLoadedResources);
+      }
+  }, [loadedResources]);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
@@ -882,6 +887,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
     instructors, mentors, loading, setUser,
+    loadData, // Expose lazy loader
     handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
     completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
     handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
@@ -893,7 +899,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }), [
     user, users, courses, articles, projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
     courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
-    instructors, mentors, loading
+    instructors, mentors, loading, loadData
   ]);
 
   return (

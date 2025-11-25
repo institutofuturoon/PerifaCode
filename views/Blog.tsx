@@ -123,11 +123,15 @@ interface BlogProps {
 }
 
 const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
-  const { articles } = useAppContext();
+  const { articles, loadData } = useAppContext();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [activeTag, setActiveTag] = useState<string | null>(null);
+
+  useEffect(() => {
+      loadData(['articles', 'users']);
+  }, [loadData]);
 
   const handleArticleSelect = (article: Article) => {
     navigate(`/article/${article.slug || article.id}`);

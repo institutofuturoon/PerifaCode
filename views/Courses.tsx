@@ -39,7 +39,7 @@ const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => v
 );
 
 const Courses: React.FC = () => {
-  const { courses, user, showToast } = useAppContext();
+  const { courses, user, showToast, loadData } = useAppContext();
   const navigate = useNavigate();
   
   const [activeTrack, setActiveTrack] = useState<string>('Todos');
@@ -50,6 +50,11 @@ const Courses: React.FC = () => {
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Load Data on Mount
+  useEffect(() => {
+      loadData(['courses', 'tracks']);
+  }, [loadData]);
 
   // Reset page when filters change
   useEffect(() => {

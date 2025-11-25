@@ -505,7 +505,7 @@ export interface AppContextType {
   tracks: Track[];
   financialStatements: FinancialStatement[];
   annualReports: AnnualReport[];
-  marketingPosts: MarketingPost[]; // Novo
+  marketingPosts: MarketingPost[];
   toast: string | null;
   courseProgress: CourseProgress;
   isProfileModalOpen: boolean;
@@ -518,6 +518,9 @@ export interface AppContextType {
   mentors: User[];
   loading: boolean;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+
+  // Data Loading Action (Lazy Loading)
+  loadData: (resources: string[]) => Promise<void>;
 
   // Actions
   handleLogout: () => void;

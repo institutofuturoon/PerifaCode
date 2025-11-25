@@ -416,15 +416,25 @@ const Dashboard: React.FC = () => {
         user, users, courses, articles, team, events,
         handleDeleteArticle, handleToggleArticleStatus,
         handleDeleteUser, handleDeleteCourse, handleDeleteEvent,
-        handleSaveCourse
+        handleSaveCourse, loadData
     } = useAppContext();
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+    // --- CRITICAL: Load all resources needed for the Dashboard on mount ---
+    useEffect(() => {
+        if (user) {
+            loadData([
+                'users', 'courses', 'articles', 'projects', 'communityPosts', 
+                'events', 'mentorSessions', 'tracks', 'marketingPosts'
+            ]);
+        }
+    }, [user, loadData]);
+
     // Update active tab if user changes (e.g. login/logout)
-    React.useEffect(() => {
+    useEffect(() => {
         if (user) {
             setActiveTab(prev => prev === 'overview' ? 'overview' : prev);
         }
