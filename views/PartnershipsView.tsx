@@ -6,12 +6,14 @@ import SEO from '../components/SEO';
 import Badge from '../components/Badge';
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="flex-shrink-0 w-[180px] h-[80px] bg-white/5 border border-white/5 rounded-xl flex items-center justify-center p-4 grayscale hover:grayscale-0 hover:bg-white/10 hover:border-white/20 transition-all duration-500 cursor-pointer group relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    <div className="flex-shrink-0 w-52 h-32 bg-[#0c0c0e] border border-white/5 rounded-2xl flex items-center justify-center p-8 grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer group relative overflow-hidden hover:border-[#8a4add]/30 hover:bg-[#121212] hover:shadow-[0_0_30px_-10px_rgba(138,74,221,0.15)]">
+        {/* Subtle Gradient Orb on Hover */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#8a4add]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        
         <img 
             src={logoUrl} 
             alt={name} 
-            className="max-w-full max-h-full object-contain opacity-50 group-hover:opacity-100 transition-opacity duration-500 relative z-10"
+            className="max-w-full max-h-full object-contain opacity-40 group-hover:opacity-100 transition-all duration-500 relative z-10 transform group-hover:scale-110 filter brightness-75 group-hover:brightness-100"
         />
     </div>
 );
@@ -114,8 +116,10 @@ const PartnershipsView: React.FC = () => {
     const { partners } = useAppContext();
     const navigate = useNavigate();
 
-    // Ensure we have enough logos to make the marquee look good
-    const marqueePartners = [...partners, ...partners, ...partners].slice(0, 12);
+    // Ensure we have enough logos to make the marquee look good (min 10 items)
+    const marqueePartners = partners.length < 5 
+        ? [...partners, ...partners, ...partners, ...partners] 
+        : [...partners, ...partners];
 
     return (
         <div className="bg-[#09090B] min-h-screen overflow-hidden">
@@ -189,24 +193,29 @@ const PartnershipsView: React.FC = () => {
             </section>
 
             {/* Infinite Marquee Partners */}
-            <section className="py-16 overflow-hidden relative bg-black/20">
-                <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#09090B] to-transparent z-10 pointer-events-none"></div>
-                <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#09090B] to-transparent z-10 pointer-events-none"></div>
+            <section className="py-20 overflow-hidden relative bg-black/20 border-b border-white/5">
+                <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#09090B] to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#09090B] to-transparent z-10 pointer-events-none"></div>
                 
-                <div className="container mx-auto px-4 mb-10 text-center">
-                     <span className="text-[#c4b5fd] font-bold tracking-widest text-xs uppercase mb-2 block">Nossa Rede</span>
-                     <h3 className="text-2xl md:text-4xl font-bold text-white mb-4">
+                <div className="container mx-auto px-4 mb-12 text-center">
+                     <span className="text-[#c4b5fd] font-bold tracking-widest text-xs uppercase mb-3 block">Nossa Rede</span>
+                     <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
                         Um ecossistema de <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8a4add] to-[#f27983]">inovação social</span>
                      </h3>
-                     <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-lg">
+                     <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
                         Junte-se às organizações que estão construindo pontes reais entre a periferia e o mercado de tecnologia.
                      </p>
                 </div>
 
-                <div className="marquee">
-                    <div className="marquee-content gap-8 py-4">
+                <div className="relative flex overflow-hidden group">
+                    <div className="flex animate-infinite-scroll gap-8 pr-8">
                         {marqueePartners.map((p, i) => (
-                            <PartnerLogo key={`${p.id}-${i}`} name={p.name} logoUrl={p.logoUrl} />
+                            <PartnerLogo key={`a-${p.id}-${i}`} name={p.name} logoUrl={p.logoUrl} />
+                        ))}
+                    </div>
+                    <div className="flex animate-infinite-scroll gap-8 pr-8" aria-hidden="true">
+                        {marqueePartners.map((p, i) => (
+                            <PartnerLogo key={`b-${p.id}-${i}`} name={p.name} logoUrl={p.logoUrl} />
                         ))}
                     </div>
                 </div>
@@ -295,7 +304,7 @@ const PartnershipsView: React.FC = () => {
                 </div>
             </section>
 
-            {/* Process Steps Section (Replaces Testimonials) */}
+            {/* Process Steps Section */}
             <section className="py-24 bg-[#09090B] relative border-t border-white/5">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="text-center mb-16">
