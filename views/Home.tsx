@@ -5,7 +5,7 @@ import { useAppContext } from '../App';
 import SimplifiedTimeline from '../components/SimplifiedTimeline';
 import TeamMemberPreviewCard from '../components/TeamMemberPreviewCard';
 import SEO from '../components/SEO';
-import { Partner } from '../types';
+import { Partner, User } from '../types';
 import Badge from '../components/Badge';
 
 const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ finalStat, duration = 2000 }) => {
@@ -82,91 +82,32 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
 );
 
 const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const [isPaused, setIsPaused] = useState(false);
-    const [isUserInteracting, setIsUserInteracting] = useState(false);
-
-    // Create 4 sets for infinite effect illusion and buffer
-    const items = useMemo(() => [...partners, ...partners, ...partners, ...partners], [partners]);
-
-    // Auto-scroll Logic
-    useEffect(() => {
-        const container = scrollRef.current;
-        if (!container) return;
-        
-        let animationId: number;
-        
-        const scroll = () => {
-            if (!isPaused && !isUserInteracting) {
-                container.scrollLeft += 0.5; // Gentle speed
-                
-                // Reset if reach half of the scrollable width to simulate infinite loop
-                // This works because we duplicated content enough times
-                if (container.scrollLeft >= (container.scrollWidth / 2)) {
-                     container.scrollLeft = 0; 
-                }
-            }
-            animationId = requestAnimationFrame(scroll);
-        };
-        
-        animationId = requestAnimationFrame(scroll);
-        return () => cancelAnimationFrame(animationId);
-    }, [isPaused, isUserInteracting]);
-
-    const handleManualScroll = (direction: 'left' | 'right') => {
-        setIsUserInteracting(true);
-        if (scrollRef.current) {
-            const amount = 300; // Scroll amount for button click
-            scrollRef.current.scrollBy({ 
-                left: direction === 'left' ? -amount : amount, 
-                behavior: 'smooth' 
-            });
-        }
-        
-        // Resume auto-scroll after 3 seconds of inactivity
-        setTimeout(() => setIsUserInteracting(false), 3000);
-    };
-
     if (partners.length === 0) return null;
 
+    // Usamos CSS puro para a animação infinita com duplicação do conteúdo
+    // As classes animate-infinite-scroll são definidas no index.html / tailwind.config
     return (
         <div 
-            className="relative group px-4 md:px-12" 
+            className="relative w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]" 
             aria-label="Galeria de Parceiros"
             role="region"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            onTouchStart={() => setIsPaused(true)}
-            onTouchEnd={() => setIsPaused(false)}
-            onFocus={() => setIsPaused(true)} // Pause for accessibility/keyboard nav
-            onBlur={() => setIsPaused(false)}
         >
-            {/* Accessible Controls */}
-            <button 
-                onClick={() => handleManualScroll('left')}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add] hidden md:block"
-                aria-label="Ver parceiros anteriores"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            </button>
-
-            <div 
-                ref={scrollRef}
-                className="flex overflow-x-auto md:overflow-x-hidden gap-8 md:gap-16 py-4 items-center select-none scrollbar-hide"
-                style={{ scrollBehavior: 'auto' }} 
-            >
-                {items.map((partner, i) => (
-                     <PartnerLogo key={`${partner.id}-${i}`} name={partner.name} logoUrl={partner.logoUrl} />
+            {/* Lista Original */}
+            <ul className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+                {partners.map((partner) => (
+                    <li key={partner.id}>
+                       <PartnerLogo name={partner.name} logoUrl={partner.logoUrl} />
+                    </li>
                 ))}
-            </div>
-
-             <button 
-                onClick={() => handleManualScroll('right')}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-[#8a4add] hidden md:block"
-                aria-label="Ver próximos parceiros"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </button>
+            </ul>
+            {/* Lista Duplicada para Loop Infinito */}
+            <ul className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll" aria-hidden="true">
+                {partners.map((partner) => (
+                    <li key={`${partner.id}-duplicate`}>
+                       <PartnerLogo name={partner.name} logoUrl={partner.logoUrl} />
+                    </li>
+                ))}
+            </ul>
         </div>
     )
 }
@@ -175,30 +116,41 @@ const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
 const Home: React.FC = () => {
   const { partners, team, loadData } = useAppContext();
   const navigate = useNavigate();
+  const [teamPreview, setTeamPreview] = useState<User[]>([]);
+  const [hasShuffled, setHasShuffled] = useState(false); // A TRAVA: Garante que só roda 1 vez
 
   useEffect(() => {
       loadData(['partners', 'users']); // Users needed for team preview
   }, [loadData]);
   
-  const impactData = [
-    { stat: "+300", title: "Jovens Formados", text: "Capacitados em tecnologia", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
-    { stat: "+50", title: "Turmas", text: "Do online ao presencial", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-    { stat: "+14", title: "Voluntários", text: "Profissionais dedicados", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
-    { stat: `+${partners.length}`, title: "Parceiros", text: "Empresas que apoiam", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 01 1v5m-4 0h4" /></svg> },
-  ];
-  
-  const teamPreview = useMemo(() => {
+  // Randomize team on mount AND ensure it stops
+  useEffect(() => {
+    // Se já embaralhou ou não tem dados, PARE.
+    if (hasShuffled || team.length === 0) return;
+
     const visibleTeam = team.filter(member => member.showOnTeamPage);
     
-    // Fisher-Yates (aka Knuth) Shuffle
+    // Fisher-Yates shuffle para garantir aleatoriedade total
     const shuffled = [...visibleTeam];
     for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
+
+    // Seleciona os 4 primeiros
+    setTeamPreview(shuffled.slice(0, 4));
     
-    return shuffled.slice(0, 4);
-  }, [team]);
+    // ATIVA A TRAVA
+    setHasShuffled(true);
+
+  }, [team, hasShuffled]); 
+
+  const impactData = [
+    { stat: "+300", title: "Jovens Formados", text: "Capacitados em tecnologia", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
+    { stat: "+50", title: "Turmas", text: "Do online ao presencial", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+    { stat: "+14", title: "Voluntários", text: "Profissionais dedicados", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
+    { stat: `+${partners.length}`, title: "Parceiros", text: "Empresas que apoiam", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 01 1v5m-4 0h4" /></svg> },
+  ];
 
   // JSON-LD para Organização (SEO)
   const organizationSchema = {
@@ -326,9 +278,11 @@ const Home: React.FC = () => {
                     <p className="mt-4 text-lg text-gray-300 max-w-2xl mx-auto">Os mentores, instrutores e voluntários que fazem a mágica acontecer todos os dias.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto px-4 sm:px-0">
-                    {teamPreview.map(member => (
+                    {teamPreview.length > 0 ? teamPreview.map(member => (
                         <TeamMemberPreviewCard key={member.id} member={member} />
-                    ))}
+                    )) : (
+                        <p className="text-center text-gray-500 col-span-full">Carregando a tropa...</p>
+                    )}
                 </div>
                  <div className="text-center mt-12">
                      <button onClick={() => navigate('/team')} className="text-sm font-bold text-[#c4b5fd] hover:text-white uppercase tracking-widest border-b border-[#c4b5fd] hover:border-white pb-1 transition-all">
@@ -338,7 +292,7 @@ const Home: React.FC = () => {
             </div>
         </section>
 
-        {/* Nossos Parceiros Section (Carrossel Interativo e Acessível) */}
+        {/* Nossos Parceiros Section (Carrossel CSS Puro) */}
         <section className="py-16 md:py-20 relative z-10 border-t border-white/5 bg-black/10">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">

@@ -84,7 +84,10 @@ const DEFAULT_SETTINGS: SystemSettings = {
     primaryColor: '#8a4add',
     secondaryColor: '#f27983',
     backgroundColor: '#09090B',
-    surfaceColor: '#121212'
+    surfaceColor: '#121212',
+    gradientStart: '#8a4add', // Default gradient matches primary
+    gradientEnd: '#f27983',   // Default gradient matches secondary
+    borderRadius: '1rem'      // Default rounded-2xl look
 };
 
 const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -94,7 +97,8 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // System Settings State
   const [settings, setSettingsState] = useState<SystemSettings>(() => {
       const saved = localStorage.getItem('futuro_settings');
-      return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+      // Merge with default to ensure new fields exist
+      return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
   });
 
   // Apply CSS Variables whenever settings change
@@ -104,6 +108,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       root.style.setProperty('--color-secondary', settings.secondaryColor);
       root.style.setProperty('--color-background', settings.backgroundColor);
       root.style.setProperty('--color-surface', settings.surfaceColor);
+      
+      // New variables
+      root.style.setProperty('--color-gradient-start', settings.gradientStart);
+      root.style.setProperty('--color-gradient-end', settings.gradientEnd);
+      root.style.setProperty('--radius-base', settings.borderRadius);
       
       // Save to localStorage for persistence in this demo
       localStorage.setItem('futuro_settings', JSON.stringify(settings));

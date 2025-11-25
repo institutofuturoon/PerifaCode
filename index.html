@@ -15,6 +15,20 @@
               secondary: 'var(--color-secondary)',
               background: 'var(--color-background)',
               surface: 'var(--color-surface)',
+              gradientStart: 'var(--color-gradient-start)',
+              gradientEnd: 'var(--color-gradient-end)',
+            },
+            borderRadius: {
+              'base': 'var(--radius-base)',
+            },
+            animation: {
+              'infinite-scroll': 'infinite-scroll 40s linear infinite',
+            },
+            keyframes: {
+              'infinite-scroll': {
+                from: { transform: 'translateX(0)' },
+                to: { transform: 'translateX(-100%)' },
+              }
             }
           }
         }
@@ -29,6 +43,9 @@
         --color-secondary: #f27983;
         --color-background: #09090B;
         --color-surface: #121212;
+        --color-gradient-start: #8a4add;
+        --color-gradient-end: #f27983;
+        --radius-base: 1rem;
       }
       body {
         font-family: 'Inter', sans-serif;
@@ -112,32 +129,6 @@
       select option {
         background: #000;
         color: #e5e7eb;
-      }
-      .marquee {
-        display: flex;
-        overflow: hidden;
-        user-select: none;
-        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-      }
-
-      .marquee-content {
-        flex-shrink: 0;
-        display: flex;
-        justify-content: flex-start;
-        min-width: 100%;
-        gap: 2rem;
-        animation: marquee-scroll 80s linear infinite;
-      }
-
-      @keyframes marquee-scroll {
-        from { transform: translateX(0); }
-        to { transform: translateX(-50%); }
-      }
-
-      /* Pause animation on hover */
-      .marquee:hover .marquee-content {
-        animation-play-state: paused;
       }
       
       .aurora-background {

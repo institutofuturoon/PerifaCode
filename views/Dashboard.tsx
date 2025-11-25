@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport, Project } from '../types';
+import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport, Project, SystemSettings } from '../types';
 import ProgressBar from '../components/ProgressBar';
 import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
 import { useAppContext } from '../App';
@@ -98,7 +98,62 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
     );
 };
 
-// --- Tab Components ---
+// --- System Settings Components ---
+
+const COLOR_PRESETS: Record<string, SystemSettings> = {
+    'Original': { siteName: 'FuturoOn', primaryColor: '#8a4add', secondaryColor: '#f27983', backgroundColor: '#09090B', surfaceColor: '#121212', gradientStart: '#8a4add', gradientEnd: '#f27983', borderRadius: '1rem' },
+    'Ocean': { siteName: 'Ocean', primaryColor: '#0ea5e9', secondaryColor: '#3b82f6', backgroundColor: '#020617', surfaceColor: '#0f172a', gradientStart: '#38bdf8', gradientEnd: '#3b82f6', borderRadius: '0.75rem' },
+    'Forest': { siteName: 'Forest', primaryColor: '#22c55e', secondaryColor: '#84cc16', backgroundColor: '#022c22', surfaceColor: '#064e3b', gradientStart: '#4ade80', gradientEnd: '#bef264', borderRadius: '0.5rem' },
+    'Dracula': { siteName: 'Dracula', primaryColor: '#bd93f9', secondaryColor: '#ff79c6', backgroundColor: '#282a36', surfaceColor: '#44475a', gradientStart: '#ff79c6', gradientEnd: '#bd93f9', borderRadius: '0.25rem' },
+    'Sunset': { siteName: 'Sunset', primaryColor: '#f97316', secondaryColor: '#f43f5e', backgroundColor: '#2a0a0a', surfaceColor: '#450a0a', gradientStart: '#fbbf24', gradientEnd: '#f43f5e', borderRadius: '1.5rem' },
+};
+
+// IMPORTANT: Defined OUTSIDE SystemSettingsPanel to prevent re-rendering/flickering
+const ThemePreview: React.FC<{ settings: SystemSettings }> = ({ settings }) => {
+    return (
+        <div className="border border-white/10 overflow-hidden flex flex-col h-72 shadow-2xl transition-all duration-300 ease-in-out" style={{ backgroundColor: settings.backgroundColor, borderRadius: settings.borderRadius }}>
+            {/* Mock Header */}
+            <div className="h-12 border-b border-white/5 flex items-center px-4 justify-between shrink-0 transition-colors duration-300" style={{ backgroundColor: settings.surfaceColor }}>
+                <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500/20"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/20"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500/20"></div>
+                </div>
+                <div className="h-2 w-20 rounded-full bg-white/10"></div>
+            </div>
+            <div className="flex flex-1 overflow-hidden">
+                {/* Mock Sidebar */}
+                <div className="w-16 border-r border-white/5 hidden sm:flex flex-col items-center py-4 gap-3 transition-colors duration-300" style={{ backgroundColor: settings.backgroundColor }}>
+                    <div className="w-8 h-8 rounded-lg mb-2 transition-colors duration-300" style={{ backgroundColor: settings.primaryColor, opacity: 0.2, borderRadius: `calc(${settings.borderRadius} * 0.5)` }}></div>
+                    <div className="w-8 h-8 rounded-lg bg-white/5" style={{ borderRadius: `calc(${settings.borderRadius} * 0.5)` }}></div>
+                    <div className="w-8 h-8 rounded-lg bg-white/5" style={{ borderRadius: `calc(${settings.borderRadius} * 0.5)` }}></div>
+                </div>
+                {/* Mock Content */}
+                <div className="flex-1 p-4 gap-4 flex flex-col overflow-hidden">
+                    <div className="h-32 p-4 flex flex-col justify-center items-start gap-2 relative overflow-hidden shadow-sm transition-all duration-300" style={{ backgroundColor: settings.surfaceColor, borderRadius: settings.borderRadius }}>
+                        <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl opacity-10 pointer-events-none transition-colors duration-300" style={{ backgroundColor: settings.primaryColor }}></div>
+                        
+                        {/* Text Gradient Preview */}
+                        <h3 className="text-xl font-bold transition-colors duration-300 bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(to right, ${settings.gradientStart}, ${settings.gradientEnd})` }}>
+                            Texto em Degradê
+                        </h3>
+                        
+                        <div className="h-3 w-1/2 rounded-full bg-white/10"></div>
+                        <button className="px-4 py-1.5 text-[10px] font-bold text-white mt-2 shadow-lg transition-all duration-300" style={{ backgroundColor: settings.primaryColor, borderRadius: `calc(${settings.borderRadius} * 0.5)` }}>
+                            Botão Primário
+                        </button>
+                    </div>
+                    <div className="flex gap-3 flex-1">
+                        <div className="flex-1 bg-white/5 border border-white/5 relative overflow-hidden" style={{ borderRadius: settings.borderRadius }}>
+                            <div className="absolute top-0 left-0 h-1 w-full transition-colors duration-300" style={{ backgroundColor: settings.secondaryColor }}></div>
+                        </div>
+                        <div className="flex-1 bg-white/5 border border-white/5" style={{ borderRadius: settings.borderRadius }}></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 const SystemSettingsPanel: React.FC = () => {
     const { showToast, settings, updateSettings } = useAppContext();
@@ -132,6 +187,41 @@ const SystemSettingsPanel: React.FC = () => {
             prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
         );
     };
+
+    const applyPreset = (name: string) => {
+        const preset = COLOR_PRESETS[name];
+        if (preset) {
+            updateSettings(preset);
+            showToast(`Tema ${name} aplicado com sucesso!`);
+        }
+    };
+
+    const ColorInput: React.FC<{ label: string, value: string, onChange: (v: string) => void, description?: string }> = ({ label, value, onChange, description }) => (
+        <div className="group">
+            <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{label}</label>
+            <div className="flex items-center gap-3 bg-[#18181b] p-2 rounded-lg border border-white/10 focus-within:border-[var(--color-primary)] transition-colors">
+                <div className="relative w-10 h-10 rounded-md overflow-hidden shadow-inner border border-white/10 flex-shrink-0" style={{backgroundColor: value}}>
+                    <input 
+                        type="color" 
+                        value={value} 
+                        onChange={(e) => onChange(e.target.value)}
+                        className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer p-0 border-0 opacity-0"
+                    />
+                </div>
+                <div className="flex-1">
+                    <input 
+                        type="text" 
+                        value={value} 
+                        onChange={(e) => onChange(e.target.value)}
+                        className="w-full bg-transparent text-sm text-white font-mono focus:outline-none uppercase"
+                        placeholder="#000000"
+                        maxLength={7}
+                    />
+                </div>
+            </div>
+            {description && <p className="text-[10px] text-gray-500 mt-1">{description}</p>}
+        </div>
+    );
 
     // --- Backup Functions ---
     const handleBackup = async () => {
@@ -305,29 +395,8 @@ const SystemSettingsPanel: React.FC = () => {
         }
     };
 
-    // --- Color Picker Component ---
-    const ColorInput: React.FC<{ label: string, value: string, onChange: (v: string) => void }> = ({ label, value, onChange }) => (
-        <div className="flex items-center justify-between bg-white/5 p-4 rounded-lg border border-white/10">
-            <span className="text-sm font-medium text-gray-300">{label}</span>
-            <div className="flex items-center gap-3">
-                <input 
-                    type="text" 
-                    value={value} 
-                    onChange={(e) => onChange(e.target.value)}
-                    className="w-24 bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white font-mono focus:outline-none focus:border-primary"
-                />
-                <input 
-                    type="color" 
-                    value={value} 
-                    onChange={(e) => onChange(e.target.value)}
-                    className="w-8 h-8 rounded cursor-pointer border-none p-0 bg-transparent"
-                />
-            </div>
-        </div>
-    );
-
     return (
-        <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
+        <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-white">Configurações do Sistema</h2>
@@ -335,16 +404,16 @@ const SystemSettingsPanel: React.FC = () => {
                 </div>
                 
                 {/* Tabs */}
-                <div className="flex bg-white/5 p-1 rounded-lg">
+                <div className="flex bg-white/5 p-1 rounded-lg border border-white/5">
                     <button 
                         onClick={() => setActiveTab('branding')}
-                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'branding' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'branding' ? 'bg-[var(--color-primary)] text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                     >
                         Identidade Visual
                     </button>
                     <button 
                         onClick={() => setActiveTab('backup')}
-                        className={`px-4 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'backup' ? 'bg-primary text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'backup' ? 'bg-[var(--color-primary)] text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                     >
                         Backup & Dados
                     </button>
@@ -352,70 +421,120 @@ const SystemSettingsPanel: React.FC = () => {
             </div>
 
             {activeTab === 'branding' && (
-                <div className="grid lg:grid-cols-2 gap-8 animate-fade-in">
-                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-2xl border border-primary/20">🎨</div>
-                            <div>
-                                <h3 className="text-lg font-bold text-white">Cores da Marca (Whitelabel)</h3>
-                                <p className="text-xs text-gray-400">Defina a paleta de cores global do sistema.</p>
+                <div className="grid lg:grid-cols-3 gap-8 animate-fade-in">
+                    
+                    {/* Left Column: Controls */}
+                    <div className="lg:col-span-2 space-y-6">
+                        {/* Presets */}
+                        <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                            <h3 className="text-lg font-bold text-white mb-4">Temas Pré-definidos</h3>
+                            <div className="flex flex-wrap gap-3">
+                                {Object.keys(COLOR_PRESETS).map(key => (
+                                    <button 
+                                        key={key}
+                                        onClick={() => applyPreset(key)}
+                                        className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-white text-xs font-bold transition-all flex items-center gap-2"
+                                    >
+                                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLOR_PRESETS[key].primaryColor }}></span>
+                                        {key}
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                        
-                        <div className="space-y-4">
-                            <ColorInput 
-                                label="Cor Primária (Destaque)" 
-                                value={settings.primaryColor} 
-                                onChange={(v) => updateSettings({ primaryColor: v })} 
-                            />
-                            <ColorInput 
-                                label="Cor Secundária (Gradientes)" 
-                                value={settings.secondaryColor} 
-                                onChange={(v) => updateSettings({ secondaryColor: v })} 
-                            />
-                            <ColorInput 
-                                label="Cor de Fundo (Background)" 
-                                value={settings.backgroundColor} 
-                                onChange={(v) => updateSettings({ backgroundColor: v })} 
-                            />
-                            <ColorInput 
-                                label="Cor de Superfície (Cards)" 
-                                value={settings.surfaceColor} 
-                                onChange={(v) => updateSettings({ surfaceColor: v })} 
-                            />
+
+                        {/* Advanced Color Controls */}
+                        <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-10 h-10 bg-[var(--color-primary)]/10 rounded-xl flex items-center justify-center text-xl border border-[var(--color-primary)]/20">🎨</div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-white">Cores Personalizadas</h3>
+                                    <p className="text-xs text-gray-400">Defina a paleta hexadecimal e degradês.</p>
+                                </div>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <ColorInput 
+                                    label="Cor Primária" 
+                                    value={settings.primaryColor} 
+                                    onChange={(v) => updateSettings({ primaryColor: v })}
+                                    description="Botões, destaques e links."
+                                />
+                                <ColorInput 
+                                    label="Cor Secundária" 
+                                    value={settings.secondaryColor} 
+                                    onChange={(v) => updateSettings({ secondaryColor: v })}
+                                    description="Gradientes e detalhes secundários."
+                                />
+                                <ColorInput 
+                                    label="Fundo (Background)" 
+                                    value={settings.backgroundColor} 
+                                    onChange={(v) => updateSettings({ backgroundColor: v })}
+                                    description="Cor de fundo principal da página."
+                                />
+                                <ColorInput 
+                                    label="Superfície (Cards)" 
+                                    value={settings.surfaceColor} 
+                                    onChange={(v) => updateSettings({ surfaceColor: v })}
+                                    description="Fundo de cartões, painéis e modais."
+                                />
+                                <ColorInput 
+                                    label="Início do Degradê (Texto)" 
+                                    value={settings.gradientStart} 
+                                    onChange={(v) => updateSettings({ gradientStart: v })}
+                                    description="Usado em títulos e elementos especiais."
+                                />
+                                <ColorInput 
+                                    label="Fim do Degradê (Texto)" 
+                                    value={settings.gradientEnd} 
+                                    onChange={(v) => updateSettings({ gradientEnd: v })}
+                                    description="Combina com o início para criar brilho."
+                                />
+                            </div>
                         </div>
 
-                        <div className="mt-6 p-4 bg-black/30 rounded-lg border border-white/5">
-                            <p className="text-xs text-gray-500 mb-2">Preview de Botões:</p>
-                            <div className="flex gap-3">
-                                <button className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold">Botão Primário</button>
-                                <button className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-bold border border-white/10 hover:bg-white/20">Botão Secundário</button>
+                        {/* Shape & Info */}
+                        <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                            <h3 className="text-lg font-bold text-white mb-4">Aparência e Informações</h3>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nome do Site</label>
+                                    <input 
+                                        type="text" 
+                                        value={settings.siteName}
+                                        onChange={(e) => updateSettings({ siteName: e.target.value })}
+                                        className="w-full p-3 bg-white/5 rounded-lg border border-white/10 focus:ring-1 focus:ring-[var(--color-primary)] focus:outline-none text-white text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Arredondamento (Radius)</label>
+                                    <select 
+                                        value={settings.borderRadius}
+                                        onChange={(e) => updateSettings({ borderRadius: e.target.value })}
+                                        className="w-full p-3 bg-white/5 rounded-lg border border-white/10 focus:ring-1 focus:ring-[var(--color-primary)] focus:outline-none text-white text-sm"
+                                    >
+                                        <option value="0px">Quadrado (0px)</option>
+                                        <option value="0.25rem">Pequeno (4px)</option>
+                                        <option value="0.5rem">Médio (8px)</option>
+                                        <option value="1rem">Grande (16px)</option>
+                                        <option value="1.5rem">Redondo (24px)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-2xl border border-white/10">🏢</div>
-                            <div>
-                                <h3 className="text-lg font-bold text-white">Informações Gerais</h3>
-                                <p className="text-xs text-gray-400">Nome do site e configurações básicas.</p>
+                    {/* Right Column: Live Preview */}
+                    <div className="lg:col-span-1">
+                        <div className="sticky top-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Live Preview</h3>
+                                <span className="text-[10px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded font-bold">Ao Vivo</span>
                             </div>
-                        </div>
-                        
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Nome da Plataforma</label>
-                                <input 
-                                    type="text" 
-                                    value={settings.siteName}
-                                    onChange={(e) => updateSettings({ siteName: e.target.value })}
-                                    className="w-full p-3 bg-white/5 rounded-lg border border-white/10 focus:ring-1 focus:ring-primary focus:outline-none text-white text-sm"
-                                />
+                            {/* Use ThemePreview outside to prevent full re-renders */}
+                            <ThemePreview settings={settings} />
+                            <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-xs text-yellow-300/80 leading-relaxed">
+                                <p><strong>Dica:</strong> As alterações são salvas automaticamente no navegador para você testar. Para persistir no banco de dados, seria necessário uma integração de backend.</p>
                             </div>
-                        </div>
-                        <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-300">
-                            <p><strong>Nota:</strong> As alterações de cor são aplicadas instantaneamente para você visualizar, mas recomendamos atualizar a página após salvar para garantir consistência total em todos os componentes.</p>
                         </div>
                     </div>
                 </div>
