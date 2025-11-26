@@ -1,336 +1,403 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FuturoOn - Transforme seu futuro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: 'var(--color-primary)',
-              secondary: 'var(--color-secondary)',
-              background: 'var(--color-background)',
-              surface: 'var(--color-surface)',
-              gradientStart: 'var(--color-gradient-start)',
-              gradientEnd: 'var(--color-gradient-end)',
-            },
-            borderRadius: {
-              'base': 'var(--radius-base)',
-            },
-            animation: {
-              'infinite-scroll': 'infinite-scroll 40s linear infinite',
-            },
-            keyframes: {
-              'infinite-scroll': {
-                from: { transform: 'translateX(0)' },
-                to: { transform: 'translateX(-100%)' },
-              }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FuturoOn - Transforme seu futuro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--color-primary)',
+            secondary: 'var(--color-secondary)',
+            background: 'var(--color-background)',
+            surface: 'var(--color-surface)',
+            gradientStart: 'var(--color-gradient-start)',
+            gradientEnd: 'var(--color-gradient-end)',
+          },
+          borderRadius: {
+            'base': 'var(--radius-base)',
+          },
+          animation: {
+            'infinite-scroll': 'infinite-scroll 40s linear infinite',
+          },
+          keyframes: {
+            'infinite-scroll': {
+              from: { transform: 'translateX(0)' },
+              to: { transform: 'translateX(-100%)' },
             }
           }
         }
       }
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        --color-primary: #8a4add;
-        --color-secondary: #f27983;
-        --color-background: #09090B;
-        --color-surface: #121212;
-        --color-gradient-start: #8a4add;
-        --color-gradient-end: #f27983;
-        --radius-base: 1rem;
-      }
-      body {
-        font-family: 'Inter', sans-serif;
-        overflow-x: hidden; /* Prevent horizontal scroll from background effects */
-        background-color: var(--color-background);
-        color: #e5e7eb;
-      }
-      /* Estilos para o conteúdo renderizado pelo Markdown */
-      .prose p {
-        margin-top: 0.8em;
-        margin-bottom: 0.8em;
-        font-size: 1.05rem; /* Increased for better readability */
-        line-height: 1.6;
-      }
-      .prose h2 {
-        font-size: 1.5rem; /* text-2xl */
-        font-weight: 800;
-        margin-top: 1.5em;
-        margin-bottom: 0.6em;
-      }
-      .prose h3 {
-        font-size: 1.25rem; /* text-xl */
-        font-weight: 700;
-        margin-top: 1.2em;
-        margin-bottom: 0.5em;
-      }
-      .prose ul, .prose ol {
-        margin-top: 0.5em;
-        margin-bottom: 0.5em;
-        font-size: 1.05rem;
-      }
-      .prose li {
-        margin-top: 0.2em;
-        margin-bottom: 0.2em;
-      }
-      .prose a {
-        color: var(--color-primary);
-        text-decoration: none;
-        transition: color 0.2s;
-      }
-      .prose a:hover {
-        color: #a78bfa;
-        text-decoration: underline;
-      }
-      .prose blockquote {
-        border-left-color: var(--color-primary);
-        color: #d1d5db;
-        font-weight: 500;
-        font-size: 1rem;
-        padding-left: 1rem;
-        margin-left: 0;
-      }
-      /* Estilos para blocos de código */
-      .prose pre {
-        background-color: #111827; /* Fundo escuro para o bloco de código */
-        padding: 0.5rem;
-        border-radius: 0.375rem;
-        overflow-x: auto;
-        border: 1px solid #374151; /* Borda sutil */
-        color: #d1d5db; /* Texto claro */
-        font-size: 0.9rem;
-        margin-top: 0.8em;
-        margin-bottom: 0.8em;
-      }
-      .prose code {
-        font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-        background-color: rgba(138, 74, 221, 0.15); /* Fundo roxo sutil */
-        color: var(--color-primary); /* Texto roxo claro */
-        padding: 0.1em 0.3em;
-        border-radius: 3px;
-        font-size: 90%;
-      }
-       .prose pre code {
-        background-color: transparent;
-        color: inherit;
-        padding: 0;
-        border-radius: 0;
-        font-size: inherit;
-      }
-      /* Custom styles for select dropdown options */
-      select option {
-        background: #000;
-        color: #e5e7eb;
-      }
-      
-      .aurora-background {
-        background-color: var(--color-background);
-        position: relative;
-        overflow: clip; /* Fix for preventing background from causing extra space */
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #8a4add;
+      --color-secondary: #f27983;
+      --color-background: #09090B;
+      --color-surface: #121212;
+      --color-gradient-start: #8a4add;
+      --color-gradient-end: #f27983;
+      --radius-base: 1rem;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      /* Prevent horizontal scroll from background effects */
+      background-color: var(--color-background);
+      color: #e5e7eb;
+    }
+
+    /* Estilos para o conteúdo renderizado pelo Markdown */
+    .prose p {
+      margin-top: 0.8em;
+      margin-bottom: 0.8em;
+      font-size: 1.05rem;
+      /* Increased for better readability */
+      line-height: 1.6;
+    }
+
+    .prose h2 {
+      font-size: 1.5rem;
+      /* text-2xl */
+      font-weight: 800;
+      margin-top: 1.5em;
+      margin-bottom: 0.6em;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+      /* text-xl */
+      font-weight: 700;
+      margin-top: 1.2em;
+      margin-bottom: 0.5em;
+    }
+
+    .prose ul,
+    .prose ol {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      font-size: 1.05rem;
+    }
+
+    .prose li {
+      margin-top: 0.2em;
+      margin-bottom: 0.2em;
+    }
+
+    .prose a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .prose a:hover {
+      color: #a78bfa;
+      text-decoration: underline;
+    }
+
+    .prose blockquote {
+      border-left-color: var(--color-primary);
+      color: #d1d5db;
+      font-weight: 500;
+      font-size: 1rem;
+      padding-left: 1rem;
+      margin-left: 0;
+    }
+
+    /* Estilos para blocos de código */
+    .prose pre {
+      background-color: #111827;
+      /* Fundo escuro para o bloco de código */
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      overflow-x: auto;
+      border: 1px solid #374151;
+      /* Borda sutil */
+      color: #d1d5db;
+      /* Texto claro */
+      font-size: 0.9rem;
+      margin-top: 0.8em;
+      margin-bottom: 0.8em;
+    }
+
+    .prose code {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      background-color: rgba(138, 74, 221, 0.15);
+      /* Fundo roxo sutil */
+      color: var(--color-primary);
+      /* Texto roxo claro */
+      padding: 0.1em 0.3em;
+      border-radius: 3px;
+      font-size: 90%;
+    }
+
+    .prose pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+    }
+
+    /* Custom styles for select dropdown options */
+    select option {
+      background: #000;
+      color: #e5e7eb;
+    }
+
+    .aurora-background {
+      background-color: var(--color-background);
+      position: relative;
+      overflow: clip;
+      /* Fix for preventing background from causing extra space */
+    }
+
+    .aurora-background::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150%;
+      padding-bottom: 150%;
+      border-radius: 50%;
+      background-image: radial-gradient(circle at center, rgba(138, 74, 221, 0.2) 0%, rgba(76, 29, 149, 0.3) 30%, var(--color-background) 70%);
+      transform: translate(-50%, -50%);
+      animation: aurora-spin 20s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+      /* Allows clicks to pass through to content below */
+    }
+
+    @keyframes aurora-spin {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
       }
 
-      .aurora-background::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 150%;
-        padding-bottom: 150%;
-        border-radius: 50%;
-        background-image: radial-gradient(circle at center, rgba(138, 74, 221, 0.2) 0%, rgba(76, 29, 149, 0.3) 30%, var(--color-background) 70%);
-        transform: translate(-50%, -50%);
-        animation: aurora-spin 20s linear infinite;
-        z-index: 0;
-        pointer-events: none; /* Allows clicks to pass through to content below */
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    .bg-grid-pattern {
+      background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 2rem 2rem;
+    }
+
+    /* Lunar Lander Styles */
+    #spaceship-container {
+      position: fixed;
+      z-index: 50;
+      width: 50px;
+      /* Reduced size */
+      height: 50px;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    #spaceship-container svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    #spaceship-flame {
+      transform-origin: 50% 100%;
+      animation: flicker 0.15s infinite alternate;
+    }
+
+    @keyframes flicker {
+      from {
+        transform: scaleY(1) scaleX(1);
       }
 
-      @keyframes aurora-spin {
-        from { transform: translate(-50%, -50%) rotate(0deg); }
-        to { transform: translate(-50%, -50%) rotate(360deg); }
+      to {
+        transform: scaleY(1.3) scaleX(1.1);
+      }
+    }
+
+    #spaceship-hud,
+    #spaceship-instructions {
+      position: fixed;
+      z-index: 51;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.8rem;
+      color: #00ff00;
+      text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+      pointer-events: none;
+    }
+
+    #spaceship-hud {
+      bottom: 1rem;
+      left: 1rem;
+    }
+
+    #spaceship-instructions {
+      top: 4rem;
+      right: 1rem;
+    }
+
+    #spaceship-hud p,
+    #spaceship-instructions p {
+      margin: 0.1rem 0;
+    }
+
+    .explosion {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .explosion .particle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      background: #FFD700;
+      border-radius: 50%;
+      animation: explode 0.7s ease-out forwards;
+      --angle: calc(var(--i) * 18deg);
+      /* 360 / 20 particles */
+      --distance: calc(60px + (var(--i) * 4px));
+      animation-delay: calc(var(--i) * 0.005s);
+    }
+
+    .explosion .particle:nth-child(even) {
+      background: #FFA500;
+      width: 6px;
+      height: 6px;
+    }
+
+    @keyframes explode {
+      0% {
+        transform: translate(-50%, -50%) rotate(0deg) translateX(0) scale(1.5);
+        opacity: 1;
       }
 
-      .bg-grid-pattern {
-        background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        background-size: 2rem 2rem;
+      100% {
+        transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--distance)) scale(0);
+        opacity: 0;
       }
-      
-      /* Lunar Lander Styles */
-      #spaceship-container {
-        position: fixed;
-        z-index: 50;
-        width: 50px; /* Reduced size */
-        height: 50px;
-        will-change: transform;
-        pointer-events: none;
-      }
-      
-      #spaceship-container svg {
-        width: 100%;
-        height: 100%;
+    }
+
+    #game-activate-button {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 49;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(138, 74, 221, 0.3);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      border: 1px solid rgba(138, 74, 221, 0.5);
+      border-radius: 50%;
+      color: var(--color-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 0 15px rgba(138, 74, 221, 0.3);
+    }
+
+    #game-activate-button:hover {
+      transform: scale(1.1);
+      background-color: rgba(138, 74, 221, 0.6);
+      box-shadow: 0 0 35px rgba(138, 74, 221, 0.7);
+    }
+
+    #game-over-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fade-in 0.3s ease;
+    }
+
+    #game-over-modal>div {
+      background-color: #111827;
+      border: 1px solid var(--color-primary);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(138, 74, 221, 0.5);
+    }
+
+    @keyframes fade-in {
+      from {
+        opacity: 0;
       }
 
-      #spaceship-flame {
-        transform-origin: 50% 100%;
-        animation: flicker 0.15s infinite alternate;
+      to {
+        opacity: 1;
+      }
+    }
+
+    .animate-fade-in {
+      animation: fade-in 0.3s ease-out;
+    }
+
+    @keyframes fade-in-out {
+
+      0%,
+      100% {
+        opacity: 0;
+        transform: translateY(1rem);
       }
 
-      @keyframes flicker {
-        from { transform: scaleY(1) scaleX(1); }
-        to { transform: scaleY(1.3) scaleX(1.1); }
+      10%,
+      90% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in-out {
+      animation: fade-in-out 3s ease-in-out forwards;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
       }
 
-      #spaceship-hud, #spaceship-instructions {
-          position: fixed;
-          z-index: 51;
-          background-color: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(5px);
-          -webkit-backdrop-filter: blur(5px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          padding: 0.4rem 0.8rem;
-          border-radius: 6px;
-          font-family: 'Courier New', Courier, monospace;
-          font-size: 0.8rem;
-          color: #00ff00;
-          text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
-          pointer-events: none;
+      25% {
+        transform: translateX(-5px);
       }
 
-      #spaceship-hud {
-          bottom: 1rem;
-          left: 1rem;
+      75% {
+        transform: translateX(5px);
       }
+    }
 
-      #spaceship-instructions {
-          top: 4rem;
-          right: 1rem;
-      }
-
-      #spaceship-hud p, #spaceship-instructions p {
-          margin: 0.1rem 0;
-      }
-
-      .explosion {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-      }
-
-      .explosion .particle {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 4px;
-        height: 4px;
-        background: #FFD700;
-        border-radius: 50%;
-        animation: explode 0.7s ease-out forwards;
-        --angle: calc(var(--i) * 18deg); /* 360 / 20 particles */
-        --distance: calc(60px + (var(--i) * 4px));
-        animation-delay: calc(var(--i) * 0.005s);
-      }
-      
-      .explosion .particle:nth-child(even) {
-        background: #FFA500;
-        width: 6px;
-        height: 6px;
-      }
-
-      @keyframes explode {
-        0% {
-          transform: translate(-50%, -50%) rotate(0deg) translateX(0) scale(1.5);
-          opacity: 1;
-        }
-        100% {
-          transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--distance)) scale(0);
-          opacity: 0;
-        }
-      }
-
-      #game-activate-button {
-        position: fixed;
-        bottom: 1rem;
-        right: 1rem;
-        z-index: 49;
-        width: 40px;
-        height: 40px;
-        background-color: rgba(138, 74, 221, 0.3);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-        border: 1px solid rgba(138, 74, 221, 0.5);
-        border-radius: 50%;
-        color: var(--color-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 0 15px rgba(138, 74, 221, 0.3);
-      }
-      #game-activate-button:hover {
-        transform: scale(1.1);
-        background-color: rgba(138, 74, 221, 0.6);
-        box-shadow: 0 0 35px rgba(138, 74, 221, 0.7);
-      }
-
-      #game-over-modal {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
-        background-color: rgba(0,0,0,0.7);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        animation: fade-in 0.3s ease;
-      }
-
-      #game-over-modal > div {
-        background-color: #111827;
-        border: 1px solid var(--color-primary);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 0 30px rgba(138, 74, 221, 0.5);
-      }
-
-      @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      
-      .animate-fade-in {
-        animation: fade-in 0.3s ease-out;
-      }
-
-      @keyframes fade-in-out {
-        0%, 100% { opacity: 0; transform: translateY(1rem); }
-        10%, 90% { opacity: 1; transform: translateY(0); }
-      }
-      
-      .animate-fade-in-out {
-        animation: fade-in-out 3s ease-in-out forwards;
-      }
-
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
-      }
-      .animate-shake {
-        animation: shake 0.4s ease-in-out;
-      }
-    </style>
+    .animate-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -358,8 +425,10 @@
 }
 </script>
 </head>
-  <body class="bg-background text-gray-300 text-base">
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+
+<body class="bg-background text-gray-300 text-base">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>
