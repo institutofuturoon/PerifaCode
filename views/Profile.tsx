@@ -185,7 +185,7 @@ const Profile: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      await handleUpdateUserProfile({ ...user, ...formData });
+      await handleUpdateUserProfile({ ...user, ...formData } as unknown as User);
       showToast('✅ Perfil salvo com sucesso!');
   };
 

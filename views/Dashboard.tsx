@@ -664,6 +664,70 @@ const SystemSettingsPanel: React.FC = () => {
     );
 };
 
+const TransparencyPanel: React.FC = () => {
+    const { financialStatements, annualReports, handleDeleteFinancialStatement, handleDeleteAnnualReport } = useAppContext();
+    const navigate = useNavigate();
+
+    return (
+        <div className="space-y-8 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-xl font-bold text-white">Portal da Transparência</h2>
+                    <p className="text-xs text-gray-400 mt-1">Gerencie relatórios financeiros e de impacto.</p>
+                </div>
+                <button 
+                    onClick={() => navigate('/admin/transparency-editor')}
+                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20"
+                >
+                    <span>+</span> Novo Relatório
+                </button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+                {/* Financial Statements */}
+                <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
+                    <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios Financeiros</h3>
+                    <div className="space-y-2">
+                         {financialStatements.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
+                            financialStatements.sort((a,b) => b.year - a.year).map(fs => (
+                                <div key={fs.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                                    <div>
+                                        <span className="font-bold text-white text-sm block">{fs.year}</span>
+                                        <span className="text-[10px] text-gray-500">Receita: <span className="text-green-400">{fs.totalRevenue}</span></span>
+                                    </div>
+                                    <div className="flex gap-2 text-xs">
+                                        <button onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
+                                        <button onClick={() => handleDeleteFinancialStatement(fs.id)} className="text-red-500 hover:text-red-400">Excluir</button>
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                </div>
+
+                {/* Annual Reports */}
+                <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
+                    <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios de Impacto</h3>
+                    <div className="space-y-2">
+                         {annualReports.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
+                            annualReports.sort((a,b) => b.year - a.year).map(ar => (
+                                <div key={ar.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                                    <div>
+                                         <span className="font-bold text-white text-sm block">{ar.year}</span>
+                                         <span className="text-[10px] text-gray-500">Autor: {ar.coordinationLetter.authorName}</span>
+                                    </div>
+                                    <div className="flex gap-2 text-xs">
+                                        <button onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
+                                        <button onClick={() => handleDeleteAnnualReport(ar.id)} className="text-red-500 hover:text-red-400">Excluir</button>
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const TeamManagementPanel: React.FC = () => {
     const { users, handleSaveTeamOrder, handleDeleteUser, user } = useAppContext();
     const navigate = useNavigate();
@@ -1083,7 +1147,7 @@ const ExploreCoursesPanel: React.FC = () => {
                         placeholder="Buscar curso..." 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg focus:ring-1 focus:ring-primary focus:outline-none text-sm text-white"
+                        className="w-full pl-10 pr-4 py-2 bg-black/30 border border-white/10 rounded-lg focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white"
                     />
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>
@@ -1104,7 +1168,7 @@ const ExploreCoursesPanel: React.FC = () => {
             {/* Header info */}
             <div className="flex justify-between items-center px-2">
                 <h2 className="text-xl font-bold text-white">Catálogo de Cursos</h2>
-                <p className="text--[10px] font-bold text-gray-500 uppercase tracking-widest">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                     {filteredCourses.length} resultados
                 </p>
             </div>
@@ -1483,15 +1547,25 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
 // --- Teacher Overview Component (NEW) ---
 const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
     const { courses, mentorSessions, communityPosts, users } = useAppContext();
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Correctly using hook
+
+    // Pagination State for Courses Card
+    const [coursesPage, setCoursesPage] = useState(1);
+    const COURSES_PER_PAGE = 4;
 
     const myCourses = useMemo(() => courses.filter(c => c.instructorId === user.id), [courses, user.id]);
-    const mySessions = useMemo(() => mentorSessions.filter(s => s.mentorId === user.id && !s.isBooked), [mentorSessions, user.id]); // Upcoming free slots
+    const mySessions = useMemo(() => mentorSessions.filter(s => s.mentorId === user.id && !s.isBooked), [mentorSessions, user.id]); 
     const bookedSessions = useMemo(() => mentorSessions.filter(s => s.mentorId === user.id && s.isBooked), [mentorSessions, user.id]);
     
+    // Pagination Logic
+    const totalPages = Math.ceil(myCourses.length / COURSES_PER_PAGE);
+    const displayedCourses = myCourses.slice(
+        (coursesPage - 1) * COURSES_PER_PAGE, 
+        coursesPage * COURSES_PER_PAGE
+    );
+
     // Calc stats
     const totalStudents = useMemo(() => {
-        // Mock: In real app, fetch enrollments. Here we sum distinct students from mock analytics or fallback
         return 120; // Mock value for UI demo
     }, []);
 
@@ -1547,7 +1621,7 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                             <h3 className="text-lg font-bold text-white flex items-center gap-2">
                                 <span className="bg-red-500/10 text-red-400 p-1 rounded">🚨</span> Alunos em Risco
                             </h3>
-                            <button className="text-xs text-[#c4b5fd] hover:underline">Ver todos</button>
+                            <button onClick={() => navigate('/students')} className="text-xs text-[#c4b5fd] hover:underline">Ver todos</button>
                         </div>
                         <div className="space-y-3">
                             {atRiskStudents.map(student => (
@@ -1591,46 +1665,76 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                 {/* 4. Sidebar (Right - 1 col) */}
                 <div className="space-y-6">
                     
-                    {/* My Courses Shortcuts */}
-                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
-                        <h3 className="text-lg font-bold text-white mb-4">Meus Cursos</h3>
-                        <div className="space-y-3">
-                            {myCourses.length > 0 ? myCourses.map(course => (
+                    {/* My Courses Shortcuts (WITH PAGINATION) */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 flex flex-col h-full">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-bold text-white">Meus Cursos</h3>
+                            {myCourses.length > 0 && (
+                                <span className="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded-full">
+                                    {myCourses.length} ativos
+                                </span>
+                            )}
+                        </div>
+                        
+                        <div className="space-y-3 flex-grow">
+                            {displayedCourses.length > 0 ? displayedCourses.map(course => (
                                 <div 
                                     key={course.id} 
                                     className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 rounded-xl p-3 transition-all duration-300 cursor-pointer flex gap-4 items-center"
                                     onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)}
                                 >
                                     {/* Thumbnail */}
-                                    <div className="h-16 w-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+                                    <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 relative">
                                         <img src={course.imageUrl} className="w-full h-full object-cover" alt={course.title} />
                                         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
                                     </div>
                                     
                                     {/* Info */}
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-start">
-                                            <h4 className="text-white font-bold text-sm truncate pr-2">{course.title}</h4>
-                                        </div>
-                                        
-                                        {/* Stats Row */}
-                                        <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
-                                            <span className="flex items-center gap-1" title="Módulos">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg> 
+                                        <h4 className="text-white font-bold text-xs truncate pr-2 group-hover:text-[#c4b5fd] transition-colors">{course.title}</h4>
+                                        <div className="flex items-center gap-3 mt-1 text-[10px] text-gray-500">
+                                            <span className="flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                                                 {course.modules.length} Módulos
                                             </span>
-                                        </div>
-
-                                        {/* CTA */}
-                                        <div className="mt-2 text-[#c4b5fd] text-[10px] font-bold uppercase tracking-wider group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                                            Gerenciar Turma <span>→</span>
+                                            <span className="flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                                {/* Mock student count per course */}
+                                                {Math.floor(Math.random() * 50) + 10} Alunos
+                                            </span>
                                         </div>
                                     </div>
+                                    <span className="text-gray-500 group-hover:text-white transition-colors">›</span>
                                 </div>
                             )) : (
-                                <p className="text-sm text-gray-500">Você não tem cursos atribuídos.</p>
+                                <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
+                                    <p className="text-sm text-gray-500">Você não tem cursos atribuídos.</p>
+                                </div>
                             )}
                         </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
+                                <button 
+                                    onClick={() => setCoursesPage(p => Math.max(1, p - 1))}
+                                    disabled={coursesPage === 1}
+                                    className="text-xs font-bold text-gray-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    ← Anterior
+                                </button>
+                                <span className="text-[10px] text-gray-500 font-mono">
+                                    {coursesPage} / {totalPages}
+                                </span>
+                                <button 
+                                    onClick={() => setCoursesPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={coursesPage === totalPages}
+                                    className="text-xs font-bold text-gray-500 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    Próximo →
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Quick Actions */}
@@ -1923,7 +2027,7 @@ const Dashboard: React.FC = () => {
                 </button>
             </div>
             
-            <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+            <div className="bg-white/[0.02] rounded-xl border border-white/10 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
                         <TableHeader cols={['Curso', 'Trilha', 'Aulas', 'Ações']} />
@@ -1985,6 +2089,71 @@ const Dashboard: React.FC = () => {
             </div>
         );
     };
+    
+    // --- Transparency Panel (NEW) ---
+    const TransparencyPanel: React.FC = () => {
+        const { financialStatements, annualReports, handleDeleteFinancialStatement, handleDeleteAnnualReport } = useAppContext();
+        const navigate = useNavigate();
+
+        return (
+            <div className="space-y-8 animate-fade-in">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h2 className="text-xl font-bold text-white">Portal da Transparência</h2>
+                        <p className="text-xs text-gray-400 mt-1">Gerencie relatórios financeiros e de impacto.</p>
+                    </div>
+                    <button 
+                        onClick={() => navigate('/admin/transparency-editor')}
+                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20"
+                    >
+                        <span>+</span> Novo Relatório
+                    </button>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Financial Statements */}
+                    <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
+                        <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios Financeiros</h3>
+                        <div className="space-y-2">
+                             {financialStatements.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
+                                financialStatements.sort((a,b) => b.year - a.year).map(fs => (
+                                    <div key={fs.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                                        <div>
+                                            <span className="font-bold text-white text-sm block">{fs.year}</span>
+                                            <span className="text-[10px] text-gray-500">Receita: <span className="text-green-400">{fs.totalRevenue}</span></span>
+                                        </div>
+                                        <div className="flex gap-2 text-xs">
+                                            <button onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
+                                            <button onClick={() => handleDeleteFinancialStatement(fs.id)} className="text-red-500 hover:text-red-400">Excluir</button>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+
+                    {/* Annual Reports */}
+                    <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
+                        <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios de Impacto</h3>
+                        <div className="space-y-2">
+                             {annualReports.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
+                                annualReports.sort((a,b) => b.year - a.year).map(ar => (
+                                    <div key={ar.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
+                                        <div>
+                                             <span className="font-bold text-white text-sm block">{ar.year}</span>
+                                             <span className="text-[10px] text-gray-500">Autor: {ar.coordinationLetter.authorName}</span>
+                                        </div>
+                                        <div className="flex gap-2 text-xs">
+                                            <button onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
+                                            <button onClick={() => handleDeleteAnnualReport(ar.id)} className="text-red-500 hover:text-red-400">Excluir</button>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     // --- FINAL GUARD CLAUSE ---
     // Only return null here, AFTER all hooks have run.
@@ -2026,10 +2195,11 @@ const Dashboard: React.FC = () => {
                         {activeTab === 'students' && <StudentsPanel />}
                         {activeTab === 'teamMembers' && <TeamManagementPanel />}
                         {activeTab === 'moderation' && <ModerationPanel />}
+                        {activeTab === 'transparency' && <TransparencyPanel />}
                         {activeTab === 'system-settings' && <SystemSettingsPanel />}
                         
                         {/* Fallback for other tabs */}
-                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation', 'system-settings'].includes(activeTab) && (
+                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation', 'transparency', 'system-settings'].includes(activeTab) && (
                             <div className="text-center py-20 text-gray-500">Funcionalidade em desenvolvimento: {tabTitles[activeTab]}</div>
                         )}
                     </div>

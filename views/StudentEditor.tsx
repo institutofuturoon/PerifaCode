@@ -51,7 +51,7 @@ const StudentEditor: React.FC = () => {
       lastCompletionDate: '',
       hasCompletedOnboardingTour: false,
       mustChangePassword: true, // Força a troca de senha
-      accountStatus: 'active',
+      accountStatus: 'active' as const,
     };
   }, [userId, users, isCreating]);
 
@@ -291,4 +291,3 @@ const StudentEditor: React.FC = () => {
 };
 
 export default StudentEditor;
-    

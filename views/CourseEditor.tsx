@@ -87,6 +87,7 @@ const CourseEditor: React.FC = () => {
   const navigate = useNavigate();
 
   const DRAFT_KEY = `draft_course_${courseId || 'new'}`;
+  const lessonContentRef = useRef<HTMLTextAreaElement>(null); // MOVED TO TOP LEVEL
 
   // -- Initial State Setup --
   const getNewCourseTemplate = useMemo(() => ({
@@ -123,9 +124,6 @@ const CourseEditor: React.FC = () => {
   const [aiLoading, setAiLoading] = useState<string | null>(null);
   const [editingLesson, setEditingLesson] = useState<{mIndex: number, lIndex: number} | null>(null);
   
-  // FIX: Define ref at top level to avoid hook rule violation in conditional render
-  const lessonContentRef = useRef<HTMLTextAreaElement>(null);
-
   // -- Effects --
 
   useEffect(() => {
