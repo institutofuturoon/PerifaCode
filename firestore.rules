@@ -1,0 +1,258 @@
+rules_version = '2';
+
+/**
+ * Firestore Security Rules - PerifaCode (FuturoOn)
+ * 
+ * IMPORTANTE: Estas regras protegem os dados dos usuários e garantem
+ * que apenas pessoas autorizadas possam ler/escrever informações.
+ * 
+ * Para fazer deploy destas regras:
+ * 1. Instale Firebase CLI: npm install -g firebase-tools
+ * 2. Faça login: firebase login
+ * 3. Inicialize o projeto: firebase init firestore
+ * 4. Deploy: firebase deploy --only firestore:rules
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // FUNÇÕES AUXILIARES
+    // ==========================================
+    
+    // Verifica se o usuário está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Verifica se o usuário é o dono do recurso
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Obtém o role do usuário atual
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Verifica se o usuário é admin
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    // Verifica se o usuário é instrutor
+    function isInstructor() {
+      return isAuthenticated() && getUserRole() == 'instructor';
+    }
+    
+    // Verifica se o usuário é admin ou instrutor
+    function isAdminOrInstructor() {
+      return isAuthenticated() && getUserRole() in ['admin', 'instructor'];
+    }
+    
+    // Verifica se a conta do usuário está ativa
+    function isActiveAccount() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountStatus == 'active';
+    }
+    
+    // ==========================================
+    // COLEÇÃO: users
+    // ==========================================
+    match /users/{userId} {
+      // Qualquer usuário autenticado pode ler perfis de outros usuários
+      // (necessário para exibir nomes, avatares, etc.)
+      allow read: if isAuthenticated();
+      
+      // Usuários podem criar seu próprio perfil durante o registro
+      allow create: if isOwner(userId);
+      
+      // Usuários podem atualizar apenas seu próprio perfil
+      // Admins podem atualizar qualquer perfil
+      allow update: if isOwner(userId) || isAdmin();
+      
+      // Apenas admins podem deletar usuários (na prática, desativar)
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: courses
+    // ==========================================
+    match /courses/{courseId} {
+      // Todos podem visualizar cursos (público)
+      allow read: if true;
+      
+      // Apenas admins e instrutores podem criar cursos
+      allow create: if isAdminOrInstructor();
+      
+      // Apenas admins e o instrutor dono do curso podem editar
+      allow update: if isAdmin() || 
+                       (isInstructor() && resource.data.instructorId == request.auth.uid);
+      
+      // Apenas admins podem deletar cursos
+      allow delete: if isAdmin();
+      
+      // ==========================================
+      // SUBCOLEÇÃO: lessons (conteúdo das aulas)
+      // ==========================================
+      match /lessons/{lessonId} {
+        // Todos podem ler aulas (conteúdo público)
+        allow read: if true;
+        
+        // Apenas admins e instrutores podem criar/editar aulas
+        allow write: if isAdminOrInstructor();
+      }
+    }
+    
+    // ==========================================
+    // COLEÇÃO: articles (Blog)
+    // ==========================================
+    match /articles/{articleId} {
+      // Todos podem ler artigos publicados
+      // Admins podem ler rascunhos
+      allow read: if resource.data.status == 'published' || isAdmin();
+      
+      // Apenas admins podem criar/editar/deletar artigos
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: projects (Portfólio da Comunidade)
+    // ==========================================
+    match /projects/{projectId} {
+      // Todos podem ler projetos aprovados
+      // Autores e admins podem ler seus próprios projetos (mesmo pendentes/rejeitados)
+      allow read: if resource.data.status == 'approved' || 
+                     isOwner(resource.data.authorId) ||
+                     isAdmin();
+      
+      // Usuários autenticados podem criar projetos
+      allow create: if isAuthenticated() && 
+                       request.resource.data.authorId == request.auth.uid &&
+                       request.resource.data.status == 'pending'; // Sempre começa como pendente
+      
+      // Autores podem editar seus próprios projetos
+      // Admins podem editar qualquer projeto (para moderação)
+      allow update: if isOwner(resource.data.authorId) || isAdmin();
+      
+      // Apenas admins podem deletar projetos
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: communityPosts (Fórum)
+    // ==========================================
+    match /communityPosts/{postId} {
+      // Todos os usuários autenticados podem ler posts
+      allow read: if isAuthenticated();
+      
+      // Usuários autenticados podem criar posts
+      allow create: if isAuthenticated() && 
+                       request.resource.data.authorId == request.auth.uid;
+      
+      // Autores podem editar seus próprios posts
+      // Admins podem editar qualquer post (moderação)
+      allow update: if isOwner(resource.data.authorId) || isAdmin();
+      
+      // Autores e admins podem deletar posts
+      allow delete: if isOwner(resource.data.authorId) || isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: events (Eventos e Lives)
+    // ==========================================
+    match /events/{eventId} {
+      // Todos podem visualizar eventos (público)
+      allow read: if true;
+      
+      // Apenas admins e instrutores podem criar/editar eventos
+      allow write: if isAdminOrInstructor();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: partners (Parceiros)
+    // ==========================================
+    match /partners/{partnerId} {
+      // Todos podem visualizar parceiros (público)
+      allow read: if true;
+      
+      // Apenas admins podem gerenciar parceiros
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: supporters (Apoiadores)
+    // ==========================================
+    match /supporters/{supporterId} {
+      // Todos podem visualizar apoiadores (público)
+      allow read: if true;
+      
+      // Apenas admins podem gerenciar apoiadores
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: tracks (Trilhas de Aprendizado)
+    // ==========================================
+    match /tracks/{trackId} {
+      // Todos podem visualizar trilhas
+      allow read: if true;
+      
+      // Apenas admins podem criar/editar trilhas
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: financialStatements (Transparência Financeira)
+    // ==========================================
+    match /financialStatements/{statementId} {
+      // Todos podem visualizar (transparência pública)
+      allow read: if true;
+      
+      // Apenas admins podem gerenciar
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: annualReports (Relatórios Anuais)
+    // ==========================================
+    match /annualReports/{reportId} {
+      // Todos podem visualizar (transparência pública)
+      allow read: if true;
+      
+      // Apenas admins podem gerenciar
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: marketingPosts (Marketing Studio)
+    // ==========================================
+    match /marketingPosts/{postId} {
+      // Apenas admins podem visualizar e gerenciar
+      allow read, write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: mentorSessions (Mentorias)
+    // ==========================================
+    match /mentorSessions/{sessionId} {
+      // Usuários autenticados podem visualizar sessões
+      allow read: if isAuthenticated();
+      
+      // Mentores podem criar/editar suas próprias sessões
+      // Alunos podem fazer booking (update)
+      // Admins têm acesso total
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated(); // Permite booking por alunos
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // REGRA PADRÃO: Negar tudo que não foi explicitamente permitido
+    // ==========================================
+    // Esta é uma boa prática de segurança: "deny by default"
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

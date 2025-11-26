@@ -22,52 +22,48 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validações no frontend
     if (!file.type.startsWith('image/')) {
-        showToast('❌ Por favor, selecione um arquivo de imagem válido.');
-        return;
+      showToast('❌ Por favor, selecione um arquivo de imagem válido.');
+      return;
     }
     if (file.size > 4 * 1024 * 1024) { // 4MB limit
-        showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
-        return;
+      showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
+      return;
     }
 
     setIsUploading(true);
     try {
-        // --- PRODUCTION SECURITY WARNING ---
-        // In a real production environment, DO NOT use a client-side token like below.
-        // Instead, call your backend API (e.g., /api/upload) to get a presigned URL or handle the upload.
-        // The direct use of BLOB_READ_WRITE_TOKEN here is for demonstration/MVP purposes only.
-        const pathname = `${pathnamePrefix}-${Date.now()}-${file.name}`;
-        const BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_uI73bVafvL0LLaMC_v9NEwyi9BSF1pBmOXbFEamnbWvh3Rc'; 
+      // ✅ SEGURO: Chamar API do servidor ao invés de fazer upload direto
+      // O token BLOB_READ_WRITE_TOKEN fica protegido no servidor
+      const filename = `${pathnamePrefix}-${Date.now()}-${file.name}`;
 
-        const response = await fetch(
-            `https://blob.vercel-storage.com/${pathname}`,
-            {
-              method: 'PUT',
-              headers: {
-                Authorization: `Bearer ${BLOB_READ_WRITE_TOKEN}`,
-                'x-api-version': '8',
-                'Content-Type': file.type,
-              },
-              body: file,
-            },
-        );
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type,
+          'X-Filename': filename,
+        },
+        body: file,
+      });
 
-        const newBlob = await response.json();
-        if (!response.ok) {
-            throw new Error(`Falha no upload: ${newBlob.error?.message || 'Erro desconhecido do servidor'}`);
-        }
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Falha no upload');
+      }
 
-        onUploadComplete(newBlob.url);
+      const data = await response.json();
+      onUploadComplete(data.url);
+      showToast('✅ Imagem enviada com sucesso!');
 
     } catch (err: any) {
-        console.error(`Erro detalhado no upload:`, err);
-        showToast(`❌ Erro ao enviar a imagem: ${err.message}`);
+      console.error(`Erro detalhado no upload:`, err);
+      showToast(`❌ Erro ao enviar a imagem: ${err.message}`);
     } finally {
-        setIsUploading(false);
-        if(fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
