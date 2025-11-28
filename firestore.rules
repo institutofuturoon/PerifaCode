@@ -60,9 +60,8 @@ service cloud.firestore {
     // COLEÇÃO: users
     // ==========================================
     match /users/{userId} {
-      // Qualquer usuário autenticado pode ler perfis de outros usuários
-      // (necessário para exibir nomes, avatares, etc.)
-      allow read: if isAuthenticated();
+      // Leitura pública de perfis (necessário para exibir nomes, avatares, etc.)
+      allow read: if true;
       
       // Usuários podem criar seu próprio perfil durante o registro
       allow create: if isOwner(userId);
@@ -143,8 +142,8 @@ service cloud.firestore {
     // COLEÇÃO: communityPosts (Fórum)
     // ==========================================
     match /communityPosts/{postId} {
-      // Todos os usuários autenticados podem ler posts
-      allow read: if isAuthenticated();
+      // Leitura pública de posts do fórum
+      allow read: if true;
       
       // Usuários autenticados podem criar posts
       allow create: if isAuthenticated() && 
@@ -228,16 +227,18 @@ service cloud.firestore {
     // COLEÇÃO: marketingPosts (Marketing Studio)
     // ==========================================
     match /marketingPosts/{postId} {
-      // Apenas admins podem visualizar e gerenciar
-      allow read, write: if isAdmin();
+      // Leitura pública para exibir posts de marketing
+      // Apenas admins podem criar/editar/deletar
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
     // ==========================================
     // COLEÇÃO: mentorSessions (Mentorias)
     // ==========================================
     match /mentorSessions/{sessionId} {
-      // Usuários autenticados podem visualizar sessões
-      allow read: if isAuthenticated();
+      // Leitura pública de sessões de mentoria disponíveis
+      allow read: if true;
       
       // Mentores podem criar/editar suas próprias sessões
       // Alunos podem fazer booking (update)
