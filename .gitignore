@@ -40,3 +40,4 @@ firestore-debug.log
 .cache/
 
 .env.local
+.env.local.template

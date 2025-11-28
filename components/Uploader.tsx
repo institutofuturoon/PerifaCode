@@ -34,31 +34,25 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
 
     setIsUploading(true);
     try {
-      // ✅ SEGURO: Chamar API do servidor ao invés de fazer upload direto
-      // O token BLOB_READ_WRITE_TOKEN fica protegido no servidor
-      const filename = `${pathnamePrefix}-${Date.now()}-${file.name}`;
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': file.type,
-          'X-Filename': filename,
-        },
-        body: file,
+      // SOLUÇÃO TEMPORÁRIA: Converter para Data URL (base64)
+      // Para produção, configure um backend/API para upload seguro
+      const reader = new FileReader();
+      
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Falha no upload');
-      }
-
-      const data = await response.json();
-      onUploadComplete(data.url);
-      showToast('✅ Imagem enviada com sucesso!');
+      // Retornar a Data URL como se fosse uma URL de upload
+      onUploadComplete(dataUrl);
+      showToast('✅ Imagem carregada com sucesso!');
 
     } catch (err: any) {
       console.error(`Erro detalhado no upload:`, err);
-      showToast(`❌ Erro ao enviar a imagem: ${err.message}`);
+      showToast(`❌ Erro ao carregar a imagem: ${err.message}`);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {

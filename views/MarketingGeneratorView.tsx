@@ -318,56 +318,45 @@ const MarketingGeneratorView: React.FC = () => {
             // 3. Generate Image (Only if user didn't provide one)
             if (!activeImageUrl) {
                 setLoadingImage(true);
+                
+                // Fallback: Usar imagem do Unsplash ao invés de gerar com IA
+                // Motivo: Quota do Gemini Image API esgotada
                 try {
-                    // Mapeamento de estilos para o prompt em inglês
-                    const styleMap: Record<string, string> = {
-                        'Fotorealista': 'High quality professional photography, realistic lighting, depth of field',
-                        'Ilustração 3D': '3D render, blender style, soft lighting, cute 3d characters, vibrant',
-                        'Minimalista (Flat)': 'Minimalist flat vector art, clean lines, simple composition, solid colors, corporate memphis style',
-                        'Geométrico/Abstrato': 'Abstract geometric shapes, modern graphic design, clean, tech-oriented, patterns'
+                    // Extrair palavras-chave do prompt de imagem
+                    const imageKeywords = textResult.imagePrompt
+                        .toLowerCase()
+                        .replace(/[^a-z0-9\s]/g, '')
+                        .split(' ')
+                        .filter(w => w.length > 3)
+                        .slice(0, 3)
+                        .join(',');
+                    
+                    // Usar URL do Unsplash diretamente (evita problemas de CORS)
+                    // Adiciona timestamp para evitar cache e garantir imagem diferente
+                    const timestamp = Date.now();
+                    const unsplashUrl = `https://source.unsplash.com/800x800/?${imageKeywords || 'technology,education,youth'}&sig=${timestamp}`;
+                    
+                    console.log('🖼️ Imagem Unsplash gerada:', unsplashUrl);
+                    console.log('📝 Keywords:', imageKeywords);
+                    
+                    // Salvar como uploadedImage ao invés de base64
+                    const finalPost = { 
+                        ...newPost, 
+                        uploadedImage: unsplashUrl,
+                        imageBase64: null 
                     };
-
-                    let stylePrompt = styleMap[visualStyle] || styleMap['Fotorealista'];
-                    let finalImagePrompt = textResult.imagePrompt;
                     
-                    // Instructions for Branding
-                    if (useBranding) {
-                        finalImagePrompt += `. BRANDING COLORS: Use strict color palette: Primary Purple (#8a4add), Secondary Pink (#f27983) and Dark Backgrounds (#09090B).`;
-                    } else {
-                        finalImagePrompt += ". Vibrant colors, diverse, hopeful atmosphere.";
-                    }
-
-                    const response = await ai.models.generateContent({
-                        model: 'gemini-2.5-flash-image',
-                        contents: {
-                            parts: [{ text: `${stylePrompt}. ${finalImagePrompt}. High resolution.` }]
-                        },
-                        config: {
-                            imageConfig: {
-                                aspectRatio: "1:1"
-                            }
-                        }
-                    });
-
-                    let base64Image = null;
-                    if (response.candidates && response.candidates[0].content.parts) {
-                        for (const part of response.candidates[0].content.parts) {
-                            if (part.inlineData) {
-                                base64Image = part.inlineData.data;
-                                break;
-                            }
-                        }
-                    }
+                    console.log('✅ Post final:', finalPost);
                     
-                    if (!base64Image) throw new Error("A IA não retornou uma imagem válida.");
-
-                    const finalPost = { ...newPost, imageBase64: base64Image };
                     setGeneratedContent(finalPost);
-                    showToast("✨ Post completo gerado com sucesso!");
+                    showToast("✨ Post gerado com imagem do Unsplash!");
 
-                } catch (imgError) {
-                    console.error("Erro ao gerar imagem:", imgError);
-                    showToast("⚠️ Texto gerado, mas houve erro na imagem.");
+                } catch (imgError: any) {
+                    console.error("Erro ao buscar imagem:", imgError);
+                    
+                    // Se falhar, apenas mostra o texto sem imagem
+                    setGeneratedContent(newPost);
+                    showToast("⚠️ Texto gerado! Adicione uma imagem manualmente ou faça upload.");
                 } finally {
                     setLoadingImage(false);
                 }
@@ -459,6 +448,15 @@ const MarketingGeneratorView: React.FC = () => {
             <div className="mb-8">
                 <h1 className="text-3xl font-black text-white">Marketing Studio <span className="text-[#8a4add] text-xl">AI</span></h1>
                 <p className="text-gray-400 mt-1">Crie posts completos baseados em ideias, pesquisas ou imagens reais.</p>
+                
+                {/* Quota Warning */}
+                <div className="mt-4 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex items-start gap-3">
+                    <span className="text-amber-400 text-lg flex-shrink-0">⚠️</span>
+                    <div className="text-xs text-amber-200">
+                        <p className="font-semibold mb-1">Geração de imagens temporariamente limitada</p>
+                        <p className="text-amber-300/80">A quota gratuita da API do Gemini foi atingida. Posts serão gerados com imagens do Unsplash ou você pode fazer upload da sua própria imagem.</p>
+                    </div>
+                </div>
             </div>
 
             <div className="grid lg:grid-cols-12 gap-8 items-start">
