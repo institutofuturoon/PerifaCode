@@ -52,7 +52,7 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
     if (!user) return null;
 
     return (
-        <header className="h-16 bg-background border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-30 bg-opacity-90 backdrop-blur-md">
+        <header className="h-16 bg-background/95 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-30">
             <div className="flex items-center gap-4">
                 <button onClick={toggleSidebar} className="md:hidden text-gray-400 hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
@@ -67,10 +67,10 @@ const DashboardHeader: React.FC<{ user: User | null, toggleSidebar: () => void, 
             <div className="flex items-center gap-4">
                 {/* Gamification Badges (Visible on Desktop) */}
                 <div className="hidden md:flex items-center gap-3 mr-4">
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs font-bold" title="Ofensiva">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-orange/10 border border-brand-orange/20 text-brand-orange text-xs font-bold" title="Ofensiva">
                         <span>🔥</span> {user.streak}
                     </div>
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold" title="XP Total">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-bold" title="XP Total">
                         <span>⚡</span> {user.xp}
                     </div>
                 </div>
@@ -157,7 +157,8 @@ const ThemePreview: React.FC<{ settings: SystemSettings }> = ({ settings }) => {
 
 const SystemSettingsPanel: React.FC = () => {
     const { showToast, settings, updateSettings } = useAppContext();
-    const [activeTab, setActiveTab] = useState<'branding' | 'backup'>('branding');
+    const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState<'branding' | 'backup' | 'features'>('branding');
     
     // Backup States
     const [isBackingUp, setIsBackingUp] = useState(false);
@@ -412,6 +413,12 @@ const SystemSettingsPanel: React.FC = () => {
                         Identidade Visual
                     </button>
                     <button 
+                        onClick={() => setActiveTab('features')}
+                        className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'features' ? 'bg-[var(--color-primary)] text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                    >
+                        Recursos
+                    </button>
+                    <button 
                         onClick={() => setActiveTab('backup')}
                         className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${activeTab === 'backup' ? 'bg-[var(--color-primary)] text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
                     >
@@ -534,6 +541,109 @@ const SystemSettingsPanel: React.FC = () => {
                             <ThemePreview settings={settings} />
                             <div className="mt-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-xs text-yellow-300/80 leading-relaxed">
                                 <p><strong>Dica:</strong> As alterações são salvas automaticamente no navegador para você testar. Para persistir no banco de dados, seria necessário uma integração de backend.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {activeTab === 'features' && (
+                <div className="space-y-6 animate-fade-in">
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-10 h-10 bg-brand-gold/10 rounded-xl flex items-center justify-center text-xl border border-brand-gold/20">
+                                ⚙️
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Recursos da Plataforma</h3>
+                                <p className="text-sm text-gray-400">Habilite ou desabilite funcionalidades</p>
+                            </div>
+                        </div>
+
+                        {/* Marketing Studio Toggle */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-all">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-brand-orange/10 rounded-lg flex items-center justify-center border border-brand-orange/20">
+                                        <span className="text-2xl">📱</span>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-base font-bold text-white">Marketing Studio</h4>
+                                        <p className="text-xs text-gray-400 mt-0.5">
+                                            Ferramenta de geração de conteúdo com IA para redes sociais
+                                        </p>
+                                        {!settings.marketingStudioEnabled && (
+                                            <p className="text-xs text-warning mt-1">
+                                                ⚠️ Desabilitado - Usuários não terão acesso
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        updateSettings({ 
+                                            marketingStudioEnabled: !settings.marketingStudioEnabled 
+                                        });
+                                        showToast(
+                                            settings.marketingStudioEnabled 
+                                                ? '❌ Marketing Studio desabilitado' 
+                                                : '✅ Marketing Studio habilitado'
+                                        );
+                                    }}
+                                    className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
+                                        settings.marketingStudioEnabled 
+                                            ? 'bg-success' 
+                                            : 'bg-gray-600'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                                            settings.marketingStudioEnabled 
+                                                ? 'translate-x-7' 
+                                                : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                            </div>
+
+                            {/* Info sobre API Gemini */}
+                            {settings.marketingStudioEnabled && (
+                                <div className="bg-info/5 border border-info/20 rounded-lg p-4">
+                                    <div className="flex items-start gap-3">
+                                        <span className="text-info text-lg">ℹ️</span>
+                                        <div className="text-xs text-gray-300">
+                                            <p className="font-semibold text-white mb-1">Sobre o Marketing Studio:</p>
+                                            <ul className="space-y-1 text-gray-400">
+                                                <li>• Usa a API do Google Gemini (plano gratuito)</li>
+                                                <li>• Rate limiting automático implementado</li>
+                                                <li>• Monitore o uso no <button onClick={() => navigate('/gemini-api-dashboard')} className="text-info hover:underline">Dashboard da API</button></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Futuras funcionalidades */}
+                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6 opacity-50">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-xl">
+                                🚀
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Recursos Futuros</h3>
+                                <p className="text-sm text-gray-400">Em desenvolvimento</p>
+                            </div>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                                <span className="text-sm text-gray-400">Notificações Push</span>
+                                <span className="text-xs text-gray-500">Em breve</span>
+                            </div>
+                            <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                                <span className="text-sm text-gray-400">Gamificação Avançada</span>
+                                <span className="text-xs text-gray-500">Em breve</span>
                             </div>
                         </div>
                     </div>
@@ -665,62 +775,303 @@ const SystemSettingsPanel: React.FC = () => {
 };
 
 const TransparencyPanel: React.FC = () => {
-    const { financialStatements, annualReports, handleDeleteFinancialStatement, handleDeleteAnnualReport } = useAppContext();
+    const { financialStatements, annualReports, handleDeleteFinancialStatement, handleDeleteAnnualReport, showToast } = useAppContext();
     const navigate = useNavigate();
+
+    // Stats
+    const totalFinancial = financialStatements.length;
+    const totalImpact = annualReports.length;
+    const latestYear = Math.max(
+        ...financialStatements.map(f => f.year),
+        ...annualReports.map(r => r.year),
+        new Date().getFullYear()
+    );
+
+    const handleDelete = (type: 'financial' | 'report', id: string, year: number) => {
+        if (!window.confirm(`Deseja realmente excluir o relatório de ${year}?`)) return;
+        
+        if (type === 'financial') {
+            handleDeleteFinancialStatement(id);
+        } else {
+            handleDeleteAnnualReport(id);
+        }
+        showToast(`✅ Relatório de ${year} excluído com sucesso`);
+    };
 
     return (
         <div className="space-y-8 animate-fade-in">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h2 className="text-xl font-bold text-white">Portal da Transparência</h2>
-                    <p className="text-xs text-gray-400 mt-1">Gerencie relatórios financeiros e de impacto.</p>
+            {/* Header com Stats */}
+            <div className="bg-gradient-to-r from-[#121212] to-[#1a1a1d] rounded-2xl border border-white/10 p-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
+                
+                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                    <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-12 h-12 rounded-xl bg-[#8a4add]/20 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-white">Portal da Transparência</h2>
+                                <p className="text-sm text-gray-400">Gerencie relatórios públicos da organização</p>
+                            </div>
+                        </div>
+                        
+                        {/* Mini Stats */}
+                        <div className="flex flex-wrap gap-4 mt-4">
+                            <div className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                                <span className="text-2xl">💰</span>
+                                <div>
+                                    <p className="text-xs text-gray-400">Relatórios Financeiros</p>
+                                    <p className="text-lg font-bold text-white">{totalFinancial}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                                <span className="text-2xl">📊</span>
+                                <div>
+                                    <p className="text-xs text-gray-400">Relatórios de Impacto</p>
+                                    <p className="text-lg font-bold text-white">{totalImpact}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                                <span className="text-2xl">📅</span>
+                                <div>
+                                    <p className="text-xs text-gray-400">Último Ano</p>
+                                    <p className="text-lg font-bold text-white">{latestYear}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button 
+                        onClick={() => navigate('/admin/transparency-editor')}
+                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#8a4add]/20 transition-all"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Novo Relatório
+                    </button>
                 </div>
-                <button 
-                    onClick={() => navigate('/admin/transparency-editor')}
-                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20"
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                    onClick={() => navigate('/transparency')}
+                    className="block bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-blue-500/30 rounded-xl p-4 transition-all group text-left"
                 >
-                    <span>+</span> Novo Relatório
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-white">Visualizar Portal</p>
+                            <p className="text-xs text-gray-500">Ver como público</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button
+                    onClick={() => navigate('/admin/transparency-editor/financial/new')}
+                    className="block bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-green-500/30 rounded-xl p-4 transition-all group text-left"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-white">Novo Financeiro</p>
+                            <p className="text-xs text-gray-500">Criar relatório</p>
+                        </div>
+                    </div>
+                </button>
+
+                <button
+                    onClick={() => navigate('/admin/transparency-editor/report/new')}
+                    className="block bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-purple-500/30 rounded-xl p-4 transition-all group text-left"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-white">Novo Impacto</p>
+                            <p className="text-xs text-gray-500">Criar relatório</p>
+                        </div>
+                    </div>
                 </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            {/* Relatórios */}
+            <div className="grid lg:grid-cols-2 gap-6">
                 {/* Financial Statements */}
-                <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                    <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios Financeiros</h3>
-                    <div className="space-y-2">
-                         {financialStatements.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
-                            financialStatements.sort((a,b) => b.year - a.year).map(fs => (
-                                <div key={fs.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                                    <div>
-                                        <span className="font-bold text-white text-sm block">{fs.year}</span>
-                                        <span className="text-[10px] text-gray-500">Receita: <span className="text-green-400">{fs.totalRevenue}</span></span>
-                                    </div>
-                                    <div className="flex gap-2 text-xs">
-                                        <button onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
-                                        <button onClick={() => handleDeleteFinancialStatement(fs.id)} className="text-red-500 hover:text-red-400">Excluir</button>
-                                    </div>
+                <div className="bg-[#0a0a0a] rounded-xl border border-white/10 overflow-hidden">
+                    <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/5 border-b border-white/10 p-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                                <span className="text-xl">💰</span>
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-white">Relatórios Financeiros</h3>
+                                <p className="text-xs text-gray-400">{totalFinancial} relatório(s) publicado(s)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        {financialStatements.length === 0 ? (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
                                 </div>
-                            ))}
+                                <p className="text-sm text-gray-500 mb-4">Nenhum relatório financeiro cadastrado</p>
+                                <button
+                                    onClick={() => navigate('/admin/transparency-editor/financial/new')}
+                                    className="text-xs text-[#c4b5fd] hover:text-white font-semibold"
+                                >
+                                    + Criar primeiro relatório
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {financialStatements.sort((a,b) => b.year - a.year).map(fs => (
+                                    <div key={fs.id} className="group bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-green-500/30 rounded-lg p-4 transition-all">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="text-lg font-black text-white">{fs.year}</span>
+                                                    <span className="text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded-full font-semibold">Financeiro</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                                    <div>
+                                                        <p className="text-gray-500">Receita</p>
+                                                        <p className="text-green-400 font-bold">{fs.totalRevenue}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-gray-500">Despesas</p>
+                                                        <p className="text-red-400 font-bold">{fs.totalExpenses}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <button 
+                                                    onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)}
+                                                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    title="Editar"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDelete('financial', fs.id, fs.year)}
+                                                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+                                                    title="Excluir"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Annual Reports */}
-                <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                    <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios de Impacto</h3>
-                    <div className="space-y-2">
-                         {annualReports.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
-                            annualReports.sort((a,b) => b.year - a.year).map(ar => (
-                                <div key={ar.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                                    <div>
-                                         <span className="font-bold text-white text-sm block">{ar.year}</span>
-                                         <span className="text-[10px] text-gray-500">Autor: {ar.coordinationLetter.authorName}</span>
-                                    </div>
-                                    <div className="flex gap-2 text-xs">
-                                        <button onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
-                                        <button onClick={() => handleDeleteAnnualReport(ar.id)} className="text-red-500 hover:text-red-400">Excluir</button>
-                                    </div>
+                <div className="bg-[#0a0a0a] rounded-xl border border-white/10 overflow-hidden">
+                    <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/5 border-b border-white/10 p-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                <span className="text-xl">📊</span>
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-white">Relatórios de Impacto</h3>
+                                <p className="text-xs text-gray-400">{totalImpact} relatório(s) publicado(s)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar">
+                        {annualReports.length === 0 ? (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
                                 </div>
-                            ))}
+                                <p className="text-sm text-gray-500 mb-4">Nenhum relatório de impacto cadastrado</p>
+                                <button
+                                    onClick={() => navigate('/admin/transparency-editor/report/new')}
+                                    className="text-xs text-[#c4b5fd] hover:text-white font-semibold"
+                                >
+                                    + Criar primeiro relatório
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {annualReports.sort((a,b) => b.year - a.year).map(ar => (
+                                    <div key={ar.id} className="group bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-purple-500/30 rounded-lg p-4 transition-all">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="text-lg font-black text-white">{ar.year}</span>
+                                                    <span className="text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full font-semibold">Impacto</span>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-2 text-xs">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                        </svg>
+                                                        <span className="text-gray-400">{ar.coordinationLetter.authorName}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-xs">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                                        </svg>
+                                                        <span className="text-gray-400">{ar.testimonials.length} depoimento(s)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-1">
+                                                <button 
+                                                    onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)}
+                                                    className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
+                                                    title="Editar"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDelete('report', ar.id, ar.year)}
+                                                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+                                                    title="Excluir"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -1771,6 +2122,15 @@ const Dashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+    // Handler para navegação especial (páginas externas ao dashboard)
+    const handleTabChange = (tab: string) => {
+        if (tab === 'gemini-api') {
+            navigate('/gemini-api-dashboard');
+        } else {
+            setActiveTab(tab);
+        }
+    };
+
     // --- CRITICAL: Load all resources needed for the Dashboard on mount ---
     useEffect(() => {
         if (user) {
@@ -1947,6 +2307,52 @@ const Dashboard: React.FC = () => {
                     />
                 </div>
 
+                {/* Gemini API Status Card */}
+                <div className="mt-6 bg-info/5 border border-info/20 rounded-xl p-6 hover:border-info/40 transition-all">
+                    <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-4 flex-1">
+                            <div className="w-12 h-12 rounded-full bg-brand-gold/20 flex items-center justify-center flex-shrink-0">
+                                <span className="text-2xl">🤖</span>
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="text-lg font-bold text-white mb-1">API Gemini - Plano Gratuito</h3>
+                                <p className="text-sm text-gray-400 mb-3">
+                                    Monitore o uso da API do Google Gemini para evitar interrupções
+                                </p>
+                                <div className="grid grid-cols-2 gap-4 mb-3">
+                                    <div>
+                                        <p className="text-xs text-gray-500 mb-1">Texto (hoje)</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                                                <div className="h-full bg-brand-cyan" style={{width: '23%'}}></div>
+                                            </div>
+                                            <span className="text-xs font-bold text-white">342/1.500</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 mb-1">Imagem (hoje)</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                                                <div className="h-full bg-warning" style={{width: '96%'}}></div>
+                                            </div>
+                                            <span className="text-xs font-bold text-warning">48/50</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                    ⚠️ Quota de imagens próxima do limite • Reset em 6h
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => navigate('/gemini-api-dashboard')}
+                            className="ml-4 bg-info hover:bg-info/90 text-white font-bold py-2 px-4 rounded-lg transition-all text-sm whitespace-nowrap"
+                        >
+                            Ver Detalhes →
+                        </button>
+                    </div>
+                </div>
+
                 <div className="grid lg:grid-cols-3 gap-8">
                     {/* System Status & Recent Activity */}
                     <div className="lg:col-span-2 bg-[#121212] border border border-white/10 rounded-2xl p-6">
@@ -2090,70 +2496,9 @@ const Dashboard: React.FC = () => {
         );
     };
     
-    // --- Transparency Panel (NEW) ---
-    const TransparencyPanel: React.FC = () => {
-        const { financialStatements, annualReports, handleDeleteFinancialStatement, handleDeleteAnnualReport } = useAppContext();
-        const navigate = useNavigate();
-
-        return (
-            <div className="space-y-8 animate-fade-in">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div>
-                        <h2 className="text-xl font-bold text-white">Portal da Transparência</h2>
-                        <p className="text-xs text-gray-400 mt-1">Gerencie relatórios financeiros e de impacto.</p>
-                    </div>
-                    <button 
-                        onClick={() => navigate('/admin/transparency-editor')}
-                        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20"
-                    >
-                        <span>+</span> Novo Relatório
-                    </button>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                    {/* Financial Statements */}
-                    <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                        <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios Financeiros</h3>
-                        <div className="space-y-2">
-                             {financialStatements.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
-                                financialStatements.sort((a,b) => b.year - a.year).map(fs => (
-                                    <div key={fs.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                                        <div>
-                                            <span className="font-bold text-white text-sm block">{fs.year}</span>
-                                            <span className="text-[10px] text-gray-500">Receita: <span className="text-green-400">{fs.totalRevenue}</span></span>
-                                        </div>
-                                        <div className="flex gap-2 text-xs">
-                                            <button onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
-                                            <button onClick={() => handleDeleteFinancialStatement(fs.id)} className="text-red-500 hover:text-red-400">Excluir</button>
-                                        </div>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-
-                    {/* Annual Reports */}
-                    <div className="bg-white/[0.02] rounded-xl border border-white/5 p-6">
-                        <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-wider border-b border-white/5 pb-2">Relatórios de Impacto</h3>
-                        <div className="space-y-2">
-                             {annualReports.length === 0 ? <p className="text-xs text-gray-500 py-4 text-center">Nenhum relatório cadastrado.</p> : 
-                                annualReports.sort((a,b) => b.year - a.year).map(ar => (
-                                    <div key={ar.id} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                                        <div>
-                                             <span className="font-bold text-white text-sm block">{ar.year}</span>
-                                             <span className="text-[10px] text-gray-500">Autor: {ar.coordinationLetter.authorName}</span>
-                                        </div>
-                                        <div className="flex gap-2 text-xs">
-                                            <button onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)} className="text-blue-400 hover:text-blue-300">Editar</button>
-                                            <button onClick={() => handleDeleteAnnualReport(ar.id)} className="text-red-500 hover:text-red-400">Excluir</button>
-                                        </div>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    };
+    // --- FINAL GUARD CLAUSE ---
+    // Only return null here, AFTER all hooks have run.
+    if (!user) return null;
 
     // --- FINAL GUARD CLAUSE ---
     // Only return null here, AFTER all hooks have run.
@@ -2166,10 +2511,10 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#09090B] bg-background flex">
+        <div className="min-h-screen bg-[#09090B] flex">
             <DashboardSidebar 
                 activeTab={activeTab} 
-                onTabChange={setActiveTab} 
+                onTabChange={handleTabChange} 
                 userRole={user.role} 
                 isOpen={isSidebarOpen} 
                 onClose={() => setIsSidebarOpen(false)} 
@@ -2178,8 +2523,8 @@ const Dashboard: React.FC = () => {
             <div className="flex-1 flex flex-col min-w-0 md:pl-64 transition-all duration-300">
                 <DashboardHeader user={user} toggleSidebar={() => setIsSidebarOpen(true)} title={tabTitles[activeTab]} />
                 
-                <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-                    <div className="max-w-7xl mx-auto animate-fade-in">
+                <main className="flex-1 p-6 overflow-y-auto custom-scrollbar relative">
+                    <div className="max-w-7xl mx-auto relative z-10">
                         {/* CONDITIONAL OVERVIEW */}
                         {activeTab === 'overview' && renderOverview()}
                         

@@ -150,7 +150,7 @@ const TransparencyEditor: React.FC = () => {
     }, [id, isNew, isFinancial, isReport, financialStatements, annualReports]);
 
     // --- Selection (Tabs) logic if creating new ---
-    const [selectedType, setSelectedType] = useState<'financial' | 'report'>(type as 'financial' | 'report' || 'financial');
+    const [selectedType, setSelectedType] = useState<'financial' | 'report'>((type as 'financial' | 'report') || 'financial');
     
     // If editing, force the type
     useEffect(() => {
@@ -162,11 +162,32 @@ const TransparencyEditor: React.FC = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validação
         if (selectedType === 'financial') {
+            if (!financialData.year || financialData.year < 2000) {
+                alert('⚠️ Por favor, informe um ano válido.');
+                return;
+            }
+            if (!financialData.totalRevenue || !financialData.totalExpenses) {
+                alert('⚠️ Por favor, preencha receita e despesa total.');
+                return;
+            }
             handleSaveFinancialStatement(financialData);
+            alert('✅ Relatório financeiro salvo com sucesso!');
         } else {
+            if (!reportData.year || reportData.year < 2000) {
+                alert('⚠️ Por favor, informe um ano válido.');
+                return;
+            }
+            if (!reportData.coordinationLetter.text || reportData.coordinationLetter.text.length < 50) {
+                alert('⚠️ A carta da coordenação deve ter pelo menos 50 caracteres.');
+                return;
+            }
             handleSaveAnnualReport(reportData);
+            alert('✅ Relatório de impacto salvo com sucesso!');
         }
+        
         navigate('/admin');
     };
 

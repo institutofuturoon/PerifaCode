@@ -54,11 +54,11 @@ const ForumPostCard: React.FC<ForumPostCardProps> = ({ post, onPostSelect }) => 
             <div className="flex-1 min-w-0">
                 <div className="flex items-start gap-2 mb-2 flex-wrap">
                     {isQuestion ? (
-                        <span className={`flex-shrink-0 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border ${post.isSolved ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
+                        <span className={`flex-shrink-0 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border ${post.isSolved ? 'bg-brand-cyan/10 text-brand-cyan border-brand-cyan/20' : 'bg-warning/10 text-warning border-warning/20'}`}>
                             {post.isSolved ? '✓ Resolvido' : '? Dúvida'}
                         </span>
                     ) : (
-                        <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                        <span className="flex-shrink-0 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-info/10 text-info border border-info/20">
                             Discussão
                         </span>
                     )}

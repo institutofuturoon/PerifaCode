@@ -4,7 +4,7 @@ import React from 'react';
 interface BadgeProps {
   text: string;
   className?: string;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'outline';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'outline' | 'info' | 'new' | 'live' | 'premium';
 }
 
 const Badge: React.FC<BadgeProps> = ({ text, className = '', variant = 'default' }) => {
@@ -16,22 +16,46 @@ const Badge: React.FC<BadgeProps> = ({ text, className = '', variant = 'default'
       dot: 'bg-[#8a4add]'
     },
     success: {
-      bg: 'bg-green-500/10',
-      border: 'border-green-500/20',
-      text: 'text-green-400',
-      dot: 'bg-green-500'
+      bg: 'bg-success/10',
+      border: 'border-success/20',
+      text: 'text-success',
+      dot: 'bg-success'
     },
     warning: {
-      bg: 'bg-yellow-500/10',
-      border: 'border-yellow-500/20',
-      text: 'text-yellow-400',
-      dot: 'bg-yellow-500'
+      bg: 'bg-warning/10',
+      border: 'border-warning/20',
+      text: 'text-warning',
+      dot: 'bg-warning'
     },
     danger: {
-      bg: 'bg-red-500/10',
-      border: 'border-red-500/20',
-      text: 'text-red-400',
-      dot: 'bg-red-500'
+      bg: 'bg-error/10',
+      border: 'border-error/20',
+      text: 'text-error',
+      dot: 'bg-error'
+    },
+    info: {
+      bg: 'bg-info/10',
+      border: 'border-info/20',
+      text: 'text-info',
+      dot: 'bg-info'
+    },
+    new: {
+      bg: 'bg-brand-orange',
+      border: 'border-brand-orange',
+      text: 'text-white',
+      dot: 'bg-white'
+    },
+    live: {
+      bg: 'bg-brand-orange/10',
+      border: 'border-brand-orange/30',
+      text: 'text-brand-orange',
+      dot: 'bg-brand-orange'
+    },
+    premium: {
+      bg: 'bg-gradient-to-r from-brand-gold to-brand-orange',
+      border: 'border-transparent',
+      text: 'text-white',
+      dot: 'bg-white'
     },
     outline: {
         bg: 'bg-transparent',

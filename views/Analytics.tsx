@@ -98,12 +98,12 @@ const StudentRetentionChart: React.FC<{data: typeof MOCK_ANALYTICS_DATA.studentR
                 <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
                     <defs>
                         <linearGradient id="retentionGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4"/>
-                            <stop offset="100%" stopColor="#60a5fa" stopOpacity="0"/>
+                            <stop offset="0%" stopColor="#05a7f2" stopOpacity="0.4"/>
+                            <stop offset="100%" stopColor="#05a7f2" stopOpacity="0"/>
                         </linearGradient>
                     </defs>
                     <path d={areaPath} fill="url(#retentionGradient)" />
-                    <polyline fill="none" stroke="#60a5fa" strokeWidth="2" points={points} />
+                    <polyline fill="none" stroke="#05a7f2" strokeWidth="2" points={points} />
                 </svg>
             </div>
         </div>

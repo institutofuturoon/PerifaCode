@@ -85,7 +85,7 @@ const AboutUsView: React.FC = () => {
             </section>
             
             {/* Nossos Princípios (Baseado na Imagem Enviada) */}
-            <Section className="bg-black/20">
+            <Section className="bg-brand-navy/30">
                 <div className="max-w-4xl mx-auto text-center mb-16">
                     <h2 className="text-4xl font-black tracking-tight text-white">Nosso Manifesto</h2>
                     <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4 mb-6"></div>
@@ -184,7 +184,7 @@ const AboutUsView: React.FC = () => {
 
 
             {/* Team & Donate CTA Section */}
-            <Section className="bg-black/20">
+            <Section className="bg-brand-navy/30">
                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                      <div className="grid md:grid-cols-2 gap-8">
                         <ActionCard

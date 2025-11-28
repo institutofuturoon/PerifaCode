@@ -22,13 +22,13 @@ const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> =
 );
 
 const FinancialCard: React.FC<{ value: string, label: string, icon: React.ReactNode, color: string }> = ({ value, label, icon, color }) => (
-    <div className="bg-white/5 p-6 rounded-lg border border-white/10 flex items-center gap-4">
+    <div className="bg-info/5 p-6 rounded-lg border border-info/20 flex items-center gap-4 hover:border-info/40 transition-colors">
         <div className={`flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center text-white ${color}`}>
             {icon}
         </div>
         <div>
             <p className="text-3xl font-bold text-white">{value}</p>
-            <p className="text-sm text-gray-400">{label}</p>
+            <p className="text-sm text-info">{label}</p>
         </div>
     </div>
 );
@@ -37,14 +37,18 @@ const FinancialCard: React.FC<{ value: string, label: string, icon: React.ReactN
 const DonutChart: React.FC<{ items: FinancialItem[], title: string }> = ({ items, title }) => {
     // Map tailwind class names to hex codes for the gradient
     const colorMap: Record<string, string> = {
-        'bg-sky-500': '#0ea5e9',
-        'bg-green-500': '#22c55e',
-        'bg-red-500': '#ef4444',
-        'bg-yellow-500': '#eab308',
-        'bg-purple-500': '#a855f7',
-        'bg-pink-500': '#ec4899',
-        'bg-orange-500': '#f97316',
+        'bg-sky-500': '#05a7f2',      // Ciano da paleta
+        'bg-green-500': '#10b981',    // Verde success
+        'bg-red-500': '#d01717',      // Vermelho da paleta
+        'bg-yellow-500': '#d99204',   // Dourado da paleta
+        'bg-purple-500': '#8a4add',   // Roxo principal
+        'bg-pink-500': '#f27983',     // Rosa secundária
+        'bg-orange-500': '#f28705',   // Laranja da paleta
         'bg-gray-500': '#6b7280',
+        'bg-info': '#034c8c',         // Azul escuro
+        'bg-brand-cyan': '#05a7f2',
+        'bg-brand-gold': '#d99204',
+        'bg-brand-orange': '#f28705',
     };
 
     // Calculate gradient string

@@ -21,12 +21,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onProjectSelect }) =
     >
       {/* Status Badges */}
       {isPending && (
-        <div className="absolute top-1.5 left-1.5 z-20 bg-yellow-500 text-black text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
+        <div className="absolute top-1.5 left-1.5 z-20 bg-warning text-black text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
             ⏳ ANÁLISE
         </div>
       )}
        {isRejected && (
-        <div className="absolute top-1.5 left-1.5 z-20 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
+        <div className="absolute top-1.5 left-1.5 z-20 bg-error text-white text-[8px] font-bold px-1 py-0.5 rounded shadow-md">
             🚫 REJEITADO
         </div>
       )}

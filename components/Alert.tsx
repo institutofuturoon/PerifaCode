@@ -10,27 +10,31 @@ interface AlertProps {
 const alertConfig = {
   info: {
     icon: '💡',
-    borderColor: 'border-sky-500',
-    iconBgColor: 'bg-sky-500/20',
-    iconTextColor: 'text-sky-400',
+    borderColor: 'border-info',
+    iconBgColor: 'bg-info/20',
+    iconTextColor: 'text-info',
+    bgColor: 'bg-info/5',
   },
   success: {
     icon: '✅',
-    borderColor: 'border-green-500',
-    iconBgColor: 'bg-green-500/20',
-    iconTextColor: 'text-green-400',
+    borderColor: 'border-success',
+    iconBgColor: 'bg-success/20',
+    iconTextColor: 'text-success',
+    bgColor: 'bg-success/5',
   },
   warning: {
     icon: '⚠️',
-    borderColor: 'border-yellow-500',
-    iconBgColor: 'bg-yellow-500/20',
-    iconTextColor: 'text-yellow-400',
+    borderColor: 'border-warning',
+    iconBgColor: 'bg-warning/20',
+    iconTextColor: 'text-warning',
+    bgColor: 'bg-warning/5',
   },
   danger: {
     icon: '🔥',
-    borderColor: 'border-red-500',
-    iconBgColor: 'bg-red-500/20',
-    iconTextColor: 'text-red-400',
+    borderColor: 'border-error',
+    iconBgColor: 'bg-error/20',
+    iconTextColor: 'text-error',
+    bgColor: 'bg-error/5',
   },
 };
 
@@ -38,7 +42,7 @@ const Alert: React.FC<AlertProps> = ({ type = 'info', children }) => {
   const config = alertConfig[type];
 
   return (
-    <div className={`my-6 bg-white/5 border-l-4 ${config.borderColor} rounded-r-lg p-6 flex items-start gap-4`}>
+    <div className={`my-6 ${config.bgColor} border-l-4 ${config.borderColor} rounded-r-lg p-6 flex items-start gap-4`}>
       <div className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${config.iconBgColor}`}>
         <span className={`text-lg ${config.iconTextColor}`}>{config.icon}</span>
       </div>

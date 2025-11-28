@@ -4,6 +4,8 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
 import { MarketingPost } from '../types';
+import { useGeminiTextRateLimit, useGeminiImageRateLimit } from '../hooks/useRateLimit';
+import Alert from '../components/Alert';
 
 // --- Preview Components ---
 
@@ -141,7 +143,11 @@ const TwitterPreview: React.FC<{ content: Partial<MarketingPost>, loadingImage: 
 // --- Main View ---
 
 const MarketingGeneratorView: React.FC = () => {
-    const { showToast, handleSaveMarketingPost, marketingPosts, user, handleDeleteMarketingPost } = useAppContext();
+    const { showToast, handleSaveMarketingPost, marketingPosts, user, handleDeleteMarketingPost, settings } = useAppContext();
+    
+    // Rate limiting hooks
+    const textRateLimit = useGeminiTextRateLimit();
+    const imageRateLimit = useGeminiImageRateLimit();
     
     const [topic, setTopic] = useState('');
     const [platform, setPlatform] = useState('Instagram');
@@ -181,6 +187,14 @@ const MarketingGeneratorView: React.FC = () => {
 
     const handleGenerate = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Verificar rate limit antes de fazer requisição
+        if (!textRateLimit.checkRateLimit()) {
+            const timeUntilReset = textRateLimit.getTimeUntilReset();
+            showToast(`⏳ Limite de requisições atingido. Aguarde ${timeUntilReset}s para tentar novamente.`);
+            return;
+        }
+        
         if (!topic.trim() && !activeImageUrl) {
             showToast("Por favor, descreva o tópico ou forneça uma imagem.");
             return;
@@ -443,18 +457,64 @@ const MarketingGeneratorView: React.FC = () => {
         }
     };
 
+    // Verificar se Marketing Studio está habilitado
+    if (settings.marketingStudioEnabled === false) {
+        return (
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div className="max-w-2xl mx-auto text-center">
+                    <div className="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span className="text-4xl">🚫</span>
+                    </div>
+                    <h1 className="text-3xl font-black text-white mb-4">
+                        Marketing Studio Desabilitado
+                    </h1>
+                    <p className="text-gray-400 mb-8">
+                        Esta funcionalidade foi temporariamente desabilitada pelo administrador.
+                        Entre em contato se precisar de acesso.
+                    </p>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-lg transition-all"
+                    >
+                        ← Voltar
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div className="mb-8">
                 <h1 className="text-3xl font-black text-white">Marketing Studio <span className="text-[#8a4add] text-xl">AI</span></h1>
                 <p className="text-gray-400 mt-1">Crie posts completos baseados em ideias, pesquisas ou imagens reais.</p>
                 
+                {/* Rate Limit Info */}
+                {textRateLimit.isBlocked && (
+                    <Alert type="danger">
+                        <strong>Limite de requisições atingido!</strong> Aguarde {textRateLimit.getTimeUntilReset()}s para fazer novas gerações.
+                    </Alert>
+                )}
+                
+                {!textRateLimit.isBlocked && textRateLimit.remainingRequests <= 5 && (
+                    <div className="mt-4 bg-warning/10 border border-warning/20 rounded-lg p-3 flex items-start gap-3">
+                        <span className="text-warning text-lg flex-shrink-0">⚠️</span>
+                        <div className="text-xs text-warning">
+                            <p className="font-semibold mb-1">Atenção: Poucas requisições restantes</p>
+                            <p className="opacity-80">
+                                Você tem apenas {textRateLimit.remainingRequests} gerações restantes neste minuto.
+                                Use com moderação para evitar bloqueio temporário.
+                            </p>
+                        </div>
+                    </div>
+                )}
+                
                 {/* Quota Warning */}
-                <div className="mt-4 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex items-start gap-3">
-                    <span className="text-amber-400 text-lg flex-shrink-0">⚠️</span>
-                    <div className="text-xs text-amber-200">
+                <div className="mt-4 bg-warning/10 border border-warning/20 rounded-lg p-3 flex items-start gap-3">
+                    <span className="text-warning text-lg flex-shrink-0">⚠️</span>
+                    <div className="text-xs text-warning">
                         <p className="font-semibold mb-1">Geração de imagens temporariamente limitada</p>
-                        <p className="text-amber-300/80">A quota gratuita da API do Gemini foi atingida. Posts serão gerados com imagens do Unsplash ou você pode fazer upload da sua própria imagem.</p>
+                        <p className="opacity-80">A quota gratuita da API do Gemini foi atingida. Posts serão gerados com imagens do Unsplash ou você pode fazer upload da sua própria imagem.</p>
                     </div>
                 </div>
             </div>

@@ -37,7 +37,7 @@ const FooterList: React.FC<{ title: string; children: React.ReactNode }> = ({ ti
 const Footer: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <footer id="landing-pad" className="bg-[#09090B] text-white border-t border-white/5 relative z-20">
+    <footer id="landing-pad" className="bg-brand-navy text-white border-t border-white/5 relative z-20">
       <div className="container mx-auto py-16 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           

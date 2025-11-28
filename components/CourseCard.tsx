@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Course } from '../types';
+import StatusBadge from './StatusBadge';
 
 interface CourseCardProps {
   course: Course;
@@ -27,10 +28,13 @@ const CategoryIcon: React.FC<{ category?: string }> = ({ category }) => {
 };
 
 const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progress = 0, isEnrolled = false }) => {
+  // Verificar se o curso é novo (criado nos últimos 30 dias)
+  const isNewCourse = course.id ? false : false; // TODO: Implementar lógica de data
+  
   const statusConfig = {
-    open: { text: 'Abertas', classes: 'bg-green-500/80' },
-    closed: { text: 'Fechadas', classes: 'bg-red-500/80' },
-    soon: { text: 'Em Breve', classes: 'bg-sky-500/80' }
+    open: { text: 'Abertas', variant: 'success' as const },
+    closed: { text: 'Fechadas', variant: 'error' as const },
+    soon: { text: 'Em Breve', variant: 'warning' as const }
   };
   const status = course.enrollmentStatus ? statusConfig[course.enrollmentStatus] : null;
 
@@ -43,21 +47,31 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
         <img className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" src={course.imageUrl} alt={course.title} />
         <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent opacity-60"></div>
         
-        {status && !isEnrolled && (
-            <div className={`absolute top-2 left-2 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white uppercase tracking-wide shadow-sm ${status.classes}`}>
-              {status.text}
-            </div>
+        {/* Badge NOVO - Laranja */}
+        {isNewCourse && !isEnrolled && (
+          <div className="absolute top-2 left-2">
+            <StatusBadge variant="new">🆕 NOVO</StatusBadge>
+          </div>
         )}
         
+        {/* Status de inscrição */}
+        {status && !isEnrolled && !isNewCourse && (
+          <div className="absolute top-2 left-2">
+            <StatusBadge variant={status.variant}>{status.text}</StatusBadge>
+          </div>
+        )}
+        
+        {/* Barra de progresso */}
         {isEnrolled && (
              <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-700">
                 <div 
-                    className={`h-full ${progress === 100 ? 'bg-green-500' : 'bg-[#8a4add]'}`} 
+                    className={`h-full ${progress === 100 ? 'bg-success' : 'bg-brand-cyan'}`} 
                     style={{ width: `${progress}%` }}
                 ></div>
              </div>
         )}
 
+        {/* Nível do curso */}
         <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10">
           {course.skillLevel}
         </div>
@@ -83,8 +97,15 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, onCourseSelect, progres
         <div className="mt-auto pt-3 border-t border-white/5 w-full">
             {isEnrolled ? (
                 <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-300">
-                        {progress === 100 ? 'Concluído 🎉' : `${progress}% concluído`}
+                    <span className="text-xs font-medium text-gray-300 flex items-center gap-1.5">
+                        {progress === 100 ? (
+                          <>
+                            <span className="text-success">✓</span>
+                            <span>Concluído</span>
+                          </>
+                        ) : (
+                          `${progress}% concluído`
+                        )}
                     </span>
                     <span className="text-xs font-bold text-[#c4b5fd] group-hover:translate-x-1 transition-transform flex items-center gap-1">
                         {progress === 100 ? 'Revisar' : 'Continuar'} &rarr;

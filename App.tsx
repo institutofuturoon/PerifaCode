@@ -21,6 +21,7 @@ import LessonView from './views/LessonView';
 import CourseEditor from './views/CourseEditor';
 import CertificateView from './views/CertificateView';
 import Analytics from './views/Analytics';
+import GeminiApiDashboard from './views/GeminiApiDashboard';
 import ArticleView from './views/ArticleView';
 import ArticleEditor from './views/ArticleEditor';
 import StudentEditor from './views/StudentEditor';
@@ -42,6 +43,7 @@ import DonateView from './views/DonateView';
 import AboutUsView from './views/AboutUsView';
 import AnnualReportView from './views/AnnualReportView';
 import FinancialStatementView from './views/FinancialStatementView';
+import TransparencyView from './views/TransparencyView';
 import EventDetailView from './views/EventDetailView';
 import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
@@ -83,6 +85,7 @@ const DEFAULT_SETTINGS: SystemSettings = {
     siteName: 'FuturoOn',
     primaryColor: '#8a4add',
     secondaryColor: '#f27983',
+    marketingStudioEnabled: true, // Marketing Studio habilitado por padrão
     backgroundColor: '#09090B',
     surfaceColor: '#121212',
     gradientStart: '#8a4add', // Default gradient matches primary
@@ -1112,6 +1115,7 @@ const AppContent: React.FC = () => {
                     <Route path="/admin/transparency-editor" element={<TransparencyEditor />} />
                     <Route path="/admin/transparency-editor/:type/:id" element={<TransparencyEditor />} />
                     <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/gemini-api-dashboard" element={<GeminiApiDashboard />} />
                     <Route path="/community" element={<CommunityView />} />
                     <Route path="/forum" element={<ForumView />} />
                     <Route path="/project/:projectId" element={<ProjectDetailView />} />
@@ -1130,6 +1134,7 @@ const AppContent: React.FC = () => {
                     <Route path="/team" element={<TeamView />} />
                     <Route path="/donate" element={<DonateView />} />
                     <Route path="/about" element={<AboutUsView />} />
+                    <Route path="/transparency" element={<TransparencyView />} />
                     <Route path="/annual-report" element={<AnnualReportView />} />
                     <Route path="/financial-statement" element={<FinancialStatementView />} />
                     <Route path="/upload-test" element={<StudentUploadTest />} />

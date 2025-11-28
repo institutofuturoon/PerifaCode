@@ -338,6 +338,47 @@ export const MOCK_ANALYTICS_DATA_V2: AnalyticsData = {
 
 export const MOCK_FINANCIAL_STATEMENTS: FinancialStatement[] = [
     {
+        id: 'fin_2025',
+        year: 2025,
+        totalRevenue: 'R$ 850.000,00',
+        totalExpenses: 'R$ 780.000,00',
+        reinvested: 'R$ 70.000,00',
+        revenueBreakdown: [
+            { label: 'Parcerias Corporativas', value: 'R$ 480k', percentage: 56, color: 'bg-purple-500' },
+            { label: 'Doações Individuais', value: 'R$ 200k', percentage: 24, color: 'bg-pink-500' },
+            { label: 'Editais e Fomento Público', value: 'R$ 120k', percentage: 14, color: 'bg-sky-500' },
+            { label: 'Eventos e Campanhas', value: 'R$ 50k', percentage: 6, color: 'bg-amber-500' }
+        ],
+        expensesBreakdown: [
+            { label: 'Programas Educacionais', value: 'R$ 390k', percentage: 50, color: 'bg-green-500' },
+            { label: 'Infraestrutura e Tecnologia', value: 'R$ 195k', percentage: 25, color: 'bg-blue-500' },
+            { label: 'Equipe e Recursos Humanos', value: 'R$ 125k', percentage: 16, color: 'bg-purple-500' },
+            { label: 'Marketing e Comunicação', value: 'R$ 40k', percentage: 5, color: 'bg-pink-500' },
+            { label: 'Administrativo e Jurídico', value: 'R$ 30k', percentage: 4, color: 'bg-gray-500' }
+        ],
+        documentsUrl: '#'
+    },
+    {
+        id: 'fin_2024',
+        year: 2024,
+        totalRevenue: 'R$ 620.000,00',
+        totalExpenses: 'R$ 570.000,00',
+        reinvested: 'R$ 50.000,00',
+        revenueBreakdown: [
+            { label: 'Parcerias Corporativas', value: 'R$ 340k', percentage: 55, color: 'bg-purple-500' },
+            { label: 'Doações Individuais', value: 'R$ 145k', percentage: 23, color: 'bg-pink-500' },
+            { label: 'Editais e Fomento', value: 'R$ 105k', percentage: 17, color: 'bg-sky-500' },
+            { label: 'Outros', value: 'R$ 30k', percentage: 5, color: 'bg-gray-500' }
+        ],
+        expensesBreakdown: [
+            { label: 'Educação (Salários/Bolsas)', value: 'R$ 280k', percentage: 49, color: 'bg-green-500' },
+            { label: 'Infraestrutura e Tecnologia', value: 'R$ 165k', percentage: 29, color: 'bg-blue-500' },
+            { label: 'Alimentação e Transporte', value: 'R$ 85k', percentage: 15, color: 'bg-yellow-500' },
+            { label: 'Administrativo', value: 'R$ 40k', percentage: 7, color: 'bg-red-500' }
+        ],
+        documentsUrl: '#'
+    },
+    {
         id: 'fin_2023',
         year: 2023,
         totalRevenue: 'R$ 450.000,00',
@@ -360,6 +401,74 @@ export const MOCK_FINANCIAL_STATEMENTS: FinancialStatement[] = [
 ];
 
 export const MOCK_ANNUAL_REPORTS: AnnualReport[] = [
+    {
+        id: 'rep_2025',
+        year: 2025,
+        stats: [
+            { label: 'Alunos Atendidos', value: '580', color: 'text-purple-400' },
+            { label: 'Taxa de Empregabilidade', value: '82%', color: 'text-green-400' },
+            { label: 'Mulheres na Tech', value: '48%', color: 'text-pink-400' },
+            { label: 'Horas de Mentoria', value: '2.500h', color: 'text-blue-400' },
+            { label: 'Projetos Desenvolvidos', value: '156', color: 'text-amber-400' },
+            { label: 'Parcerias Ativas', value: '12', color: 'text-cyan-400' }
+        ],
+        coordinationLetter: {
+            text: "2025 marca um novo capítulo na história do FuturoOn. Alcançamos a marca de 580 alunos atendidos, com uma taxa de empregabilidade de 82% - resultado que nos enche de orgulho e responsabilidade. Nossa plataforma digital foi completamente renovada, incorporando IA para personalizar a jornada de aprendizado de cada estudante. Expandimos para três novas comunidades e lançamos o programa 'Mulheres que Codam', que já representa 48% dos nossos alunos. Mas o que mais me emociona são as histórias: mães que voltaram a estudar, jovens que conseguiram o primeiro emprego, famílias transformadas pela tecnologia. Cada linha de código escrita aqui carrega esperança e possibilidade. Agradeço profundamente a cada parceiro, doador, voluntário e aluno que faz parte dessa transformação. Juntos, estamos provando que o futuro se constrói com educação, tecnologia e muita determinação.",
+            authorName: "Thaís Santana",
+            authorRole: "Fundadora e Diretora Executiva",
+            authorAvatarUrl: "https://randomuser.me/api/portraits/women/68.jpg"
+        },
+        testimonials: [
+            {
+                name: "Mariana Silva",
+                quote: "Eu era manicure e mãe solo. Hoje sou desenvolvedora frontend em uma startup. O FuturoOn não só me ensinou a programar, me deu uma nova identidade profissional. Minha filha agora me vê como exemplo.",
+                role: "Desenvolvedora Frontend Jr.",
+                avatarUrl: "https://randomuser.me/api/portraits/women/32.jpg"
+            },
+            {
+                name: "Rafael Santos",
+                quote: "Cresci no Complexo da Coruja sem perspectiva. Hoje trabalho remoto para uma empresa dos EUA ganhando em dólar. A educação de qualidade mudou completamente minha trajetória.",
+                role: "Desenvolvedor Backend Pleno",
+                avatarUrl: "https://randomuser.me/api/portraits/men/67.jpg"
+            },
+            {
+                name: "Camila Rodrigues",
+                quote: "O programa Mulheres que Codam me mostrou que eu posso ser quem eu quiser. Hoje estou no meu primeiro estágio e já contribuindo com projetos reais. É surreal!",
+                role: "Estagiária de Desenvolvimento",
+                avatarUrl: "https://randomuser.me/api/portraits/women/55.jpg"
+            }
+        ]
+    },
+    {
+        id: 'rep_2024',
+        year: 2024,
+        stats: [
+            { label: 'Alunos Formados', value: '425', color: 'text-purple-400' },
+            { label: 'Taxa de Empregabilidade', value: '80%', color: 'text-green-400' },
+            { label: 'Mulheres na Tech', value: '46%', color: 'text-pink-400' },
+            { label: 'Projetos Entregues', value: '118', color: 'text-amber-400' }
+        ],
+        coordinationLetter: {
+            text: "2024 foi um ano de crescimento exponencial. Dobramos nossa capacidade de atendimento e mantivemos a qualidade que nos define. Lançamos novos cursos em áreas emergentes como IA e Cloud Computing, sempre com foco na empregabilidade real. Nossa comunidade se fortaleceu, com ex-alunos retornando como mentores voluntários. Esse ciclo virtuoso é a prova de que estamos no caminho certo.",
+            authorName: "Thaís Santana",
+            authorRole: "Fundadora e Diretora Executiva",
+            authorAvatarUrl: "https://randomuser.me/api/portraits/women/68.jpg"
+        },
+        testimonials: [
+            {
+                name: "Pedro Henrique",
+                quote: "Saí do desemprego para desenvolvedor júnior em 8 meses. O método prático do FuturoOn fez toda diferença. Hoje ajudo minha família e inspiro meus irmãos mais novos.",
+                role: "Desenvolvedor Full Stack Jr.",
+                avatarUrl: "https://randomuser.me/api/portraits/men/28.jpg"
+            },
+            {
+                name: "Juliana Alves",
+                quote: "Nunca imaginei que aos 35 anos eu mudaria de carreira. O FuturoOn me acolheu e me mostrou que nunca é tarde para recomeçar. Hoje trabalho com o que amo.",
+                role: "QA Engineer",
+                avatarUrl: "https://randomuser.me/api/portraits/women/41.jpg"
+            }
+        ]
+    },
     {
         id: 'rep_2023',
         year: 2023,

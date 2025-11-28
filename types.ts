@@ -11,6 +11,7 @@ export interface SystemSettings {
   gradientStart: string; // Nova: Início do degradê de texto/botões
   gradientEnd: string;   // Nova: Fim do degradê
   borderRadius: string;  // Nova: '0px', '0.5rem', '1rem', etc.
+  marketingStudioEnabled?: boolean; // Habilitar/desabilitar Marketing Studio
 }
 
 export interface User {
