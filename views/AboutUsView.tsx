@@ -42,12 +42,19 @@ const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> =
 );
 
 const TimelineItem: React.FC<{ year: string; title: string; description: string; isLeft: boolean; }> = ({ year, title, description, isLeft }) => (
-    <div className={`flex items-center w-full my-6 ${isLeft ? 'justify-start' : 'justify-end'}`}>
-        <div className={`w-full md:w-1/2 ${isLeft ? 'md:pr-8' : 'md:pl-8'}`}>
-            <div className="p-6 bg-white/5 rounded-lg border border-white/10">
-                <p className="text-sm font-semibold text-[#c4b5fd]">{year}</p>
-                <h3 className="mt-1 font-bold text-white">{title}</h3>
-                <p className="mt-2 text-sm text-gray-400">{description}</p>
+    <div className={`flex items-center w-full my-8 ${isLeft ? 'justify-start' : 'justify-end'}`}>
+        <div className={`w-full md:w-1/2 ${isLeft ? 'md:pr-12' : 'md:pl-12'}`}>
+            <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                <div className="relative p-6 bg-[#121212] rounded-xl border border-white/10 hover:border-[#8a4add]/30 transition-all duration-300">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="px-3 py-1 rounded-full bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-xs font-bold">
+                            {year}
+                        </div>
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#c4b5fd] transition-colors">{title}</h3>
+                    <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -84,6 +91,73 @@ const AboutUsView: React.FC = () => {
                 </div>
             </section>
             
+            {/* Mission, Vision, Values */}
+            <Section className="bg-black/20">
+                <SectionTitle subtitle="Os pilares que guiam cada decisão, cada projeto e cada vida transformada.">
+                    Missão, Visão e Valores
+                </SectionTitle>
+                <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#8a4add]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                        <div className="relative p-8 bg-[#121212] rounded-2xl border border-white/10 h-full hover:border-[#8a4add]/30 transition-all duration-300">
+                            <div className="w-12 h-12 rounded-full bg-[#8a4add]/10 flex items-center justify-center mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#8a4add]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-2xl font-black text-white mb-4">Missão</h3>
+                            <p className="text-gray-300 leading-relaxed">
+                                Democratizar o acesso à tecnologia e educação de qualidade, transformando jovens da periferia em protagonistas do futuro digital.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#f27983]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                        <div className="relative p-8 bg-[#121212] rounded-2xl border border-white/10 h-full hover:border-[#f27983]/30 transition-all duration-300">
+                            <div className="w-12 h-12 rounded-full bg-[#f27983]/10 flex items-center justify-center mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#f27983]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-2xl font-black text-white mb-4">Visão</h3>
+                            <p className="text-gray-300 leading-relaxed">
+                                Ser referência nacional em inclusão digital e social, criando um ecossistema onde talento e oportunidade se encontram, independente da origem.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#c4b5fd]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                        <div className="relative p-8 bg-[#121212] rounded-2xl border border-white/10 h-full hover:border-[#c4b5fd]/30 transition-all duration-300">
+                            <div className="w-12 h-12 rounded-full bg-[#c4b5fd]/10 flex items-center justify-center mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364l7.682 7.682a4.5 4.5 0 006.364 0l7.682-7.682a4.5 4.5 0 000-6.364L19.682 3.5a4.5 4.5 0 00-6.364 0L12 4.818 10.682 3.5a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-2xl font-black text-white mb-4">Valores</h3>
+                            <ul className="text-gray-300 leading-relaxed space-y-2">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-[#c4b5fd] mt-1">•</span>
+                                    <span>Inclusão e diversidade</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-[#c4b5fd] mt-1">•</span>
+                                    <span>Transparência total</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-[#c4b5fd] mt-1">•</span>
+                                    <span>Excelência educacional</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-[#c4b5fd] mt-1">•</span>
+                                    <span>Impacto social real</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </Section>
+
             {/* Nossos Princípios (Baseado na Imagem Enviada) */}
             <Section className="bg-brand-navy/30">
                 <div className="max-w-4xl mx-auto text-center mb-16">
@@ -131,19 +205,74 @@ const AboutUsView: React.FC = () => {
                 </div>
             </Section>
 
+            {/* Video/Media Section */}
+            <Section className="bg-black/20">
+                <SectionTitle subtitle="Veja de perto o impacto real do nosso trabalho e as histórias que nos movem todos os dias.">
+                    Conheça Nossa História
+                </SectionTitle>
+                <div className="max-w-4xl mx-auto">
+                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-[#8a4add]/20 to-[#f27983]/20 border border-white/10 group hover:border-[#8a4add]/30 transition-all duration-300">
+                        {/* Placeholder for video - replace with actual video embed */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center space-y-4">
+                                <div className="w-20 h-20 mx-auto rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#8a4add]/20 transition-all duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                </div>
+                                <p className="text-gray-300 text-lg font-semibold">Vídeo Institucional</p>
+                                <p className="text-gray-400 text-sm">Em breve: nossa história em movimento</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Section>
+
             {/* Timeline Section */}
             <Section>
                 <SectionTitle>Nossa Jornada de Conquistas</SectionTitle>
-                <div className="relative">
-                    {/* Vertical line */}
-                    <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 h-full w-0.5 bg-white/10"></div>
+                <div className="relative max-w-5xl mx-auto">
+                    {/* Vertical line with gradient */}
+                    <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 h-full w-1 bg-gradient-to-b from-[#8a4add] via-[#f27983] to-[#8a4add] opacity-20"></div>
                     {timelineData.map((item, index) => (
                         <div key={index} className="relative">
-                            {/* Dot on the timeline */}
-                            <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 items-center justify-center w-5 h-5 rounded-full bg-[#8a4add] border-2 border-black/50"></div>
+                            {/* Enhanced dot on the timeline */}
+                            <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 items-center justify-center">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] p-0.5">
+                                    <div className="w-full h-full rounded-full bg-[#0a0a0a] flex items-center justify-center">
+                                        <div className="w-3 h-3 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983]"></div>
+                                    </div>
+                                </div>
+                            </div>
                             <TimelineItem {...item} isLeft={index % 2 === 0} />
                         </div>
                     ))}
+                </div>
+            </Section>
+
+            {/* Photo Gallery Section */}
+            <Section className="bg-brand-navy/30">
+                <SectionTitle subtitle="Momentos reais, sorrisos verdadeiros e transformações que acontecem todos os dias.">
+                    Nosso Dia a Dia
+                </SectionTitle>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+                        <div key={item} className="relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 border border-white/10 group hover:border-[#8a4add]/30 transition-all duration-300 hover:scale-105">
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/30 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <p className="text-xs text-gray-400 mt-2">Foto {item}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="text-center mt-8">
+                    <p className="text-gray-400 text-sm">
+                        📸 Galeria em construção - Em breve, fotos reais das nossas atividades e eventos
+                    </p>
                 </div>
             </Section>
 
