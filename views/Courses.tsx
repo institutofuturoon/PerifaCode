@@ -162,6 +162,32 @@ const Courses: React.FC = () => {
              </div>
         </section>
 
+        {/* Statistics Section */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-16 relative z-20">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-6 rounded-2xl border border-white/10 text-center transform transition-all duration-300 hover:-translate-y-2 hover:border-[#8a4add]/40 hover:shadow-2xl hover:shadow-[#8a4add]/20">
+                    <div className="text-4xl mb-2">👥</div>
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">300+</p>
+                    <p className="text-xs md:text-sm text-gray-400 font-semibold uppercase tracking-wider">Alunos Formados</p>
+                </div>
+                <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-6 rounded-2xl border border-white/10 text-center transform transition-all duration-300 hover:-translate-y-2 hover:border-[#8a4add]/40 hover:shadow-2xl hover:shadow-[#8a4add]/20">
+                    <div className="text-4xl mb-2">🎓</div>
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">{courses.length}</p>
+                    <p className="text-xs md:text-sm text-gray-400 font-semibold uppercase tracking-wider">Cursos Disponíveis</p>
+                </div>
+                <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-6 rounded-2xl border border-white/10 text-center transform transition-all duration-300 hover:-translate-y-2 hover:border-[#8a4add]/40 hover:shadow-2xl hover:shadow-[#8a4add]/20">
+                    <div className="text-4xl mb-2">⭐</div>
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">4.8/5</p>
+                    <p className="text-xs md:text-sm text-gray-400 font-semibold uppercase tracking-wider">Avaliação Média</p>
+                </div>
+                <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-6 rounded-2xl border border-white/10 text-center transform transition-all duration-300 hover:-translate-y-2 hover:border-[#8a4add]/40 hover:shadow-2xl hover:shadow-[#8a4add]/20">
+                    <div className="text-4xl mb-2">💼</div>
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">85%</p>
+                    <p className="text-xs md:text-sm text-gray-400 font-semibold uppercase tracking-wider">Empregabilidade</p>
+                </div>
+            </div>
+        </section>
+
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-24 relative z-20">
             
             {canCreateCourse && (
@@ -175,6 +201,47 @@ const Courses: React.FC = () => {
                     </button>
                 </div>
             )}
+
+            {/* Why Study Here Section */}
+            <section className="mb-20">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                        Por que Estudar na FuturoOn?
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                        Mais do que cursos, oferecemos uma experiência completa de transformação
+                    </p>
+                </div>
+                <div className="grid md:grid-cols-3 gap-8">
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 hover:-translate-y-2 group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
+                            🎓
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-3">100% Gratuito</h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            Educação de qualidade sem custo. Acreditamos que conhecimento não tem preço e deve ser acessível a todos.
+                        </p>
+                    </div>
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 hover:-translate-y-2 group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
+                            👨‍💼
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-3">Mentoria Real</h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            Profissionais atuantes no mercado te guiando durante toda a jornada. Aprenda com quem vive a realidade do dia a dia.
+                        </p>
+                    </div>
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 hover:-translate-y-2 group">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
+                            💼
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-3">Conexão com Empresas</h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            Parcerias com empresas que contratam nossos alunos. Seu próximo emprego pode estar a um curso de distância.
+                        </p>
+                    </div>
+                </div>
+            </section>
 
             {featuredCourse && courses.length > 0 && (
                  <section className="mb-16 animate-fade-in">
@@ -200,26 +267,43 @@ const Courses: React.FC = () => {
 
             <section id="all-courses" className="scroll-mt-24 relative">
                 <div className="sticky top-[72px] z-30 mb-8 transition-all duration-300">
-                    <div className="bg-[#09090B]/80 backdrop-blur-xl p-4 rounded-2xl border border-white/10 shadow-2xl ring-1 ring-white/5">
+                    <div className="bg-gradient-to-br from-[#09090B]/95 to-[#18181B]/95 backdrop-blur-xl p-5 rounded-2xl border border-white/10 shadow-2xl ring-1 ring-white/5">
                         <div className="flex items-center gap-3">
                             <div className="relative flex-grow group">
+                                {/* Search Icon */}
+                                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#8a4add] transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                
+                                {/* Input */}
                                 <input
                                     type="search"
                                     placeholder="Buscar por título, tecnologia ou assunto..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-10 py-3 bg-[#18181B] hover:bg-[#202024] rounded-xl border border-white/5 focus:border-[#8a4add]/50 focus:ring-1 focus:ring-[#8a4add]/50 focus:outline-none transition-all text-sm text-white placeholder-gray-500"
+                                    className="w-full pl-12 pr-4 py-3.5 bg-[#18181B] hover:bg-[#202024] rounded-xl border border-white/10 focus:border-[#8a4add] focus:ring-2 focus:ring-[#8a4add]/20 focus:outline-none transition-all text-sm text-white placeholder-gray-500 font-medium"
                                 />
-                                <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-gray-500 group-focus-within:text-[#8a4add] transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                                </div>
+                                
+                                {/* Clear button */}
+                                {searchTerm && (
+                                    <button
+                                        onClick={() => setSearchTerm('')}
+                                        className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 hover:text-white transition-colors"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
                             </div>
 
                             <div className="relative w-48 hidden md:block">
                                 <select 
                                     value={activeTrack} 
                                     onChange={e => setActiveTrack(e.target.value)} 
-                                    className="w-full appearance-none bg-[#18181B] hover:bg-[#202024] text-gray-300 py-3 pl-4 pr-10 rounded-xl border border-white/5 text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors focus:outline-none focus:border-[#8a4add] focus:text-white"
+                                    className="w-full appearance-none bg-[#18181B] hover:bg-[#202024] text-gray-300 py-3.5 pl-4 pr-10 rounded-xl border border-white/10 focus:border-[#8a4add] focus:ring-2 focus:ring-[#8a4add]/20 focus:outline-none transition-all text-xs font-bold uppercase tracking-wider cursor-pointer"
                                 >
                                     {tracks.map(track => <option key={track} value={track}>{track === 'Todos' ? 'Trilha: Todas' : track}</option>)}
                                 </select>
