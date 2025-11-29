@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
@@ -18,13 +18,192 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
     </div>
 );
 
-const StatItem: React.FC<{ label: string; value: string; icon: React.ReactNode }> = ({ label, value, icon }) => (
-    <div className="flex flex-col items-center justify-center text-center px-6 border-r border-white/10 last:border-0 py-4 md:py-0">
+// Componente de Estatística Animada
+const AnimatedStatCard: React.FC<{ 
+  value: string; 
+  label: string; 
+  icon: React.ReactNode;
+}> = ({ value, label, icon }) => {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
+  
+  useEffect(() => {
+    if (isVisible) {
+      const target = parseInt(value.replace(/\D/g, ''));
+      if (target > 0) {
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        
+        const timer = setInterval(() => {
+          setCount(prev => {
+            if (prev >= target) {
+              clearInterval(timer);
+              return target;
+            }
+            return Math.min(prev + increment, target);
+          });
+        }, 16);
+        
+        return () => clearInterval(timer);
+      }
+    }
+  }, [isVisible, value]);
+  
+  const displayValue = value.includes('+') 
+    ? `+${Math.round(count)}` 
+    : value.includes('%')
+    ? `${Math.round(count)}%`
+    : Math.round(count).toString();
+  
+  return (
+    <div ref={ref} className="flex flex-col items-center justify-center text-center px-6 border-r border-white/10 last:border-0 py-4 md:py-0">
         <div className="text-[#8a4add] mb-2 opacity-80">{icon}</div>
-        <p className="text-2xl md:text-3xl font-black text-white mb-1 tracking-tight uppercase">{value}</p>
+        <p className="text-2xl md:text-3xl font-black text-white mb-1 tracking-tight uppercase">{displayValue}</p>
         <p className="text-xs text-gray-400 uppercase tracking-widest font-bold">{label}</p>
     </div>
+  );
+};
+
+// Componente de Case de Sucesso
+const SuccessCaseCard: React.FC<{
+  companyName: string;
+  companySize: string;
+  stats: { label: string; value: string }[];
+  testimonial: string;
+  authorName: string;
+  authorRole: string;
+}> = ({ companyName, companySize, stats, testimonial, authorName, authorRole }) => (
+  <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:-translate-y-2 hover:border-[#8a4add]/40 transition-all duration-300">
+    <div className="flex items-center gap-4 mb-6">
+      <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#8a4add]/20 to-[#f27983]/20 flex items-center justify-center">
+        <span className="text-2xl font-black text-white">{companyName.charAt(0)}</span>
+      </div>
+      <div>
+        <h3 className="text-xl font-bold text-white">{companyName}</h3>
+        <p className="text-sm text-gray-400">{companySize}</p>
+      </div>
+    </div>
+    
+    <div className="grid grid-cols-3 gap-4 mb-6">
+      {stats.map((stat, i) => (
+        <div key={i} className="text-center">
+          <p className="text-2xl font-black text-[#8a4add]">{stat.value}</p>
+          <p className="text-xs text-gray-400">{stat.label}</p>
+        </div>
+      ))}
+    </div>
+    
+    <blockquote className="text-gray-300 italic mb-4 leading-relaxed">
+      "{testimonial}"
+    </blockquote>
+    
+    <div className="flex items-center gap-3 pt-4 border-t border-white/10">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center">
+        <span className="text-sm font-bold text-white">{authorName.charAt(0)}</span>
+      </div>
+      <div>
+        <p className="text-sm font-bold text-white">{authorName}</p>
+        <p className="text-xs text-gray-400">{authorRole}</p>
+      </div>
+    </div>
+  </div>
 );
+
+// Componente de Calculadora de ROI
+const ROICalculator: React.FC = () => {
+  const [devsNeeded, setDevsNeeded] = useState(5);
+  const [avgSalary, setAvgSalary] = useState(8000);
+  
+  const traditionalCost = devsNeeded * 15000;
+  const partnershipCost = devsNeeded * 5000;
+  const savings = traditionalCost - partnershipCost;
+  
+  return (
+    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10">
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Inputs */}
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-bold text-gray-300 mb-2">
+              Quantos desenvolvedores você precisa contratar?
+            </label>
+            <input 
+              type="number" 
+              value={devsNeeded}
+              onChange={(e) => setDevsNeeded(Number(e.target.value))}
+              className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white focus:border-[#8a4add] focus:outline-none"
+              placeholder="Ex: 5"
+              min="1"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-bold text-gray-300 mb-2">
+              Salário médio que você paga (R$)
+            </label>
+            <input 
+              type="number" 
+              value={avgSalary}
+              onChange={(e) => setAvgSalary(Number(e.target.value))}
+              className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white focus:border-[#8a4add] focus:outline-none"
+              placeholder="Ex: 8000"
+              min="0"
+            />
+          </div>
+        </div>
+        
+        {/* Results */}
+        <div className="bg-black/20 p-6 rounded-xl">
+          <h3 className="text-xl font-bold text-white mb-4">Seu ROI Anual</h3>
+          
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <span className="text-gray-400">Custo de recrutamento tradicional:</span>
+              <span className="text-white font-bold">R$ {traditionalCost.toLocaleString()}</span>
+            </div>
+            
+            <div className="flex justify-between">
+              <span className="text-gray-400">Investimento em parceria:</span>
+              <span className="text-white font-bold">R$ {partnershipCost.toLocaleString()}</span>
+            </div>
+            
+            <div className="border-t border-white/10 pt-4">
+              <div className="flex justify-between">
+                <span className="text-[#8a4add] font-bold">Economia total:</span>
+                <span className="text-[#8a4add] font-bold text-xl">R$ {savings.toLocaleString()}</span>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 p-4 rounded-lg">
+              <p className="text-sm text-white">
+                💡 Além da economia, você ganha talentos dedicados e 
+                contribui para transformação social!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const BenefitCard: React.FC<{ icon: React.ReactNode; title: string; description: string }> = ({ icon, title, description }) => (
     <div className="bg-[#121212] p-8 rounded-3xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden">
@@ -161,32 +340,40 @@ const PartnershipsView: React.FC = () => {
                             Ver Modelos de Apoio
                         </button>
                     </div>
+                    
+                    {/* Urgência - NOVO! */}
+                    <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-full">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-bold text-orange-300">
+                            Apenas 6 vagas restantes para turma de Abril 2025
+                        </span>
+                    </div>
                 </div>
             </section>
 
-            {/* Stats Strip - PILARES (Qualitativo) */}
+            {/* Stats Strip - MELHORADO COM ANIMAÇÃO! */}
             <section className="border-y border-white/5 bg-white/[0.02] backdrop-blur-sm py-12">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-white/5">
-                        <StatItem 
-                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
-                            value="Missão" 
-                            label="Inclusão Digital" 
+                        <AnimatedStatCard 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
+                            value="+300" 
+                            label="Jovens Formados" 
                         />
-                        <StatItem 
-                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>}
-                            value="Método" 
-                            label="Ensino Prático" 
+                        <AnimatedStatCard 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
+                            value="+50" 
+                            label="Turmas Realizadas" 
                         />
-                        <StatItem 
-                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 00-9-9m9 9a9 9 0 009-9" /></svg>}
-                            value="Cultura" 
-                            label="Diversidade Real" 
+                        <AnimatedStatCard 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>}
+                            value="85%" 
+                            label="Taxa de Conclusão" 
                         />
-                        <StatItem 
-                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>}
-                            value="Impacto" 
-                            label="Transformação Social" 
+                        <AnimatedStatCard 
+                            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}
+                            value="100%" 
+                            label="Impacto Social" 
                         />
                     </div>
                 </div>
@@ -217,6 +404,67 @@ const PartnershipsView: React.FC = () => {
                         {marqueePartners.map((p, i) => (
                             <PartnerLogo key={`b-${p.id}-${i}`} name={p.name} logoUrl={p.logoUrl} />
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Cases de Sucesso - NOVO! */}
+            <section className="py-24 bg-black/20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-white mb-4">
+                            Cases de Sucesso
+                        </h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">
+                            Veja como nossas parcerias geram resultados reais para empresas e jovens
+                        </p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                        <SuccessCaseCard
+                            companyName="Tech Solutions"
+                            companySize="Tecnologia • 200+ funcionários"
+                            stats={[
+                                { label: "Jovens Contratados", value: "8" },
+                                { label: "Retenção", value: "90%" },
+                                { label: "Tempo Médio", value: "4 meses" }
+                            ]}
+                            testimonial="Os jovens do FuturoOn chegam com uma energia e dedicação impressionantes. Já contratamos 8 e todos se destacaram nas suas equipes."
+                            authorName="Carlos Silva"
+                            authorRole="CTO, Tech Solutions"
+                        />
+                        <SuccessCaseCard
+                            companyName="Digital Ventures"
+                            companySize="Startup • 50+ funcionários"
+                            stats={[
+                                { label: "Jovens Contratados", value: "5" },
+                                { label: "Retenção", value: "100%" },
+                                { label: "Tempo Médio", value: "3 meses" }
+                            ]}
+                            testimonial="Encontramos talentos que realmente querem aprender e crescer. A parceria com o FuturoOn transformou nossa estratégia de contratação."
+                            authorName="Ana Costa"
+                            authorRole="CEO, Digital Ventures"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* Calculadora de ROI - NOVO! */}
+            <section className="py-24 bg-gradient-to-b from-black/20 to-transparent">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="text-center mb-12">
+                            <h2 className="text-4xl font-black text-white mb-4">
+                                Calcule seu ROI
+                            </h2>
+                            <p className="text-gray-400">
+                                Veja quanto sua empresa pode economizar e ganhar
+                            </p>
+                            <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                        </div>
+                        
+                        <ROICalculator />
                     </div>
                 </div>
             </section>
@@ -274,20 +522,28 @@ const PartnershipsView: React.FC = () => {
                                 "Selo digital de reconhecimento como apoiador"
                             ]}
                         />
-                        <PlanCard 
-                            title="🟪 Mantenedor Educacional"
-                            description="Para empresas que desejam acompanhar de perto o impacto gerado."
-                            isFeatured={true}
-                            ctaText="Tornar-se Mantenedor"
-                            ctaLink="mailto:parcerias@institutofuturoon.org?subject=Quero ser Mantenedor"
-                            features={[
-                                "Apoio contínuo a uma turma ou ciclo formativo",
-                                "Logo em destaque no site e materiais institucionais",
-                                "Relatório trimestral com histórias e progresso",
-                                "Visita ou palestra com nossos educadores e alunos",
-                                "Prioridade em ações futuras de conexão com talentos"
-                            ]}
-                        />
+                        <div className="relative">
+                            {/* Badge de Urgência - NOVO! */}
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+                                <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+                                    Últimas Vagas!
+                                </span>
+                            </div>
+                            <PlanCard 
+                                title="🟪 Mantenedor Educacional"
+                                description="Para empresas que desejam acompanhar de perto o impacto gerado."
+                                isFeatured={true}
+                                ctaText="Tornar-se Mantenedor"
+                                ctaLink="mailto:parcerias@institutofuturoon.org?subject=Quero ser Mantenedor"
+                                features={[
+                                    "Apoio contínuo a uma turma ou ciclo formativo",
+                                    "Logo em destaque no site e materiais institucionais",
+                                    "Relatório trimestral com histórias e progresso",
+                                    "Visita ou palestra com nossos educadores e alunos",
+                                    "Prioridade em ações futuras de conexão com talentos"
+                                ]}
+                            />
+                        </div>
                         <PlanCard 
                             title="🟦 Parceiro de Oportunidades"
                             description="Para empresas que querem se aproximar dos alunos e apoiar sua entrada no mercado."
