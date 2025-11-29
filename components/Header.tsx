@@ -83,6 +83,7 @@ const Header: React.FC = () => {
               <NavLink onClick={() => handleNav('/')} active={isActive('/')}>Início</NavLink>
               <NavLink onClick={() => handleNav('/courses')} active={isActive('/courses')}>Cursos</NavLink>
               <NavLink onClick={() => handleNav('/about')} active={isActive('/about')}>Quem Somos</NavLink>
+              <NavLink onClick={() => handleNav('/team')} active={isActive('/team')}>Equipe</NavLink>
               <NavLink onClick={() => handleNav('/partnerships')} active={isActive('/partnerships')}>Parcerias</NavLink>
               <NavLink onClick={() => handleNav('/blog')} active={isActive('/blog')}>Blog</NavLink>
             </nav>
@@ -149,6 +150,7 @@ const Header: React.FC = () => {
              <MobileLink onClick={() => handleNav('/')} active={isActive('/')}>Início</MobileLink>
              <MobileLink onClick={() => handleNav('/courses')} active={isActive('/courses')}>Cursos</MobileLink>
              <MobileLink onClick={() => handleNav('/about')} active={isActive('/about')}>Quem Somos</MobileLink>
+             <MobileLink onClick={() => handleNav('/team')} active={isActive('/team')}>Equipe</MobileLink>
              <MobileLink onClick={() => handleNav('/partnerships')} active={isActive('/partnerships')}>Para Empresas</MobileLink>
              <MobileLink onClick={() => handleNav('/blog')} active={isActive('/blog')}>Blog & Notícias</MobileLink>
           </div>
