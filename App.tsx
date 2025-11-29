@@ -45,6 +45,7 @@ import AnnualReportView from './views/AnnualReportView';
 import FinancialStatementView from './views/FinancialStatementView';
 import TransparencyView from './views/TransparencyView';
 import EventDetailView from './views/EventDetailView';
+import EventsView from './views/EventsView';
 import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
@@ -1126,6 +1127,7 @@ const AppContent: React.FC = () => {
                     <Route path="/partnerships" element={<PartnershipsView />} />
                     <Route path="/supporters" element={<SupportersView />} />
                     <Route path="/supporter/:partnerId" element={<PartnerDetailView />} />
+                    <Route path="/events" element={<EventsView />} />
                     <Route path="/event/new" element={<EventEditor />} />
                     <Route path="/event/edit/:eventId" element={<EventEditor />} />
                     <Route path="/event/:eventId" element={<EventDetailView />} />
