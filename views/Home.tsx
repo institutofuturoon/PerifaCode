@@ -88,6 +88,77 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
     </div>
 );
 
+const TestimonialCard: React.FC<{ 
+    name: string; 
+    role: string; 
+    company: string; 
+    photo: string; 
+    quote: string;
+}> = ({ name, role, company, photo, quote }) => (
+    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 transform hover:-translate-y-2 group relative overflow-hidden">
+        {/* Glow effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[#8a4add]/10 via-transparent to-[#f27983]/10 blur-xl"></div>
+        
+        {/* Quote icon */}
+        <div className="relative z-10 text-[#8a4add] mb-4 opacity-50">
+            <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+            </svg>
+        </div>
+        
+        {/* Quote */}
+        <p className="relative z-10 text-gray-300 text-base leading-relaxed mb-6 italic">
+            "{quote}"
+        </p>
+        
+        {/* Author */}
+        <div className="relative z-10 flex items-center gap-4">
+            <img 
+                src={photo} 
+                alt={name}
+                className="w-14 h-14 rounded-full object-cover border-2 border-[#8a4add]/30 group-hover:border-[#8a4add] transition-colors"
+            />
+            <div>
+                <p className="font-bold text-white">{name}</p>
+                <p className="text-sm text-gray-400">{role}</p>
+                <p className="text-xs text-[#8a4add] font-semibold">{company}</p>
+            </div>
+        </div>
+    </div>
+);
+
+const StepCard: React.FC<{ 
+    number: string; 
+    title: string; 
+    description: string;
+    icon: React.ReactNode;
+}> = ({ number, title, description, icon }) => (
+    <div className="relative flex flex-col items-center text-center group">
+        {/* Connector line (hidden on last item) */}
+        <div className="hidden lg:block absolute top-16 left-1/2 w-full h-0.5 bg-gradient-to-r from-[#8a4add] to-transparent -z-10 group-last:hidden"></div>
+        
+        {/* Number badge */}
+        <div className="relative mb-6">
+            <div className="w-32 h-32 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center shadow-lg shadow-[#8a4add]/30 group-hover:scale-110 transition-transform duration-300">
+                <div className="text-white">
+                    {icon}
+                </div>
+            </div>
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-10 h-10 bg-[#8a4add] rounded-full flex items-center justify-center text-white font-black text-lg border-4 border-[#09090B]">
+                {number}
+            </div>
+        </div>
+        
+        {/* Content */}
+        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#c4b5fd] transition-colors">
+            {title}
+        </h3>
+        <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
+            {description}
+        </p>
+    </div>
+);
+
 const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
     if (partners.length === 0) return null;
 
@@ -260,6 +331,150 @@ const Home: React.FC = () => {
                             text={item.text}
                         />
                     ))}
+                </div>
+            </div>
+        </section>
+
+        {/* Como Funciona Section */}
+        <section className="py-20 md:py-32 relative z-10 overflow-hidden">
+            {/* Background effects */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#8a4add]/5 rounded-full blur-[120px] -z-10"></div>
+            
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+                {/* Header */}
+                <div className="text-center mb-16 md:mb-20">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 mb-6">
+                        <svg className="w-4 h-4 text-[#8a4add]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span className="text-sm font-bold text-[#8a4add] uppercase tracking-wider">Seu Caminho</span>
+                    </div>
+                    
+                    <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">
+                        Como Funciona
+                    </h2>
+                    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        Do primeiro clique até sua primeira vaga em tech. Veja como é simples começar sua jornada.
+                    </p>
+                </div>
+
+                {/* Steps */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 max-w-7xl mx-auto mb-12">
+                    <StepCard 
+                        number="1"
+                        title="Inscreva-se"
+                        description="Preencha o formulário de inscrição com seus dados. É rápido, gratuito e sem pegadinhas."
+                        icon={
+                            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        }
+                    />
+                    <StepCard 
+                        number="2"
+                        title="Faça o Teste"
+                        description="Participe do processo seletivo. Não precisa saber programar, avaliamos seu potencial e vontade de aprender."
+                        icon={
+                            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        }
+                    />
+                    <StepCard 
+                        number="3"
+                        title="Comece a Estudar"
+                        description="Aulas presenciais e online com mentores experientes. Aprenda fazendo projetos reais."
+                        icon={
+                            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        }
+                    />
+                    <StepCard 
+                        number="4"
+                        title="Conquiste seu Futuro"
+                        description="Receba certificado, monte seu portfólio e tenha acesso a vagas exclusivas em empresas parceiras."
+                        icon={
+                            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        }
+                    />
+                </div>
+
+                {/* CTA */}
+                <div className="text-center">
+                    <button
+                        onClick={() => navigate('/register')}
+                        className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] rounded-full text-white font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:shadow-2xl hover:shadow-[#8a4add]/40 hover:scale-105 overflow-hidden"
+                    >
+                        <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+                        <span className="relative">Começar Agora</span>
+                        <svg className="relative w-6 h-6 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </button>
+                    <p className="text-sm text-gray-500 mt-4">
+                        Vagas limitadas • Processo seletivo aberto
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="py-20 md:py-32 bg-black/20 relative z-10">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header */}
+                <div className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 mb-6">
+                        <svg className="w-4 h-4 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span className="text-sm font-bold text-[#8a4add] uppercase tracking-wider">Histórias Reais</span>
+                    </div>
+                    
+                    <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">
+                        Vozes da Quebrada
+                    </h2>
+                    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        Conheça quem já passou por aqui e hoje está construindo uma carreira em tech
+                    </p>
+                </div>
+
+                {/* Testimonials Grid */}
+                <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                    <TestimonialCard 
+                        name="Lucas Silva"
+                        role="Desenvolvedor Front-end"
+                        company="Empresa de Tecnologia"
+                        photo="https://i.pravatar.cc/150?img=12"
+                        quote="O FuturoOn mudou minha vida. Saí de um emprego informal para trabalhar como dev em uma empresa incrível. Hoje ganho 5x mais e tenho plano de carreira."
+                    />
+                    <TestimonialCard 
+                        name="Mariana Santos"
+                        role="Desenvolvedora Full Stack"
+                        company="Startup de Educação"
+                        photo="https://i.pravatar.cc/150?img=45"
+                        quote="Nunca imaginei que eu, moradora da periferia, poderia trabalhar com tecnologia. O FuturoOn me deu essa oportunidade e hoje sou referência na minha comunidade."
+                    />
+                    <TestimonialCard 
+                        name="Rafael Costa"
+                        role="Desenvolvedor Back-end"
+                        company="Fintech"
+                        photo="https://i.pravatar.cc/150?img=33"
+                        quote="Aprendi mais em 6 meses no FuturoOn do que em anos tentando sozinho. Os mentores são incríveis e o networking abriu portas que eu nem sabia que existiam."
+                    />
+                </div>
+
+                {/* CTA */}
+                <div className="text-center mt-12">
+                    <button 
+                        onClick={() => navigate('/about')}
+                        className="text-sm font-bold text-[#c4b5fd] hover:text-white uppercase tracking-widest border-b border-[#c4b5fd] hover:border-white pb-1 transition-all"
+                    >
+                        Ver mais histórias
+                    </button>
                 </div>
             </div>
         </section>
