@@ -5,7 +5,7 @@ import ActionCard from '../components/ActionCard';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
 
-// Componente de Estatística Animada
+// Componente de Estatística Animada - MELHORADO!
 const AnimatedImpactCard: React.FC<{ 
   value: string; 
   label: string; 
@@ -37,49 +37,60 @@ const AnimatedImpactCard: React.FC<{
   useEffect(() => {
     if (isVisible) {
       const target = parseInt(value.replace(/\D/g, ''));
-      const duration = 2000;
-      const increment = target / (duration / 16);
-      
-      const timer = setInterval(() => {
-        setCount(prev => {
-          if (prev >= target) {
-            clearInterval(timer);
-            return target;
-          }
-          return Math.min(prev + increment, target);
-        });
-      }, 16);
-      
-      return () => clearInterval(timer);
+      if (target > 0) {
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        
+        const timer = setInterval(() => {
+          setCount(prev => {
+            if (prev >= target) {
+              clearInterval(timer);
+              return target;
+            }
+            return Math.min(prev + increment, target);
+          });
+        }, 16);
+        
+        return () => clearInterval(timer);
+      }
     }
   }, [isVisible, value]);
   
+  const displayValue = value.includes('+') 
+    ? `+${Math.round(count)}` 
+    : value.includes('%')
+    ? `${Math.round(count)}%`
+    : Math.round(count).toString();
+  
   return (
     <div ref={ref} className="relative group">
-      <div className={`absolute inset-0 bg-gradient-to-br ${color}/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300`}></div>
-      <div className="relative bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 text-center hover:-translate-y-2 hover:border-[#8a4add]/40 transition-all duration-300">
-        <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${color}/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+      {/* Glow effect mais intenso */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${color} rounded-2xl blur-2xl opacity-20 group-hover:opacity-40 group-hover:blur-3xl transition-all duration-500`}></div>
+      
+      <div className="relative bg-gradient-to-br from-[#18181B] to-[#09090B] p-8 rounded-2xl border border-white/10 group-hover:border-white/20 text-center hover:-translate-y-2 transition-all duration-300 h-full">
+        {/* Ícone com animação */}
+        <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
           {icon}
         </div>
         
-        <p className={`text-5xl font-black ${color} mb-2`}>
-          {value.includes('+') ? '+' : ''}{Math.round(count)}
+        {/* Valor grande */}
+        <p className={`text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r ${color} mb-3 group-hover:scale-105 transition-transform duration-300`}>
+          {displayValue}
         </p>
         
-        <p className="text-lg font-bold text-white mb-3 uppercase tracking-wider">
+        {/* Label */}
+        <p className="text-sm text-white font-bold uppercase tracking-widest mb-2">
           {label}
         </p>
         
-        <p className="text-sm text-gray-400 leading-relaxed">
+        {/* Descrição */}
+        <p className="text-xs text-gray-400 leading-relaxed">
           {context}
         </p>
         
-        {/* Progress bar */}
-        <div className="mt-4 w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
-          <div 
-            className={`h-full bg-gradient-to-r ${color} transition-all duration-2000 ease-out`}
-            style={{ width: isVisible ? '100%' : '0%' }}
-          ></div>
+        {/* Barra decorativa */}
+        <div className="mt-4 w-full h-1 bg-white/5 rounded-full overflow-hidden">
+          <div className={`h-full bg-gradient-to-r ${color} group-hover:w-full w-0 transition-all duration-1000 ease-out`}></div>
         </div>
       </div>
     </div>
@@ -395,57 +406,71 @@ const AboutUsView: React.FC = () => {
             </Section>
             
             {/* Impact Section - MELHORADO! */}
-            <Section className="bg-black/20" style={{backgroundImage: 'radial-gradient(circle at center, #8a4add10, transparent 60%)'}}>
-                <SectionTitle subtitle="Somos vistos como uma 'segunda casa', transformando vidas e criando novas oportunidades.">
-                    Nosso Impacto em Números
-                </SectionTitle>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-                    <AnimatedImpactCard 
-                        value="+300" 
-                        label="Jovens Formados" 
-                        color="from-sky-400 to-blue-500"
-                        context="Cada um com uma história de superação"
-                        icon={
-                            <svg className="w-8 h-8 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
-                            </svg>
-                        }
-                    />
-                    <AnimatedImpactCard 
-                        value="+50" 
-                        label="Turmas Realizadas" 
-                        color="from-green-400 to-emerald-500"
-                        context="Presenciais e online, sempre com qualidade"
-                        icon={
-                            <svg className="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
-                            </svg>
-                        }
-                    />
-                    <AnimatedImpactCard 
-                        value="+14" 
-                        label="Voluntários Ativos" 
-                        color="from-pink-400 to-rose-500"
-                        context="Profissionais dedicados à causa"
-                        icon={
-                            <svg className="w-8 h-8 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                            </svg>
-                        }
-                    />
-                    <AnimatedImpactCard 
-                        value="0" 
-                        label="Apoio Governamental" 
-                        color="from-amber-400 to-orange-500"
-                        context="100% independente e transparente"
-                        icon={
-                            <svg className="w-8 h-8 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                            </svg>
-                        }
-                    />
+            <section className="py-20 border-y border-white/5 bg-gradient-to-b from-black/40 via-black/20 to-transparent relative overflow-hidden">
+                {/* Background decorativo */}
+                <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+                <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-[#8a4add]/10 rounded-full blur-[120px]"></div>
+                <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-[#f27983]/10 rounded-full blur-[120px]"></div>
+                
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                            Nosso Impacto em Números
+                        </h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">
+                            Somos vistos como uma 'segunda casa', transformando vidas e criando novas oportunidades
+                        </p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+                        <AnimatedImpactCard 
+                            value="+300" 
+                            label="Jovens Formados" 
+                            color="from-sky-400 to-blue-500"
+                            context="Cada um com uma história de superação"
+                            icon={
+                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                                </svg>
+                            }
+                        />
+                        <AnimatedImpactCard 
+                            value="+50" 
+                            label="Turmas Realizadas" 
+                            color="from-green-400 to-emerald-500"
+                            context="Presenciais e online, sempre com qualidade"
+                            icon={
+                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                                </svg>
+                            }
+                        />
+                        <AnimatedImpactCard 
+                            value="+14" 
+                            label="Voluntários Ativos" 
+                            color="from-pink-400 to-rose-500"
+                            context="Profissionais dedicados à causa"
+                            icon={
+                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                </svg>
+                            }
+                        />
+                        <AnimatedImpactCard 
+                            value="0" 
+                            label="Apoio Governamental" 
+                            color="from-amber-400 to-orange-500"
+                            context="100% independente e transparente"
+                            icon={
+                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                </svg>
+                            }
+                        />
+                    </div>
                 </div>
-            </Section>
+            </section>
 
             {/* Seção Antes vs Depois - NOVO! */}
             <section className="py-24">
