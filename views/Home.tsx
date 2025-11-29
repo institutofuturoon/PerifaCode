@@ -72,11 +72,18 @@ const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string;
 };
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="flex-shrink-0 w-36 h-20 md:w-60 md:h-32 flex items-center justify-center p-4 md:p-6 bg-black/20 rounded-2xl border border-white/10 group transition-all duration-300 transform hover:bg-white/5 hover:shadow-2xl hover:shadow-[#8a4add]/10 hover:scale-105 hover:border-white/20">
+    <div className="relative flex-shrink-0 w-40 h-24 md:w-64 md:h-36 flex items-center justify-center p-3 md:p-4 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 group transition-all duration-500 transform hover:scale-110 hover:border-[#8a4add]/40 overflow-hidden">
+        {/* Efeito de brilho no hover */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+        
+        {/* Glow effect */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[#8a4add]/10 via-transparent to-[#f27983]/10 blur-xl"></div>
+        
+        {/* Logo - ocupa todo o espaço disponível */}
         <img 
             src={logoUrl} 
             alt={name} 
-            className="h-8 md:h-14 max-w-full object-contain transition-all duration-300 opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0"
+            className="relative z-10 w-full h-full object-contain transition-all duration-500 opacity-70 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 filter drop-shadow-lg"
         />
     </div>
 );
@@ -292,24 +299,68 @@ const Home: React.FC = () => {
             </div>
         </section>
 
-        {/* Nossos Parceiros Section (Carrossel CSS Puro) */}
-        <section className="py-16 md:py-20 relative z-10 border-t border-white/5 bg-black/10">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-black text-white">Apoiadores</h2>
-                    <p className="text-lg text-gray-400 mt-2">Empresas que tornam este sonho possível</p>
+        {/* Nossos Parceiros Section - Design Melhorado */}
+        <section className="py-20 md:py-32 relative z-10 overflow-hidden">
+            {/* Background com gradiente e efeitos */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-[#8a4add]/5 to-black/20"></div>
+            <div className="absolute inset-0" style={{
+                backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(138, 74, 221, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(242, 121, 131, 0.08) 0%, transparent 50%)'
+            }}></div>
+            
+            {/* Linha decorativa superior */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#8a4add]/30 to-transparent"></div>
+            
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+                {/* Header da seção */}
+                <div className="text-center mb-16 md:mb-20">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8a4add]/10 border border-[#8a4add]/20 mb-6">
+                        <svg className="w-4 h-4 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span className="text-sm font-bold text-[#8a4add] uppercase tracking-wider">Nossos Parceiros</span>
+                    </div>
+                    
+                    <h2 className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tight">
+                        Apoiadores
+                    </h2>
+                    <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        Empresas e organizações que acreditam no poder da educação e tornam este sonho possível
+                    </p>
                 </div>
                 
-                <div className="relative opacity-90">
+                {/* Carrossel de logos */}
+                <div className="relative mb-16">
                     <PartnerCarousel partners={partners} />
                 </div>
 
-                 <div className="text-center mt-12">
-                     <button onClick={() => navigate('/supporters')} className="px-8 py-3 border border-white/20 rounded-full text-sm font-bold text-[#c4b5fd] hover:bg-white/10 hover:text-white transition-all hover:border-white/40">
-                        Ver todos os parceiros &rarr;
+                {/* CTA melhorado */}
+                <div className="text-center">
+                    <button 
+                        onClick={() => navigate('/supporters')} 
+                        className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] rounded-full text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-2xl hover:shadow-[#8a4add]/40 hover:scale-105 overflow-hidden"
+                    >
+                        <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></span>
+                        <span className="relative">Ver todos os parceiros</span>
+                        <svg className="relative w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                     </button>
+                    
+                    {/* Texto adicional */}
+                    <p className="text-sm text-gray-500 mt-6">
+                        Quer fazer parte dessa transformação? 
+                        <button 
+                            onClick={() => navigate('/partnerships')} 
+                            className="text-[#8a4add] hover:text-[#c4b5fd] font-semibold ml-2 underline decoration-[#8a4add]/30 hover:decoration-[#8a4add] transition-colors"
+                        >
+                            Seja um parceiro
+                        </button>
+                    </p>
                 </div>
             </div>
+            
+            {/* Linha decorativa inferior */}
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#8a4add]/30 to-transparent"></div>
         </section>
 
         {/* CTA Donate Section - Ajustado Padding Mobile */}
