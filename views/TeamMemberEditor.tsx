@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
+import EditorHeader from '../components/EditorHeader';
 
 const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
@@ -72,22 +73,19 @@ const TeamMemberEditor: React.FC = () => {
   const checkboxDescriptionClasses = "text-gray-400 text-sm";
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-4xl font-black text-white">{initialMember.name ? 'Editar Membro da Equipe' : 'Novo Membro da Equipe'}</h1>
-            <p className="text-gray-400 mt-1">Gerencie os perfis e permissões dos membros da equipe.</p>
-          </div>
-          <div className="flex gap-4">
-            <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
-              Cancelar
-            </button>
-            <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
-              Salvar Membro
-            </button>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#09090B]">
+      <EditorHeader
+        title={initialMember.name ? 'Editar Membro da Equipe' : 'Novo Membro da Equipe'}
+        subtitle="Gerencie os perfis e permissões dos membros da equipe."
+        onBack={onCancel}
+        actions={
+          <button type="submit" form="team-member-form" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
+            Salvar Membro
+          </button>
+        }
+      />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <form id="team-member-form" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
 
         <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-[#8a4add]/10 overflow-hidden">
              <div className="relative">
@@ -214,6 +212,7 @@ const TeamMemberEditor: React.FC = () => {
             </div>
         </div>
       </form>
+      </div>
     </div>
   );
 };

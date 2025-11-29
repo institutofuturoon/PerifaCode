@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Project } from '../types';
 import { useAppContext } from '../App';
+import EditorHeader from '../components/EditorHeader';
 
 const ProjectEditor: React.FC = () => {
     const { projects, user, handleSaveProject } = useAppContext();
@@ -60,22 +61,19 @@ const ProjectEditor: React.FC = () => {
     const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-4xl font-black text-white">{initialProject?.title ? 'Editar Projeto' : 'Submeter Projeto'}</h1>
-                        <p className="text-gray-400 mt-1">Mostre à comunidade o que você construiu!</p>
-                    </div>
-                    <div className="flex gap-4">
-                        <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
-                            Cancelar
-                        </button>
-                        <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
-                            Salvar Projeto
-                        </button>
-                    </div>
-                </div>
+        <div className="min-h-screen bg-[#09090B]">
+            <EditorHeader
+                title={initialProject?.title ? 'Editar Projeto' : 'Submeter Projeto'}
+                subtitle="Mostre à comunidade o que você construiu!"
+                onBack={onCancel}
+                actions={
+                    <button type="submit" form="project-form" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
+                        Salvar Projeto
+                    </button>
+                }
+            />
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <form id="project-form" onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto">
 
                 <div className="p-8 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 space-y-6">
                     <div>
@@ -123,6 +121,7 @@ const ProjectEditor: React.FC = () => {
                     </div>
                 </div>
             </form>
+            </div>
         </div>
     );
 };

@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CommunityPost } from '../types';
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
+import EditorHeader from '../components/EditorHeader';
 
 const ForumPostEditor: React.FC = () => {
     const { communityPosts, user, handleSaveCommunityPost } = useAppContext();
@@ -76,22 +77,19 @@ const ForumPostEditor: React.FC = () => {
     const labelClasses = "block text-sm font-medium text-gray-300 mb-2";
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-4xl font-black text-white">{postId === 'new' ? 'Criar Novo Post' : 'Editar Post'}</h1>
-                        <p className="text-gray-400 mt-1">Compartilhe sua dúvida ou conhecimento com a comunidade.</p>
-                    </div>
-                    <div className="flex gap-4">
-                        <button type="button" onClick={onCancel} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">
-                            Cancelar
-                        </button>
-                        <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
-                            {postId === 'new' ? 'Publicar' : 'Salvar Alterações'}
-                        </button>
-                    </div>
-                </div>
+        <div className="min-h-screen bg-[#09090B]">
+            <EditorHeader
+                title={postId === 'new' ? 'Criar Novo Post' : 'Editar Post'}
+                subtitle="Compartilhe sua dúvida ou conhecimento com a comunidade."
+                onBack={onCancel}
+                actions={
+                    <button type="submit" form="forum-post-form" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
+                        {postId === 'new' ? 'Publicar' : 'Salvar Alterações'}
+                    </button>
+                }
+            />
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <form id="forum-post-form" onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
 
                 <div className="p-8 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10 space-y-6">
                      <div className="grid md:grid-cols-3 gap-6">
@@ -124,6 +122,7 @@ const ForumPostEditor: React.FC = () => {
                     </div>
                 </div>
             </form>
+            </div>
         </div>
     );
 };

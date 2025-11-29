@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { FinancialStatement, AnnualReport, FinancialItem, Testimonial } from '../types';
+import DashboardSidebar from '../components/DashboardSidebar';
 
 // Styles moved outside
 const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors sm:text-sm text-white";
@@ -94,8 +95,9 @@ const TestimonialListEditor: React.FC<{
 
 const TransparencyEditor: React.FC = () => {
     const { type, id } = useParams<{ type: string, id: string }>();
-    const { financialStatements, annualReports, handleSaveFinancialStatement, handleSaveAnnualReport, user } = useAppContext();
+    const { financialStatements, annualReports, handleSaveFinancialStatement, handleSaveAnnualReport, user, showToast } = useAppContext();
     const navigate = useNavigate();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Determine edit mode and object type
     const isFinancial = type === 'financial';
@@ -191,19 +193,85 @@ const TransparencyEditor: React.FC = () => {
         navigate('/admin');
     };
 
+    const pageTitle = isNew 
+        ? 'Novo Relatório de Transparência'
+        : `Editar Relatório ${isFinancial ? 'Financeiro' : 'de Impacto'} ${isFinancial ? financialData.year : reportData.year}`;
+
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-4xl font-black text-white">Editor de Transparência</h1>
-                        <p className="text-gray-400 mt-1">Gerencie os relatórios exibidos publicamente.</p>
+        <div className="min-h-screen bg-[#09090B] flex">
+            {/* Sidebar */}
+            <DashboardSidebar 
+                activeTab="transparency"
+                onTabChange={(tab) => {
+                    if (tab === 'transparency') {
+                        navigate('/dashboard');
+                    } else {
+                        navigate('/dashboard');
+                    }
+                }}
+                userRole={user?.role || 'student'}
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+            />
+
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col min-w-0 md:pl-64">
+                {/* Header */}
+                <header className="h-16 bg-background/95 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-30">
+                    <div className="flex items-center gap-4">
+                        <button 
+                            onClick={() => setIsSidebarOpen(true)} 
+                            className="md:hidden text-gray-400 hover:text-white"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="3" x2="21" y1="6" y2="6"/>
+                                <line x1="3" x2="21" y1="12" y2="12"/>
+                                <line x1="3" x2="21" y1="18" y2="18"/>
+                            </svg>
+                        </button>
+                        <button 
+                            onClick={() => navigate('/dashboard')}
+                            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+                        >
+                            <svg 
+                                className="h-5 w-5 group-hover:-translate-x-1 transition-transform" 
+                                fill="none" 
+                                viewBox="0 0 24 24" 
+                                stroke="currentColor"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                            <span className="text-sm font-medium hidden sm:inline">Voltar</span>
+                        </button>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span className="hidden sm:inline">Portal da Transparência</span>
+                            <span className="hidden sm:inline">/</span>
+                            <span className="text-white font-medium">{pageTitle}</span>
+                        </div>
                     </div>
-                    <div className="flex gap-4">
-                        <button type="button" onClick={() => navigate('/admin')} className="bg-white/10 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-white/20 transition-colors">Cancelar</button>
-                        <button type="submit" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all">Salvar Relatório</button>
-                    </div>
-                </div>
+
+                    <button 
+                        type="submit" 
+                        form="transparency-form"
+                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] hover:opacity-90 text-white font-bold py-2 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 text-sm"
+                    >
+                        Salvar
+                    </button>
+                </header>
+
+                {/* Content */}
+                <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+                    <div className="max-w-7xl mx-auto">
+                        <form id="transparency-form" onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
+                            {/* Header Info */}
+                            <div className="bg-gradient-to-r from-[#121212] to-[#1a1a1d] rounded-xl border border-white/10 p-6">
+                                <h2 className="text-2xl font-black text-white mb-2">
+                                    {isNew ? 'Criar Novo Relatório' : 'Editar Relatório'}
+                                </h2>
+                                <p className="text-gray-400 text-sm">
+                                    Gerencie os relatórios exibidos publicamente no Portal da Transparência.
+                                </p>
+                            </div>
 
                 {/* Type Switcher (Only if creating new) */}
                 {isNew && (
@@ -293,7 +361,10 @@ const TransparencyEditor: React.FC = () => {
                     </div>
                 )}
 
-            </form>
+                        </form>
+                    </div>
+                </main>
+            </div>
         </div>
     );
 };

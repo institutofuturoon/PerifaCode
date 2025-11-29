@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../App';
 import StatusBadge from '../components/StatusBadge';
 import Alert from '../components/Alert';
+import DashboardSidebar from '../components/DashboardSidebar';
 
 interface ApiQuota {
   model: string;
@@ -14,6 +16,8 @@ interface ApiQuota {
 
 const GeminiApiDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAppContext();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [quotas, setQuotas] = useState<ApiQuota[]>([
     {
       model: 'gemini-2.5-flash',
@@ -74,37 +78,80 @@ const GeminiApiDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-20">
-      {/* Header */}
-      <div className="bg-brand-navy/30 border-b border-white/5 py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <button
-            onClick={() => navigate('/admin')}
-            className="text-gray-400 hover:text-white mb-6 flex items-center gap-2 text-sm font-semibold transition-colors hover:gap-3"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Voltar ao Admin
-          </button>
-          <h1 className="text-3xl md:text-4xl font-black text-white">
-            Dashboard <span className="text-brand-gold">Gemini API</span>
-          </h1>
-          <p className="text-gray-400 mt-2">
-            Monitore o uso e limites da API do Google Gemini
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#09090B] flex">
+      {/* Sidebar */}
+      <DashboardSidebar 
+        activeTab="gemini-api"
+        onTabChange={(tab) => {
+          if (tab === 'gemini-api') {
+            // Já está na página
+          } else {
+            navigate('/dashboard');
+          }
+        }}
+        userRole={user?.role || 'admin'}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Alert de Informação */}
-        <Alert type="info">
-          <strong>Plano Gratuito:</strong> A API do Google Gemini tem limites no plano gratuito.
-          Monitore o uso para evitar interrupções no serviço.
-        </Alert>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 md:pl-64">
+        {/* Header */}
+        <header className="h-16 bg-background/95 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsSidebarOpen(true)} 
+              className="md:hidden text-gray-400 hover:text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" x2="21" y1="6" y2="6"/>
+                <line x1="3" x2="21" y1="12" y2="12"/>
+                <line x1="3" x2="21" y1="18" y2="18"/>
+              </svg>
+            </button>
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+            >
+              <svg 
+                className="h-5 w-5 group-hover:-translate-x-1 transition-transform" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="text-sm font-medium hidden sm:inline">Voltar</span>
+            </button>
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span className="hidden sm:inline">Dashboard</span>
+              <span className="hidden sm:inline">/</span>
+              <span className="text-white font-medium">Gemini API</span>
+            </div>
+          </div>
+        </header>
 
-        {/* Cards de Quota por Modelo */}
-        <div className="grid md:grid-cols-2 gap-6 mt-8">
+        {/* Content */}
+        <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+          <div className="max-w-7xl mx-auto">
+            {/* Page Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
+                Dashboard <span className="text-brand-gold">Gemini API</span>
+              </h1>
+              <p className="text-gray-400">
+                Monitore o uso e limites da API do Google Gemini
+              </p>
+            </div>
+
+            {/* Alert de Informação */}
+            <Alert type="info">
+              <strong>Plano Gratuito:</strong> A API do Google Gemini tem limites no plano gratuito.
+              Monitore o uso para evitar interrupções no serviço.
+            </Alert>
+
+            {/* Cards de Quota por Modelo */}
+            <div className="grid md:grid-cols-2 gap-6 mt-8">
           {quotas.map((quota) => {
             const dayPercentage = getUsagePercentage(quota.currentDayUsage, quota.requestsPerDay);
             const minutePercentage = getUsagePercentage(quota.currentMinuteUsage, quota.requestsPerMinute);
@@ -306,6 +353,8 @@ const GeminiApiDashboard: React.FC = () => {
             * Dados simulados para demonstração
           </p>
         </div>
+          </div>
+        </main>
       </div>
     </div>
   );

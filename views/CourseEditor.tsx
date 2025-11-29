@@ -6,6 +6,7 @@ import { GoogleGenAI } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
 import Uploader from '../components/Uploader';
+import EditorHeader from '../components/EditorHeader';
 
 // --- Types & Helpers ---
 
@@ -282,33 +283,34 @@ const CourseEditor: React.FC = () => {
   const labelClasses = "block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider";
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
-      
-      {draftFound && (
-          <div className="mb-6 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-center justify-between animate-fade-in">
-              <div className="flex items-center gap-3 text-yellow-200 text-sm">
-                  <span>⚠️</span> Rascunho não salvo encontrado.
-              </div>
-              <div className="flex gap-3">
-                  <button onClick={handleDiscardDraft} className="text-xs font-bold text-red-400 hover:text-red-300">Descartar</button>
-                  <button onClick={handleRestoreDraft} className="text-xs font-bold bg-yellow-500/20 text-yellow-200 px-3 py-1.5 rounded-lg hover:bg-yellow-500/30">Restaurar</button>
-              </div>
+    <div className="min-h-screen bg-[#09090B]">
+      <EditorHeader
+        title={courseId === 'new' ? 'Criar Novo Curso' : 'Editar Curso'}
+        subtitle={
+          <>
+            {course.title || 'Sem Título'} 
+            {lastAutoSave && <span className="opacity-50"> • Salvo às {lastAutoSave.toLocaleTimeString()}</span>}
+          </>
+        }
+        onBack={onCancel}
+        actions={
+          <button onClick={handleSubmit} className="bg-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:bg-[#7c3aed] transition-colors shadow-lg shadow-[#8a4add]/20 text-sm">
+            Salvar Curso
+          </button>
+        }
+      />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {draftFound && (
+          <div className="mb-6 bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3 text-yellow-200 text-sm">
+              <span>⚠️</span> Rascunho não salvo encontrado.
+            </div>
+            <div className="flex gap-3">
+              <button onClick={handleDiscardDraft} className="text-xs font-bold text-red-400 hover:text-red-300">Descartar</button>
+              <button onClick={handleRestoreDraft} className="text-xs font-bold bg-yellow-500/20 text-yellow-200 px-3 py-1.5 rounded-lg hover:bg-yellow-500/30">Restaurar</button>
+            </div>
           </div>
-      )}
-
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-              <div className="flex items-center gap-3 mb-1">
-                <button onClick={onCancel} className="text-gray-500 hover:text-white transition-colors">&larr;</button>
-                <h1 className="text-3xl font-black text-white tracking-tight">{courseId === 'new' ? 'Criar Novo Curso' : 'Editar Curso'}</h1>
-              </div>
-              <p className="text-gray-400 text-sm ml-6">{course.title || 'Sem Título'} {lastAutoSave && <span className="opacity-50">• Salvo às {lastAutoSave.toLocaleTimeString()}</span>}</p>
-          </div>
-          <div className="flex gap-3 w-full md:w-auto">
-              <button onClick={onCancel} className="flex-1 md:flex-none bg-white/5 text-gray-300 font-bold py-3 px-6 rounded-xl hover:bg-white/10 transition-colors text-sm">Cancelar</button>
-              <button onClick={handleSubmit} className="flex-1 md:flex-none bg-[#8a4add] text-white font-bold py-3 px-8 rounded-xl hover:bg-[#7c3aed] transition-colors shadow-lg shadow-[#8a4add]/20 text-sm">Salvar Curso</button>
-          </div>
-      </div>
+        )}
 
       <div className="grid lg:grid-cols-12 gap-8">
           
@@ -567,6 +569,7 @@ const CourseEditor: React.FC = () => {
               )}
 
           </div>
+      </div>
       </div>
     </div>
   );
