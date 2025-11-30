@@ -54,6 +54,8 @@ import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
+import WhatsAppButton from './components/WhatsAppButton';
+import ReadingProgressBar from './components/ReadingProgressBar';
 import StudentUploadTest from './views/StudentUploadTest';
 import ForumPostDetailView from './views/ForumPostDetailView';
 import ForumPostEditor from './views/ForumPostEditor';
@@ -1085,6 +1087,7 @@ const AppContent: React.FC = () => {
             <AnalyticsTracker />
             <main className="flex-grow relative">
                 {!isWorkspaceRoute && <ScrollSpaceship />}
+                {!isWorkspaceRoute && <WhatsAppButton />}
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/courses" element={<Courses />} />

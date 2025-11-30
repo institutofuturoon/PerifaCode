@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import ActionCard from '../components/ActionCard';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
+import FAQ from '../components/FAQ';
+import { useOngData } from '../hooks/useOngData';
 
 // Componente de Estatística Animada - MELHORADO!
 const AnimatedImpactCard: React.FC<{ 
@@ -207,6 +209,7 @@ const TimelineItem: React.FC<{ year: string; title: string; description: string;
 
 const AboutUsView: React.FC = () => {
     const navigate = useNavigate();
+    const { faq } = useOngData();
 
     const timelineData = [
         { year: '2021', title: 'Fundação do FuturoON', description: 'Iniciativa de Thais Santana no Complexo da Coruja, São Gonçalo, com objetivo de conectar a periferia à tecnologia, cultura e cidadania.' },
@@ -882,6 +885,16 @@ const AboutUsView: React.FC = () => {
                 </div>
             </Section>
 
+            {/* FAQ Section */}
+            {faq && faq.length > 0 && (
+                <Section>
+                    <FAQ 
+                        items={faq.filter(item => item.category === 'sobre')}
+                        title="Perguntas Frequentes"
+                        subtitle="Tire suas dúvidas sobre o Instituto FuturoOn"
+                    />
+                </Section>
+            )}
 
             {/* Team & Donate CTA Section */}
             <Section className="bg-brand-navy/30">

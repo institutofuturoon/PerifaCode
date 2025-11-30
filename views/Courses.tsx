@@ -7,6 +7,8 @@ import { Course } from '../types';
 import OnsiteCourseCard from '../components/OnsiteCourseCard';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
+import FAQ from '../components/FAQ';
+import { useOngData } from '../hooks/useOngData';
 
 const ITEMS_PER_PAGE = 8;
 
@@ -41,6 +43,7 @@ const FeaturedCourse: React.FC<{ course: Course, onSelect: (course: Course) => v
 const Courses: React.FC = () => {
   const { courses, user, showToast, loadData } = useAppContext();
   const navigate = useNavigate();
+  const { faq } = useOngData();
   
   const [activeTrack, setActiveTrack] = useState<string>('Todos');
   const [searchTerm, setSearchTerm] = useState('');
@@ -471,6 +474,15 @@ const Courses: React.FC = () => {
                     </div>
                 )}
             </section>
+
+            {/* FAQ Section */}
+            {faq && faq.length > 0 && (
+                <FAQ 
+                    items={faq.filter(item => item.category === 'cursos')}
+                    title="Dúvidas Frequentes sobre os Cursos"
+                    subtitle="Tire suas dúvidas antes de começar sua jornada"
+                />
+            )}
 
             <section className="text-center py-12 mt-8 border-t border-white/5">
                 <h3 className="text-base font-bold text-white mb-2">Não encontrou o que procura?</h3>
