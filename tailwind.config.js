@@ -2,9 +2,7 @@
 export default {
     content: [
         "./index.html",
-        "./**/*.{js,ts,jsx,tsx}",
-        "./views/**/*.{js,ts,jsx,tsx}",
-        "./components/**/*.{js,ts,jsx,tsx}",
+        "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
         extend: {
@@ -16,7 +14,7 @@ export default {
                 surface: 'var(--color-surface)',
                 gradientStart: 'var(--color-gradient-start)',
                 gradientEnd: 'var(--color-gradient-end)',
-                
+
                 // Paleta de marca (cores fixas)
                 brand: {
                     blue: '#034c8c',
@@ -29,7 +27,7 @@ export default {
                     purple: '#8a4add',
                     pink: '#f27983',
                 },
-                
+
                 // Estados semânticos
                 success: '#10b981',
                 warning: '#f2d194',
