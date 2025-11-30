@@ -2,10 +2,11 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
+import SEO from '../components/SEO';
+import Badge from '../components/Badge';
 
-// Reusable components for this view
 const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className = '' }) => (
-    <section className={`py-16 md:py-20 relative z-10 ${className}`}>
+    <section className={`py-16 md:py-24 relative ${className}`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {children}
         </div>
@@ -13,28 +14,40 @@ const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ 
 );
 
 const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> = ({ children, subtitle }) => (
-    <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">{children}</h2>
-        {subtitle && <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">{subtitle}</p>}
-        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+    <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">{children}</h2>
+        {subtitle && <p className="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-300 leading-relaxed px-4">{subtitle}</p>}
+        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-6"></div>
     </div>
 );
 
-const StatCard: React.FC<{ value: string, label: string, color: string }> = ({ value, label, color }) => (
-    <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-center transform hover:-translate-y-1 transition-transform">
-        <p className={`text-5xl font-black ${color}`}>{value}</p>
-        <p className="mt-2 text-gray-300">{label}</p>
+const StatCard: React.FC<{ value: string, label: string, color: string, icon?: React.ReactNode }> = ({ value, label, color, icon }) => (
+    <div className="group relative bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10 text-center hover:border-[#8a4add]/30 hover:bg-white/[0.07] transition-all duration-300">
+        {icon && (
+            <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 rounded-xl bg-[#8a4add]/10 flex items-center justify-center text-[#8a4add]">
+                    {icon}
+                </div>
+            </div>
+        )}
+        <p className={`text-4xl md:text-5xl lg:text-6xl font-black ${color} mb-2`}>{value}</p>
+        <p className="text-sm md:text-base text-gray-300 font-medium">{label}</p>
     </div>
 );
 
 const TestimonialCard: React.FC<{ quote: string, name: string, course: string, avatar: string }> = ({ quote, name, course, avatar }) => (
-    <div className="bg-white/5 p-8 rounded-lg border border-white/10 h-full flex flex-col">
-        <p className="text-gray-300 italic flex-grow">"{quote}"</p>
-        <div className="mt-6 flex items-center gap-4">
-            <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover" />
+    <div className="bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10 h-full flex flex-col hover:border-[#8a4add]/30 transition-all duration-300">
+        <div className="mb-4">
+            <svg className="w-8 h-8 text-[#8a4add]/30" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+            </svg>
+        </div>
+        <p className="text-gray-300 leading-relaxed flex-grow text-sm md:text-base mb-6">"{quote}"</p>
+        <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+            <img src={avatar} alt={name} className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-[#8a4add]/30" />
             <div>
-                <p className="font-bold text-white">{name}</p>
-                <p className="text-sm text-[#8a4add]">{course}</p>
+                <p className="font-bold text-white text-sm md:text-base">{name}</p>
+                <p className="text-xs md:text-sm text-[#c4b5fd]">{course}</p>
             </div>
         </div>
     </div>
@@ -62,36 +75,86 @@ const AnnualReportView: React.FC = () => {
 
     return (
         <>
+            <SEO 
+                title={`Relatório Anual ${latestReport.year} | Instituto FuturoOn`}
+                description="Veja nosso impacto, conquistas e histórias de transformação através da tecnologia e educação."
+            />
+            
             {/* Hero Section */}
-            <header className="py-32 md:py-40 text-center relative z-10 bg-grid-pattern">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                     <p className="font-semibold text-[#c4b5fd] uppercase tracking-widest">FuturoOn</p>
-                    <h1 className="mt-4 text-5xl md:text-7xl font-black tracking-tighter leading-tight">
-                        Relatório Anual {latestReport.year}
+            <header className="relative py-20 md:py-32 lg:py-40 text-center overflow-hidden">
+                {/* Background Effects */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] md:w-[800px] h-[400px] bg-[#8a4add]/10 rounded-full blur-[120px] pointer-events-none"></div>
+                
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <Badge text={`Ano ${latestReport.year}`} />
+                    
+                    <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight">
+                        Relatório Anual<br className="hidden sm:block" />
+                        <span className="text-[#c4b5fd]">{latestReport.year}</span>
                     </h1>
-                    <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-gray-300 leading-relaxed">
+                    
+                    <p className="mt-6 max-w-3xl mx-auto text-base md:text-lg lg:text-xl text-gray-300 leading-relaxed px-4">
                         Um ano de coragem, comunidade e código. Veja como, juntos, estamos reescrevendo o futuro da tecnologia na periferia.
                     </p>
+
+                    {/* Quick Stats Preview */}
+                    <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-4xl mx-auto">
+                        {latestReport.stats.slice(0, 4).map((stat, i) => (
+                            <div key={i} className="bg-white/5 backdrop-blur-sm p-4 md:p-6 rounded-xl border border-white/10">
+                                <p className={`text-2xl md:text-3xl font-black ${stat.color}`}>{stat.value}</p>
+                                <p className="text-xs md:text-sm text-gray-400 mt-1">{stat.label}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </header>
 
             {/* Letter from Coordination */}
-            <Section className="bg-black/20">
-                <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-12 items-start">
-                    <div className="md:col-span-2">
-                        <h2 className="text-3xl font-bold text-white mb-4">Carta da Coordenação</h2>
-                        <div className="prose prose-invert text-gray-300 leading-relaxed space-y-4 whitespace-pre-wrap">
-                            <p>{latestReport.coordinationLetter.text}</p>
-                            <div className="pt-4">
-                                <p className="font-bold text-white">{latestReport.coordinationLetter.authorName}</p>
-                                <p className="text-sm text-gray-400">{latestReport.coordinationLetter.authorRole}, FuturoOn</p>
+            <Section className="bg-gradient-to-b from-black/20 to-transparent">
+                <div className="max-w-6xl mx-auto">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Carta da Coordenação</h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 md:gap-12 items-start">
+                        {/* Author Image - Mobile First */}
+                        <div className="md:order-2 flex justify-center">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-[#8a4add]/20 rounded-full blur-2xl"></div>
+                                <img 
+                                    src={latestReport.coordinationLetter.authorAvatarUrl} 
+                                    alt={latestReport.coordinationLetter.authorName} 
+                                    className="relative w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-[#8a4add] shadow-2xl"
+                                />
                             </div>
                         </div>
-                    </div>
-                     <div className="flex flex-col items-center gap-8">
-                        {/* Author Image */}
-                        <div className="text-center">
-                            <img src={latestReport.coordinationLetter.authorAvatarUrl} alt={latestReport.coordinationLetter.authorName} className="w-40 h-40 rounded-full object-cover border-4 border-[#8a4add] mx-auto shadow-2xl shadow-[#8a4add]/20" />
+
+                        {/* Letter Content */}
+                        <div className="md:col-span-2 md:order-1">
+                            <div className="bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10">
+                                <div className="mb-6">
+                                    <svg className="w-10 h-10 text-[#8a4add]/30" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                                    </svg>
+                                </div>
+                                
+                                <div className="text-gray-300 leading-relaxed space-y-4 text-sm md:text-base whitespace-pre-wrap">
+                                    {latestReport.coordinationLetter.text}
+                                </div>
+                                
+                                <div className="mt-8 pt-6 border-t border-white/10 flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center">
+                                        <span className="text-white font-bold text-lg">
+                                            {latestReport.coordinationLetter.authorName.charAt(0)}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-white text-sm md:text-base">{latestReport.coordinationLetter.authorName}</p>
+                                        <p className="text-xs md:text-sm text-gray-400">{latestReport.coordinationLetter.authorRole}, FuturoOn</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,20 +165,31 @@ const AnnualReportView: React.FC = () => {
                 <SectionTitle subtitle="Nossos resultados refletem o poder da nossa comunidade e a dedicação de cada indivíduo envolvido.">
                     Nosso Impacto em Números
                 </SectionTitle>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
                     {latestReport.stats.map((stat, i) => (
-                        <StatCard key={i} value={stat.value} label={stat.label} color={stat.color} />
+                        <StatCard 
+                            key={i} 
+                            value={stat.value} 
+                            label={stat.label} 
+                            color={stat.color}
+                            icon={
+                                i === 0 ? <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> :
+                                i === 1 ? <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg> :
+                                i === 2 ? <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg> :
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                            }
+                        />
                     ))}
                 </div>
             </Section>
 
             {/* Testimonials */}
             {latestReport.testimonials.length > 0 && (
-                <Section className="bg-black/20">
+                <Section className="bg-gradient-to-b from-transparent to-black/20">
                     <SectionTitle subtitle="Nada fala mais alto do que as vozes da nossa comunidade.">
                         Histórias que Inspiram
                     </SectionTitle>
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
                         {latestReport.testimonials.map((t, i) => (
                             <TestimonialCard 
                                 key={i}
@@ -130,15 +204,77 @@ const AnnualReportView: React.FC = () => {
             )}
 
             {/* Call to Action */}
-            <Section className="bg-black/20">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold text-white">Faça Parte do Próximo Capítulo</h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-300">
-                       Sua doação ou parceria nos ajuda a escrever mais histórias de sucesso como estas.
-                    </p>
-                    <div className="mt-8">
-                        <button onClick={() => navigate('/donate')} className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300">
-                            Apoie nossa Missão
+            <Section className="bg-gradient-to-b from-black/20 to-transparent">
+                <div className="max-w-4xl mx-auto text-center">
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/10 rounded-3xl blur-2xl"></div>
+                        <div className="relative bg-white/5 backdrop-blur-sm p-8 md:p-12 rounded-3xl border border-white/10">
+                            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                                Faça Parte do Próximo Capítulo
+                            </h2>
+                            <p className="text-base md:text-lg text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+                                Sua doação ou parceria nos ajuda a escrever mais histórias de sucesso como estas. Juntos, podemos transformar ainda mais vidas.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <button 
+                                    onClick={() => navigate('/donate')} 
+                                    className="px-8 py-4 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+                                >
+                                    Fazer uma Doação
+                                </button>
+                                <button 
+                                    onClick={() => navigate('/partnerships')} 
+                                    className="px-8 py-4 bg-white/10 text-white font-bold rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300"
+                                >
+                                    Ser Parceiro
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Section>
+
+            {/* Additional Info */}
+            <Section>
+                <div className="max-w-4xl mx-auto">
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <button 
+                            onClick={() => navigate('/transparency')}
+                            className="p-6 bg-white/5 rounded-xl border border-white/10 hover:border-[#8a4add]/30 hover:bg-white/[0.07] transition-all duration-300 text-center group"
+                        >
+                            <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-[#8a4add]/10 flex items-center justify-center text-[#8a4add] group-hover:bg-[#8a4add]/20 transition-colors">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 className="font-bold text-white mb-2">Transparência</h3>
+                            <p className="text-sm text-gray-400">Veja todos os nossos relatórios</p>
+                        </button>
+
+                        <button 
+                            onClick={() => navigate('/financial-statement')}
+                            className="p-6 bg-white/5 rounded-xl border border-white/10 hover:border-[#f27983]/30 hover:bg-white/[0.07] transition-all duration-300 text-center group"
+                        >
+                            <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-[#f27983]/10 flex items-center justify-center text-[#f27983] group-hover:bg-[#f27983]/20 transition-colors">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 className="font-bold text-white mb-2">Prestação de Contas</h3>
+                            <p className="text-sm text-gray-400">Detalhamento financeiro</p>
+                        </button>
+
+                        <button 
+                            onClick={() => navigate('/about')}
+                            className="p-6 bg-white/5 rounded-xl border border-white/10 hover:border-[#c4b5fd]/30 hover:bg-white/[0.07] transition-all duration-300 text-center group"
+                        >
+                            <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-[#c4b5fd]/10 flex items-center justify-center text-[#c4b5fd] group-hover:bg-[#c4b5fd]/20 transition-colors">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h3 className="font-bold text-white mb-2">Quem Somos</h3>
+                            <p className="text-sm text-gray-400">Nossa história e missão</p>
                         </button>
                     </div>
                 </div>
