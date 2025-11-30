@@ -52,7 +52,7 @@ import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
 import PartnerDetailView from './views/PartnerDetailView';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
-import ScrollSpaceship from './components/ScrollSpaceship';
+// import ScrollSpaceship from './components/ScrollSpaceship'; // Desativado - jogo de nave removido
 import WhatsAppButton from './components/WhatsAppButton';
 import ReadingProgressBar from './components/ReadingProgressBar';
 import StudentUploadTest from './views/StudentUploadTest';
@@ -1085,7 +1085,7 @@ const AppContent: React.FC = () => {
             {/* Componente de Tracking do Google Analytics */}
             <AnalyticsTracker />
             <main className="flex-grow relative">
-                {!isWorkspaceRoute && <ScrollSpaceship />}
+                {/* ScrollSpaceship desativado - jogo de nave removido */}
                 {!isWorkspaceRoute && <WhatsAppButton />}
                 <Routes>
                     <Route path="/" element={<Home />} />
