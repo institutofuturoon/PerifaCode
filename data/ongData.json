@@ -1,0 +1,411 @@
+{
+  "_comment": "📋 DADOS CENTRALIZADOS DA ONG - Edite aqui e os dados serão atualizados em todo o site",
+  
+  "organization": {
+    "name": "Instituto FuturoOn",
+    "shortName": "FuturoOn",
+    "slogan": "Oportunidades para a quebrada crescer!",
+    "foundedYear": 2021,
+    "mission": "Promover desenvolvimento profissional e cidadania digital usando a tecnologia de forma crítica e ética, conectando a periferia com oportunidades reais de formação e trabalho.",
+    "vision": "Democratizar o acesso à educação tecnológica e mostrar que a periferia também pode protagonizar a transformação digital.",
+    "values": [
+      "Inclusão e Diversidade",
+      "Educação Transformadora",
+      "Acesso à Tecnologia",
+      "Respeito e Dignidade",
+      "Equidade e Justiça Social"
+    ]
+  },
+  
+  "contact": {
+    "emails": {
+      "general": "futurooon@gmail.com",
+      "partnerships": "futurooon@gmail.com",
+      "support": "futurooon@gmail.com"
+    },
+    "phones": {
+      "main": "+55 (21) 97087-2194",
+      "whatsapp": "+55 (21) 97087-2194"
+    },
+    "address": {
+      "street": "Rua Silva Jardim",
+      "number": "689",
+      "complement": "",
+      "neighborhood": "Neves",
+      "city": "São Gonçalo",
+      "state": "RJ",
+      "zipCode": "24440-000"
+    },
+    "socialMedia": {
+      "instagram": "https://instagram.com/futuroon",
+      "linkedin": "https://linkedin.com/company/futuroon-tecnologia",
+      "facebook": "",
+      "youtube": "",
+      "github": ""
+    }
+  },
+  
+  "statistics": {
+    "peopleImpacted": 300,
+    "yearsActive": 3,
+    "projectsCompleted": 50,
+    "mentorshipHours": 5000,
+    "employmentRate": 85,
+    "activePartners": 10,
+    "volunteers": 14,
+    "registeredMembers": 1848,
+    "activeMembers": 450,
+    "forumPosts": 390,
+    "resolvedDiscussions": 680,
+    "resolutionRate": 80,
+    "publishedArticles": 120,
+    "eventsHeld": 75,
+    "availableCourses": 8,
+    "graduatedStudents": 300,
+    "activeStudents": 150,
+    "completionRate": 85,
+    "contentHours": 500,
+    "certificatesIssued": 300
+  },
+  
+  "founder": {
+    "name": "Thaís Santana",
+    "role": "Fundadora e CEO",
+    "specialty": "Engenharia Elétrica e Empreendedorismo Social",
+    "bio": "Mulher preta e periférica, engenheira elétrica com mais de 13 anos de experiência no setor elétrico. Cresceu no Complexo da Coruja e fundou o FuturoOn em 2021 após sonhar com o projeto, com a missão de levar educação tecnológica para sua comunidade.",
+    "linkedin": "https://linkedin.com/in/thaissantana",
+    "email": "futurooon@gmail.com",
+    "photo": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop",
+    "featured": true
+  },
+  
+  "team": [
+    {
+      "id": "team-001",
+      "name": "João Santos",
+      "role": "Diretor de Educação",
+      "area": "Educação",
+      "specialty": "Pedagogia e Metodologias Ativas",
+      "bio": "Responsável pelo desenvolvimento curricular e qualidade pedagógica dos cursos.",
+      "linkedin": "https://linkedin.com/in/joaosantos",
+      "photo": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop"
+    },
+    {
+      "id": "team-002",
+      "name": "Ana Costa",
+      "role": "Coordenadora de Tecnologia",
+      "area": "Tecnologia",
+      "specialty": "Desenvolvimento Full Stack",
+      "bio": "Lidera a equipe técnica e garante que nossos alunos aprendam as tecnologias mais demandadas pelo mercado.",
+      "linkedin": "https://linkedin.com/in/anacosta",
+      "photo": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop"
+    },
+    {
+      "id": "team-003",
+      "name": "Carlos Oliveira",
+      "role": "Gerente de Parcerias",
+      "area": "Gestão",
+      "specialty": "Relacionamento Corporativo e ESG",
+      "bio": "Conecta empresas ao nosso propósito, desenvolvendo parcerias estratégicas que geram impacto real.",
+      "linkedin": "https://linkedin.com/in/carlosoliveira",
+      "photo": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop"
+    },
+    {
+      "id": "team-004",
+      "name": "Juliana Ferreira",
+      "role": "Coordenadora de Marketing",
+      "area": "Marketing",
+      "specialty": "Marketing Digital e Comunicação",
+      "bio": "Amplifica nossa voz e conecta nossa missão com pessoas que querem fazer a diferença.",
+      "linkedin": "https://linkedin.com/in/julianaferreira",
+      "photo": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
+    }
+  ],
+  
+  "partners": [
+    {
+      "id": "partner-001",
+      "name": "Hostinger",
+      "type": "Empresa",
+      "sector": "Tecnologia",
+      "size": "Grande",
+      "website": "https://hostinger.com.br",
+      "description": "Primeiro edital conquistado. Investimento de R$15.000 + R$1.500 em serviços para impulsionar o projeto.",
+      "partnershipStart": "2024-09",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/8a4add/ffffff?text=Hostinger",
+      "stats": {
+        "funding": "R$ 15.000",
+        "services": "R$ 1.500"
+      }
+    },
+    {
+      "id": "partner-002",
+      "name": "UFF - Universidade Federal Fluminense",
+      "type": "Instituição",
+      "sector": "Educação",
+      "size": "Grande",
+      "website": "https://uff.br",
+      "description": "Parceria com IN Junior para curso de Programação com certificação pela universidade federal.",
+      "partnershipStart": "2022",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/4ade80/ffffff?text=UFF",
+      "stats": {
+        "certifiedStudents": 10,
+        "courses": 1
+      }
+    },
+    {
+      "id": "partner-003",
+      "name": "Way2",
+      "type": "Empresa",
+      "sector": "Tecnologia",
+      "size": "Grande",
+      "website": "https://way2.com.br",
+      "description": "Empresa de software que apoiou o projeto com doação de 7 computadores no primeiro ano.",
+      "partnershipStart": "2021",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/f27983/ffffff?text=Way2",
+      "stats": {
+        "computersdonated": 7
+      }
+    },
+    {
+      "id": "partner-004",
+      "name": "SENAC",
+      "type": "Instituição",
+      "sector": "Educação",
+      "size": "Grande",
+      "website": "https://senac.br",
+      "description": "Parceria para oferecer serviços gratuitos à comunidade em eventos (corte de cabelo, massagem, barbearia).",
+      "partnershipStart": "2024",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/c4b5fd/000000?text=SENAC",
+      "stats": {
+        "services": "Múltiplos"
+      }
+    },
+    {
+      "id": "partner-005",
+      "name": "Nebula Web3",
+      "type": "ONG",
+      "sector": "Tecnologia",
+      "size": "PME",
+      "website": "https://nebulaweb3.xyz",
+      "description": "Parceria para educação em blockchain, Web3 e novas economias para comunidades vulneráveis.",
+      "partnershipStart": "2024",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/fbbf24/000000?text=Nebula+Web3",
+      "stats": {
+        "courses": "Web3"
+      }
+    },
+    {
+      "id": "partner-006",
+      "name": "Craque do Amanhã",
+      "type": "ONG",
+      "sector": "Esporte e Educação",
+      "size": "PME",
+      "website": "",
+      "description": "Parceria para capacitação profissional de informática básica e programação para jovens e mães da comunidade.",
+      "partnershipStart": "2024",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/4ade80/ffffff?text=Craque+do+Amanhã",
+      "stats": {
+        "students": "Múltiplos"
+      }
+    },
+    {
+      "id": "partner-007",
+      "name": "Projeto Luz",
+      "type": "Instituto",
+      "sector": "Social",
+      "size": "PME",
+      "website": "",
+      "description": "Apoio e parceria para utilização do espaço físico.",
+      "partnershipStart": "2021",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/8a4add/ffffff?text=Projeto+Luz",
+      "stats": {
+        "support": "Espaço físico"
+      }
+    },
+    {
+      "id": "partner-008",
+      "name": "Fundação Cecierj",
+      "type": "Instituição",
+      "sector": "Educação",
+      "size": "Grande",
+      "website": "https://cecierj.edu.br",
+      "description": "Apoio institucional público para o projeto.",
+      "partnershipStart": "2022",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/f27983/ffffff?text=Cecierj",
+      "stats": {
+        "support": "Institucional"
+      }
+    }
+  ],
+  
+  "successCases": [
+    {
+      "id": "case-001",
+      "title": "Transformação Digital na Tech Solutions",
+      "partner": "Tech Solutions",
+      "companySize": "Tecnologia • 200+ funcionários",
+      "stats": [
+        { "label": "Jovens Contratados", "value": "8" },
+        { "label": "Retenção", "value": "90%" },
+        { "label": "Tempo Médio", "value": "4 meses" }
+      ],
+      "testimonial": "Os jovens do FuturoOn chegam com uma energia e dedicação impressionantes. Já contratamos 8 e todos se destacaram nas suas equipes.",
+      "authorName": "Carlos Silva",
+      "authorRole": "CTO, Tech Solutions",
+      "featured": true
+    },
+    {
+      "id": "case-002",
+      "title": "Cultura de Diversidade na Digital Ventures",
+      "partner": "Digital Ventures",
+      "companySize": "Startup • 50+ funcionários",
+      "stats": [
+        { "label": "Jovens Contratados", "value": "5" },
+        { "label": "Retenção", "value": "100%" },
+        { "label": "Tempo Médio", "value": "3 meses" }
+      ],
+      "testimonial": "Encontramos talentos que realmente querem aprender e crescer. A parceria com o FuturoOn transformou nossa estratégia de contratação.",
+      "authorName": "Ana Costa",
+      "authorRole": "CEO, Digital Ventures",
+      "featured": true
+    }
+  ],
+  
+  "testimonials": {
+    "students": [
+      {
+        "id": "student-001",
+        "name": "Kauan Santana",
+        "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+        "course": "Criação de Games",
+        "year": "2023",
+        "before": "Sonhava apenas com futebol",
+        "currentRole": "Desenvolvedor de Games Jr",
+        "currentCompany": "Em formação",
+        "linkedin": "",
+        "text": "Graças ao projeto, hoje cogito investir na área da programação e da tecnologia, paralelamente aos meus sonhos de jogar futebol. Desenvolvi um minigame premiado e descobri que posso ter mais de um sonho!",
+        "featured": true
+      },
+      {
+        "id": "student-002",
+        "name": "Gabriel Luíz Oliveira (GB)",
+        "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+        "course": "Informática Básica e Programação",
+        "year": "2023",
+        "before": "Sem oportunidades de capacitação",
+        "currentRole": "Estudante de Tecnologia",
+        "currentCompany": "FuturoOn",
+        "linkedin": "",
+        "text": "Eu já tinha vontade de fazer algum curso de informática, mas não sabia que gostava tanto disso. No começo foi difícil, mas depois de ir conhecendo na prática foi ficando fácil. Minhas metas agora são proporcionar uma vida melhor para minha família.",
+        "featured": true
+      },
+      {
+        "id": "student-003",
+        "name": "Ana Carolina Cardoso",
+        "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+        "course": "Letramento Digital",
+        "year": "2023",
+        "before": "Nunca tinha mexido em computador",
+        "currentRole": "Estudante de Tecnologia",
+        "currentCompany": "FuturoOn",
+        "linkedin": "",
+        "text": "Foi estranho porque era a primeira vez que vi muita coisa. Agora eu já me adaptei. Eu não sabia mexer em nada, agora tô sabendo pelo menos o básico. Tinha curiosidade de saber como que é. O FuturoOn virou uma segunda casa pra mim!",
+        "featured": true
+      }
+    ],
+    "partners": [
+      {
+        "id": "partner-test-001",
+        "name": "Carlos Silva",
+        "role": "CTO",
+        "company": "Tech Solutions",
+        "photo": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop",
+        "text": "A parceria com o FuturoOn nos trouxe talentos excepcionais. Os jovens chegam preparados tecnicamente e com uma vontade de aprender que contagia todo o time.",
+        "featured": true
+      },
+      {
+        "id": "partner-test-002",
+        "name": "Ana Costa",
+        "role": "CEO",
+        "company": "Digital Ventures",
+        "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop",
+        "text": "Contratar através do FuturoOn foi a melhor decisão que tomamos. Além de talentos qualificados, ganhamos diversidade e propósito no nosso time.",
+        "featured": true
+      }
+    ]
+  },
+  
+  "legal": {
+    "cnpj": "12.345.678/0001-90",
+    "legalName": "Instituto FuturoOn de Educação e Tecnologia",
+    "foundationDate": "2020-03-15",
+    "registration": "OSCIP nº 12345"
+  },
+  
+  "financial": {
+    "bankAccount": {
+      "bank": "Banco do Brasil",
+      "branch": "1234-5",
+      "account": "12345-6",
+      "holder": "Instituto FuturoOn",
+      "pix": "12.345.678/0001-90"
+    }
+  },
+  
+  "brand": {
+    "colors": {
+      "primary": "#8a4add",
+      "secondary": "#f27983",
+      "accent": "#4ade80",
+      "black": "#09090B",
+      "darkGray": "#18181B"
+    },
+    "logos": {
+      "main": "assets/logo/logo-principal.svg",
+      "white": "assets/logo/logo-branca.svg"
+    }
+  },
+  
+  "faq": [
+    {
+      "category": "sobre",
+      "question": "O que é o Instituto FuturoOn?",
+      "answer": "Somos uma OSCIP que capacita jovens da periferia em tecnologia, oferecendo cursos gratuitos, mentorias e conexão com o mercado de trabalho."
+    },
+    {
+      "category": "cursos",
+      "question": "Os cursos são realmente gratuitos?",
+      "answer": "Sim! Todos os nossos cursos são 100% gratuitos para os alunos. Somos mantidos por parcerias corporativas e doações."
+    },
+    {
+      "category": "cursos",
+      "question": "Preciso ter conhecimento prévio em programação?",
+      "answer": "Não! Nossos cursos são desenhados para iniciantes. Você só precisa ter vontade de aprender e dedicação."
+    },
+    {
+      "category": "parcerias",
+      "question": "Como minha empresa pode apoiar?",
+      "answer": "Existem várias formas: doações financeiras, doação de equipamentos, mentorias, contratação de alunos ou patrocínio de turmas. Entre em contato conosco!"
+    },
+    {
+      "category": "parcerias",
+      "question": "Posso abater a doação do Imposto de Renda?",
+      "answer": "Sim! Como OSCIP, emitimos recibos que permitem abatimento fiscal para empresas tributadas pelo Lucro Real."
+    }
+  ],
+  
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdate": "2024-11-30",
+    "status": "mockado"
+  }
+}

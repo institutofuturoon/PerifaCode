@@ -261,25 +261,28 @@ const AboutUsView: React.FC = () => {
                                 </div>
                                 
                                 <h2 className="text-4xl font-black text-white">
-                                    Thais Santana
+                                    Thaís Santana
                                 </h2>
                                 
                                 <p className="text-xl text-[#c4b5fd] font-semibold italic">
-                                    "Eu vim da periferia. Eu sei o que é não ter oportunidade. 
-                                    E eu decidi que nenhum jovem deveria passar por isso."
+                                    "Eu sonhei com esse projeto. Literalmente. Acordei com o nome, 
+                                    a missão e a certeza de que era isso que eu deveria fazer."
                                 </p>
                                 
                                 <div className="space-y-4 text-gray-300 leading-relaxed">
                                     <p>
-                                        Nascida e criada no Complexo da Coruja, em São Gonçalo, Thais 
-                                        sempre sonhou em transformar a realidade da sua comunidade.
+                                        Mulher preta e periférica, engenheira elétrica com mais de 13 anos 
+                                        de experiência no setor elétrico. Nascida e criada no Complexo da Coruja, 
+                                        em São Gonçalo, Thaís sempre teve o sonho de transformar a realidade da sua comunidade.
                                     </p>
                                     <p>
-                                        Em 2021, cansada de ver jovens talentosos sem oportunidades, 
-                                        ela fundou o FuturoOn com recursos próprios e muita determinação.
+                                        Em 2021, ela literalmente sonhou com o FuturoOn - acordou com o nome do projeto, 
+                                        a estrutura e a missão clara. Sem incentivo financeiro público ou privado, 
+                                        fundou o instituto com recursos próprios e muita determinação.
                                     </p>
                                     <p>
-                                        Hoje, o instituto já formou mais de 300 jovens e se tornou 
+                                        Hoje, o FuturoOn já realizou mais de 300 formações, organizou dezenas de turmas 
+                                        e eventos, e inseriu diversos alunos no mercado de trabalho. O projeto se tornou 
                                         referência em inclusão digital na Baixada Fluminense.
                                     </p>
                                 </div>
@@ -287,15 +290,21 @@ const AboutUsView: React.FC = () => {
                                 <div className="flex flex-wrap gap-4 pt-4">
                                     <div className="flex items-center gap-2 text-sm text-gray-400">
                                         <svg className="w-5 h-5 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
                                         </svg>
-                                        Educadora Social
+                                        Engenheira Elétrica
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-gray-400">
                                         <svg className="w-5 h-5 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
                                         </svg>
-                                        São Gonçalo, RJ
+                                        Complexo da Coruja, São Gonçalo - RJ
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                                        <svg className="w-5 h-5 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                        </svg>
+                                        13+ anos de experiência
                                     </div>
                                 </div>
                             </div>

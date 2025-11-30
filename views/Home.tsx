@@ -7,6 +7,7 @@ import TeamMemberPreviewCard from '../components/TeamMemberPreviewCard';
 import SEO from '../components/SEO';
 import { Partner, User } from '../types';
 import Badge from '../components/Badge';
+import { useStatistics, useActivePartners, useFeaturedTestimonials } from '../hooks/useOngData';
 
 const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ finalStat, duration = 2000 }) => {
   const [currentValue, setCurrentValue] = React.useState(0);
@@ -197,6 +198,11 @@ const Home: React.FC = () => {
   const [teamPreview, setTeamPreview] = useState<User[]>([]);
   const [hasShuffled, setHasShuffled] = useState(false); // A TRAVA: Garante que só roda 1 vez
 
+  // 🎯 Dados centralizados do JSON
+  const stats = useStatistics();
+  const ongPartners = useActivePartners();
+  const testimonials = useFeaturedTestimonials();
+
   useEffect(() => {
       loadData(['partners', 'users']); // Users needed for team preview
   }, [loadData]);
@@ -223,11 +229,12 @@ const Home: React.FC = () => {
 
   }, [team, hasShuffled]); 
 
+  // 📊 Estatísticas vindas do JSON
   const impactData = [
-    { stat: "+300", title: "Jovens Formados", text: "Capacitados em tecnologia", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
-    { stat: "+50", title: "Turmas", text: "Do online ao presencial", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-    { stat: "+14", title: "Voluntários", text: "Profissionais dedicados", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
-    { stat: `+${partners.length}`, title: "Parceiros", text: "Empresas que apoiam", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg> },
+    { stat: `+${stats.graduatedStudents}`, title: "Jovens Formados", text: "Capacitados em tecnologia", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M1 12v7a2 2 0 002 2h18a2 2 0 002-2v-7" /></svg> },
+    { stat: `+${stats.projectsCompleted}`, title: "Turmas", text: "Do online ao presencial", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+    { stat: `+${stats.volunteers}`, title: "Voluntários", text: "Profissionais dedicados", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
+    { stat: `+${stats.activePartners}`, title: "Parceiros", text: "Empresas que apoiam", icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg> },
   ];
 
   // JSON-LD para Organização (SEO)
@@ -442,29 +449,18 @@ const Home: React.FC = () => {
                     </p>
                 </div>
 
-                {/* Testimonials Grid */}
+                {/* Testimonials Grid - Dados do JSON */}
                 <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                    <TestimonialCard 
-                        name="Lucas Silva"
-                        role="Desenvolvedor Front-end"
-                        company="Empresa de Tecnologia"
-                        photo="https://i.pravatar.cc/150?img=12"
-                        quote="O FuturoOn mudou minha vida. Saí de um emprego informal para trabalhar como dev em uma empresa incrível. Hoje ganho 5x mais e tenho plano de carreira."
-                    />
-                    <TestimonialCard 
-                        name="Mariana Santos"
-                        role="Desenvolvedora Full Stack"
-                        company="Startup de Educação"
-                        photo="https://i.pravatar.cc/150?img=45"
-                        quote="Nunca imaginei que eu, moradora da periferia, poderia trabalhar com tecnologia. O FuturoOn me deu essa oportunidade e hoje sou referência na minha comunidade."
-                    />
-                    <TestimonialCard 
-                        name="Rafael Costa"
-                        role="Desenvolvedor Back-end"
-                        company="Fintech"
-                        photo="https://i.pravatar.cc/150?img=33"
-                        quote="Aprendi mais em 6 meses no FuturoOn do que em anos tentando sozinho. Os mentores são incríveis e o networking abriu portas que eu nem sabia que existiam."
-                    />
+                    {testimonials.students.map((student) => (
+                        <TestimonialCard 
+                            key={student.id}
+                            name={student.name}
+                            role={student.currentRole}
+                            company={student.currentCompany}
+                            photo={student.photo}
+                            quote={student.text}
+                        />
+                    ))}
                 </div>
 
                 {/* CTA */}
@@ -543,9 +539,13 @@ const Home: React.FC = () => {
                     </p>
                 </div>
                 
-                {/* Carrossel de logos */}
+                {/* Carrossel de logos - Dados do JSON */}
                 <div className="relative mb-16">
-                    <PartnerCarousel partners={partners} />
+                    <PartnerCarousel partners={partners.length > 0 ? partners : ongPartners.map(p => ({ 
+                        id: p.id, 
+                        name: p.name, 
+                        logoUrl: p.logo 
+                    } as Partner))} />
                 </div>
 
                 {/* CTA melhorado */}
