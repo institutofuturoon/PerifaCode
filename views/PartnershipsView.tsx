@@ -1,209 +1,60 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useAppContext } from '../App';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
+import { useActivePartners, useStatistics, useContactInfo, useFeaturedTestimonials } from '../hooks/useOngData';
 
-const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="flex-shrink-0 w-52 h-32 bg-[#0c0c0e] border border-white/5 rounded-2xl flex items-center justify-center p-8 grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer group relative overflow-hidden hover:border-[#8a4add]/30 hover:bg-[#121212] hover:shadow-[0_0_30px_-10px_rgba(138,74,221,0.15)]">
-        {/* Subtle Gradient Orb on Hover */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#8a4add]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-        
-        <img 
-            src={logoUrl} 
-            alt={name} 
-            className="max-w-full max-h-full object-contain opacity-40 group-hover:opacity-100 transition-all duration-500 relative z-10 transform group-hover:scale-110 filter brightness-75 group-hover:brightness-100"
-        />
+const PartnerCard: React.FC<{ 
+    name: string; 
+    description: string;
+    sector: string;
+    logo: string;
+}> = ({ name, description, sector, logo }) => (
+    <div className="group relative bg-white/5 rounded-2xl border border-white/10 p-8 hover:border-[#8a4add]/30 hover:bg-white/[0.07] transition-all duration-300">
+        <div className="flex items-start gap-6">
+            <div className="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-[#8a4add]/30 transition-all">
+                <img src={logo} alt={name} className="w-16 h-16 object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+            </div>
+            <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg font-bold text-white">{name}</h3>
+                    <span className="text-xs px-2 py-1 rounded-full bg-[#8a4add]/10 text-[#c4b5fd] border border-[#8a4add]/20">
+                        {sector}
+                    </span>
+                </div>
+                <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
+            </div>
+        </div>
     </div>
 );
 
-// Componente de Estatística Animada
-const AnimatedStatCard: React.FC<{ 
-  value: string; 
-  label: string; 
-  icon: React.ReactNode;
-}> = ({ value, label, icon }) => {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-    
-    return () => observer.disconnect();
-  }, []);
-  
-  useEffect(() => {
-    if (isVisible) {
-      const target = parseInt(value.replace(/\D/g, ''));
-      if (target > 0) {
-        const duration = 2000;
-        const increment = target / (duration / 16);
-        
-        const timer = setInterval(() => {
-          setCount(prev => {
-            if (prev >= target) {
-              clearInterval(timer);
-              return target;
-            }
-            return Math.min(prev + increment, target);
-          });
-        }, 16);
-        
-        return () => clearInterval(timer);
-      }
-    }
-  }, [isVisible, value]);
-  
-  const displayValue = value.includes('+') 
-    ? `+${Math.round(count)}` 
-    : value.includes('%')
-    ? `${Math.round(count)}%`
-    : Math.round(count).toString();
-  
-  return (
-    <div ref={ref} className="flex flex-col items-center justify-center text-center px-6 border-r border-white/10 last:border-0 py-4 md:py-0">
+const StatCard: React.FC<{ value: string; label: string; icon: React.ReactNode }> = ({ value, label, icon }) => (
+    <div className="flex flex-col items-center justify-center text-center px-6 border-r border-white/10 last:border-0 py-4 md:py-0">
         <div className="text-[#8a4add] mb-2 opacity-80">{icon}</div>
-        <p className="text-2xl md:text-3xl font-black text-white mb-1 tracking-tight uppercase">{displayValue}</p>
-        <p className="text-xs text-gray-400 uppercase tracking-widest font-bold">{label}</p>
+        <p className="text-3xl md:text-4xl font-black text-white mb-1">{value}</p>
+        <p className="text-sm text-gray-400">{label}</p>
     </div>
-  );
-};
+);
 
-// Componente de Case de Sucesso
-const SuccessCaseCard: React.FC<{
-  companyName: string;
-  companySize: string;
-  stats: { label: string; value: string }[];
-  testimonial: string;
-  authorName: string;
-  authorRole: string;
-}> = ({ companyName, companySize, stats, testimonial, authorName, authorRole }) => (
-  <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:-translate-y-2 hover:border-[#8a4add]/40 transition-all duration-300">
+const TestimonialCard: React.FC<{
+  name: string;
+  role: string;
+  company: string;
+  text: string;
+  photo: string;
+}> = ({ name, role, company, text, photo }) => (
+  <div className="bg-white/5 rounded-2xl border border-white/10 p-8 hover:border-[#8a4add]/30 transition-all duration-300">
     <div className="flex items-center gap-4 mb-6">
-      <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-[#8a4add]/20 to-[#f27983]/20 flex items-center justify-center">
-        <span className="text-2xl font-black text-white">{companyName.charAt(0)}</span>
-      </div>
+      <img src={photo} alt={name} className="w-16 h-16 rounded-full object-cover border-2 border-[#8a4add]/30" />
       <div>
-        <h3 className="text-xl font-bold text-white">{companyName}</h3>
-        <p className="text-sm text-gray-400">{companySize}</p>
+        <p className="font-bold text-white">{name}</p>
+        <p className="text-sm text-gray-400">{role}, {company}</p>
       </div>
     </div>
-    
-    <div className="grid grid-cols-3 gap-4 mb-6">
-      {stats.map((stat, i) => (
-        <div key={i} className="text-center">
-          <p className="text-2xl font-black text-[#8a4add]">{stat.value}</p>
-          <p className="text-xs text-gray-400">{stat.label}</p>
-        </div>
-      ))}
-    </div>
-    
-    <blockquote className="text-gray-300 italic mb-4 leading-relaxed">
-      "{testimonial}"
-    </blockquote>
-    
-    <div className="flex items-center gap-3 pt-4 border-t border-white/10">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center">
-        <span className="text-sm font-bold text-white">{authorName.charAt(0)}</span>
-      </div>
-      <div>
-        <p className="text-sm font-bold text-white">{authorName}</p>
-        <p className="text-xs text-gray-400">{authorRole}</p>
-      </div>
-    </div>
+    <p className="text-gray-300 leading-relaxed italic">"{text}"</p>
   </div>
 );
-
-// Componente de Calculadora de ROI
-const ROICalculator: React.FC = () => {
-  const [devsNeeded, setDevsNeeded] = useState(5);
-  const [avgSalary, setAvgSalary] = useState(8000);
-  
-  const traditionalCost = devsNeeded * 15000;
-  const partnershipCost = devsNeeded * 5000;
-  const savings = traditionalCost - partnershipCost;
-  
-  return (
-    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10">
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Inputs */}
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-bold text-gray-300 mb-2">
-              Quantos desenvolvedores você precisa contratar?
-            </label>
-            <input 
-              type="number" 
-              value={devsNeeded}
-              onChange={(e) => setDevsNeeded(Number(e.target.value))}
-              className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white focus:border-[#8a4add] focus:outline-none"
-              placeholder="Ex: 5"
-              min="1"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-bold text-gray-300 mb-2">
-              Salário médio que você paga (R$)
-            </label>
-            <input 
-              type="number" 
-              value={avgSalary}
-              onChange={(e) => setAvgSalary(Number(e.target.value))}
-              className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white focus:border-[#8a4add] focus:outline-none"
-              placeholder="Ex: 8000"
-              min="0"
-            />
-          </div>
-        </div>
-        
-        {/* Results */}
-        <div className="bg-black/20 p-6 rounded-xl">
-          <h3 className="text-xl font-bold text-white mb-4">Seu ROI Anual</h3>
-          
-          <div className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Custo de recrutamento tradicional:</span>
-              <span className="text-white font-bold">R$ {traditionalCost.toLocaleString()}</span>
-            </div>
-            
-            <div className="flex justify-between">
-              <span className="text-gray-400">Investimento em parceria:</span>
-              <span className="text-white font-bold">R$ {partnershipCost.toLocaleString()}</span>
-            </div>
-            
-            <div className="border-t border-white/10 pt-4">
-              <div className="flex justify-between">
-                <span className="text-[#8a4add] font-bold">Economia total:</span>
-                <span className="text-[#8a4add] font-bold text-xl">R$ {savings.toLocaleString()}</span>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 p-4 rounded-lg">
-              <p className="text-sm text-white">
-                💡 Além da economia, você ganha talentos dedicados e 
-                contribui para transformação social!
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const BenefitCard: React.FC<{ icon: React.ReactNode; title: string; description: string }> = ({ icon, title, description }) => (
     <div className="bg-[#121212] p-8 rounded-3xl border border-white/10 hover:border-[#8a4add]/50 transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden">
@@ -292,16 +143,16 @@ const FAQItem: React.FC<{ question: string; answer: string }> = ({ question, ans
 };
 
 const PartnershipsView: React.FC = () => {
-    const { partners } = useAppContext();
     const navigate = useNavigate();
-
-    // Ensure we have enough logos to make the marquee look good (min 10 items)
-    const marqueePartners = partners.length < 5 
-        ? [...partners, ...partners, ...partners, ...partners] 
-        : [...partners, ...partners];
+    
+    // Dados centralizados do JSON
+    const partners = useActivePartners();
+    const stats = useStatistics();
+    const contact = useContactInfo();
+    const { partners: testimonials } = useFeaturedTestimonials();
 
     return (
-        <div className="bg-[#09090B] min-h-screen overflow-hidden">
+        <>
             <SEO 
                 title="Seja um Parceiro | Instituto FuturoOn"
                 description="Conecte sua empresa à próxima geração de líderes em tecnologia. Descubra como apoiar a formação de talentos da periferia e impulsionar seu ESG."
@@ -309,334 +160,457 @@ const PartnershipsView: React.FC = () => {
             />
             
             {/* Hero Section */}
-            <section className="relative py-20 md:py-32 text-center relative z-10">
-                {/* Abstract Background */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[#8a4add]/10 rounded-[100%] blur-[120px] -z-10 pointer-events-none mix-blend-screen"></div>
-                <div className="absolute inset-0 bg-grid-pattern opacity-30 -z-10"></div>
-
+            <section className="relative py-20 md:py-32 text-center">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#8a4add]/10 rounded-full blur-[120px] pointer-events-none"></div>
+                
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <Badge text="B2B & Impacto Social" />
+                    <Badge text="Parcerias Corporativas" />
                     
-                    <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-tight mb-6 max-w-5xl mx-auto">
-                        Invista em talentos que <br className="hidden md:block" />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] via-[#c4b5fd] to-[#f27983]">transformam vidas.</span>
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight mb-6 max-w-5xl mx-auto">
+                        Transforme vidas e <br className="hidden md:block" />
+                        <span className="text-[#c4b5fd]">fortaleça seu ESG</span>
                     </h1>
                     
-                    <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-10">
-                        Ao apoiar o FuturoOn, sua empresa cumpre metas de diversidade, fortalece sua estratégia ESG e ganha acesso direto a desenvolvedores júnior formados em tecnologias modernas.
+                    <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-10">
+                        Conecte sua empresa à próxima geração de talentos em tecnologia. Apoie a formação de jovens da periferia e ganhe acesso a profissionais qualificados.
                     </p>
                     
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <a 
-                            href="mailto:parcerias@institutofuturoon.org"
-                            className="w-full sm:w-auto px-8 py-4 bg-[#8a4add] text-white font-bold rounded-xl hover:bg-[#7c3aed] transition-all transform hover:scale-105 shadow-[0_0_30px_-5px_rgba(138,74,221,0.5)]"
+                            href={`mailto:${contact.emails.partnerships}?subject=Quero ser Parceiro`}
+                            className="w-full sm:w-auto px-8 py-4 bg-[#8a4add] text-white font-bold rounded-xl hover:bg-[#7c3aed] transition-all transform hover:scale-105"
                         >
                             Quero ser Parceiro
                         </a>
                         <button 
                             onClick={() => document.getElementById('models')?.scrollIntoView({ behavior: 'smooth' })}
-                            className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-colors backdrop-blur-sm"
+                            className="w-full sm:w-auto px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-colors"
                         >
-                            Ver Modelos de Apoio
+                            Ver Modelos de Parceria
                         </button>
                     </div>
-                    
-                    {/* Urgência - NOVO! */}
-                    <div className="mt-8 inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 rounded-full">
-                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                        <span className="text-sm font-bold text-orange-300">
-                            Apenas 6 vagas restantes para turma de Abril 2025
-                        </span>
-                    </div>
                 </div>
             </section>
 
-            {/* Stats Strip - MELHORADO COM ANIMAÇÃO! */}
-            <section className="border-y border-white/5 bg-white/[0.02] backdrop-blur-sm py-12">
+            {/* Stats */}
+            <section className="border-y border-white/5 bg-white/[0.02] py-12">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-white/5">
-                        <AnimatedStatCard 
+                        <StatCard 
                             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
-                            value="+300" 
+                            value={`+${stats.graduatedStudents}`}
                             label="Jovens Formados" 
                         />
-                        <AnimatedStatCard 
+                        <StatCard 
                             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
-                            value="+50" 
+                            value={`+${stats.projectsCompleted}`}
                             label="Turmas Realizadas" 
                         />
-                        <AnimatedStatCard 
+                        <StatCard 
                             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>}
-                            value="85%" 
-                            label="Taxa de Conclusão" 
+                            value={`${stats.employmentRate}%`}
+                            label="Taxa de Empregabilidade" 
                         />
-                        <AnimatedStatCard 
+                        <StatCard 
                             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>}
-                            value="100%" 
-                            label="Impacto Social" 
+                            value={`+${stats.activePartners}`}
+                            label="Parceiros Ativos" 
                         />
                     </div>
                 </div>
             </section>
 
-            {/* Infinite Marquee Partners */}
-            <section className="py-20 overflow-hidden relative bg-black/20 border-b border-white/5">
-                <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#09090B] to-transparent z-10 pointer-events-none"></div>
-                <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#09090B] to-transparent z-10 pointer-events-none"></div>
-                
-                <div className="container mx-auto px-4 mb-12 text-center">
-                     <span className="text-[#c4b5fd] font-bold tracking-widest text-xs uppercase mb-3 block">Nossa Rede</span>
-                     <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                        Um ecossistema de <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8a4add] to-[#f27983]">inovação social</span>
-                     </h3>
-                     <p className="text-gray-400 max-w-2xl mx-auto text-base md:text-lg">
-                        Junte-se às organizações que estão construindo pontes reais entre a periferia e o mercado de tecnologia.
-                     </p>
-                </div>
-
-                <div className="relative flex overflow-hidden group">
-                    <div className="flex animate-infinite-scroll gap-8 pr-8">
-                        {marqueePartners.map((p, i) => (
-                            <PartnerLogo key={`a-${p.id}-${i}`} name={p.name} logoUrl={p.logoUrl} />
-                        ))}
-                    </div>
-                    <div className="flex animate-infinite-scroll gap-8 pr-8" aria-hidden="true">
-                        {marqueePartners.map((p, i) => (
-                            <PartnerLogo key={`b-${p.id}-${i}`} name={p.name} logoUrl={p.logoUrl} />
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Cases de Sucesso - NOVO! */}
+            {/* Nossos Parceiros */}
             <section className="py-24 bg-black/20">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-black text-white mb-4">
-                            Cases de Sucesso
+                            Quem já está com a gente
                         </h2>
                         <p className="text-gray-400 max-w-2xl mx-auto">
-                            Veja como nossas parcerias geram resultados reais para empresas e jovens
+                            Empresas e instituições que acreditam no poder transformador da educação tecnológica
                         </p>
                         <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
                     </div>
                     
-                    <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-                        <SuccessCaseCard
-                            companyName="Tech Solutions"
-                            companySize="Tecnologia • 200+ funcionários"
-                            stats={[
-                                { label: "Jovens Contratados", value: "8" },
-                                { label: "Retenção", value: "90%" },
-                                { label: "Tempo Médio", value: "4 meses" }
-                            ]}
-                            testimonial="Os jovens do FuturoOn chegam com uma energia e dedicação impressionantes. Já contratamos 8 e todos se destacaram nas suas equipes."
-                            authorName="Carlos Silva"
-                            authorRole="CTO, Tech Solutions"
-                        />
-                        <SuccessCaseCard
-                            companyName="Digital Ventures"
-                            companySize="Startup • 50+ funcionários"
-                            stats={[
-                                { label: "Jovens Contratados", value: "5" },
-                                { label: "Retenção", value: "100%" },
-                                { label: "Tempo Médio", value: "3 meses" }
-                            ]}
-                            testimonial="Encontramos talentos que realmente querem aprender e crescer. A parceria com o FuturoOn transformou nossa estratégia de contratação."
-                            authorName="Ana Costa"
-                            authorRole="CEO, Digital Ventures"
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* Calculadora de ROI - NOVO! */}
-            <section className="py-24 bg-gradient-to-b from-black/20 to-transparent">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-12">
-                            <h2 className="text-4xl font-black text-white mb-4">
-                                Calcule seu ROI
-                            </h2>
-                            <p className="text-gray-400">
-                                Veja quanto sua empresa pode economizar e ganhar
-                            </p>
-                            <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
-                        </div>
-                        
-                        <ROICalculator />
-                    </div>
-                </div>
-            </section>
-
-            {/* Value Proposition Grid */}
-            <section className="py-24 container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16 max-w-3xl mx-auto">
-                    <h2 className="text-3xl md:text-5xl font-black text-white mb-6">Mais que doação, <br/>um investimento estratégico.</h2>
-                    <p className="text-gray-400 text-lg">
-                        Alinhe propósito com performance. Veja o ROI de apoiar o Instituto FuturoOn.
-                    </p>
-                </div>
-
-                <div className="grid md:grid-cols-3 gap-8">
-                    <BenefitCard 
-                        icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
-                        title="Talentos Qualificados"
-                        description="Acesso direto a um pool de desenvolvedores júnior formados com tecnologias modernas (React, Node, Python) e prontos para o mercado."
-                    />
-                    <BenefitCard 
-                        icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-                        title="Metas de ESG"
-                        description="Cumpra suas metas de diversidade e impacto social com métricas claras e relatórios transparentes de transformação de vidas."
-                    />
-                    <BenefitCard 
-                        icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
-                        title="Brand Awareness"
-                        description="Posicione sua marca como líder em inovação social. Ganhe visibilidade em nossos eventos, hackathons e canais digitais."
-                    />
-                </div>
-            </section>
-
-            {/* Engagement Models */}
-            <section id="models" className="py-24 bg-[#121212] relative border-t border-white/5">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-grid-pattern opacity-10 pointer-events-none"></div>
-                
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Escolha como impactar</h2>
-                        <p className="text-gray-400 max-w-xl mx-auto">
-                            Modelos acessíveis para empresas de todos os tamanhos — cada apoio ajuda a transformar vidas.
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
-                        <PlanCard 
-                            title="🟣 Apoiador Pontual"
-                            description="Ideal para empresas que querem contribuir de forma direta e prática."
-                            ctaText="Fazer Doação"
-                            ctaLink="/donate"
-                            features={[
-                                "Doação financeira livre",
-                                "Doação de equipamentos ou materiais",
-                                "Voluntariado corporativo (mentorias, oficinas)",
-                                "Selo digital de reconhecimento como apoiador"
-                            ]}
-                        />
-                        <div className="relative">
-                            {/* Badge de Urgência - NOVO! */}
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-                                <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
-                                    Últimas Vagas!
-                                </span>
-                            </div>
-                            <PlanCard 
-                                title="🟪 Mantenedor Educacional"
-                                description="Para empresas que desejam acompanhar de perto o impacto gerado."
-                                isFeatured={true}
-                                ctaText="Tornar-se Mantenedor"
-                                ctaLink="mailto:parcerias@institutofuturoon.org?subject=Quero ser Mantenedor"
-                                features={[
-                                    "Apoio contínuo a uma turma ou ciclo formativo",
-                                    "Logo em destaque no site e materiais institucionais",
-                                    "Relatório trimestral com histórias e progresso",
-                                    "Visita ou palestra com nossos educadores e alunos",
-                                    "Prioridade em ações futuras de conexão com talentos"
-                                ]}
+                    <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                        {partners.slice(0, 6).map((partner) => (
+                            <PartnerCard
+                                key={partner.id}
+                                name={partner.name}
+                                description={partner.description}
+                                sector={partner.sector}
+                                logo={partner.logo}
                             />
-                        </div>
-                        <PlanCard 
-                            title="🟦 Parceiro de Oportunidades"
-                            description="Para empresas que querem se aproximar dos alunos e apoiar sua entrada no mercado."
-                            ctaText="Quero apoiar talentos"
-                            ctaLink="mailto:parcerias@institutofuturoon.org?subject=Quero Apoiar Talentos"
-                            features={[
-                                "Participação em eventos e feiras de carreira",
-                                "Divulgação de vagas de estágio ou emprego",
-                                "Encontros com alunos em formação para troca de experiências",
-                                "Reconhecimento como empresa inclusiva"
-                            ]}
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Depoimentos de Parceiros */}
+            <section className="py-24">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-white mb-4">
+                            O que dizem nossos parceiros
+                        </h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">
+                            Histórias reais de empresas que transformaram suas equipes e impactaram vidas
+                        </p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                        {testimonials.map((testimonial) => (
+                            <TestimonialCard
+                                key={testimonial.id}
+                                name={testimonial.name}
+                                role={testimonial.role}
+                                company={testimonial.company}
+                                text={testimonial.text}
+                                photo={testimonial.photo}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Benefícios */}
+            <section className="py-24 bg-black/20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-white mb-4">
+                            Por que ser parceiro?
+                        </h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">
+                            Mais que uma doação, um investimento estratégico em pessoas e propósito
+                        </p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        <BenefitCard 
+                            icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
+                            title="Talentos Qualificados"
+                            description="Acesso direto a desenvolvedores júnior formados em tecnologias modernas (React, Node, Python) e prontos para o mercado."
+                        />
+                        <BenefitCard 
+                            icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                            title="Metas de ESG"
+                            description="Cumpra suas metas de diversidade e impacto social com métricas claras e relatórios transparentes."
+                        />
+                        <BenefitCard 
+                            icon={<svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}
+                            title="Visibilidade de Marca"
+                            description="Posicione sua marca como líder em inovação social. Ganhe destaque em eventos e canais digitais."
                         />
                     </div>
                 </div>
             </section>
 
-            {/* Process Steps Section */}
-            <section className="py-24 bg-[#09090B] relative border-t border-white/5">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* Modelos de Parceria */}
+            <section id="models" className="py-24 bg-gradient-to-b from-black/20 to-transparent">
+                <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
-                         <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Como iniciamos essa jornada</h2>
-                         <p className="text-gray-400 max-w-xl mx-auto">
-                            Um processo simples, transparente e focado em resultados.
+                        <h2 className="text-4xl font-black text-white mb-4">Modelos de Parceria</h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">
+                            Escolha a melhor forma de apoiar e transformar vidas através da tecnologia
+                        </p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        {/* Apoiador Pontual */}
+                        <div className="relative bg-white/5 rounded-2xl border border-white/10 p-8 hover:border-[#8a4add]/30 hover:bg-white/[0.07] transition-all duration-300">
+                            <div className="mb-6">
+                                <div className="w-12 h-12 rounded-xl bg-[#8a4add]/10 flex items-center justify-center mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#8a4add]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Apoiador Pontual</h3>
+                                <p className="text-sm text-gray-400">Ideal para empresas que querem contribuir de forma direta e prática</p>
+                            </div>
+
+                            <div className="space-y-4 mb-8">
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#8a4add] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Doação Financeira</p>
+                                        <p className="text-xs text-gray-400">Qualquer valor ajuda a manter nossas operações</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#8a4add] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Doação de Equipamentos</p>
+                                        <p className="text-xs text-gray-400">Notebooks, monitores e periféricos</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#8a4add] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Voluntariado Corporativo</p>
+                                        <p className="text-xs text-gray-400">Mentorias e oficinas com sua equipe</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#8a4add] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Selo de Reconhecimento</p>
+                                        <p className="text-xs text-gray-400">Badge digital de apoiador</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/10">
+                                <p className="text-xs text-gray-500 mb-4">Exemplo: Way2 doou 7 computadores</p>
+                                <a 
+                                    href="/donate"
+                                    className="block w-full py-3 text-center bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all"
+                                >
+                                    Fazer Doação
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Mantenedor Educacional - FEATURED */}
+                        <div className="relative bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 rounded-2xl border-2 border-[#8a4add] p-8 transform md:-translate-y-4 shadow-[0_0_40px_-10px_rgba(138,74,221,0.3)]">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-xs font-bold uppercase tracking-wider py-2 px-6 rounded-full">
+                                Recomendado
+                            </div>
+
+                            <div className="mb-6">
+                                <div className="w-12 h-12 rounded-xl bg-[#8a4add]/20 flex items-center justify-center mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#c4b5fd]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Mantenedor Educacional</h3>
+                                <p className="text-sm text-gray-300">Para empresas que desejam acompanhar de perto o impacto gerado</p>
+                            </div>
+
+                            <div className="space-y-4 mb-8">
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#c4b5fd] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Apoio Contínuo a uma Turma</p>
+                                        <p className="text-xs text-gray-300">Patrocine um ciclo formativo completo</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#c4b5fd] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Logo em Destaque</p>
+                                        <p className="text-xs text-gray-300">Site, materiais e eventos</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#c4b5fd] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Relatório Trimestral</p>
+                                        <p className="text-xs text-gray-300">Histórias e métricas de impacto</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#c4b5fd] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Visitas e Palestras</p>
+                                        <p className="text-xs text-gray-300">Conexão direta com alunos e educadores</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#c4b5fd] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Prioridade em Contratações</p>
+                                        <p className="text-xs text-gray-300">Acesso antecipado ao banco de talentos</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/20">
+                                <p className="text-xs text-gray-300 mb-4">Exemplo: Hostinger investiu R$ 15.000</p>
+                                <a 
+                                    href={`mailto:${contact.emails.partnerships}?subject=Quero ser Mantenedor`}
+                                    className="block w-full py-3 text-center bg-white text-black font-bold rounded-xl hover:bg-gray-100 transition-all"
+                                >
+                                    Tornar-se Mantenedor
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Parceiro de Oportunidades */}
+                        <div className="relative bg-white/5 rounded-2xl border border-white/10 p-8 hover:border-[#f27983]/30 hover:bg-white/[0.07] transition-all duration-300">
+                            <div className="mb-6">
+                                <div className="w-12 h-12 rounded-xl bg-[#f27983]/10 flex items-center justify-center mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#f27983]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-2xl font-bold text-white mb-2">Parceiro de Oportunidades</h3>
+                                <p className="text-sm text-gray-400">Para empresas que querem contratar talentos e apoiar carreiras</p>
+                            </div>
+
+                            <div className="space-y-4 mb-8">
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#f27983] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Banco de Talentos</p>
+                                        <p className="text-xs text-gray-400">Acesso a 300+ jovens formados</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#f27983] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Divulgação de Vagas</p>
+                                        <p className="text-xs text-gray-400">Estágios e empregos direto aos alunos</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#f27983] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Eventos de Carreira</p>
+                                        <p className="text-xs text-gray-400">Feiras, hackathons e meetups</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <svg className="w-5 h-5 text-[#f27983] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-white font-semibold text-sm">Selo de Empresa Inclusiva</p>
+                                        <p className="text-xs text-gray-400">Reconhecimento público</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/10">
+                                <p className="text-xs text-gray-500 mb-4">85% dos alunos conseguem emprego</p>
+                                <a 
+                                    href={`mailto:${contact.emails.partnerships}?subject=Quero Contratar Talentos`}
+                                    className="block w-full py-3 text-center bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all"
+                                >
+                                    Quero Contratar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Informação adicional */}
+                    <div className="mt-12 text-center">
+                        <p className="text-gray-400 text-sm">
+                            💡 Todas as doações podem ser abatidas do Imposto de Renda (empresas no Lucro Real)
                         </p>
                     </div>
-                    <div className="grid md:grid-cols-3 gap-6">
+                </div>
+            </section>
+
+            {/* Como Funciona */}
+            <section className="py-24 bg-black/20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-white mb-4">Como funciona a parceria</h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">
+                            Um processo simples, transparente e focado em resultados
+                        </p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                         <ProcessStepCard 
                             step="1"
                             title="Contato Inicial"
-                            description="Agende uma conversa com nosso time de parcerias. Vamos entender seus objetivos de ESG, marca empregadora e contratação."
+                            description="Agende uma conversa com nosso time. Vamos entender seus objetivos de ESG e contratação."
                         />
                         <ProcessStepCard 
                             step="2"
                             title="Definição do Modelo"
-                            description="Co-criamos o plano ideal para sua empresa, seja apoiando uma turma específica, oferecendo mentorias ou contratando talentos."
+                            description="Co-criamos o plano ideal para sua empresa, seja apoiando turmas ou contratando talentos."
                         />
                         <ProcessStepCard 
                             step="3"
                             title="Início do Impacto"
-                            description="Sua marca ganha visibilidade, nossos alunos ganham oportunidades e você recebe relatórios periódicos sobre a transformação gerada."
+                            description="Sua marca ganha visibilidade e você recebe relatórios periódicos sobre a transformação gerada."
                         />
                     </div>
                 </div>
             </section>
 
-            {/* FAQ Section */}
-            <section className="py-24 bg-black/20 border-y border-white/5">
+            {/* FAQ */}
+            <section className="py-24">
                 <div className="container mx-auto px-4 max-w-3xl">
                     <div className="text-center mb-12">
-                         <h2 className="text-3xl md:text-4xl font-black text-white mb-4">Dúvidas Frequentes</h2>
-                         <p className="text-gray-400">Tudo o que você precisa saber sobre a parceria.</p>
+                        <h2 className="text-4xl font-black text-white mb-4">Dúvidas Frequentes</h2>
+                        <p className="text-gray-400">Tudo o que você precisa saber sobre parcerias</p>
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
                     </div>
-                    <div className="bg-[#121212] rounded-2xl border border-white/10 p-2">
-                         <FAQItem 
+                    
+                    <div className="bg-white/5 rounded-2xl border border-white/10 p-2">
+                        <FAQItem 
                             question="Minha empresa pode abater do Imposto de Renda?"
-                            answer="Sim! Como OSCIP, o Instituto FuturoOn emite recibos que permitem abatimento fiscal para empresas tributadas pelo Lucro Real, seguindo a legislação vigente de incentivo à cultura e educação."
-                         />
-                         <FAQItem 
+                            answer="Sim! Como OSCIP, emitimos recibos que permitem abatimento fiscal para empresas tributadas pelo Lucro Real."
+                        />
+                        <FAQItem 
                             question="Podemos doar equipamentos usados?"
-                            answer="Com certeza. Notebooks, monitores e periféricos em bom estado são revisados por nossa equipe técnica e entregues aos alunos que não possuem computador em casa para acompanhar as aulas."
-                         />
-                         <FAQItem 
+                            answer="Com certeza! Notebooks e periféricos em bom estado são revisados e entregues aos alunos que precisam."
+                        />
+                        <FAQItem 
                             question="Como funciona a contratação dos alunos?"
-                            answer="Parceiros 'Parceiro de Oportunidades' e Mantenedores têm acesso exclusivo ao nosso banco de talentos e podem divulgar vagas diretamente. Além disso, realizamos a ponte entre o RH da sua empresa e os alunos mais promissores."
-                         />
-                         <FAQItem 
-                            question="Existe valor mínimo para doação pontual?"
-                            answer="Não. Qualquer contribuição é bem-vinda e ajuda a manter nossas operações. Para benefícios de marca e relatórios de impacto, sugerimos os planos de Mantenedor."
-                         />
+                            answer="Parceiros têm acesso exclusivo ao nosso banco de talentos e podem divulgar vagas diretamente."
+                        />
+                        <FAQItem 
+                            question="Existe valor mínimo para doação?"
+                            answer="Não. Qualquer contribuição é bem-vinda e ajuda a transformar vidas."
+                        />
                     </div>
                 </div>
             </section>
 
-            {/* Final CTA */}
-            <section className="py-24 relative overflow-hidden text-center">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#09090B] to-[#1a1033]"></div>
-                <div className="container mx-auto px-4 relative z-10">
-                    <h2 className="text-4xl md:text-5xl font-black text-white mb-8">
-                        Sua empresa está pronta para <br/> o futuro?
+            {/* CTA Final */}
+            <section className="py-24 bg-gradient-to-b from-black/20 to-transparent text-center">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+                        Pronto para fazer a diferença?
                     </h2>
                     <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-                        Agende uma conversa com nosso time de parcerias e descubra como podemos construir juntos.
+                        Agende uma conversa e descubra como sua empresa pode transformar vidas
                     </p>
                     <a 
-                        href="mailto:parcerias@institutofuturoon.org"
-                        className="inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-black font-bold rounded-full hover:bg-gray-100 transition-all transform hover:scale-105 shadow-[0_0_50px_-10px_rgba(255,255,255,0.3)] text-lg"
+                        href={`mailto:${contact.emails.partnerships}?subject=Quero ser Parceiro`}
+                        className="inline-flex items-center gap-3 px-10 py-5 bg-[#8a4add] text-white font-bold rounded-xl hover:bg-[#7c3aed] transition-all transform hover:scale-105"
                     >
                         Agendar Reunião
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
                     </a>
                 </div>
             </section>
-        </div>
+        </>
     );
 };
 

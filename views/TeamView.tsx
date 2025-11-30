@@ -3,6 +3,7 @@ import { useAppContext } from '../App';
 import { User } from '../types';
 import SEO from '../components/SEO';
 import Badge from '../components/Badge';
+import { useTeam as useOngTeam, useStatistics, useOngData } from '../hooks/useOngData';
 
 // Componente de Card de Membro - MELHORADO!
 const TeamCard: React.FC<{ member: User; index: number }> = ({ member, index }) => {
@@ -133,13 +134,69 @@ const TeamValueCard: React.FC<{
 
 const TeamView: React.FC = () => {
     const { team } = useAppContext();
+    const { founder, team: ongTeam } = useOngTeam();
+    const stats = useStatistics();
+    const ongData = useOngData();
     const [filter, setFilter] = useState<'all' | 'core' | 'volunteers'>('all');
 
-    const sortedVisibleTeam = useMemo(() => 
-        team
-            .filter(member => member.showOnTeamPage)
-            .sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999))
-    , [team]);
+    // Combinar dados do Firebase com dados do JSON
+    const sortedVisibleTeam = useMemo(() => {
+        // Se tiver dados do Firebase, usa eles
+        if (team.length > 0) {
+            return team
+                .filter(member => member.showOnTeamPage)
+                .sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999));
+        }
+        
+        // Senão, usa dados do JSON (fundadora + equipe)
+        const jsonTeam: User[] = [];
+        
+        // Adiciona fundadora
+        if (founder) {
+            jsonTeam.push({
+                id: 'founder-001',
+                name: founder.name,
+                email: founder.email,
+                avatarUrl: founder.photo,
+                bannerUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop',
+                title: `${founder.role} • ${founder.specialty}`,
+                role: 'admin',
+                showOnTeamPage: true,
+                displayOrder: 0,
+                bio: founder.bio,
+                linkedin: founder.linkedin,
+                completedLessonIds: [],
+                xp: 0,
+                achievements: [],
+                streak: 0,
+                lastCompletionDate: null
+            } as User);
+        }
+        
+        // Adiciona membros da equipe
+        ongTeam.forEach((member, index) => {
+            jsonTeam.push({
+                id: member.id,
+                name: member.name,
+                email: 'contato@futuroon.org',
+                avatarUrl: member.photo,
+                bannerUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop',
+                title: `${member.role} • ${member.specialty}`,
+                role: member.area === 'Educação' || member.area === 'Tecnologia' ? 'instructor' : 'admin',
+                showOnTeamPage: true,
+                displayOrder: index + 1,
+                bio: member.bio,
+                linkedin: member.linkedin,
+                completedLessonIds: [],
+                xp: 0,
+                achievements: [],
+                streak: 0,
+                lastCompletionDate: null
+            } as User);
+        });
+        
+        return jsonTeam;
+    }, [team, founder, ongTeam]);
 
     // Separar equipe principal e voluntários (baseado em role)
     const coreTeam = sortedVisibleTeam.filter(m => m.role === 'admin' || m.role === 'instructor');
@@ -202,9 +259,9 @@ const TeamView: React.FC = () => {
                                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                                 </svg>
                             }
-                            value={`${sortedVisibleTeam.length}+`}
-                            label="Membros"
-                            description="Profissionais e voluntários dedicados"
+                            value={`${stats.volunteers}+`}
+                            label="Voluntários"
+                            description="Profissionais dedicados à causa"
                             color="from-[#8a4add] to-[#c4b5fd]"
                         />
                         <TeamStatCard
@@ -213,9 +270,9 @@ const TeamView: React.FC = () => {
                                     <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"/>
                                 </svg>
                             }
-                            value="100%"
-                            label="Dedicação"
-                            description="Comprometimento total com a causa"
+                            value={`${stats.mentorshipHours.toLocaleString('pt-BR')}`}
+                            label="Horas de Mentoria"
+                            description="Dedicadas ao desenvolvimento dos alunos"
                             color="from-[#f27983] to-[#fbbf24]"
                         />
                         <TeamStatCard
@@ -224,8 +281,8 @@ const TeamView: React.FC = () => {
                                     <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
                                 </svg>
                             }
-                            value="300+"
-                            label="Alunos Impactados"
+                            value={`${stats.graduatedStudents}+`}
+                            label="Alunos Formados"
                             description="Jovens transformados pela educação"
                             color="from-[#10b981] to-[#3b82f6]"
                         />
@@ -235,9 +292,9 @@ const TeamView: React.FC = () => {
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
                             }
-                            value="4"
-                            label="Anos de História"
-                            description="Construindo o futuro desde 2021"
+                            value={`${ongData.organization.foundedYear}`}
+                            label="Ano de Fundação"
+                            description={`${new Date().getFullYear() - ongData.organization.foundedYear} anos transformando vidas`}
                             color="from-[#fbbf24] to-[#f59e0b]"
                         />
                     </div>
@@ -258,21 +315,22 @@ const TeamView: React.FC = () => {
                     </div>
                     
                     <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        <TeamValueCard
-                            icon="💜"
-                            title="Paixão por Ensinar"
-                            description="Acreditamos que educação de qualidade transforma vidas. Cada aula é uma oportunidade de fazer diferença."
-                        />
-                        <TeamValueCard
-                            icon="🤝"
-                            title="Colaboração"
-                            description="Trabalhamos juntos, compartilhamos conhecimento e crescemos como equipe. Ninguém fica para trás."
-                        />
-                        <TeamValueCard
-                            icon="🚀"
-                            title="Inovação Constante"
-                            description="Sempre buscamos novas formas de ensinar, engajar e preparar nossos alunos para o mercado."
-                        />
+                        {ongData.organization.values.slice(0, 3).map((value, index) => {
+                            const icons = ["💜", "🤝", "🚀", "✨", "🎯"];
+                            const descriptions = [
+                                "Acreditamos que todos merecem oportunidades iguais, independente de origem ou condição social.",
+                                "Educação de qualidade é a chave para transformar vidas e comunidades inteiras.",
+                                "Democratizamos o acesso à tecnologia para que todos possam participar da transformação digital."
+                            ];
+                            return (
+                                <TeamValueCard
+                                    key={index}
+                                    icon={icons[index]}
+                                    title={value}
+                                    description={descriptions[index]}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
             </section>
@@ -355,7 +413,7 @@ const TeamView: React.FC = () => {
                         
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <a 
-                                href="mailto:contato@institutofuturoon.org?subject=Quero ser Voluntário"
+                                href={`mailto:${ongData.contact.emails.general}?subject=Quero ser Voluntário`}
                                 className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-[#8a4add]/30 hover:-translate-y-1 transition-all duration-300"
                             >
                                 Quero ser Voluntário

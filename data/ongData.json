@@ -65,7 +65,8 @@
     "activeStudents": 150,
     "completionRate": 85,
     "contentHours": 500,
-    "certificatesIssued": 300
+    "certificatesIssued": 300,
+    "marketInclusions": 5
   },
   
   "founder": {
@@ -284,6 +285,45 @@
     "students": [
       {
         "id": "student-001",
+        "name": "João Silva",
+        "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+        "course": "Programação Web",
+        "year": "2023",
+        "before": "Desempregado, sem experiência em tech",
+        "currentRole": "Dev Jr na Empresa X",
+        "currentCompany": "Empresa de Tecnologia",
+        "linkedin": "",
+        "text": "Eu não sabia nem o que era HTML. Hoje eu desenvolvo sites profissionais e tenho meu primeiro emprego na área. O FuturoOn mudou minha vida!",
+        "featured": true
+      },
+      {
+        "id": "student-002",
+        "name": "Maria Santos",
+        "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+        "course": "Desenvolvimento Full Stack",
+        "year": "2024",
+        "before": "Mãe solo, desempregada",
+        "currentRole": "Freelancer Full Stack",
+        "currentCompany": "Autônoma",
+        "linkedin": "",
+        "text": "Mãe solo, desempregada. Hoje trabalho de casa, ganho bem e posso cuidar da minha filha. Gratidão eterna ao FuturoOn!",
+        "featured": true
+      },
+      {
+        "id": "student-003",
+        "name": "Pedro Costa",
+        "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+        "course": "Programação e Lógica",
+        "year": "2023",
+        "before": "17 anos, primeiro emprego",
+        "currentRole": "Estagiário em Startup",
+        "currentCompany": "Startup de Tecnologia",
+        "linkedin": "",
+        "text": "17 anos, primeiro emprego, trabalhando com o que amo. O FuturoOn me deu a chance que eu nunca tive. Mais jovem contratado!",
+        "featured": true
+      },
+      {
+        "id": "student-004",
         "name": "Kauan Santana",
         "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
         "course": "Criação de Games",
@@ -293,10 +333,10 @@
         "currentCompany": "Em formação",
         "linkedin": "",
         "text": "Graças ao projeto, hoje cogito investir na área da programação e da tecnologia, paralelamente aos meus sonhos de jogar futebol. Desenvolvi um minigame premiado e descobri que posso ter mais de um sonho!",
-        "featured": true
+        "featured": false
       },
       {
-        "id": "student-002",
+        "id": "student-005",
         "name": "Gabriel Luíz Oliveira (GB)",
         "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
         "course": "Informática Básica e Programação",
@@ -306,10 +346,10 @@
         "currentCompany": "FuturoOn",
         "linkedin": "",
         "text": "Eu já tinha vontade de fazer algum curso de informática, mas não sabia que gostava tanto disso. No começo foi difícil, mas depois de ir conhecendo na prática foi ficando fácil. Minhas metas agora são proporcionar uma vida melhor para minha família.",
-        "featured": true
+        "featured": false
       },
       {
-        "id": "student-003",
+        "id": "student-006",
         "name": "Ana Carolina Cardoso",
         "photo": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
         "course": "Letramento Digital",
@@ -319,7 +359,7 @@
         "currentCompany": "FuturoOn",
         "linkedin": "",
         "text": "Foi estranho porque era a primeira vez que vi muita coisa. Agora eu já me adaptei. Eu não sabia mexer em nada, agora tô sabendo pelo menos o básico. Tinha curiosidade de saber como que é. O FuturoOn virou uma segunda casa pra mim!",
-        "featured": true
+        "featured": false
       }
     ],
     "partners": [
