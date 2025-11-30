@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, createContext, useContext, useMemo } from 'react';
+import React, { useState, useEffect, createContext, useContext, useMemo, Suspense, lazy } from 'react';
 import { onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 import { auth, db } from './services/firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
@@ -8,61 +8,72 @@ import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-
 import { User, Course, Lesson, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost, SystemSettings } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Home from './views/Home';
-import Dashboard from './views/Dashboard';
-import ConnectView from './views/ConnectView';
-import Blog from './views/Blog';
-import Login from './views/Login';
-import Register from './views/Register';
-import CompleteProfile from './views/CompleteProfile';
-import Profile from './views/Profile';
-import CourseDetail from './views/CourseDetail';
-import LessonView from './views/LessonView';
-import CourseEditor from './views/CourseEditor';
-import CertificateView from './views/CertificateView';
-import Analytics from './views/Analytics';
-import GeminiApiDashboard from './views/GeminiApiDashboard';
-import ArticleView from './views/ArticleView';
-import ArticleEditor from './views/ArticleEditor';
-import StudentEditor from './views/StudentEditor';
-import InstructorCourseDashboard from './views/InstructorCourseDashboard';
-import CommunityView from './views/CommunityView';
-import ForumView from './views/ForumView';
-import ProjectDetailView from './views/ProjectDetailView';
-import ProjectEditor from './views/ProjectEditor';
-import PartnershipsUnifiedView from './views/PartnershipsUnifiedView';
-import EventEditor from './views/EventEditor';
-import PrivacyPolicyView from './views/PrivacyPolicyView';
-import TermsOfUseView from './views/TermsOfUseView';
-import TeamView from './views/TeamView';
-import TeamMemberEditor from './views/TeamMemberEditor';
 import ProfileModal from './components/ProfileModal';
 import OnboardingTour from './components/OnboardingTour';
-import Courses from './views/Courses';
-import DonateView from './views/DonateView';
-import AboutUsView from './views/AboutUsView';
-import AnnualReportView from './views/AnnualReportView';
-import FinancialStatementView from './views/FinancialStatementView';
-import TransparencyView from './views/TransparencyView';
-import EventDetailView from './views/EventDetailView';
-import EventsView from './views/EventsView';
-import ContactView from './views/ContactView';
-import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
-import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
-import PartnerDetailView from './views/PartnerDetailView';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
-// import ScrollSpaceship from './components/ScrollSpaceship'; // Desativado - jogo de nave removido
 import WhatsAppButton from './components/WhatsAppButton';
 import ReadingProgressBar from './components/ReadingProgressBar';
-import StudentUploadTest from './views/StudentUploadTest';
-import ForumPostDetailView from './views/ForumPostDetailView';
-import ForumPostEditor from './views/ForumPostEditor';
-import ApiTest from './views/ApiTest';
 import ScrollToTop from './components/ScrollToTop';
-import TransparencyEditor from './views/TransparencyEditor';
 import AnalyticsTracker from './components/AnalyticsTracker';
+
+// Lazy load all views for better performance
+const Home = lazy(() => import('./views/Home'));
+const Dashboard = lazy(() => import('./views/Dashboard'));
+const ConnectView = lazy(() => import('./views/ConnectView'));
+const Blog = lazy(() => import('./views/Blog'));
+const Login = lazy(() => import('./views/Login'));
+const Register = lazy(() => import('./views/Register'));
+const CompleteProfile = lazy(() => import('./views/CompleteProfile'));
+const Profile = lazy(() => import('./views/Profile'));
+const CourseDetail = lazy(() => import('./views/CourseDetail'));
+const LessonView = lazy(() => import('./views/LessonView'));
+const CourseEditor = lazy(() => import('./views/CourseEditor'));
+const CertificateView = lazy(() => import('./views/CertificateView'));
+const Analytics = lazy(() => import('./views/Analytics'));
+const GeminiApiDashboard = lazy(() => import('./views/GeminiApiDashboard'));
+const ArticleView = lazy(() => import('./views/ArticleView'));
+const ArticleEditor = lazy(() => import('./views/ArticleEditor'));
+const StudentEditor = lazy(() => import('./views/StudentEditor'));
+const InstructorCourseDashboard = lazy(() => import('./views/InstructorCourseDashboard'));
+const CommunityView = lazy(() => import('./views/CommunityView'));
+const ForumView = lazy(() => import('./views/ForumView'));
+const ProjectDetailView = lazy(() => import('./views/ProjectDetailView'));
+const ProjectEditor = lazy(() => import('./views/ProjectEditor'));
+const PartnershipsUnifiedView = lazy(() => import('./views/PartnershipsUnifiedView'));
+const EventEditor = lazy(() => import('./views/EventEditor'));
+const PrivacyPolicyView = lazy(() => import('./views/PrivacyPolicyView'));
+const TermsOfUseView = lazy(() => import('./views/TermsOfUseView'));
+const TeamView = lazy(() => import('./views/TeamView'));
+const TeamMemberEditor = lazy(() => import('./views/TeamMemberEditor'));
+const Courses = lazy(() => import('./views/Courses'));
+const DonateView = lazy(() => import('./views/DonateView'));
+const AboutUsView = lazy(() => import('./views/AboutUsView'));
+const AnnualReportView = lazy(() => import('./views/AnnualReportView'));
+const FinancialStatementView = lazy(() => import('./views/FinancialStatementView'));
+const TransparencyView = lazy(() => import('./views/TransparencyView'));
+const EventDetailView = lazy(() => import('./views/EventDetailView'));
+const EventsView = lazy(() => import('./views/EventsView'));
+const ContactView = lazy(() => import('./views/ContactView'));
+const ChangePassword = lazy(() => import('./views/ChangePassword'));
+const CourseLandingPage = lazy(() => import('./views/CourseLandingPage'));
+const PartnerDetailView = lazy(() => import('./views/PartnerDetailView'));
+const StudentUploadTest = lazy(() => import('./views/StudentUploadTest'));
+const ForumPostDetailView = lazy(() => import('./views/ForumPostDetailView'));
+const ForumPostEditor = lazy(() => import('./views/ForumPostEditor'));
+const ApiTest = lazy(() => import('./views/ApiTest'));
+const TransparencyEditor = lazy(() => import('./views/TransparencyEditor'));
+
+// Loading component
+const LoadingFallback = () => (
+    <div className="flex items-center justify-center min-h-screen bg-[#09090B]">
+        <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#8a4add] mb-4"></div>
+            <p className="text-gray-400 text-sm">Carregando...</p>
+        </div>
+    </div>
+);
 
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -1088,65 +1099,67 @@ const AppContent: React.FC = () => {
             <main className="flex-grow relative">
                 {/* ScrollSpaceship desativado - jogo de nave removido */}
                 {!isWorkspaceRoute && <WhatsAppButton />}
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/cursos" element={<Courses />} />
-                    {/* Support both ID and Slug in routes */}
-                    <Route path="/curso/:courseId" element={<CourseDetail />} />
-                    <Route path="/curso-info/:courseId" element={<CourseLandingPage />} />
-                    <Route path="/curso/:courseId/aula/:lessonId" element={<LessonView />} />
-                    <Route path="/curso/:courseId/certificado" element={<CertificateView />} />
-                    <Route path="/painel" element={<Dashboard />} />
-                    <Route path="/conectar" element={<ConnectView />} />
-                    <Route path="/blog" element={<Blog />} />
-                    {/* Support both ID and Slug in article routes */}
-                    <Route path="/artigo/:articleId" element={<ArticleView />} />
-                    <Route path="/entrar" element={<Login />} />
-                    <Route path="/cadastro" element={<Register />} />
-                    <Route path="/completar-perfil" element={<CompleteProfile />} />
-                    <Route path="/perfil" element={<Profile />} />
-                    <Route path="/alterar-senha" element={<ChangePassword />} />
-                    <Route path="/admin" element={<Dashboard />} />
-                    <Route path="/admin/editor-curso" element={<CourseEditor />} />
-                    <Route path="/admin/editor-curso/:courseId" element={<CourseEditor />} />
-                    <Route path="/admin/editor-artigo" element={<ArticleEditor />} />
-                    <Route path="/admin/editor-artigo/:articleId" element={<ArticleEditor />} />
-                    <Route path="/admin/editor-usuario/novo" element={<StudentEditor />} />
-                    <Route path="/admin/editor-usuario/:userId" element={<StudentEditor />} />
-                    <Route path="/admin/editor-equipe/novo" element={<TeamMemberEditor />} />
-                    <Route path="/admin/editor-equipe/:userId" element={<TeamMemberEditor />} />
-                    <Route path="/admin/painel-instrutor/:courseId" element={<InstructorCourseDashboard />} />
-                    <Route path="/admin/editor-transparencia" element={<TransparencyEditor />} />
-                    <Route path="/admin/editor-transparencia/:type/:id" element={<TransparencyEditor />} />
-                    <Route path="/analise" element={<Analytics />} />
-                    <Route path="/gemini-api-dashboard" element={<GeminiApiDashboard />} />
-                    <Route path="/comunidade" element={<CommunityView />} />
-                    <Route path="/forum" element={<ForumView />} />
-                    <Route path="/projeto/:projectId" element={<ProjectDetailView />} />
-                    <Route path="/projeto/editar" element={<ProjectEditor />} />
-                    <Route path="/projeto/editar/:projectId" element={<ProjectEditor />} />
-                    <Route path="/comunidade/post/novo" element={<ForumPostEditor />} />
-                    <Route path="/comunidade/post/:postId" element={<ForumPostDetailView />} />
-                    <Route path="/parcerias" element={<PartnershipsUnifiedView />} />
-                    <Route path="/apoiadores" element={<PartnershipsUnifiedView />} />
-                    <Route path="/apoiador/:partnerId" element={<PartnerDetailView />} />
-                    <Route path="/eventos" element={<EventsView />} />
-                    <Route path="/evento/novo" element={<EventEditor />} />
-                    <Route path="/evento/editar/:eventId" element={<EventEditor />} />
-                    <Route path="/evento/:eventId" element={<EventDetailView />} />
-                    <Route path="/privacidade" element={<PrivacyPolicyView />} />
-                    <Route path="/termos" element={<TermsOfUseView />} />
-                    <Route path="/equipe" element={<TeamView />} />
-                    <Route path="/doar" element={<DonateView />} />
-                    <Route path="/sobre" element={<AboutUsView />} />
-                    <Route path="/transparencia" element={<TransparencyView />} />
-                    <Route path="/relatorio-anual" element={<AnnualReportView />} />
-                    <Route path="/contato" element={<ContactView />} />
-                    <Route path="/demonstrativo-financeiro" element={<FinancialStatementView />} />
-                    <Route path="/upload-test" element={<StudentUploadTest />} />
-                    <Route path="/api-test" element={<ApiTest />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
+                <Suspense fallback={<LoadingFallback />}>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/cursos" element={<Courses />} />
+                        {/* Support both ID and Slug in routes */}
+                        <Route path="/curso/:courseId" element={<CourseDetail />} />
+                        <Route path="/curso-info/:courseId" element={<CourseLandingPage />} />
+                        <Route path="/curso/:courseId/aula/:lessonId" element={<LessonView />} />
+                        <Route path="/curso/:courseId/certificado" element={<CertificateView />} />
+                        <Route path="/painel" element={<Dashboard />} />
+                        <Route path="/conectar" element={<ConnectView />} />
+                        <Route path="/blog" element={<Blog />} />
+                        {/* Support both ID and Slug in article routes */}
+                        <Route path="/artigo/:articleId" element={<ArticleView />} />
+                        <Route path="/entrar" element={<Login />} />
+                        <Route path="/cadastro" element={<Register />} />
+                        <Route path="/completar-perfil" element={<CompleteProfile />} />
+                        <Route path="/perfil" element={<Profile />} />
+                        <Route path="/alterar-senha" element={<ChangePassword />} />
+                        <Route path="/admin" element={<Dashboard />} />
+                        <Route path="/admin/editor-curso" element={<CourseEditor />} />
+                        <Route path="/admin/editor-curso/:courseId" element={<CourseEditor />} />
+                        <Route path="/admin/editor-artigo" element={<ArticleEditor />} />
+                        <Route path="/admin/editor-artigo/:articleId" element={<ArticleEditor />} />
+                        <Route path="/admin/editor-usuario/novo" element={<StudentEditor />} />
+                        <Route path="/admin/editor-usuario/:userId" element={<StudentEditor />} />
+                        <Route path="/admin/editor-equipe/novo" element={<TeamMemberEditor />} />
+                        <Route path="/admin/editor-equipe/:userId" element={<TeamMemberEditor />} />
+                        <Route path="/admin/painel-instrutor/:courseId" element={<InstructorCourseDashboard />} />
+                        <Route path="/admin/editor-transparencia" element={<TransparencyEditor />} />
+                        <Route path="/admin/editor-transparencia/:type/:id" element={<TransparencyEditor />} />
+                        <Route path="/analise" element={<Analytics />} />
+                        <Route path="/gemini-api-dashboard" element={<GeminiApiDashboard />} />
+                        <Route path="/comunidade" element={<CommunityView />} />
+                        <Route path="/forum" element={<ForumView />} />
+                        <Route path="/projeto/:projectId" element={<ProjectDetailView />} />
+                        <Route path="/projeto/editar" element={<ProjectEditor />} />
+                        <Route path="/projeto/editar/:projectId" element={<ProjectEditor />} />
+                        <Route path="/comunidade/post/novo" element={<ForumPostEditor />} />
+                        <Route path="/comunidade/post/:postId" element={<ForumPostDetailView />} />
+                        <Route path="/parcerias" element={<PartnershipsUnifiedView />} />
+                        <Route path="/apoiadores" element={<PartnershipsUnifiedView />} />
+                        <Route path="/apoiador/:partnerId" element={<PartnerDetailView />} />
+                        <Route path="/eventos" element={<EventsView />} />
+                        <Route path="/evento/novo" element={<EventEditor />} />
+                        <Route path="/evento/editar/:eventId" element={<EventEditor />} />
+                        <Route path="/evento/:eventId" element={<EventDetailView />} />
+                        <Route path="/privacidade" element={<PrivacyPolicyView />} />
+                        <Route path="/termos" element={<TermsOfUseView />} />
+                        <Route path="/equipe" element={<TeamView />} />
+                        <Route path="/doar" element={<DonateView />} />
+                        <Route path="/sobre" element={<AboutUsView />} />
+                        <Route path="/transparencia" element={<TransparencyView />} />
+                        <Route path="/relatorio-anual" element={<AnnualReportView />} />
+                        <Route path="/contato" element={<ContactView />} />
+                        <Route path="/demonstrativo-financeiro" element={<FinancialStatementView />} />
+                        <Route path="/upload-test" element={<StudentUploadTest />} />
+                        <Route path="/api-test" element={<ApiTest />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </Suspense>
             </main>
             {!isWorkspaceRoute && <Footer />}
 
