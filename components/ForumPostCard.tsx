@@ -38,7 +38,7 @@ const ForumPostCard: React.FC<ForumPostCardProps> = ({ post, onPostSelect }) => 
     return (
         <button 
             onClick={() => onPostSelect(post)}
-            className={`w-full text-left ${bgClass} border ${borderClass} rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 transition-all relative overflow-hidden`}
+            className={`w-full max-w-full text-left ${bgClass} border ${borderClass} rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6 transition-all relative overflow-hidden`}
         >
             {post.isPinned && (
                 <div className="absolute top-0 right-0 bg-[#8a4add] text-white text-[10px] font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-bl-lg">
