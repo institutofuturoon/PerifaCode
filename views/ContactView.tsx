@@ -357,7 +357,7 @@ const ContactView: React.FC = () => {
             
             <div className="relative bg-gradient-to-br from-[#18181B] to-[#09090B] rounded-2xl border border-white/10 overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.2!2d-43.0!3d-22.8!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjLCsDQ4JzAwLjAiUyA0M8KwMDAnMDAuMCJX!5e0!3m2!1spt-BR!2sbr!4v1234567890"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.3!2d-43.0537!3d-22.8267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997ab9b0e0e0e0e0%3A0x0!2zUnVhIFNpbHZhIEphcmRpbSwgNjg5IC0gTmV2ZXMsIFPDo28gR29uw6dhbG8gLSBSSiwgMjQ0NDAtMDAw!5e0!3m2!1spt-BR!2sbr!4v1701368400000!5m2!1spt-BR!2sbr"
                 width="100%"
                 height="450"
                 style={{ border: 0 }}
@@ -365,6 +365,7 @@ const ContactView: React.FC = () => {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 className="w-full"
+                title="Localização do Instituto FuturoOn"
               ></iframe>
             </div>
           </div>
