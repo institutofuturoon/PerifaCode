@@ -440,6 +440,26 @@
       "category": "parcerias",
       "question": "Posso abater a doação do Imposto de Renda?",
       "answer": "Sim! Como OSCIP, emitimos recibos que permitem abatimento fiscal para empresas tributadas pelo Lucro Real."
+    },
+    {
+      "category": "contato",
+      "question": "Qual o melhor canal para entrar em contato?",
+      "answer": "Para atendimento rápido, recomendamos o WhatsApp durante o horário comercial. Para assuntos formais, utilize o e-mail ou o formulário de contato."
+    },
+    {
+      "category": "contato",
+      "question": "Quanto tempo leva para receber uma resposta?",
+      "answer": "Respondemos mensagens via WhatsApp em até 24 horas úteis. E-mails podem levar até 48 horas úteis para resposta."
+    },
+    {
+      "category": "contato",
+      "question": "Posso visitar a sede do Instituto?",
+      "answer": "Sim! Estamos localizados na Rua Silva Jardim, 689 - Neves, São Gonçalo/RJ. Recomendamos agendar uma visita previamente pelo WhatsApp."
+    },
+    {
+      "category": "contato",
+      "question": "Como faço para me inscrever nos cursos?",
+      "answer": "Você pode se inscrever diretamente pelo site na página de Cursos, ou entrar em contato conosco via WhatsApp para mais informações sobre o processo seletivo."
     }
   ],
   

@@ -342,6 +342,91 @@ const Home: React.FC = () => {
             </div>
         </section>
 
+        {/* Expanded Statistics Section - NOVO! */}
+        <section className="py-16 md:py-24 bg-gradient-to-b from-black/40 via-black/20 to-transparent relative overflow-hidden">
+            <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+            <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-[#8a4add]/10 rounded-full blur-[120px]"></div>
+            <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-[#f27983]/10 rounded-full blur-[120px]"></div>
+            
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="text-center mb-12">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 border border-[#8a4add]/30 mb-6">
+                        <span className="text-sm font-bold text-[#c4b5fd]">Estatísticas Detalhadas</span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                        Nosso Ecossistema em Números
+                    </h2>
+                    <p className="text-gray-400 max-w-2xl mx-auto">
+                        Uma comunidade ativa e engajada construindo o futuro da tecnologia
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 max-w-7xl mx-auto">
+                    {/* Comunidade */}
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-4 md:p-6 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 group">
+                        <div className="text-2xl md:text-3xl font-black text-white mb-1">
+                            <AnimatedNumber finalStat={`${stats.registeredMembers}`} />
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-400">Membros Registrados</div>
+                        <div className="mt-2 text-[10px] md:text-xs text-[#8a4add] font-semibold">👥 Comunidade</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-4 md:p-6 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 group">
+                        <div className="text-2xl md:text-3xl font-black text-white mb-1">
+                            <AnimatedNumber finalStat={`${stats.forumPosts}`} />
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-400">Posts no Fórum</div>
+                        <div className="mt-2 text-[10px] md:text-xs text-[#f27983] font-semibold">💬 Discussões</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-4 md:p-6 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 group">
+                        <div className="text-2xl md:text-3xl font-black text-white mb-1">
+                            <AnimatedNumber finalStat={`${stats.resolvedDiscussions}`} />
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-400">Discussões Resolvidas</div>
+                        <div className="mt-2 text-[10px] md:text-xs text-[#10b981] font-semibold">✅ Soluções</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-4 md:p-6 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 group">
+                        <div className="text-2xl md:text-3xl font-black text-white mb-1">
+                            <AnimatedNumber finalStat={`${stats.publishedArticles}`} />
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-400">Artigos Publicados</div>
+                        <div className="mt-2 text-[10px] md:text-xs text-[#fbbf24] font-semibold">📝 Conteúdo</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-4 md:p-6 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 group">
+                        <div className="text-2xl md:text-3xl font-black text-white mb-1">
+                            <AnimatedNumber finalStat={`${stats.eventsHeld}`} />
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-400">Eventos Realizados</div>
+                        <div className="mt-2 text-[10px] md:text-xs text-[#c4b5fd] font-semibold">🎉 Eventos</div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-4 md:p-6 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 group">
+                        <div className="text-2xl md:text-3xl font-black text-white mb-1">
+                            <AnimatedNumber finalStat={`${stats.contentHours}`} />
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-400">Horas de Conteúdo</div>
+                        <div className="mt-2 text-[10px] md:text-xs text-[#8a4add] font-semibold">⏱️ Aprendizado</div>
+                    </div>
+                </div>
+
+                {/* CTA */}
+                <div className="text-center mt-12">
+                    <button 
+                        onClick={() => navigate('/about')}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-colors backdrop-blur-sm"
+                    >
+                        Ver Mais Sobre Nós
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+
         {/* Como Funciona Section */}
         <section className="py-20 md:py-32 relative z-10 overflow-hidden">
             {/* Background effects */}

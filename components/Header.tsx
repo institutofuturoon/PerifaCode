@@ -148,17 +148,21 @@ const Header: React.FC = () => {
               <NavLink onClick={() => handleNav('/events')} active={isActive('/events')}>Eventos</NavLink>
               <NavLink onClick={() => handleNav('/blog')} active={isActive('/blog')}>Blog</NavLink>
               <NavLink onClick={() => handleNav('/partnerships')} active={isActive('/partnerships')}>Parcerias</NavLink>
+              <NavLink onClick={() => handleNav('/contact')} active={isActive('/contact')}>Contato</NavLink>
               
               {/* Dropdown "Sobre" */}
               <DropdownNavLink 
                 label="Sobre" 
-                active={isActive('/about') || isActive('/team') || isActive('/transparency')}
+                active={isActive('/about') || isActive('/team') || isActive('/supporters') || isActive('/transparency')}
               >
                 <DropdownItem onClick={() => handleNav('/about')} active={isActive('/about')}>
                   Quem Somos
                 </DropdownItem>
                 <DropdownItem onClick={() => handleNav('/team')} active={isActive('/team')}>
                   Equipe
+                </DropdownItem>
+                <DropdownItem onClick={() => handleNav('/supporters')} active={isActive('/supporters')}>
+                  Apoiadores
                 </DropdownItem>
                 <DropdownItem onClick={() => handleNav('/transparency')} active={isActive('/transparency')}>
                   Transparência
@@ -241,6 +245,7 @@ const Header: React.FC = () => {
              <MobileLink onClick={() => handleNav('/events')} active={isActive('/events')}>Eventos</MobileLink>
              <MobileLink onClick={() => handleNav('/blog')} active={isActive('/blog')}>Blog</MobileLink>
              <MobileLink onClick={() => handleNav('/partnerships')} active={isActive('/partnerships')}>Parcerias</MobileLink>
+             <MobileLink onClick={() => handleNav('/contact')} active={isActive('/contact')}>Contato</MobileLink>
              
              {/* Sobre Submenu */}
              <div className="w-full">
@@ -248,6 +253,7 @@ const Header: React.FC = () => {
                <div className="space-y-1">
                  <MobileSubLink onClick={() => handleNav('/about')} active={isActive('/about')}>Quem Somos</MobileSubLink>
                  <MobileSubLink onClick={() => handleNav('/team')} active={isActive('/team')}>Equipe</MobileSubLink>
+                 <MobileSubLink onClick={() => handleNav('/supporters')} active={isActive('/supporters')}>Apoiadores</MobileSubLink>
                  <MobileSubLink onClick={() => handleNav('/transparency')} active={isActive('/transparency')}>Transparência</MobileSubLink>
                </div>
              </div>

@@ -46,6 +46,7 @@ import FinancialStatementView from './views/FinancialStatementView';
 import TransparencyView from './views/TransparencyView';
 import EventDetailView from './views/EventDetailView';
 import EventsView from './views/EventsView';
+import ContactView from './views/ContactView';
 import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
@@ -174,7 +175,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         if (collectionName === 'articles') {
             dataFromDb = dataFromDb.map(article => ({
                 ...article,
-                readingTime: calculateReadingTime(article.content)
+                readingTime: calculateReadingTime((article as Article).content || '')
             }));
             const mockArticleIds = new Set(ARTICLES.map(a => a.id));
             const additionalDbArticles = dataFromDb.filter(dbArticle => !mockArticleIds.has((dbArticle as Article).id));
@@ -1140,6 +1141,7 @@ const AppContent: React.FC = () => {
                     <Route path="/about" element={<AboutUsView />} />
                     <Route path="/transparency" element={<TransparencyView />} />
                     <Route path="/annual-report" element={<AnnualReportView />} />
+                    <Route path="/contact" element={<ContactView />} />
                     <Route path="/financial-statement" element={<FinancialStatementView />} />
                     <Route path="/upload-test" element={<StudentUploadTest />} />
                     <Route path="/api-test" element={<ApiTest />} />
