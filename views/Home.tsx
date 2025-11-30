@@ -452,7 +452,7 @@ const Home: React.FC = () => {
                 </div>
 
                 {/* Steps */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 max-w-7xl mx-auto mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-8 max-w-6xl mx-auto mb-12">
                     <StepCard 
                         number="1"
                         title="Inscreva-se"
@@ -465,18 +465,8 @@ const Home: React.FC = () => {
                     />
                     <StepCard 
                         number="2"
-                        title="Faça o Teste"
-                        description="Participe do processo seletivo. Não precisa saber programar, avaliamos seu potencial e vontade de aprender."
-                        icon={
-                            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        }
-                    />
-                    <StepCard 
-                        number="3"
                         title="Comece a Estudar"
-                        description="Aulas presenciais e online com mentores experientes. Aprenda fazendo projetos reais."
+                        description="Aulas presenciais e online com mentores experientes. Aprenda fazendo projetos reais e construindo seu portfólio."
                         icon={
                             <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -484,7 +474,7 @@ const Home: React.FC = () => {
                         }
                     />
                     <StepCard 
-                        number="4"
+                        number="3"
                         title="Conquiste seu Futuro"
                         description="Receba certificado, monte seu portfólio e tenha acesso a vagas exclusivas em empresas parceiras."
                         icon={
@@ -508,7 +498,7 @@ const Home: React.FC = () => {
                         </svg>
                     </button>
                     <p className="text-sm text-gray-500 mt-4">
-                        Vagas limitadas • Processo seletivo aberto
+                        Inscrições abertas • Cursos 100% gratuitos
                     </p>
                 </div>
             </div>
