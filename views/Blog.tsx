@@ -3,6 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
+import { useOngData } from '../hooks/useOngData';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import SEO from '../components/SEO';
@@ -12,10 +13,10 @@ import Badge from '../components/Badge';
 const SidebarWidget: React.FC<{ title: string, children: React.ReactNode, icon?: string }> = ({ title, children, icon }) => (
     <div className="relative group">
         <div className="absolute inset-0 bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-        <div className="relative bg-gradient-to-br from-[#18181B] to-[#09090B] backdrop-blur-xl p-6 rounded-2xl border border-white/10 group-hover:border-white/20 transition-all duration-300">
-            <div className="flex items-center gap-2 mb-4">
-                {icon && <span className="text-xl">{icon}</span>}
-                <h3 className="text-lg font-bold text-white">{title}</h3>
+        <div className="relative bg-gradient-to-br from-[#18181B] to-[#09090B] backdrop-blur-xl p-4 md:p-6 rounded-2xl border border-white/10 group-hover:border-white/20 transition-all duration-300">
+            <div className="flex items-center gap-2 mb-3 md:mb-4">
+                {icon && <span className="text-lg md:text-xl">{icon}</span>}
+                <h3 className="text-base md:text-lg font-bold text-white">{title}</h3>
             </div>
             {children}
         </div>
@@ -131,10 +132,12 @@ interface BlogProps {
 
 const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
   const { articles, loadData } = useAppContext();
+  const { statistics } = useOngData();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
       loadData(['articles', 'users']);
@@ -219,25 +222,25 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] via-[#c4b5fd] to-[#f27983]">Blog</span>
                         </h1>
                         
-                        <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-10">
+                        <p className="text-base md:text-lg lg:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8 px-4">
                             Artigos, tutoriais e histórias de sucesso para inspirar e guiar sua jornada no universo da tecnologia.
                         </p>
                         
                         {/* Stats */}
-                        <div className="flex flex-wrap items-center justify-center gap-8">
+                        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 px-4">
                             <div className="text-center">
-                                <p className="text-3xl font-black text-white mb-1">{publishedArticles.length}</p>
-                                <p className="text-sm text-gray-400">Artigos</p>
+                                <p className="text-2xl md:text-3xl font-black text-white mb-1">{statistics?.publishedArticles || publishedArticles.length}</p>
+                                <p className="text-xs md:text-sm text-gray-400">Artigos</p>
                             </div>
-                            <div className="w-px h-12 bg-white/10"></div>
+                            <div className="w-px h-10 md:h-12 bg-white/10"></div>
                             <div className="text-center">
-                                <p className="text-3xl font-black text-white mb-1">{categories.length - 1}</p>
-                                <p className="text-sm text-gray-400">Categorias</p>
+                                <p className="text-2xl md:text-3xl font-black text-white mb-1">{categories.length - 1}</p>
+                                <p className="text-xs md:text-sm text-gray-400">Categorias</p>
                             </div>
-                            <div className="w-px h-12 bg-white/10"></div>
+                            <div className="w-px h-10 md:h-12 bg-white/10"></div>
                             <div className="text-center">
-                                <p className="text-3xl font-black text-white mb-1">{allTags.length}</p>
-                                <p className="text-sm text-gray-400">Tags</p>
+                                <p className="text-2xl md:text-3xl font-black text-white mb-1">{allTags.length}</p>
+                                <p className="text-xs md:text-sm text-gray-400">Tags</p>
                             </div>
                         </div>
                     </div>
@@ -247,18 +250,18 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
 
         {/* Main Content & Sidebar */}
         <section className={containerClass}>
-            <div className="grid lg:grid-cols-4 gap-12">
+            <div className="grid lg:grid-cols-4 gap-8 lg:gap-12">
                 {/* Main Content */}
                 <div className="lg:col-span-3">
                    {filteredArticles.length > 0 ? (
-                       <div className="space-y-12">
+                       <div className="space-y-8 md:space-y-12">
                            {/* Featured Article */}
                            {featuredArticle && (
                                <div>
-                                   <div className="flex items-center gap-3 mb-6">
-                                       <div className="w-1 h-8 bg-gradient-to-b from-[#8a4add] to-[#f27983] rounded-full"></div>
-                                       <h2 className="text-3xl font-black text-white">Em Destaque</h2>
-                                       <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
+                                   <div className="flex items-center gap-3 mb-4 md:mb-6">
+                                       <div className="w-1 h-6 md:h-8 bg-gradient-to-b from-[#8a4add] to-[#f27983] rounded-full"></div>
+                                       <h2 className="text-2xl md:text-3xl font-black text-white">Em Destaque</h2>
+                                       <div className="hidden sm:block flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
                                    </div>
                                    <ArticleCard 
                                        article={featuredArticle} 
@@ -271,17 +274,43 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                            {/* Other Articles */}
                            {otherArticles.length > 0 && (
                                <div>
-                                   <div className="flex items-center gap-3 mb-6">
-                                       <div className="w-1 h-8 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full"></div>
-                                       <h2 className="text-3xl font-black text-white">Mais Recentes</h2>
-                                       <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
+                                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                                       <div className="flex items-center gap-3">
+                                           <div className="w-1 h-6 md:h-8 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full"></div>
+                                           <h2 className="text-2xl md:text-3xl font-black text-white">Mais Recentes</h2>
+                                           <div className="hidden sm:block flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
+                                       </div>
+                                       
+                                       {/* View Mode Toggle */}
+                                       <div className="flex items-center gap-2 bg-white/5 p-1 rounded-lg border border-white/10">
+                                           <button
+                                               onClick={() => setViewMode('grid')}
+                                               className={`p-2 rounded transition-all ${viewMode === 'grid' ? 'bg-[#8a4add] text-white' : 'text-gray-400 hover:text-white'}`}
+                                               title="Visualização em grade"
+                                           >
+                                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                               </svg>
+                                           </button>
+                                           <button
+                                               onClick={() => setViewMode('list')}
+                                               className={`p-2 rounded transition-all ${viewMode === 'list' ? 'bg-[#8a4add] text-white' : 'text-gray-400 hover:text-white'}`}
+                                               title="Visualização em lista"
+                                           >
+                                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                               </svg>
+                                           </button>
+                                       </div>
                                    </div>
-                                   <div className="grid md:grid-cols-2 gap-8">
+                                   
+                                   <div className={viewMode === 'grid' ? 'grid sm:grid-cols-2 gap-6 md:gap-8' : 'space-y-6'}>
                                        {otherArticles.map(article => (
                                            <ArticleCard 
                                                key={article.id} 
                                                article={article} 
                                                onArticleSelect={handleArticleSelect}
+                                               layout={viewMode === 'list' ? 'horizontal' : 'vertical'}
                                            />
                                        ))}
                                    </div>
@@ -315,7 +344,7 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                 </div>
 
                 {/* Sidebar - MELHORADO! */}
-                <aside className={`lg:col-span-1 space-y-8 ${!embedded ? 'lg:sticky top-24' : ''} h-fit`}>
+                <aside className={`lg:col-span-1 space-y-6 md:space-y-8 ${!embedded ? 'lg:sticky top-24' : ''} h-fit`}>
                     {/* Search Widget */}
                     <SidebarWidget title="Pesquisar" icon="🔍">
                         <div className="relative">
@@ -393,7 +422,7 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                                 <button
                                     key={category}
                                     onClick={() => handleCategoryClick(category)}
-                                    className={`px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300 border ${
+                                    className={`px-3 md:px-4 py-1.5 md:py-2 text-xs font-bold rounded-xl transition-all duration-300 border ${
                                     activeCategory === category && !activeTag
                                         ? 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white border-transparent shadow-lg shadow-[#8a4add]/30 scale-105'
                                         : 'bg-white/5 text-gray-300 border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20'
@@ -408,12 +437,12 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                     {/* Tags */}
                     {allTags.length > 0 && (
                         <SidebarWidget title="Tags" icon="🏷️">
-                            <div className="flex flex-wrap gap-2">
-                                {allTags.map(tag => (
+                            <div className="flex flex-wrap gap-1.5 md:gap-2">
+                                {allTags.slice(0, 15).map(tag => (
                                     <button
                                         key={tag}
                                         onClick={() => handleTagClick(tag)}
-                                        className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-300 ${
+                                        className={`px-2.5 md:px-3 py-1 md:py-1.5 text-[10px] md:text-xs font-semibold rounded-lg transition-all duration-300 ${
                                         activeTag === tag
                                             ? 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-md shadow-[#8a4add]/20'
                                             : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
@@ -422,6 +451,11 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                                        #{tag}
                                     </button>
                                 ))}
+                                {allTags.length > 15 && (
+                                    <span className="px-2.5 py-1 text-[10px] md:text-xs text-gray-500">
+                                        +{allTags.length - 15} mais
+                                    </span>
+                                )}
                             </div>
                         </SidebarWidget>
                     )}
