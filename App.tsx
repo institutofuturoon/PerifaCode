@@ -30,7 +30,7 @@ import CommunityView from './views/CommunityView';
 import ForumView from './views/ForumView';
 import ProjectDetailView from './views/ProjectDetailView';
 import ProjectEditor from './views/ProjectEditor';
-import PartnershipsView from './views/PartnershipsView';
+import PartnershipsUnifiedView from './views/PartnershipsUnifiedView';
 import EventEditor from './views/EventEditor';
 import PrivacyPolicyView from './views/PrivacyPolicyView';
 import TermsOfUseView from './views/TermsOfUseView';
@@ -50,7 +50,6 @@ import ChangePassword from './views/ChangePassword';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import CourseLandingPage from './views/CourseLandingPage';
 import InscriptionFormModal from './components/InscriptionFormModal';
-import SupportersView from './views/SupportersView';
 import PartnerDetailView from './views/PartnerDetailView';
 import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
 import ScrollSpaceship from './components/ScrollSpaceship';
@@ -1127,8 +1126,8 @@ const AppContent: React.FC = () => {
                     <Route path="/project/edit/:projectId" element={<ProjectEditor />} />
                     <Route path="/community/post/new" element={<ForumPostEditor />} />
                     <Route path="/community/post/:postId" element={<ForumPostDetailView />} />
-                    <Route path="/partnerships" element={<PartnershipsView />} />
-                    <Route path="/supporters" element={<SupportersView />} />
+                    <Route path="/partnerships" element={<PartnershipsUnifiedView />} />
+                    <Route path="/supporters" element={<PartnershipsUnifiedView />} />
                     <Route path="/supporter/:partnerId" element={<PartnerDetailView />} />
                     <Route path="/events" element={<EventsView />} />
                     <Route path="/event/new" element={<EventEditor />} />
