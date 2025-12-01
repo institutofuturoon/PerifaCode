@@ -72,22 +72,41 @@ const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string;
     );
 };
 
-const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => (
-    <div className="relative flex-shrink-0 w-40 h-24 md:w-64 md:h-36 flex items-center justify-center p-3 md:p-4 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 group transition-all duration-500 transform hover:scale-110 hover:border-[#8a4add]/40 overflow-hidden">
-        {/* Efeito de brilho no hover */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => {
+    // Check if it's a placeholder URL - if so, skip loading and show fallback immediately
+    const isPlaceholder = logoUrl.includes('via.placeholder.com');
+    
+    // Extract color from placeholder URL or use default
+    const getColorFromUrl = (url: string) => {
+        const match = url.match(/\/([0-9a-fA-F]{6})\//);
+        return match ? `#${match[1]}` : '#8a4add';
+    };
+    
+    const bgColor = getColorFromUrl(logoUrl);
+    
+    return (
+        <div className="relative flex-shrink-0 w-40 h-24 md:w-64 md:h-36 flex items-center justify-center p-3 md:p-4 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 group transition-all duration-500 transform hover:scale-110 hover:border-[#8a4add]/40 overflow-hidden">
+            {/* Efeito de brilho no hover */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
 
-        {/* Glow effect */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[#8a4add]/10 via-transparent to-[#f27983]/10 blur-xl"></div>
+            {/* Glow effect */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[#8a4add]/10 via-transparent to-[#f27983]/10 blur-xl"></div>
 
-        {/* Logo - ocupa todo o espaço disponível */}
-        <img
-            src={logoUrl}
-            alt={name}
-            className="relative z-10 w-full h-full object-contain transition-all duration-500 opacity-70 grayscale group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 filter drop-shadow-lg"
-        />
-    </div>
-);
+            {/* Fallback for placeholder URLs - no image loading attempt */}
+            <div 
+                className="relative z-10 w-full h-full flex items-center justify-center rounded-lg transition-all duration-500 group-hover:scale-105"
+                style={{ backgroundColor: `${bgColor}20` }}
+            >
+                <span 
+                    className="text-sm md:text-base font-bold text-center px-2 transition-all duration-500 opacity-70 group-hover:opacity-100"
+                    style={{ color: bgColor }}
+                >
+                    {name}
+                </span>
+            </div>
+        </div>
+    );
+};
 
 const TestimonialCard: React.FC<{
     name: string;
@@ -284,7 +303,7 @@ const Home: React.FC = () => {
                     <Badge text="Matrículas Abertas" />
                     <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-tight max-w-5xl mx-auto">
                         Seu futuro na tecnologia<br />
-                        começa <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#c4b5fd] to-[#fbbf24]">na quebrada.</span>
+                        começa <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">na quebrada.</span>
                     </h1>
                     <p className="mt-6 max-w-2xl mx-auto text-base md:text-xl text-gray-300 leading-relaxed px-4 md:px-0">
                         Acreditamos no seu potencial. Nossa missão é abrir as portas do mercado de tecnologia para talentos da periferia, com educação de qualidade e gratuita.

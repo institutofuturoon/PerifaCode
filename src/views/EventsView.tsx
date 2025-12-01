@@ -21,9 +21,9 @@ const EventCard: React.FC<{
 }> = ({ title, date, time, location, description, category, spots, image, isUpcoming = true }) => {
   const categoryColors = {
     workshop: 'from-[#8a4add] to-[#c4b5fd]',
-    mentoria: 'from-[#f27983] to-[#fbbf24]',
-    hackathon: 'from-[#10b981] to-[#3b82f6]',
-    palestra: 'from-[#fbbf24] to-[#f59e0b]',
+    mentoria: 'from-[#f27983] to-[#c4b5fd]',
+    hackathon: 'from-[#8a4add] to-[#f27983]',
+    palestra: 'from-[#c4b5fd] to-[#f27983]',
   };
 
   const categoryLabels = {
@@ -266,7 +266,7 @@ const EventsView: React.FC = () => {
 
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-tight mb-6 max-w-5xl mx-auto">
             Mentorias & <br className="hidden md:block" />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#c4b5fd] to-[#fbbf24]">Eventos</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">Eventos</span>
           </h1>
 
           <p className="text-base md:text-lg lg:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8 px-4">
