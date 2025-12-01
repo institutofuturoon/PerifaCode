@@ -218,7 +218,7 @@ const CourseLandingPage: React.FC = () => {
                     <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
                             onClick={handleCtaClick}
-                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_-10px_rgba(138,74,221,0.5)] text-lg border border-white/10 ${currentCourse.enrollmentStatus === 'open' && currentCourse.format === 'online' ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white'}`}
+                            className={`w-full sm:w-auto font-bold py-4 px-10 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_40px_-10px_rgba(138,74,221,0.5)] text-lg border border-white/10 ${currentCourse.enrollmentStatus === 'open' && currentCourse.format === 'online' ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white'}`}
                         >
                             {getCtaLabel()}
                         </button>

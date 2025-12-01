@@ -77,7 +77,7 @@ const EventCard: React.FC<{ event: Event, host?: User }> = ({ event, host }) => 
             <div className="w-full sm:w-auto mt-4 sm:mt-0">
                  <button 
                     onClick={() => navigate(`/event/${event.id}`)}
-                    className="w-full sm:w-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 transform hover:scale-105">
+                    className="w-full sm:w-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 transform hover:scale-105">
                     Ver Detalhes
                 </button>
             </div>

@@ -63,7 +63,7 @@ const EventEditor: React.FC = () => {
         subtitle="Crie ou atualize eventos para a comunidade."
         onBack={onCancel}
         actions={
-          <button type="submit" form="event-form" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
+          <button type="submit" form="event-form" className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
             Salvar Evento
           </button>
         }

@@ -267,7 +267,7 @@ const Login: React.FC = () => {
                       <button
                           type="submit"
                           disabled={loading}
-                          className="w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-[#6d28d9] to-[#8a4add] hover:from-[#5b21b6] hover:to-[#7c3aed] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8a4add] disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-[0_0_30px_-10px_rgba(138,74,221,0.5)] hover:shadow-[0_0_40px_-10px_rgba(138,74,221,0.7)] transform hover:-translate-y-0.5"
+                          className="w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8a4add] disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-[0_0_30px_-10px_rgba(138,74,221,0.5)] hover:shadow-[0_0_40px_-10px_rgba(138,74,221,0.7)] transform hover:-translate-y-0.5"
                       >
                           {loading ? (
                               <div className="flex items-center gap-2">

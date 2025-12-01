@@ -98,7 +98,7 @@ const TransparencyView: React.FC = () => {
                     {/* Card Impacto */}
                     <a 
                         href="/#/annual-report"
-                        className="block bg-gradient-to-br from-purple-500/10 to-pink-500/5 border border-purple-500/20 rounded-2xl p-8 hover:border-purple-500/40 hover:from-purple-500/20 transition-all"
+                        className="block bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/5 border border-[#8a4add]/20 rounded-2xl p-8 hover:border-[#8a4add]/40 hover:from-[#8a4add]/20 transition-all"
                     >
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-16 h-16 bg-purple-500/20 rounded-xl flex items-center justify-center">

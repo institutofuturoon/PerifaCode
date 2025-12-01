@@ -13,7 +13,7 @@ const TeamCard: React.FC<{ member: User; index: number }> = ({ member, index }) 
     // Cores alternadas para variedade visual
     const colors = [
         'from-[#8a4add]/20 to-[#f27983]/20',
-        'from-[#6d28d9]/20 to-[#8a4add]/20',
+        'from-[#8a4add]/20 to-[#f27983]/20',
         'from-[#f27983]/20 to-[#fbbf24]/20',
         'from-[#10b981]/20 to-[#3b82f6]/20',
     ];

@@ -17,7 +17,7 @@ const ImpactCard: React.FC<{
             : 'border-white/10 hover:border-[#8a4add]/40 hover:shadow-[#8a4add]/20'
     }`}>
         {isPopular && (
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-lg">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-xs font-bold uppercase tracking-wider py-1.5 px-4 rounded-full shadow-lg">
                 Mais Escolhido
             </div>
         )}
@@ -27,7 +27,7 @@ const ImpactCard: React.FC<{
         
         {/* Icon */}
         <div className="relative z-10 flex justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#8a4add]/30 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-2xl flex items-center justify-center text-white shadow-lg shadow-[#8a4add]/30 group-hover:scale-110 transition-transform duration-300">
                 {icon}
             </div>
         </div>
@@ -53,7 +53,7 @@ const ImpactCard: React.FC<{
             }}
             className={`relative z-10 w-full py-3 rounded-xl font-bold text-sm transition-all duration-300 ${
                 isPopular
-                    ? 'bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white hover:shadow-lg hover:shadow-[#8a4add]/40'
+                    ? 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white hover:shadow-lg hover:shadow-[#8a4add]/40'
                     : 'bg-white/10 text-white hover:bg-white/20'
             }`}
         >

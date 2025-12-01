@@ -198,7 +198,7 @@ ${article.content}
         subtitle="Compartilhe conhecimento e inspire a comunidade."
         onBack={onCancel}
         actions={
-          <button type="submit" form="article-form" className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40">
+          <button type="submit" form="article-form" className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
             Salvar Artigo
           </button>
         }

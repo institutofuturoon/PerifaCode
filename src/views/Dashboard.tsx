@@ -846,7 +846,7 @@ const TransparencyPanel: React.FC = () => {
 
                     <button 
                         onClick={() => navigate('/admin/transparency-editor')}
-                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#8a4add]/20 transition-all"
+                        className="bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#8a4add]/20 transition-all"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -994,7 +994,7 @@ const TransparencyPanel: React.FC = () => {
 
                 {/* Annual Reports */}
                 <div className="bg-[#0a0a0a] rounded-xl border border-white/10 overflow-hidden">
-                    <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/5 border-b border-white/10 p-4">
+                    <div className="bg-gradient-to-r from-[#8a4add]/10 to-[#f27983]/5 border-b border-white/10 p-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
                                 <span className="text-xl">📊</span>

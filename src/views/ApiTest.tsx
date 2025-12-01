@@ -52,7 +52,7 @@ const ApiTest: React.FC = () => {
           <button
             onClick={handleTest}
             disabled={isLoading}
-            className="w-full sm:w-auto flex justify-center items-center gap-2 mx-auto bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto flex justify-center items-center gap-2 mx-auto bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-3 px-8 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <>

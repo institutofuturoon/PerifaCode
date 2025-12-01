@@ -83,7 +83,7 @@ const StudentUploadTest: React.FC = () => {
                     triggerUpload();
                   }}
                   disabled={isUploading}
-                  className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUploading ? (
                     <>

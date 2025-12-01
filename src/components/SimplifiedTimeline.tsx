@@ -9,7 +9,7 @@ const timelineData = [
 
 const TimelineCard: React.FC<{ year: string, title: string, description: string }> = ({ year, title, description }) => (
     <div className="relative p-6 bg-white/5 border border-white/10 rounded-lg h-full">
-        <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] text-white flex items-center justify-center font-bold text-sm shadow-lg">
+        <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] text-white flex items-center justify-center font-bold text-sm shadow-lg">
             {year.slice(-2)}
         </div>
         <h3 className="font-bold text-white mt-2">{title}</h3>

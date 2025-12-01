@@ -79,7 +79,7 @@ const TeamMemberEditor: React.FC = () => {
         subtitle="Gerencie os perfis e permissões dos membros da equipe."
         onBack={onCancel}
         actions={
-          <button type="submit" form="team-member-form" className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
+          <button type="submit" form="team-member-form" className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-2.5 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 hover:shadow-[#8a4add]/40">
             Salvar Membro
           </button>
         }

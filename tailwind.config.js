@@ -4,6 +4,16 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    safelist: [
+        'from-brand-purple',
+        'to-brand-pink',
+        'from-[#8a4add]',
+        'to-[#f27983]',
+        'bg-gradient-to-r',
+        'bg-gradient-to-br',
+        'shadow-brand-purple/30',
+        'shadow-[#8a4add]/30',
+    ],
     theme: {
         extend: {
             colors: {

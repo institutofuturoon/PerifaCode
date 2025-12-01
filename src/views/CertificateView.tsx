@@ -97,7 +97,7 @@ const CertificateView: React.FC = () => {
          <button
             onClick={handleDownload}
             disabled={isDownloading}
-            className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#8a4add]/20 disabled:opacity-70 disabled:cursor-not-allowed"
         >
             {isDownloading ? 'Baixando...' : 'Baixar Certificado'}
         </button>

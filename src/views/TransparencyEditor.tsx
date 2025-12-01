@@ -253,7 +253,7 @@ const TransparencyEditor: React.FC = () => {
                     <button 
                         type="submit" 
                         form="transparency-form"
-                        className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] hover:opacity-90 text-white font-bold py-2 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 text-sm"
+                        className="bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 text-white font-bold py-2 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 text-sm"
                     >
                         Salvar
                     </button>

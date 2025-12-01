@@ -64,7 +64,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
                 <div className="p-6 border-t border-white/10 mt-auto">
                     <div className="w-full bg-black/30 rounded-full h-2 border border-white/10 mb-4">
                         <div
-                            className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] h-full rounded-full transition-all duration-300 ease-out"
+                            className="bg-gradient-to-r from-[#8a4add] to-[#f27983] h-full rounded-full transition-all duration-300 ease-out"
                             style={{ width: `${progress}%` }}
                         ></div>
                     </div>
@@ -76,7 +76,7 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ onComplete }) => {
                         
                         {step < totalSteps ? (
                             <button type="button" onClick={nextStep}
-                                className="bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition-all">
+                                className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold py-2 px-6 rounded-lg hover:opacity-90 transition-all">
                                 Próximo
                             </button>
                         ) : (

@@ -217,7 +217,7 @@ const Courses: React.FC = () => {
                 </div>
                 <div className="grid md:grid-cols-3 gap-8">
                     <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 hover:-translate-y-2 group">
-                        <div className="w-16 h-16 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
                             🎓
                         </div>
                         <h3 className="text-xl font-bold text-white mb-3">100% Gratuito</h3>
@@ -226,7 +226,7 @@ const Courses: React.FC = () => {
                         </p>
                     </div>
                     <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 hover:-translate-y-2 group">
-                        <div className="w-16 h-16 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
                             👨‍💼
                         </div>
                         <h3 className="text-xl font-bold text-white mb-3">Mentoria Real</h3>
@@ -235,7 +235,7 @@ const Courses: React.FC = () => {
                         </p>
                     </div>
                     <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 hover:-translate-y-2 group">
-                        <div className="w-16 h-16 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-[#8a4add]/30">
                             💼
                         </div>
                         <h3 className="text-xl font-bold text-white mb-3">Conexão com Empresas</h3>

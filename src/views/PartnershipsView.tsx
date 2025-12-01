@@ -79,7 +79,7 @@ const PlanCard: React.FC<{
 }> = ({ title, description, price, features, isFeatured, ctaText, ctaLink, colorClass = "bg-[#8a4add]" }) => (
     <div className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-300 h-full ${isFeatured ? 'bg-white/5 border-[#8a4add] shadow-[0_0_40px_-10px_rgba(138,74,221,0.3)] transform md:-translate-y-4 z-10' : 'bg-[#121212] border-white/10 hover:border-white/20 hover:bg-white/[0.02]'}`}>
         {isFeatured && (
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#6d28d9] to-[#8a4add] text-white text-[10px] font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-lg">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white text-[10px] font-bold uppercase tracking-widest py-1.5 px-4 rounded-full shadow-lg">
                 Recomendado
             </div>
         )}
