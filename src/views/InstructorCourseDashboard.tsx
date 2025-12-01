@@ -8,7 +8,7 @@ import { MOCK_ANALYTICS_DATA_V2 } from '../constants';
 
 const StatCard: React.FC<{ icon: React.ReactNode; title: string; value: string; }> = ({ icon, title, value }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10 flex items-start gap-4">
-        <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex items-center justify-center shadow-lg shadow-[#8a4add]/20">
+        <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center shadow-lg shadow-[#8a4add]/20">
             {icon}
         </div>
         <div>

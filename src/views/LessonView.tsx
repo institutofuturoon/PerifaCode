@@ -136,7 +136,7 @@ const LessonSidebar: React.FC<{
                 {/* Sidebar Footer */}
                 <div className="p-4 border-t border-white/5 bg-[#050505]">
                     <div className="bg-white/5 rounded-lg p-3 flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex items-center justify-center text-white font-bold text-xs">
+                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center text-white font-bold text-xs">
                             FO
                         </div>
                         <div>
@@ -225,7 +225,7 @@ Aluno: "${userMessage.text}"`;
       <div className="fixed bottom-6 right-6 z-50">
         <button 
           onClick={toggleChat} 
-          className="bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-full h-14 w-14 flex items-center justify-center text-white shadow-2xl shadow-[#8a4add]/40 transform hover:scale-110 transition-transform duration-300 border border-white/20"
+          className="bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-full h-14 w-14 flex items-center justify-center text-white shadow-2xl shadow-[#8a4add]/40 transform hover:scale-110 transition-transform duration-300 border border-white/20"
           aria-label="Abrir Tutor IA para tirar dúvidas"
           title="Abrir Tutor IA"
         >
@@ -245,7 +245,7 @@ Aluno: "${userMessage.text}"`;
                 <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-[#09090B]" aria-live="polite">
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            {msg.role === 'model' && <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex-shrink-0" />}
+                            {msg.role === 'model' && <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex-shrink-0" />}
                             <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${msg.role === 'user' ? 'bg-[#8a4add] text-white rounded-br-sm' : 'bg-white/10 text-gray-200 rounded-bl-sm'}`}>
                                 <p dangerouslySetInnerHTML={renderMessageContent(msg.text)}></p>
                             </div>
@@ -253,7 +253,7 @@ Aluno: "${userMessage.text}"`;
                     ))}
                     {isLoading && (
                          <div className="flex items-end gap-2 justify-start">
-                             <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8a4add] flex-shrink-0" />
+                             <div className="h-6 w-6 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex-shrink-0" />
                              <div className="p-3 rounded-2xl bg-white/10 rounded-bl-sm">
                                 <div className="flex items-center gap-1.5">
                                     <span className="h-1.5 w-1.5 bg-gray-400 rounded-full animate-pulse [animation-delay:-0.3s]"></span>

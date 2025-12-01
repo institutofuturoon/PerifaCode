@@ -60,7 +60,7 @@ const AnimatedNumber: React.FC<{ finalStat: string; duration?: number }> = ({ fi
 const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string; text: string; }> = ({ icon, stat, title, text }) => {
     return (
         <div className="bg-white/5 backdrop-blur-sm p-6 md:p-8 rounded-3xl border border-white/10 text-center transform transition-transform duration-300 hover:-translate-y-2 h-full flex flex-col items-center hover:border-[#8a4add]/30 hover:shadow-2xl hover:shadow-[#8a4add]/10">
-            <div className="flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br from-[#6d28d9] to-[#8a4add] text-white mb-4 shadow-lg shadow-[#8a4add]/20">
+            <div className="flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-br from-[#8a4add] to-[#f27983] text-white mb-4 shadow-lg shadow-[#8a4add]/20">
                 <div className="transform scale-110">{icon}</div>
             </div>
             <p className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tight">
@@ -140,7 +140,7 @@ const StepCard: React.FC<{
         
         {/* Number badge */}
         <div className="relative mb-6">
-            <div className="w-32 h-32 bg-gradient-to-br from-[#6d28d9] to-[#8a4add] rounded-2xl flex items-center justify-center shadow-lg shadow-[#8a4add]/30 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-32 h-32 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-2xl flex items-center justify-center shadow-lg shadow-[#8a4add]/30 group-hover:scale-110 transition-transform duration-300">
                 <div className="text-white">
                     {icon}
                 </div>
