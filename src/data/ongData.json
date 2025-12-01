@@ -1,6 +1,5 @@
 {
   "_comment": "📋 DADOS CENTRALIZADOS DA ONG - Edite aqui e os dados serão atualizados em todo o site",
-  
   "organization": {
     "name": "Instituto FuturoOn",
     "shortName": "FuturoOn",
@@ -16,7 +15,6 @@
       "Equidade e Justiça Social"
     ]
   },
-  
   "contact": {
     "emails": {
       "general": "futurooon@gmail.com",
@@ -44,7 +42,6 @@
       "github": ""
     }
   },
-  
   "statistics": {
     "peopleImpacted": 300,
     "yearsActive": 3,
@@ -68,7 +65,6 @@
     "certificatesIssued": 300,
     "marketInclusions": 5
   },
-  
   "founder": {
     "name": "Thaís Santana",
     "role": "Fundadora e CEO",
@@ -76,10 +72,9 @@
     "bio": "Mulher preta e periférica, engenheira elétrica com mais de 13 anos de experiência no setor elétrico. Cresceu no Complexo da Coruja e fundou o FuturoOn em 2021 após sonhar com o projeto, com a missão de levar educação tecnológica para sua comunidade.",
     "linkedin": "https://linkedin.com/in/thaissantana",
     "email": "futurooon@gmail.com",
-    "photo": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop",
+    "photo": "https://media.licdn.com/dms/image/v2/D4D03AQERbQ7RnKzlEA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1691721804193?e=1766016000&v=beta&t=XjCc9TPv6f5vlG3m80nxefDLn-88HhoiRx1EMYXbUlI",
     "featured": true
   },
-  
   "team": [
     {
       "id": "team-001",
@@ -122,7 +117,6 @@
       "photo": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"
     }
   ],
-  
   "partners": [
     {
       "id": "partner-001",
@@ -247,7 +241,6 @@
       }
     }
   ],
-  
   "successCases": [
     {
       "id": "case-001",
@@ -255,9 +248,18 @@
       "partner": "Tech Solutions",
       "companySize": "Tecnologia • 200+ funcionários",
       "stats": [
-        { "label": "Jovens Contratados", "value": "8" },
-        { "label": "Retenção", "value": "90%" },
-        { "label": "Tempo Médio", "value": "4 meses" }
+        {
+          "label": "Jovens Contratados",
+          "value": "8"
+        },
+        {
+          "label": "Retenção",
+          "value": "90%"
+        },
+        {
+          "label": "Tempo Médio",
+          "value": "4 meses"
+        }
       ],
       "testimonial": "Os jovens do FuturoOn chegam com uma energia e dedicação impressionantes. Já contratamos 8 e todos se destacaram nas suas equipes.",
       "authorName": "Carlos Silva",
@@ -270,9 +272,18 @@
       "partner": "Digital Ventures",
       "companySize": "Startup • 50+ funcionários",
       "stats": [
-        { "label": "Jovens Contratados", "value": "5" },
-        { "label": "Retenção", "value": "100%" },
-        { "label": "Tempo Médio", "value": "3 meses" }
+        {
+          "label": "Jovens Contratados",
+          "value": "5"
+        },
+        {
+          "label": "Retenção",
+          "value": "100%"
+        },
+        {
+          "label": "Tempo Médio",
+          "value": "3 meses"
+        }
       ],
       "testimonial": "Encontramos talentos que realmente querem aprender e crescer. A parceria com o FuturoOn transformou nossa estratégia de contratação.",
       "authorName": "Ana Costa",
@@ -280,7 +291,6 @@
       "featured": true
     }
   ],
-  
   "testimonials": {
     "students": [
       {
@@ -383,14 +393,12 @@
       }
     ]
   },
-  
   "legal": {
-    "cnpj": "12.345.678/0001-90",
-    "legalName": "Instituto FuturoOn de Educação e Tecnologia",
+    "cnpj": "51.662.000/0001-98",
+    "legalName": "Instituto FuturoOn de Tecnologia",
     "foundationDate": "2020-03-15",
-    "registration": "OSCIP nº 12345"
+    "registration": ""
   },
-  
   "financial": {
     "bankAccount": {
       "bank": "Banco do Brasil",
@@ -400,7 +408,6 @@
       "pix": "12.345.678/0001-90"
     }
   },
-  
   "brand": {
     "colors": {
       "primary": "#8a4add",
@@ -414,7 +421,6 @@
       "white": "assets/logo/logo-branca.svg"
     }
   },
-  
   "faq": [
     {
       "category": "sobre",
@@ -462,7 +468,6 @@
       "answer": "Você pode se inscrever diretamente pelo site na página de Cursos, ou entrar em contato conosco via WhatsApp para mais informações sobre o processo seletivo."
     }
   ],
-  
   "metadata": {
     "version": "1.0.0",
     "lastUpdate": "2024-11-30",

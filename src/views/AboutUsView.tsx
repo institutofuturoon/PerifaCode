@@ -6,157 +6,158 @@ import SEO from '../components/SEO';
 import Badge from '../components/Badge';
 import FAQ from '../components/FAQ';
 import { useOngData } from '../hooks/useOngData';
+import thaisPhoto from '../assets/images/volutarios/thais.jpg';
 
 // Componente de Estatística Animada - MELHORADO!
-const AnimatedImpactCard: React.FC<{ 
-  value: string; 
-  label: string; 
-  color: string;
-  context: string;
-  icon: React.ReactNode;
+const AnimatedImpactCard: React.FC<{
+    value: string;
+    label: string;
+    color: string;
+    context: string;
+    icon: React.ReactNode;
 }> = ({ value, label, color, context, icon }) => {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
+    const [count, setCount] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                }
+            },
+            { threshold: 0.3 }
+        );
+
+        if (ref.current) {
+            observer.observe(ref.current);
         }
-      },
-      { threshold: 0.3 }
-    );
-    
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-    
-    return () => observer.disconnect();
-  }, []);
-  
-  useEffect(() => {
-    if (isVisible) {
-      const target = parseInt(value.replace(/\D/g, ''));
-      if (target > 0) {
-        const duration = 2000;
-        const increment = target / (duration / 16);
-        
-        const timer = setInterval(() => {
-          setCount(prev => {
-            if (prev >= target) {
-              clearInterval(timer);
-              return target;
+
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        if (isVisible) {
+            const target = parseInt(value.replace(/\D/g, ''));
+            if (target > 0) {
+                const duration = 2000;
+                const increment = target / (duration / 16);
+
+                const timer = setInterval(() => {
+                    setCount(prev => {
+                        if (prev >= target) {
+                            clearInterval(timer);
+                            return target;
+                        }
+                        return Math.min(prev + increment, target);
+                    });
+                }, 16);
+
+                return () => clearInterval(timer);
             }
-            return Math.min(prev + increment, target);
-          });
-        }, 16);
-        
-        return () => clearInterval(timer);
-      }
-    }
-  }, [isVisible, value]);
-  
-  const displayValue = value.includes('+') 
-    ? `+${Math.round(count)}` 
-    : value.includes('%')
-    ? `${Math.round(count)}%`
-    : Math.round(count).toString();
-  
-  return (
-    <div ref={ref} className="relative group">
-      {/* Glow effect mais intenso */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${color} rounded-2xl blur-2xl opacity-20 group-hover:opacity-40 group-hover:blur-3xl transition-all duration-500`}></div>
-      
-      <div className="relative bg-gradient-to-br from-[#18181B] to-[#09090B] p-8 rounded-2xl border border-white/10 group-hover:border-white/20 text-center hover:-translate-y-2 transition-all duration-300 h-full">
-        {/* Ícone com animação */}
-        <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
-          {icon}
+        }
+    }, [isVisible, value]);
+
+    const displayValue = value.includes('+')
+        ? `+${Math.round(count)}`
+        : value.includes('%')
+            ? `${Math.round(count)}%`
+            : Math.round(count).toString();
+
+    return (
+        <div ref={ref} className="relative group">
+            {/* Glow effect mais intenso */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${color} rounded-2xl blur-2xl opacity-20 group-hover:opacity-40 group-hover:blur-3xl transition-all duration-500`}></div>
+
+            <div className="relative bg-gradient-to-br from-[#18181B] to-[#09090B] p-8 rounded-2xl border border-white/10 group-hover:border-white/20 text-center hover:-translate-y-2 transition-all duration-300 h-full">
+                {/* Ícone com animação */}
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
+                    {icon}
+                </div>
+
+                {/* Valor grande */}
+                <p className={`text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r ${color} mb-3 group-hover:scale-105 transition-transform duration-300`}>
+                    {displayValue}
+                </p>
+
+                {/* Label */}
+                <p className="text-sm text-white font-bold uppercase tracking-widest mb-2">
+                    {label}
+                </p>
+
+                {/* Descrição */}
+                <p className="text-xs text-gray-400 leading-relaxed">
+                    {context}
+                </p>
+
+                {/* Barra decorativa */}
+                <div className="mt-4 w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className={`h-full bg-gradient-to-r ${color} group-hover:w-full w-0 transition-all duration-1000 ease-out`}></div>
+                </div>
+            </div>
         </div>
-        
-        {/* Valor grande */}
-        <p className={`text-5xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r ${color} mb-3 group-hover:scale-105 transition-transform duration-300`}>
-          {displayValue}
-        </p>
-        
-        {/* Label */}
-        <p className="text-sm text-white font-bold uppercase tracking-widest mb-2">
-          {label}
-        </p>
-        
-        {/* Descrição */}
-        <p className="text-xs text-gray-400 leading-relaxed">
-          {context}
-        </p>
-        
-        {/* Barra decorativa */}
-        <div className="mt-4 w-full h-1 bg-white/5 rounded-full overflow-hidden">
-          <div className={`h-full bg-gradient-to-r ${color} group-hover:w-full w-0 transition-all duration-1000 ease-out`}></div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 // Componente de Depoimento
 const TestimonialCard: React.FC<{
-  photo: string;
-  name: string;
-  role: string;
-  testimonial: string;
-  achievement: string;
-  achievementColor: string;
+    photo: string;
+    name: string;
+    role: string;
+    testimonial: string;
+    achievement: string;
+    achievementColor: string;
 }> = ({ photo, name, role, testimonial, achievement, achievementColor }) => (
-  <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:-translate-y-2 hover:border-[#8a4add]/40 transition-all duration-300">
-    <div className="flex items-center gap-4 mb-6">
-      <div className={`w-16 h-16 rounded-full border-2 ${achievementColor} bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-2xl font-black text-white`}>
-        {name.charAt(0)}
-      </div>
-      <div>
-        <h3 className="text-lg font-bold text-white">{name}</h3>
-        <p className="text-sm text-gray-400">{role}</p>
-      </div>
+    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10 hover:-translate-y-2 hover:border-[#8a4add]/40 transition-all duration-300">
+        <div className="flex items-center gap-4 mb-6">
+            <div className={`w-16 h-16 rounded-full border-2 ${achievementColor} bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-2xl font-black text-white`}>
+                {name.charAt(0)}
+            </div>
+            <div>
+                <h3 className="text-lg font-bold text-white">{name}</h3>
+                <p className="text-sm text-gray-400">{role}</p>
+            </div>
+        </div>
+
+        <div className="mb-6">
+            <div className="flex gap-1 mb-2">
+                {[...Array(5)].map((_, i) => (
+                    <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                ))}
+            </div>
+            <blockquote className="text-gray-300 italic leading-relaxed">
+                "{testimonial}"
+            </blockquote>
+        </div>
+
+        <div className={`flex items-center gap-2 text-sm ${achievementColor.replace('border-', 'text-')}`}>
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="font-semibold">{achievement}</span>
+        </div>
     </div>
-    
-    <div className="mb-6">
-      <div className="flex gap-1 mb-2">
-        {[...Array(5)].map((_, i) => (
-          <svg key={i} className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-          </svg>
-        ))}
-      </div>
-      <blockquote className="text-gray-300 italic leading-relaxed">
-        "{testimonial}"
-      </blockquote>
-    </div>
-    
-    <div className={`flex items-center gap-2 text-sm ${achievementColor.replace('border-', 'text-')}`}>
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-      </svg>
-      <span className="font-semibold">{achievement}</span>
-    </div>
-  </div>
 );
 
 // Componente de Prêmio
 const AwardCard: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-  organization: string;
-  year: string;
-  colorClass: string;
+    icon: React.ReactNode;
+    title: string;
+    organization: string;
+    year: string;
+    colorClass: string;
 }> = ({ icon, title, organization, year, colorClass }) => (
-  <div className={`bg-gradient-to-br from-white/5 to-white/[0.02] p-6 rounded-2xl border border-white/10 text-center hover:-translate-y-2 hover:border-${colorClass}-500/40 transition-all duration-300 group`}>
-    <div className={`w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-${colorClass}-400/20 to-${colorClass}-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-      {icon}
+    <div className={`bg-gradient-to-br from-white/5 to-white/[0.02] p-6 rounded-2xl border border-white/10 text-center hover:-translate-y-2 hover:border-${colorClass}-500/40 transition-all duration-300 group`}>
+        <div className={`w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-${colorClass}-400/20 to-${colorClass}-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+            {icon}
+        </div>
+        <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
+        <p className="text-sm text-gray-400 mb-2">{organization}</p>
+        <span className="text-xs text-[#8a4add] font-semibold">{year}</span>
     </div>
-    <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
-    <p className="text-sm text-gray-400 mb-2">{organization}</p>
-    <span className="text-xs text-[#8a4add] font-semibold">{year}</span>
-  </div>
 );
 
 // Novo componente baseado no design da imagem (Cards Pretos com Ícones)
@@ -221,8 +222,8 @@ const AboutUsView: React.FC = () => {
 
     return (
         <>
-            <SEO 
-                title="Quem Somos" 
+            <SEO
+                title="Quem Somos"
                 description="Conheça o Instituto FuturoOn: nossa história, missão e como estamos transformando a realidade de jovens da periferia através da tecnologia."
             />
             {/* Hero Section */}
@@ -238,7 +239,7 @@ const AboutUsView: React.FC = () => {
                     </p>
                 </div>
             </section>
-            
+
             {/* Seção da Fundadora - NOVO! */}
             <section className="py-24 bg-black/20">
                 <div className="container mx-auto px-4">
@@ -248,64 +249,63 @@ const AboutUsView: React.FC = () => {
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#8a4add]/30 to-[#f27983]/30 rounded-2xl blur-3xl group-hover:blur-4xl transition-all duration-500"></div>
                                 <div className="relative aspect-square rounded-2xl overflow-hidden border-4 border-white/10 group-hover:border-[#8a4add]/40 transition-all duration-300 bg-gradient-to-br from-[#8a4add]/20 to-[#f27983]/20 flex items-center justify-center">
-                                    <div className="text-center p-8">
-                                        <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center">
-                                            <span className="text-6xl font-black text-white">T</span>
-                                        </div>
-                                        <p className="text-gray-400 text-sm">📸 Foto em breve</p>
-                                    </div>
+                                    <img
+                                        src={thaisPhoto}
+                                        alt="Thaís Santana"
+                                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                    />
                                 </div>
                             </div>
-                            
+
                             {/* História */}
                             <div className="space-y-6">
                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 border border-[#8a4add]/30 rounded-full">
                                     <span className="text-sm font-bold text-[#c4b5fd]">Fundadora</span>
                                 </div>
-                                
+
                                 <h2 className="text-4xl font-black text-white">
                                     Thaís Santana
                                 </h2>
-                                
+
                                 <p className="text-xl text-[#c4b5fd] font-semibold italic">
-                                    "Eu sonhei com esse projeto. Literalmente. Acordei com o nome, 
+                                    "Eu sonhei com esse projeto. Literalmente. Acordei com o nome,
                                     a missão e a certeza de que era isso que eu deveria fazer."
                                 </p>
-                                
+
                                 <div className="space-y-4 text-gray-300 leading-relaxed">
                                     <p>
-                                        Mulher preta e periférica, engenheira elétrica com mais de 13 anos 
-                                        de experiência no setor elétrico. Nascida e criada no Complexo da Coruja, 
+                                        Mulher preta e periférica, engenheira elétrica com mais de 13 anos
+                                        de experiência no setor elétrico. Nascida e criada no Complexo da Coruja,
                                         em São Gonçalo, Thaís sempre teve o sonho de transformar a realidade da sua comunidade.
                                     </p>
                                     <p>
-                                        Em 2021, ela literalmente sonhou com o FuturoOn - acordou com o nome do projeto, 
-                                        a estrutura e a missão clara. Sem incentivo financeiro público ou privado, 
+                                        Em 2021, ela literalmente sonhou com o FuturoOn - acordou com o nome do projeto,
+                                        a estrutura e a missão clara. Sem incentivo financeiro público ou privado,
                                         fundou o instituto com recursos próprios e muita determinação.
                                     </p>
                                     <p>
-                                        Hoje, o FuturoOn já realizou mais de 300 formações, organizou dezenas de turmas 
-                                        e eventos, e inseriu diversos alunos no mercado de trabalho. O projeto se tornou 
+                                        Hoje, o FuturoOn já realizou mais de 300 formações, organizou dezenas de turmas
+                                        e eventos, e inseriu diversos alunos no mercado de trabalho. O projeto se tornou
                                         referência em inclusão digital na Baixada Fluminense.
                                     </p>
                                 </div>
-                                
+
                                 <div className="flex flex-wrap gap-4 pt-4">
                                     <div className="flex items-center gap-2 text-sm text-gray-400">
                                         <svg className="w-5 h-5 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                                         </svg>
                                         Engenheira Elétrica
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-gray-400">
                                         <svg className="w-5 h-5 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
+                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                                         </svg>
                                         Complexo da Coruja, São Gonçalo - RJ
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-gray-400">
                                         <svg className="w-5 h-5 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                                         </svg>
                                         13+ anos de experiência
                                     </div>
@@ -416,14 +416,14 @@ const AboutUsView: React.FC = () => {
                     />
                 </div>
             </Section>
-            
+
             {/* Impact Section - MELHORADO! */}
             <section className="py-20 border-y border-white/5 bg-gradient-to-b from-black/40 via-black/20 to-transparent relative overflow-hidden">
                 {/* Background decorativo */}
                 <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
                 <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-[#8a4add]/10 rounded-full blur-[120px]"></div>
                 <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-[#f27983]/10 rounded-full blur-[120px]"></div>
-                
+
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
@@ -434,49 +434,49 @@ const AboutUsView: React.FC = () => {
                         </p>
                         <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                        <AnimatedImpactCard 
-                            value="+300" 
-                            label="Jovens Formados" 
+                        <AnimatedImpactCard
+                            value="+300"
+                            label="Jovens Formados"
                             color="from-sky-400 to-blue-500"
                             context="Cada um com uma história de superação"
                             icon={
                                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z" />
                                 </svg>
                             }
                         />
-                        <AnimatedImpactCard 
-                            value="+50" 
-                            label="Turmas Realizadas" 
+                        <AnimatedImpactCard
+                            value="+50"
+                            label="Turmas Realizadas"
                             color="from-green-400 to-emerald-500"
                             context="Presenciais e online, sempre com qualidade"
                             icon={
                                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                                    <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                                 </svg>
                             }
                         />
-                        <AnimatedImpactCard 
-                            value="+14" 
-                            label="Voluntários Ativos" 
+                        <AnimatedImpactCard
+                            value="+14"
+                            label="Voluntários Ativos"
                             color="from-pink-400 to-rose-500"
                             context="Profissionais dedicados à causa"
                             icon={
                                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                                 </svg>
                             }
                         />
-                        <AnimatedImpactCard 
-                            value="+10" 
-                            label="Parceiros Ativos" 
+                        <AnimatedImpactCard
+                            value="+10"
+                            label="Parceiros Ativos"
                             color="from-amber-400 to-orange-500"
                             context="Empresas e instituições que apoiam"
                             icon={
                                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                                 </svg>
                             }
                         />
@@ -496,7 +496,7 @@ const AboutUsView: React.FC = () => {
                         </p>
                         <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
                     </div>
-                    
+
                     <div className="max-w-5xl mx-auto">
                         <div className="grid md:grid-cols-2 gap-8">
                             {/* ANTES */}
@@ -506,47 +506,47 @@ const AboutUsView: React.FC = () => {
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
                                             <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                             </svg>
                                         </div>
                                         <h3 className="text-2xl font-black text-white">Antes</h3>
                                     </div>
-                                    
+
                                     <ul className="space-y-4">
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Jovens sem acesso a cursos de tecnologia</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Desemprego e falta de perspectiva</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Comunidade sem referências em tech</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Talentos desperdiçados por falta de oportunidade</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Ciclo de pobreza sem quebra</span>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
-                            
+
                             {/* DEPOIS */}
                             <div className="relative">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#8a4add]/20 to-[#f27983]/20 rounded-2xl blur-xl"></div>
@@ -554,40 +554,40 @@ const AboutUsView: React.FC = () => {
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#8a4add] to-[#f27983] flex items-center justify-center">
                                             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
                                         </div>
                                         <h3 className="text-2xl font-black text-white">Depois</h3>
                                     </div>
-                                    
+
                                     <ul className="space-y-4">
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-[#8a4add] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300"><strong className="text-white">300+ jovens</strong> formados em tecnologia</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-[#8a4add] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Alunos <strong className="text-white">contratados</strong> e trabalhando na área</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-[#8a4add] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Comunidade com <strong className="text-white">novos modelos</strong> de sucesso</span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-[#8a4add] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Talentos <strong className="text-white">descobertos e valorizados</strong></span>
                                         </li>
                                         <li className="flex items-start gap-3">
                                             <svg className="w-5 h-5 text-[#8a4add] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                             </svg>
                                             <span className="text-gray-300">Famílias com <strong className="text-white">renda transformada</strong></span>
                                         </li>
@@ -595,12 +595,12 @@ const AboutUsView: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* CTA */}
                         <div className="text-center mt-12">
                             <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#8a4add]/20 to-[#f27983]/20 border border-[#8a4add]/30 rounded-full">
                                 <svg className="w-5 h-5 text-[#8a4add]" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
                                 <span className="text-white font-semibold">
                                     E isso é só o começo. Junte-se a nós!
@@ -623,7 +623,7 @@ const AboutUsView: React.FC = () => {
                         </p>
                         <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         <TestimonialCard
                             photo="/photos/aluno-1.jpg"
@@ -650,15 +650,15 @@ const AboutUsView: React.FC = () => {
                             achievementColor="border-[#c4b5fd]/40"
                         />
                     </div>
-                    
+
                     <div className="text-center mt-12">
-                        <button 
+                        <button
                             onClick={() => navigate('/success-stories')}
                             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-[#8a4add]/30 hover:-translate-y-1 transition-all duration-300"
                         >
                             Ver Mais Histórias
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>
                         </button>
                     </div>
@@ -677,12 +677,12 @@ const AboutUsView: React.FC = () => {
                         </p>
                         <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                         <AwardCard
                             icon={
                                 <svg className="w-10 h-10 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
                             }
                             title="Menção Honrosa"
@@ -693,7 +693,7 @@ const AboutUsView: React.FC = () => {
                         <AwardCard
                             icon={
                                 <svg className="w-10 h-10 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
                             }
                             title="Parceria UFF"
@@ -704,7 +704,7 @@ const AboutUsView: React.FC = () => {
                         <AwardCard
                             icon={
                                 <svg className="w-10 h-10 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
                                 </svg>
                             }
                             title="1ª Game Jam"
@@ -715,7 +715,7 @@ const AboutUsView: React.FC = () => {
                         <AwardCard
                             icon={
                                 <svg className="w-10 h-10 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd"/>
+                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                                 </svg>
                             }
                             title="Impacto Social"
@@ -739,7 +739,7 @@ const AboutUsView: React.FC = () => {
                             <div className="text-center space-y-4">
                                 <div className="w-20 h-20 mx-auto rounded-full bg-white/10 flex items-center justify-center group-hover:bg-[#8a4add]/20 transition-all duration-300">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M8 5v14l11-7z"/>
+                                        <path d="M8 5v14l11-7z" />
                                     </svg>
                                 </div>
                                 <p className="text-gray-300 text-lg font-semibold">Vídeo Institucional</p>
@@ -803,11 +803,11 @@ const AboutUsView: React.FC = () => {
                 <SectionTitle subtitle="Acreditamos que a confiança é construída com clareza. Acompanhe de perto como cada contribuição se transforma em oportunidade.">
                     Transparência Total
                 </SectionTitle>
-                
+
                 <div className="max-w-4xl mx-auto space-y-4">
                     {/* Annual Report Card */}
-                    <button 
-                        onClick={() => navigate('/relatorio-anual')} 
+                    <button
+                        onClick={() => navigate('/relatorio-anual')}
                         className="w-full text-left group"
                     >
                         <div className="flex items-center justify-between p-6 bg-white/5 rounded-xl border border-white/10 hover:border-[#8a4add]/40 hover:bg-white/[0.07] transition-all duration-200">
@@ -818,7 +818,7 @@ const AboutUsView: React.FC = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
-                                
+
                                 {/* Text */}
                                 <div>
                                     <h3 className="text-lg font-bold text-white mb-0.5">
@@ -829,7 +829,7 @@ const AboutUsView: React.FC = () => {
                                     </p>
                                 </div>
                             </div>
-                            
+
                             {/* Arrow */}
                             <div className="flex items-center gap-2 text-gray-400 group-hover:text-white transition-colors">
                                 <span className="hidden md:block text-sm">Ver relatório</span>
@@ -841,8 +841,8 @@ const AboutUsView: React.FC = () => {
                     </button>
 
                     {/* Financial Statement Card */}
-                    <button 
-                        onClick={() => navigate('/demonstrativo-financeiro')} 
+                    <button
+                        onClick={() => navigate('/demonstrativo-financeiro')}
                         className="w-full text-left group"
                     >
                         <div className="flex items-center justify-between p-6 bg-white/5 rounded-xl border border-white/10 hover:border-[#f27983]/40 hover:bg-white/[0.07] transition-all duration-200">
@@ -853,7 +853,7 @@ const AboutUsView: React.FC = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
-                                
+
                                 {/* Text */}
                                 <div>
                                     <h3 className="text-lg font-bold text-white mb-0.5">
@@ -864,7 +864,7 @@ const AboutUsView: React.FC = () => {
                                     </p>
                                 </div>
                             </div>
-                            
+
                             {/* Arrow */}
                             <div className="flex items-center gap-2 text-gray-400 group-hover:text-white transition-colors">
                                 <span className="hidden md:block text-sm">Ver prestação</span>
@@ -888,7 +888,7 @@ const AboutUsView: React.FC = () => {
             {/* FAQ Section */}
             {faq && faq.length > 0 && (
                 <Section>
-                    <FAQ 
+                    <FAQ
                         items={faq.filter(item => item.category === 'sobre')}
                         title="Perguntas Frequentes"
                         subtitle="Tire suas dúvidas sobre o Instituto FuturoOn"
@@ -898,8 +898,8 @@ const AboutUsView: React.FC = () => {
 
             {/* Team & Donate CTA Section */}
             <Section className="bg-brand-navy/30">
-               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                     <div className="grid md:grid-cols-2 gap-8">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid md:grid-cols-2 gap-8">
                         <ActionCard
                             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
                             title="Conheça Nossa Tropa"
@@ -916,7 +916,7 @@ const AboutUsView: React.FC = () => {
                             buttonOnClick={() => navigate('/doar')}
                             buttonVariant="primary"
                         />
-                     </div>
+                    </div>
                 </div>
             </Section>
         </>
