@@ -378,55 +378,91 @@ const TransparencyView: React.FC = () => {
 
                 {/* Banking Information Section */}
                 {financial && (
-                    <section className="py-20">
-                        <div className="container mx-auto px-4">
-                            <div className="max-w-4xl mx-auto text-center mb-12">
-                                <h2 className="text-3xl font-black text-white mb-4">Dados Bancários</h2>
-                                <p className="text-gray-300 text-lg">
+                    <section className="py-24 relative overflow-hidden">
+                        {/* Background decorative elements */}
+                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#8a4add]/5 rounded-full blur-3xl pointer-events-none"></div>
+                        
+                        <div className="container mx-auto px-4 relative z-10">
+                            <div className="max-w-4xl mx-auto text-center mb-16">
+                                <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Dados Bancários</h2>
+                                <p className="text-gray-300 text-lg md:text-xl leading-relaxed">
                                     Para doações e transferências diretas
                                 </p>
-                                <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-4"></div>
+                                <div className="flex items-center justify-center gap-2 mt-6">
+                                    <div className="w-2 h-2 rounded-full bg-[#8a4add]"></div>
+                                    <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] rounded-full"></div>
+                                    <div className="w-2 h-2 rounded-full bg-[#f27983]"></div>
+                                </div>
                             </div>
 
                             <div className="max-w-3xl mx-auto">
-                                <div className="bg-gradient-to-br from-white/5 to-white/[0.02] p-8 rounded-2xl border border-white/10">
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        <div>
-                                            <p className="text-sm text-gray-500 mb-1">Banco</p>
-                                            <p className="text-lg font-bold text-white">{financial.bankAccount.bank}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500 mb-1">Titular</p>
-                                            <p className="text-lg font-bold text-white">{financial.bankAccount.holder}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500 mb-1">Agência</p>
-                                            <p className="text-lg font-bold text-white font-mono">{financial.bankAccount.branch}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500 mb-1">Conta</p>
-                                            <p className="text-lg font-bold text-white font-mono">{financial.bankAccount.account}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6 pt-6 border-t border-white/10">
-                                        <div className="flex items-center justify-between">
+                                <div className="group relative">
+                                    <div className="absolute -inset-0.5 bg-gradient-to-r from-[#8a4add] to-[#f27983] rounded-3xl opacity-0 group-hover:opacity-10 blur transition-all duration-500"></div>
+                                    
+                                    <div className="relative bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-8 md:p-10 rounded-3xl border border-white/10 group-hover:border-[#8a4add]/30 transition-all duration-300">
+                                        <div className="space-y-6">
                                             <div>
-                                                <p className="text-sm text-gray-500 mb-1">PIX (CNPJ)</p>
-                                                <p className="text-lg font-bold text-[#8a4add] font-mono">{financial.bankAccount.pix}</p>
+                                                <p className="text-sm text-gray-500 mb-2 flex items-center gap-2">
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                    </svg>
+                                                    Banco Destino
+                                                </p>
+                                                <p className="text-xl md:text-2xl font-black text-white">{financial.bankAccount.bank}</p>
                                             </div>
-                                            <button
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(financial.bankAccount.pix);
-                                                    alert('PIX copiado!');
-                                                }}
-                                                className="px-4 py-2 bg-[#8a4add]/20 hover:bg-[#8a4add]/30 text-[#8a4add] rounded-lg transition-colors flex items-center gap-2"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                                </svg>
-                                                Copiar
-                                            </button>
+                                            
+                                            <div>
+                                                <p className="text-sm text-gray-500 mb-2 flex items-center gap-2">
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                    </svg>
+                                                    Favorecido
+                                                </p>
+                                                <p className="text-xl md:text-2xl font-black text-white">{financial.bankAccount.holder}</p>
+                                            </div>
+                                            
+                                            {(financial.bankAccount.branch || financial.bankAccount.account) && (
+                                                <div className="grid md:grid-cols-2 gap-6">
+                                                    {financial.bankAccount.branch && (
+                                                        <div>
+                                                            <p className="text-sm text-gray-500 mb-2">Agência</p>
+                                                            <p className="text-lg font-bold text-white font-mono">{financial.bankAccount.branch}</p>
+                                                        </div>
+                                                    )}
+                                                    {financial.bankAccount.account && (
+                                                        <div>
+                                                            <p className="text-sm text-gray-500 mb-2">Conta</p>
+                                                            <p className="text-lg font-bold text-white font-mono">{financial.bankAccount.account}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="mt-8 pt-8 border-t border-white/10">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                                <div className="flex-1">
+                                                    <p className="text-sm text-gray-500 mb-2 flex items-center gap-2">
+                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
+                                                        </svg>
+                                                        Chave PIX (CNPJ)
+                                                    </p>
+                                                    <p className="text-lg md:text-xl font-black text-[#8a4add] font-mono break-all">{financial.bankAccount.pix}</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(financial.bankAccount.pix);
+                                                        alert('Chave PIX copiada com sucesso!');
+                                                    }}
+                                                    className="px-6 py-3 bg-[#8a4add]/20 hover:bg-[#8a4add]/30 text-[#8a4add] rounded-xl transition-all duration-300 flex items-center gap-2 font-bold hover:scale-105 transform"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                    </svg>
+                                                    Copiar PIX
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

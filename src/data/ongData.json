@@ -416,11 +416,11 @@
   },
   "financial": {
     "bankAccount": {
-      "bank": "Banco do Brasil",
-      "branch": "1234-5",
-      "account": "12345-6",
-      "holder": "Instituto FuturoOn",
-      "pix": "12.345.678/0001-90"
+      "bank": "237 - Bradesco S.A.",
+      "branch": "",
+      "account": "",
+      "holder": "INSTITUTO FUTURO ON",
+      "pix": "51.662.000/0001-98"
     }
   },
   "brand": {
