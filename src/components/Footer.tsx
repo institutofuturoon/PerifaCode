@@ -124,6 +124,7 @@ const Footer: React.FC = () => {
             <li><FooterLink onClick={() => navigate('/apoiadores')}>Apoiadores</FooterLink></li>
             <li><FooterLink onClick={() => navigate('/transparencia')}>Transparência</FooterLink></li>
             <li><FooterLink onClick={() => navigate('/relatorio-anual')}>Relatório Anual</FooterLink></li>
+            <li><FooterLink onClick={() => navigate('/contato')}>Contato</FooterLink></li>
             <li><FooterLink onClick={() => navigate('/doar')}>Apoie</FooterLink></li>
           </FooterList>
 

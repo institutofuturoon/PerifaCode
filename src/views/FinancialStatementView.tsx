@@ -16,22 +16,40 @@ const Section: React.FC<{ children: React.ReactNode, className?: string }> = ({ 
 );
 
 const SectionTitle: React.FC<{ children: React.ReactNode, subtitle?: string }> = ({ children, subtitle }) => (
-    <div className="text-center mb-16">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">{children}</h2>
-        {subtitle && <p className="mt-4 max-w-3xl mx-auto text-base md:text-lg text-gray-300 leading-relaxed px-4">{subtitle}</p>}
-        <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] mx-auto mt-6"></div>
+    <div className="text-center mb-16 md:mb-20">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent">
+            {children}
+        </h2>
+        {subtitle && (
+            <p className="mt-6 max-w-3xl mx-auto text-base md:text-lg text-gray-300 leading-relaxed px-4">
+                {subtitle}
+            </p>
+        )}
+        <div className="flex items-center justify-center gap-2 mt-8">
+            <div className="w-2 h-2 rounded-full bg-[#8a4add]"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-[#8a4add] to-[#f27983] rounded-full"></div>
+            <div className="w-2 h-2 rounded-full bg-[#f27983]"></div>
+        </div>
     </div>
 );
 
 const FinancialCard: React.FC<{ value: string, label: string, icon: React.ReactNode, color: string }> = ({ value, label, icon, color }) => (
-    <div className="group relative bg-white/5 p-6 md:p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/30 hover:bg-white/[0.07] transition-all duration-300">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div className={`flex-shrink-0 h-14 w-14 md:h-16 md:w-16 rounded-xl flex items-center justify-center text-white ${color} group-hover:scale-110 transition-transform`}>
-                {icon}
-            </div>
-            <div className="text-center sm:text-left">
-                <p className="text-3xl md:text-4xl font-black text-white mb-1">{value}</p>
-                <p className="text-sm md:text-base text-gray-400 font-medium">{label}</p>
+    <div className="group relative">
+        {/* Glow effect on hover */}
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#8a4add] to-[#f27983] rounded-2xl opacity-0 group-hover:opacity-10 blur transition-all duration-500"></div>
+        
+        <div className="relative bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 md:p-8 rounded-2xl border border-white/10 hover:border-[#8a4add]/30 transition-all duration-300">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="relative">
+                    <div className={`absolute inset-0 ${color} rounded-xl blur-lg opacity-50`}></div>
+                    <div className={`relative flex-shrink-0 h-14 w-14 md:h-16 md:w-16 rounded-xl flex items-center justify-center text-white ${color} group-hover:scale-110 transition-transform`}>
+                        {icon}
+                    </div>
+                </div>
+                <div className="text-center sm:text-left flex-1">
+                    <p className="text-3xl md:text-4xl font-black text-white mb-1">{value}</p>
+                    <p className="text-sm md:text-base text-gray-400 font-medium">{label}</p>
+                </div>
             </div>
         </div>
     </div>
