@@ -2,6 +2,12 @@
 import React, { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
+import senacLogo from '../assets/images/parceiros/senac-rj-logo-branco.webp';
+import senaiLogo from '../assets/images/parceiros/senai.png';
+import hostingerLogo from '../assets/images/parceiros/hostinger-seeklogo.svg';
+import inJuniorLogo from '../assets/images/parceiros/in_junior_logo.jpg';
+import way2Logo from '../assets/images/parceiros/wai2-logo.webp';
+import craqueDoAmanhaLogo from '../assets/images/parceiros/batata-crac-logo.jpg';
 
 const StatBox: React.FC<{ label: string; value: string; icon: string }> = ({ label, value, icon }) => (
     <div className="bg-[#121214] border border-white/10 p-6 rounded-2xl flex flex-col items-start hover:border-[#8a4add]/40 transition-colors group relative overflow-hidden">
@@ -18,7 +24,21 @@ const PartnerDetailView: React.FC = () => {
     const { partners } = useAppContext();
     const navigate = useNavigate();
 
-    const partner = useMemo(() => partners.find(p => p.id === partnerId), [partners, partnerId]);
+    const partner = useMemo(() => {
+        const foundPartner = partners.find(p => p.id === partnerId);
+        if (!foundPartner) return null;
+
+        // Map to real logo
+        let logoUrl = foundPartner.logoUrl;
+        if (foundPartner.name === 'SENAC') logoUrl = senacLogo;
+        else if (foundPartner.name === 'SENAI') logoUrl = senaiLogo;
+        else if (foundPartner.name === 'Hostinger') logoUrl = hostingerLogo;
+        else if (foundPartner.name.includes('UFF') || foundPartner.name.includes('IN Junior')) logoUrl = inJuniorLogo;
+        else if (foundPartner.name === 'Way2') logoUrl = way2Logo;
+        else if (foundPartner.name === 'Craque do Amanhã') logoUrl = craqueDoAmanhaLogo;
+
+        return { ...foundPartner, logoUrl };
+    }, [partners, partnerId]);
 
     // Mock gallery data for visuals
     const gallery = [
@@ -38,7 +58,7 @@ const PartnerDetailView: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white">
-            
+
             {/* Navigation Bar */}
             <nav className="fixed top-0 w-full z-50 bg-[#09090B]/80 backdrop-blur-md border-b border-white/5 h-16 flex items-center px-6">
                 <button onClick={() => navigate('/apoiadores')} className="text-sm font-bold text-gray-400 hover:text-white flex items-center gap-2 transition-colors">
@@ -47,7 +67,7 @@ const PartnerDetailView: React.FC = () => {
             </nav>
 
             <div className="pt-32 pb-20 container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-                
+
                 {/* Header / Dossier Title */}
                 <div className="flex flex-col md:flex-row items-center md:items-end gap-8 mb-16 border-b border-white/10 pb-10">
                     <div className="w-32 h-32 bg-white rounded-2xl p-4 flex items-center justify-center shadow-[0_0_40px_-10px_rgba(138,74,221,0.3)]">
@@ -68,13 +88,13 @@ const PartnerDetailView: React.FC = () => {
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-12">
-                    
+
                     {/* Left Column: Stats & Impact */}
                     <div className="lg:col-span-1 space-y-6">
                         <h3 className="text-lg font-bold text-white flex items-center gap-2">
                             <span className="text-[#8a4add]">///</span> Dados de Impacto
                         </h3>
-                        
+
                         <div className="space-y-4">
                             <StatBox label="Investimento Total" value="R$ 150k+" icon="💎" />
                             <StatBox label="Vidas Impactadas" value="300+" icon="🚀" />

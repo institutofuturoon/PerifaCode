@@ -128,7 +128,7 @@
       "description": "Primeiro edital conquistado. Investimento de R$15.000 + R$1.500 em serviços para impulsionar o projeto.",
       "partnershipStart": "2024-09",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/8a4add/ffffff?text=Hostinger",
+      "logo": "/src/assets/images/parceiros/hostinger-seeklogo.svg",
       "stats": {
         "funding": "R$ 15.000",
         "services": "R$ 1.500"
@@ -144,7 +144,7 @@
       "description": "Parceria com IN Junior para curso de Programação com certificação pela universidade federal.",
       "partnershipStart": "2022",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/4ade80/ffffff?text=UFF",
+      "logo": "/src/assets/images/parceiros/in_junior_logo.jpg",
       "stats": {
         "certifiedStudents": 10,
         "courses": 1
@@ -160,7 +160,7 @@
       "description": "Empresa de software que apoiou o projeto com doação de 7 computadores no primeiro ano.",
       "partnershipStart": "2021",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/f27983/ffffff?text=Way2",
+      "logo": "/src/assets/images/parceiros/wai2-logo.webp",
       "stats": {
         "computersdonated": 7
       }
@@ -175,7 +175,7 @@
       "description": "Parceria para oferecer serviços gratuitos à comunidade em eventos (corte de cabelo, massagem, barbearia).",
       "partnershipStart": "2024",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/c4b5fd/000000?text=SENAC",
+      "logo": "/src/assets/images/parceiros/senac-rj-logo-branco.webp",
       "stats": {
         "services": "Múltiplos"
       }
@@ -190,7 +190,7 @@
       "description": "Parceria estratégica para formação técnica e profissionalizante.",
       "partnershipStart": "2024",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/ef4444/ffffff?text=SENAI",
+      "logo": "/src/assets/images/parceiros/senai.png",
       "stats": {
         "courses": "Técnicos"
       }
@@ -220,7 +220,7 @@
       "description": "Parceria para capacitação profissional de informática básica e programação para jovens e mães da comunidade.",
       "partnershipStart": "2024",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/4ade80/ffffff?text=Craque+do+Amanhã",
+      "logo": "/src/assets/images/parceiros/batata-crac-logo.jpg",
       "stats": {
         "students": "Múltiplos"
       }

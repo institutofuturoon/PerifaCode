@@ -73,7 +73,11 @@ const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string;
 };
 
 import senacLogo from '../assets/images/parceiros/senac-rj-logo-branco.webp';
-import senaiLogo from '../assets/images/parceiros/senai-logo.png';
+import senaiLogo from '../assets/images/parceiros/senai.png';
+import hostingerLogo from '../assets/images/parceiros/hostinger-seeklogo.svg';
+import inJuniorLogo from '../assets/images/parceiros/in_junior_logo.jpg';
+import way2Logo from '../assets/images/parceiros/wai2-logo.webp';
+import craqueDoAmanhaLogo from '../assets/images/parceiros/batata-crac-logo.jpg';
 
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => {
     // Check if it's a placeholder URL
@@ -650,10 +654,17 @@ const Home: React.FC = () => {
                             id: p.id,
                             name: p.name,
                             logoUrl: p.logo
-                        } as Partner))).map(p => ({
-                            ...p,
-                            logoUrl: p.name === 'SENAC' ? senacLogo : (p.name === 'SENAI' ? senaiLogo : p.logoUrl)
-                        }))} />
+                        } as Partner))).map(p => {
+                            // Map partner names to their actual logos
+                            let logoUrl = p.logoUrl;
+                            if (p.name === 'SENAC') logoUrl = senacLogo;
+                            else if (p.name === 'SENAI') logoUrl = senaiLogo;
+                            else if (p.name === 'Hostinger') logoUrl = hostingerLogo;
+                            else if (p.name.includes('UFF') || p.name.includes('IN Junior')) logoUrl = inJuniorLogo;
+                            else if (p.name === 'Way2') logoUrl = way2Logo;
+                            else if (p.name === 'Craque do Amanhã') logoUrl = craqueDoAmanhaLogo;
+                            return { ...p, logoUrl };
+                        })} />
                     </div>
 
                     {/* CTA melhorado */}

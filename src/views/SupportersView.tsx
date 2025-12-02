@@ -4,11 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { Partner } from '../types';
 import { useAppContext } from '../App';
 import Badge from '../components/Badge';
+import senacLogo from '../assets/images/parceiros/senac-rj-logo-branco.webp';
+import senaiLogo from '../assets/images/parceiros/senai.png';
+import hostingerLogo from '../assets/images/parceiros/hostinger-seeklogo.svg';
+import inJuniorLogo from '../assets/images/parceiros/in_junior_logo.jpg';
+import way2Logo from '../assets/images/parceiros/wai2-logo.webp';
+import craqueDoAmanhaLogo from '../assets/images/parceiros/batata-crac-logo.jpg';
 
 // --- Micro Components ---
 
 const VisionaryCard: React.FC<{ partner: Partner; onClick: () => void }> = ({ partner, onClick }) => (
-    <div 
+    <div
         onClick={onClick}
         className="group relative w-full bg-[#121214] border border-white/10 rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_50px_-12px_rgba(138,74,221,0.5)]"
     >
@@ -25,7 +31,7 @@ const VisionaryCard: React.FC<{ partner: Partner; onClick: () => void }> = ({ pa
                     Visionário
                 </span>
             </div>
-            
+
             <h3 className="text-3xl font-black text-white mb-4 group-hover:text-[#c4b5fd] transition-colors">
                 {partner.name}
             </h3>
@@ -47,13 +53,13 @@ const VisionaryCard: React.FC<{ partner: Partner; onClick: () => void }> = ({ pa
 );
 
 const EcosystemNode: React.FC<{ partner: Partner; onClick: () => void }> = ({ partner, onClick }) => (
-    <div 
+    <div
         onClick={onClick}
         className="group relative bg-black/40 border border-white/5 hover:border-white/20 rounded-2xl p-6 flex flex-col items-center justify-center aspect-square cursor-pointer transition-all duration-300 hover:bg-white/5"
     >
-        <img 
-            src={partner.logoUrl} 
-            alt={partner.name} 
+        <img
+            src={partner.logoUrl}
+            alt={partner.name}
             className="h-12 w-auto object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500 mb-4"
         />
         <p className="text-white font-bold text-sm opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 absolute bottom-4">
@@ -76,21 +82,38 @@ const SupportersView: React.FC = () => {
     const navigate = useNavigate();
     const { partners } = useAppContext();
 
+    // Map partners with actual logos
+    const partnersWithLogos = useMemo(() => {
+        const mapped = partners.map(p => {
+            let logoUrl = p.logoUrl;
+            if (p.name === 'SENAC') logoUrl = senacLogo;
+            else if (p.name === 'SENAI') logoUrl = senaiLogo;
+            else if (p.name === 'Hostinger') logoUrl = hostingerLogo;
+            else if (p.name.includes('UFF') || p.name.includes('IN Junior')) logoUrl = inJuniorLogo;
+            else if (p.name === 'Way2') logoUrl = way2Logo;
+            else if (p.name === 'Craque do Amanhã') logoUrl = craqueDoAmanhaLogo;
+
+            console.log(`Partner: ${p.name}, Original: ${p.logoUrl}, Mapped: ${logoUrl}`);
+            return { ...p, logoUrl };
+        });
+        return mapped;
+    }, [partners]);
+
     // Split partners into tiers for visual hierarchy
-    const visionaryPartners = useMemo(() => partners.slice(0, 2), [partners]);
-    const builderPartners = useMemo(() => partners.slice(2, 5), [partners]);
-    const ecosystemPartners = useMemo(() => partners.slice(5), [partners]);
+    const visionaryPartners = useMemo(() => partnersWithLogos.slice(0, 2), [partnersWithLogos]);
+    const builderPartners = useMemo(() => partnersWithLogos.slice(2, 5), [partnersWithLogos]);
+    const ecosystemPartners = useMemo(() => partnersWithLogos.slice(5), [partnersWithLogos]);
 
     return (
         <div className="bg-[#09090B] min-h-screen overflow-x-hidden">
-            
+
             {/* Hero Section - Gamified/Space Theme */}
             <section className="relative pt-32 pb-20 px-4">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#2e1065] via-[#09090B] to-[#09090B] pointer-events-none"></div>
                 <div className="container mx-auto relative z-10 text-center">
                     <Badge text="Hall of Fame" variant="default" className="mb-8" />
                     <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white mb-6">
-                        ALIANÇA <br/>
+                        ALIANÇA <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8a4add] via-[#c4b5fd] to-[#f27983]">DO FUTURO</span>
                     </h1>
                     <p className="max-w-2xl mx-auto text-gray-400 text-lg md:text-xl leading-relaxed">
@@ -107,7 +130,7 @@ const SupportersView: React.FC = () => {
                         <h2 className="text-sm font-bold text-[#c4b5fd] uppercase tracking-[0.2em]">Parceiros Visionários</h2>
                         <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#8a4add]/50"></div>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                         {visionaryPartners.map(p => (
                             <VisionaryCard key={p.id} partner={p} onClick={() => navigate(`/supporter/${p.id}`)} />
@@ -123,13 +146,13 @@ const SupportersView: React.FC = () => {
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
-                                Por que eles <br/>
+                                Por que eles <br />
                                 <span className="text-[#8a4add]">investem aqui?</span>
                             </h2>
                             <p className="text-gray-400 text-lg mb-8">
                                 Não é caridade. É estratégia. Nossos parceiros entendem que a diversidade é o motor da inovação real.
                             </p>
-                            <button 
+                            <button
                                 onClick={() => navigate('/parcerias')}
                                 className="group flex items-center gap-3 text-white font-bold border-b border-[#8a4add] pb-1 hover:text-[#c4b5fd] transition-colors"
                             >
@@ -152,8 +175,8 @@ const SupportersView: React.FC = () => {
                         <h3 className="text-center text-2xl font-bold text-white mb-12">Construtores do Ecossistema</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             {builderPartners.map(p => (
-                                <div 
-                                    key={p.id} 
+                                <div
+                                    key={p.id}
                                     onClick={() => navigate(`/supporter/${p.id}`)}
                                     className="bg-[#18181b] p-6 rounded-2xl border border-white/5 hover:border-[#8a4add]/30 transition-all cursor-pointer group"
                                 >
@@ -176,7 +199,7 @@ const SupportersView: React.FC = () => {
                             <EcosystemNode key={p.id} partner={p} onClick={() => navigate(`/supporter/${p.id}`)} />
                         ))}
                         {/* "Add Your Logo" Node */}
-                        <a 
+                        <a
                             href="mailto:parcerias@institutofuturoon.org"
                             className="group border border-dashed border-white/20 rounded-2xl p-6 flex flex-col items-center justify-center aspect-square cursor-pointer hover:bg-white/5 hover:border-[#8a4add]/50 transition-all"
                         >
@@ -194,16 +217,16 @@ const SupportersView: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#8a4add]/10 to-transparent pointer-events-none"></div>
                 <div className="container mx-auto px-4 relative z-10">
                     <h2 className="text-4xl md:text-6xl font-black text-white mb-8">
-                        Pronto para <br/> o lançamento?
+                        Pronto para <br /> o lançamento?
                     </h2>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button 
+                        <button
                             onClick={() => navigate('/parcerias')}
                             className="px-8 py-4 bg-[#8a4add] text-white font-bold rounded-xl hover:bg-[#7c3aed] transition-all shadow-[0_0_30px_rgba(138,74,221,0.4)] hover:shadow-[0_0_50px_rgba(138,74,221,0.6)] transform hover:-translate-y-1"
                         >
                             Torne-se um Parceiro
                         </button>
-                        <button 
+                        <button
                             onClick={() => navigate('/doar')}
                             className="px-8 py-4 bg-transparent border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all"
                         >
