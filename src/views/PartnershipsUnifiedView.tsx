@@ -6,8 +6,8 @@ import FAQ from '../components/FAQ';
 import { useOngData } from '../hooks/useOngData';
 
 // Componente de Card de Parceiro
-const PartnerCard: React.FC<{ 
-    name: string; 
+const PartnerCard: React.FC<{
+    name: string;
     description: string;
     sector: string;
     logo: string;
@@ -19,7 +19,7 @@ const PartnerCard: React.FC<{
         medium: 'p-6',
         small: 'p-4'
     };
-    
+
     const logoSizes = {
         large: 'h-16 w-auto',
         medium: 'h-12 w-auto',
@@ -27,12 +27,12 @@ const PartnerCard: React.FC<{
     };
 
     return (
-        <div 
+        <div
             onClick={onClick}
             className={`group relative bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 hover:border-[#8a4add]/40 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#8a4add]/20 ${sizeClasses[size]} ${onClick ? 'cursor-pointer' : ''}`}
         >
             <div className="absolute inset-0 bg-gradient-to-br from-[#8a4add]/0 to-[#8a4add]/0 group-hover:from-[#8a4add]/5 group-hover:to-transparent rounded-2xl transition-all duration-300"></div>
-            
+
             <div className="relative z-10">
                 <div className="flex items-start justify-between mb-4">
                     <div className="bg-white p-3 rounded-xl shadow-lg">
@@ -44,11 +44,11 @@ const PartnerCard: React.FC<{
                         </span>
                     )}
                 </div>
-                
+
                 <h3 className={`font-black text-white mb-2 group-hover:text-[#c4b5fd] transition-colors ${size === 'large' ? 'text-2xl' : size === 'medium' ? 'text-lg' : 'text-base'}`}>
                     {name}
                 </h3>
-                
+
                 {size !== 'small' && (
                     <>
                         <span className="inline-block px-2 py-1 rounded-full bg-white/5 text-gray-400 text-xs mb-3">
@@ -85,12 +85,12 @@ const BenefitCard: React.FC<{ icon: React.ReactNode; title: string; description:
 );
 
 // Componente de Plano de Parceria
-const PlanCard: React.FC<{ 
-    title: string; 
+const PlanCard: React.FC<{
+    title: string;
     description: string;
-    features: string[]; 
-    isFeatured?: boolean; 
-    ctaText: string; 
+    features: string[];
+    isFeatured?: boolean;
+    ctaText: string;
     ctaAction: () => void;
 }> = ({ title, description, features, isFeatured, ctaText, ctaAction }) => (
     <div className={`relative flex flex-col p-6 md:p-8 rounded-3xl border transition-all duration-300 h-full ${isFeatured ? 'bg-white/5 border-[#8a4add] shadow-[0_0_40px_-10px_rgba(138,74,221,0.3)] md:scale-105 z-10' : 'bg-[#121212] border-white/10 hover:border-white/20'}`}>
@@ -99,7 +99,7 @@ const PlanCard: React.FC<{
                 Mais Popular
             </div>
         )}
-        
+
         <div className="mb-6 text-center border-b border-white/5 pb-6">
             <h3 className="text-xl md:text-2xl font-bold mb-3 text-white">{title}</h3>
             <p className="text-xs md:text-sm text-gray-400 leading-relaxed">{description}</p>
@@ -118,7 +118,7 @@ const PlanCard: React.FC<{
             ))}
         </ul>
 
-        <button 
+        <button
             onClick={ctaAction}
             className={`w-full py-3 md:py-4 rounded-xl text-sm font-bold text-center transition-all duration-300 ${isFeatured ? 'bg-white text-black hover:bg-gray-200' : 'bg-white/10 text-white hover:bg-white/20'}`}
         >
@@ -129,74 +129,74 @@ const PlanCard: React.FC<{
 
 // Componente de Depoimento
 const TestimonialCard: React.FC<{
-  name: string;
-  role: string;
-  company: string;
-  text: string;
-  photo: string;
+    name: string;
+    role: string;
+    company: string;
+    text: string;
+    photo: string;
 }> = ({ name, role, company, text, photo }) => (
-  <div className="bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 p-6 md:p-8 hover:border-[#8a4add]/30 transition-all duration-300">
-    <div className="flex items-center gap-4 mb-6">
-      <img src={photo} alt={name} className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-[#8a4add]/30" />
-      <div>
-        <p className="font-bold text-white text-sm md:text-base">{name}</p>
-        <p className="text-xs md:text-sm text-gray-400">{role}, {company}</p>
-      </div>
+    <div className="bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 p-6 md:p-8 hover:border-[#8a4add]/30 transition-all duration-300">
+        <div className="flex items-center gap-4 mb-6">
+            <img src={photo} alt={name} className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-[#8a4add]/30" />
+            <div>
+                <p className="font-bold text-white text-sm md:text-base">{name}</p>
+                <p className="text-xs md:text-sm text-gray-400">{role}, {company}</p>
+            </div>
+        </div>
+        <p className="text-gray-300 text-sm md:text-base leading-relaxed italic">"{text}"</p>
     </div>
-    <p className="text-gray-300 text-sm md:text-base leading-relaxed italic">"{text}"</p>
-  </div>
 );
 
 // Componente Principal
 const PartnershipsUnifiedView: React.FC = () => {
     const navigate = useNavigate();
     const { partners, statistics, contact, testimonials, faq } = useOngData();
-    
+
     // Filtrar parceiros ativos
     const activePartners = partners?.filter(p => p.status === 'ativo') || [];
-    
+
     // Dividir parceiros por tamanho para layout responsivo
     const featuredPartners = activePartners.slice(0, 2);
     const mediumPartners = activePartners.slice(2, 8);
     const smallPartners = activePartners.slice(8);
-    
+
     // Depoimentos de parceiros
     const partnerTestimonials = testimonials?.partners || [];
 
     return (
         <>
-            <SEO 
+            <SEO
                 title="Parcerias & Apoiadores | Instituto FuturoOn"
                 description="Conheça nossos parceiros e descubra como sua empresa pode transformar vidas através da tecnologia. Modelos de parceria flexíveis e impacto real."
                 keywords={['parceria corporativa', 'ESG', 'apoiadores', 'patrocinadores', 'impacto social', 'diversidade', 'inclusão digital']}
             />
-            
+
             <div className="bg-[#09090B] min-h-screen">
                 {/* Hero Section */}
                 <section className="relative py-16 md:py-32 text-center overflow-hidden">
                     <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none"></div>
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#8a4add]/10 rounded-full blur-[100px] pointer-events-none"></div>
-                    
+
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                         <Badge text="Parcerias & Apoiadores" />
-                        
+
                         <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white tracking-tight leading-tight mb-4 md:mb-6 max-w-5xl mx-auto">
                             Juntos, transformamos<br className="hidden sm:block" />
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#8a4add] to-[#f27983]">vidas através da tech</span>
                         </h1>
-                        
+
                         <p className="text-base md:text-lg lg:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8 md:mb-10 px-4">
                             Conheça as organizações que acreditam no potencial da periferia e descubra como sua empresa pode fazer parte dessa transformação.
                         </p>
-                        
+
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4">
-                            <a 
+                            <a
                                 href={`mailto:${contact?.emails?.partnerships || contact?.emails?.general}?subject=Quero ser Parceiro`}
                                 className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-xl hover:opacity-90 transition-all transform hover:scale-105 text-sm md:text-base"
                             >
                                 Quero ser Parceiro
                             </a>
-                            <button 
+                            <button
                                 onClick={() => document.getElementById('partners')?.scrollIntoView({ behavior: 'smooth' })}
                                 className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-colors text-sm md:text-base"
                             >
@@ -211,22 +211,22 @@ const PartnershipsUnifiedView: React.FC = () => {
                     <section className="py-12 md:py-16 bg-black/20 border-y border-white/5">
                         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
-                                <StatCard 
+                                <StatCard
                                     icon={<svg className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>}
                                     value={`${statistics.peopleImpacted}+`}
                                     label="Vidas Impactadas"
                                 />
-                                <StatCard 
+                                <StatCard
                                     icon={<svg className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>}
                                     value={`${statistics.employmentRate}%`}
                                     label="Empregabilidade"
                                 />
-                                <StatCard 
+                                <StatCard
                                     icon={<svg className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>}
                                     value={`${statistics.activePartners}+`}
                                     label="Parceiros Ativos"
                                 />
-                                <StatCard 
+                                <StatCard
                                     icon={<svg className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
                                     value={`${statistics.mentorshipHours}+`}
                                     label="Horas de Mentoria"
@@ -298,9 +298,9 @@ const PartnershipsUnifiedView: React.FC = () => {
                                             size="small"
                                         />
                                     ))}
-                                    
+
                                     {/* "Seja Parceiro" Card */}
-                                    <a 
+                                    <a
                                         href={`mailto:${contact?.emails?.partnerships || contact?.emails?.general}`}
                                         className="group border border-dashed border-white/20 rounded-2xl p-4 flex flex-col items-center justify-center aspect-square cursor-pointer hover:bg-white/5 hover:border-[#8a4add]/50 transition-all"
                                     >
@@ -345,9 +345,9 @@ const PartnershipsUnifiedView: React.FC = () => {
                                 description="Contribua para um mercado de tecnologia mais diverso e inclusivo, com talentos da periferia."
                             />
                             <BenefitCard
-                                icon={<svg className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
-                                title="Incentivos Fiscais"
-                                description="Possibilidade de abatimento fiscal para empresas tributadas pelo Lucro Real (OSCIP)."
+                                icon={<svg className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+                                title="Transparência Total"
+                                description="Prestação de contas detalhada e recibos de todas as doações para sua segurança e compliance."
                             />
                             <BenefitCard
                                 icon={<svg className="h-6 w-6 md:h-8 md:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>}
@@ -385,28 +385,28 @@ const PartnershipsUnifiedView: React.FC = () => {
                                     "Logo em materiais de comunicação",
                                     "Relatórios trimestrais de impacto",
                                     "Certificado de parceria",
-                                    "Possibilidade de abatimento fiscal"
+                                    "Recibos para comprovação ESG"
                                 ]}
                                 ctaText="Quero Apoiar"
                                 ctaAction={() => window.location.href = `mailto:${contact?.emails?.partnerships || contact?.emails?.general}?subject=Parceria Financeira`}
                             />
-                            
+
                             <PlanCard
                                 title="Parceria Estratégica"
                                 description="Colaboração profunda com acesso a talentos e co-criação de conteúdo"
                                 features={[
                                     "Tudo da Parceria Financeira",
-                                    "Acesso prioritário ao banco de talentos",
-                                    "Divulgação de vagas exclusivas",
-                                    "Mentorias e workshops com seu time",
-                                    "Co-branding em eventos",
-                                    "Participação em comitê consultivo"
+                                    "Acesso antecipado aos talentos",
+                                    "Voluntariado Corporativo (Mentorias)",
+                                    "Co-criação de Hackathons/Desafios",
+                                    "Palestras de Impacto na sua empresa",
+                                    "Employer Branding em nossos eventos"
                                 ]}
                                 isFeatured={true}
                                 ctaText="Quero Ser Estratégico"
                                 ctaAction={() => window.location.href = `mailto:${contact?.emails?.partnerships || contact?.emails?.general}?subject=Parceria Estratégica`}
                             />
-                            
+
                             <PlanCard
                                 title="Parceria de Produto"
                                 description="Doação de equipamentos, softwares ou serviços essenciais"
@@ -427,7 +427,7 @@ const PartnershipsUnifiedView: React.FC = () => {
                             <p className="text-gray-400 mb-6 text-sm md:text-base">
                                 Não se encaixa em nenhum modelo? Vamos conversar e criar algo personalizado!
                             </p>
-                            <a 
+                            <a
                                 href={`mailto:${contact?.emails?.partnerships || contact?.emails?.general}?subject=Parceria Personalizada`}
                                 className="inline-flex items-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-white font-semibold text-sm md:text-base"
                             >
@@ -474,7 +474,7 @@ const PartnershipsUnifiedView: React.FC = () => {
                 {faq && faq.length > 0 && (
                     <section className="py-16 md:py-24">
                         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                            <FAQ 
+                            <FAQ
                                 items={faq.filter(item => item.category === 'parcerias')}
                                 title="Perguntas Frequentes"
                                 subtitle="Tire suas dúvidas sobre como se tornar um parceiro"
@@ -498,20 +498,20 @@ const PartnershipsUnifiedView: React.FC = () => {
                                         Junte-se a nós nessa missão de democratizar o acesso à tecnologia e criar oportunidades reais para jovens da periferia.
                                     </p>
                                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                        <a 
+                                        <a
                                             href={`mailto:${contact?.emails?.partnerships || contact?.emails?.general}?subject=Quero ser Parceiro do FuturoOn`}
                                             className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-xl hover:opacity-90 transition-all transform hover:scale-105 text-sm md:text-base"
                                         >
                                             Torne-se um Parceiro
                                         </a>
-                                        <button 
+                                        <button
                                             onClick={() => navigate('/doar')}
                                             className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-white/10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-all text-sm md:text-base"
                                         >
                                             Fazer Doação Pontual
                                         </button>
                                     </div>
-                                    
+
                                     {/* Contact Info */}
                                     {contact && (
                                         <div className="mt-8 md:mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 text-sm text-gray-400">
