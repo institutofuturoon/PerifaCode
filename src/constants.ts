@@ -2,17 +2,17 @@
 import { User, Course, Article, Event, Exercise, Achievement, Notification, ForumPost, Project, Partner, MentorSession, AnalyticsData, CommunityPost, Supporter, FinancialStatement, AnnualReport } from './types';
 
 export const ARTICLES: Article[] = [
-  {
-    id: 'article_csharp_future_proof',
-    title: 'Código C# à Prova de Futuro: Como Construir Software que Dura',
-    subtitle: 'Do SOLID ao .NET moderno, aprenda as técnicas essenciais para escrever código C# que não vira legado da noite para o dia.',
-    author: 'Marlon Souza',
-    date: '28/07/2024',
-    summary: 'No mundo da tecnologia, tudo muda rápido. Aprenda a escrever código C# que não só funciona hoje, mas que continua robusto, manutenível e relevante por anos. Descubra os segredos dos princípios SOLID, Design Patterns e das práticas modernas do .NET.',
-    imageUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
-    category: 'Carreira Tech',
-    content: `No mundo da tecnologia, a única constante é a mudança. Um código que hoje é de ponta, amanhã pode ser considerado legado. Mas e se a gente pudesse escrever software que resiste ao teste do tempo? Isso não é mágica, é engenharia. É sobre construir uma base sólida que permite que seu código cresça e se adapte sem quebrar.
+    {
+        id: 'article_csharp_future_proof',
+        title: 'Código C# à Prova de Futuro: Como Construir Software que Dura',
+        subtitle: 'Do SOLID ao .NET moderno, aprenda as técnicas essenciais para escrever código C# que não vira legado da noite para o dia.',
+        author: 'Marlon Souza',
+        date: '28/07/2024',
+        summary: 'No mundo da tecnologia, tudo muda rápido. Aprenda a escrever código C# que não só funciona hoje, mas que continua robusto, manutenível e relevante por anos. Descubra os segredos dos princípios SOLID, Design Patterns e das práticas modernas do .NET.',
+        imageUrl: 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        authorAvatarUrl: 'https://ui73bvafvl0llamc.public.blob.vercel-storage.com/avatars/h0VK5SzekwWfHJmkwMXNJJSleIE2-1762893257247-marlos-KMpj2WyEcBYPlaO335BA2RIj63Fx2g.png',
+        category: 'Carreira Tech',
+        content: `No mundo da tecnologia, a única constante é a mudança. Um código que hoje é de ponta, amanhã pode ser considerado legado. Mas e se a gente pudesse escrever software que resiste ao teste do tempo? Isso não é mágica, é engenharia. É sobre construir uma base sólida que permite que seu código cresça e se adapte sem quebrar.
 
 Neste post, vamos mergulhar em práticas e princípios essenciais que todo desenvolvedor C# deveria conhecer para criar software à prova de futuro. Bora lá?
 
@@ -120,11 +120,11 @@ Código sem testes é um código com um futuro incerto. Testes (unitários, de i
 Escrever código à prova de futuro não é sobre prever o futuro, mas sim sobre construir software que seja resiliente, adaptável e fácil de entender. Ao aplicar os princípios SOLID, usar Design Patterns, abraçar a injeção de dependência e testar seu código, você não está apenas escrevendo linhas de código, está construindo um legado.
 
 E aí, pronto para começar a construir o futuro?`,
-    status: 'published',
-    claps: 152,
-    tags: ['c#', '.net', 'boas-praticas', 'arquitetura', 'solid']
-  },
-  // ... outros artigos ...
+        status: 'published',
+        claps: 152,
+        tags: ['c#', '.net', 'boas-praticas', 'arquitetura', 'solid']
+    },
+    // ... outros artigos ...
 ];
 
 export const MOCK_COURSES: Course[] = [];
@@ -136,69 +136,69 @@ export const MOCK_FORUM_POSTS: ForumPost[] = [];
 export const MOCK_PROJECTS: Project[] = [];
 export const MOCK_COMMUNITY_POSTS: CommunityPost[] = [
     {
-      id: 'post_1',
-      authorId: 'h0VK5SzekwWfHJmkwMXNJJSleIE2', 
-      title: 'Qual a diferença real entre `let`, `const` e `var` em JavaScript?',
-      content: `E aí, galera! Beleza?\n\nTo começando a estudar JavaScript mais a fundo e sempre vejo a galera usando \`let\` e \`const\`, mas nos exemplos mais antigos só tinha \`var\`. Fui pesquisar e entendi que tem a ver com escopo, mas ainda tá meio confuso na minha cabeça.\n\nAlguém consegue me explicar de um jeito simples, tipo "para leigos", qual a diferença prática entre eles e quando eu devo usar cada um? Valeu!`,
-      tags: ['javascript', 'iniciante', 'frontend'],
-      claps: 42,
-      views: 215,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-      replies: [
-        {
-          id: 'reply_1_1',
-          authorId: 'O1a7N0I3M6c5p8q2S9u4V1w8Y5Z7', 
-          content: 'Boa pergunta! A principal diferença é o escopo. `var` tem escopo de função, enquanto `let` e `const` têm escopo de bloco (tudo que está dentro de `{}`). Isso evita muitos bugs!',
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(), // 30 mins later
-        },
-      ],
-      type: 'question',
-      isSolved: false
+        id: 'post_1',
+        authorId: 'h0VK5SzekwWfHJmkwMXNJJSleIE2',
+        title: 'Qual a diferença real entre `let`, `const` e `var` em JavaScript?',
+        content: `E aí, galera! Beleza?\n\nTo começando a estudar JavaScript mais a fundo e sempre vejo a galera usando \`let\` e \`const\`, mas nos exemplos mais antigos só tinha \`var\`. Fui pesquisar e entendi que tem a ver com escopo, mas ainda tá meio confuso na minha cabeça.\n\nAlguém consegue me explicar de um jeito simples, tipo "para leigos", qual a diferença prática entre eles e quando eu devo usar cada um? Valeu!`,
+        tags: ['javascript', 'iniciante', 'frontend'],
+        claps: 42,
+        views: 215,
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+        replies: [
+            {
+                id: 'reply_1_1',
+                authorId: 'O1a7N0I3M6c5p8q2S9u4V1w8Y5Z7',
+                content: 'Boa pergunta! A principal diferença é o escopo. `var` tem escopo de função, enquanto `let` e `const` têm escopo de bloco (tudo que está dentro de `{}`). Isso evita muitos bugs!',
+                createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(), // 30 mins later
+            },
+        ],
+        type: 'question',
+        isSolved: false
     },
     {
-      id: 'post_2',
-      authorId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6', 
-      title: 'Dica de carreira: Como montar um portfólio no GitHub que chama atenção?',
-      content: `Fala, pessoal!\n\nEstou terminando o curso de Frontend e quero começar a montar meu portfólio no GitHub pra procurar meu primeiro trampo. Vocês que já tão na área, têm alguma dica do que os recrutadores olham?\n\n- Quantos projetos são bons pra ter?\n- Precisa ter projeto "grande" ou vários pequenos servem?\n- Como organizar o README de cada projeto?\n\nToda ajuda é bem-vinda!`,
-      tags: ['carreira', 'github', 'portfolio', 'frontend'],
-      claps: 89,
-      views: 450,
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-      replies: [],
-      type: 'discussion',
+        id: 'post_2',
+        authorId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6',
+        title: 'Dica de carreira: Como montar um portfólio no GitHub que chama atenção?',
+        content: `Fala, pessoal!\n\nEstou terminando o curso de Frontend e quero começar a montar meu portfólio no GitHub pra procurar meu primeiro trampo. Vocês que já tão na área, têm alguma dica do que os recrutadores olham?\n\n- Quantos projetos são bons pra ter?\n- Precisa ter projeto "grande" ou vários pequenos servem?\n- Como organizar o README de cada projeto?\n\nToda ajuda é bem-vinda!`,
+        tags: ['carreira', 'github', 'portfolio', 'frontend'],
+        claps: 89,
+        views: 450,
+        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+        replies: [],
+        type: 'discussion',
     },
 ];
 export const MOCK_PARTNERS: Partner[] = [
-    { 
-        id: 'partner_1', 
-        name: 'TechCorp', 
+    {
+        id: 'partner_1',
+        name: 'TechCorp',
         logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/2560px-Google_2015_logo.svg.png',
         description: 'Líder global em inovação tecnológica, a TechCorp se dedica a organizar a informação do mundo e torná-la mundialmente acessível e útil. Sua missão vai além dos produtos, focando em criar oportunidades através da tecnologia.',
         websiteUrl: 'https://www.google.com',
         impactDescription: 'Financiamento de 50 bolsas integrais para o curso de Python e doação de 30 laptops para alunos sem equipamento.',
         since: '2023'
     },
-    { 
-        id: 'partner_2', 
-        name: 'InovaSoft', 
+    {
+        id: 'partner_2',
+        name: 'InovaSoft',
         logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/2560px-IBM_logo.svg.png',
         description: 'Pioneira em inteligência artificial e computação em nuvem, a InovaSoft tem um compromisso histórico com a educação e o desenvolvimento profissional, buscando resolver problemas complexos da sociedade.',
         websiteUrl: 'https://www.ibm.com',
         impactDescription: 'Programa de mentoria exclusivo onde 15 engenheiros seniores dedicam 2 horas semanais para orientar nossos alunos em projetos reais.',
         since: '2022'
     },
-    { 
-        id: 'partner_3', 
-        name: 'DevSolutions', 
+    {
+        id: 'partner_3',
+        name: 'DevSolutions',
         logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/2560px-Microsoft_logo_%282012%29.svg.png',
         description: 'A DevSolutions capacita cada pessoa e cada organização no planeta a conquistar mais. Através de suas ferramentas e plataformas, impulsiona a transformação digital em diversos setores.',
         websiteUrl: 'https://www.microsoft.com',
         impactDescription: 'Patrocínio do Hackathon das Favelas 2024 e contratação direta de 5 desenvolvedores júnior formados na FuturoOn.',
         since: '2024'
     },
-    { 
-        id: 'partner_4', 
-        name: 'CloudSystems', 
+    {
+        id: 'partner_4',
+        name: 'CloudSystems',
         logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Amazon_Web_Services_Logo.svg/2560px-Amazon_Web_Services_Logo.svg.png',
         description: 'Fornecendo a infraestrutura que alimenta a internet moderna, a CloudSystems é parceira fundamental para startups e grandes empresas que buscam escalabilidade e inovação.',
         websiteUrl: 'https://aws.amazon.com',
@@ -207,40 +207,40 @@ export const MOCK_PARTNERS: Partner[] = [
     },
 ];
 export const MOCK_EVENTS: Event[] = [
-  {
-    id: 'evt_hackathon_favelas',
-    title: 'Hackathon das Favelas 2024',
-    date: 'AGO 15',
-    time: '09:00',
-    hostId: 'instructor_1', 
-    description: 'Um final de semana intenso de codificação, criatividade e impacto social. Junte-se a nós para criar soluções tecnológicas para problemas reais das nossas comunidades. 🚀\n\nPré-requisitos: Vontade de aprender e trabalhar em equipe.',
-    imageUrl: 'https://images.unsplash.com/photo-1504384308090-c54be3852f33?q=80&w=1887&auto=format&fit=crop',
-    eventType: 'Workshop',
-    location: 'Presencial - Complexo da Coruja',
-    registrationUrl: 'https://forms.gle/example'
-  },
-  {
-    id: 'evt_live_career',
-    title: 'Live: Como conseguir o primeiro emprego em Tech',
-    date: 'AGO 20',
-    time: '19:00',
-    hostId: 'instructor_2',
-    description: 'Dicas valiosas sobre currículo, LinkedIn e portfólio com recrutadores de grandes empresas de tecnologia. Não perca a chance de tirar suas dúvidas ao vivo! 💼',
-    imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop',
-    eventType: 'Live',
-    location: 'Online - YouTube'
-  },
-  {
-    id: 'evt_workshop_ia',
-    title: 'Masterclass: IA para Devs Iniciantes',
-    date: 'SET 05',
-    time: '18:30',
-    hostId: 'instructor_3',
-    description: 'Entenda como ferramentas de Inteligência Artificial como o Gemini podem acelerar seu aprendizado e produtividade na programação. 🤖✨',
-    imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1932&auto=format&fit=crop',
-    eventType: 'Workshop',
-    location: 'Online - Discord'
-  }
+    {
+        id: 'evt_hackathon_favelas',
+        title: 'Hackathon das Favelas 2024',
+        date: 'AGO 15',
+        time: '09:00',
+        hostId: 'instructor_1',
+        description: 'Um final de semana intenso de codificação, criatividade e impacto social. Junte-se a nós para criar soluções tecnológicas para problemas reais das nossas comunidades. 🚀\n\nPré-requisitos: Vontade de aprender e trabalhar em equipe.',
+        imageUrl: 'https://images.unsplash.com/photo-1504384308090-c54be3852f33?q=80&w=1887&auto=format&fit=crop',
+        eventType: 'Workshop',
+        location: 'Presencial - Complexo da Coruja',
+        registrationUrl: 'https://forms.gle/example'
+    },
+    {
+        id: 'evt_live_career',
+        title: 'Live: Como conseguir o primeiro emprego em Tech',
+        date: 'AGO 20',
+        time: '19:00',
+        hostId: 'instructor_2',
+        description: 'Dicas valiosas sobre currículo, LinkedIn e portfólio com recrutadores de grandes empresas de tecnologia. Não perca a chance de tirar suas dúvidas ao vivo! 💼',
+        imageUrl: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1932&auto=format&fit=crop',
+        eventType: 'Live',
+        location: 'Online - YouTube'
+    },
+    {
+        id: 'evt_workshop_ia',
+        title: 'Masterclass: IA para Devs Iniciantes',
+        date: 'SET 05',
+        time: '18:30',
+        hostId: 'instructor_3',
+        description: 'Entenda como ferramentas de Inteligência Artificial como o Gemini podem acelerar seu aprendizado e produtividade na programação. 🤖✨',
+        imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1932&auto=format&fit=crop',
+        eventType: 'Workshop',
+        location: 'Online - Discord'
+    }
 ];
 export const MOCK_MENTOR_SESSIONS: MentorSession[] = [];
 export const EXERCISES: Exercise[] = [];
@@ -298,42 +298,42 @@ export const MOCK_SUPPORTERS: Supporter[] = [
 ];
 
 export const MOCK_ANALYTICS_DATA_V2: AnalyticsData = {
-  totalStudents: 452,
-  newStudentsLast30d: 38,
-  avgCompletionRate: 68,
-  weeklyEngagement: 85,
-  coursePerformance: [
-    { courseId: 'csharp-backend-essential', enrolled: 120, completionRate: 45, avgTime: 42, satisfaction: 4.8, dropOffRate: 15 },
-    { courseId: 'frontend-react', enrolled: 180, completionRate: 72, avgTime: 35, satisfaction: 4.9, dropOffRate: 8 },
-    { courseId: 'intro-python', enrolled: 95, completionRate: 85, avgTime: 20, satisfaction: 4.7, dropOffRate: 5 }
-  ],
-  lessonPerformance: {
-    'csharp-backend-essential': [
-        { lessonId: 'lesson_csharp_hello', title: 'Hello World e Variáveis', studentsCompleted: 115 },
-        { lessonId: 'lesson_csharp_condicionais', title: 'Tomando Decisões (If/Else)', studentsCompleted: 98 }, // Queda
-        { lessonId: 'lesson_csharp_classes', title: 'Classes e Objetos: A Fábrica de Pizzas', studentsCompleted: 70 }, // Grande Queda (Bottleneck)
-        { lessonId: 'lesson_csharp_api_concept', title: 'O que é uma API?', studentsCompleted: 65 },
-    ]
-  },
-  studentRetention: {
-    average: 78.5,
-    trend: 4.2,
-    dailyData: [65, 68, 72, 75, 78, 82, 80, 85, 88, 86, 89, 92, 90, 88, 85, 82, 80, 78, 75, 78, 80, 82, 85, 88, 90, 92, 95, 93, 94, 95]
-  },
-  studentEngagement: {
-    topStudents: [
-        { id: 'u1', name: 'Ana Souza', avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg', xp: 2450 },
-        { id: 'u2', name: 'Carlos Oliveira', avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg', xp: 2100 },
-        { id: 'u3', name: 'Beatriz Lima', avatarUrl: 'https://randomuser.me/api/portraits/women/68.jpg', xp: 1950 },
-        { id: 'u4', name: 'João Pedro', avatarUrl: 'https://randomuser.me/api/portraits/men/85.jpg', xp: 1800 },
-        { id: 'u5', name: 'Fernanda Costa', avatarUrl: 'https://randomuser.me/api/portraits/women/22.jpg', xp: 1750 }
+    totalStudents: 452,
+    newStudentsLast30d: 38,
+    avgCompletionRate: 68,
+    weeklyEngagement: 85,
+    coursePerformance: [
+        { courseId: 'csharp-backend-essential', enrolled: 120, completionRate: 45, avgTime: 42, satisfaction: 4.8, dropOffRate: 15 },
+        { courseId: 'frontend-react', enrolled: 180, completionRate: 72, avgTime: 35, satisfaction: 4.9, dropOffRate: 8 },
+        { courseId: 'intro-python', enrolled: 95, completionRate: 85, avgTime: 20, satisfaction: 4.7, dropOffRate: 5 }
     ],
-    atRiskStudents: [
-        { id: 'u6', name: 'Marcos Silva', avatarUrl: 'https://randomuser.me/api/portraits/men/12.jpg', lastLoginDaysAgo: 15 },
-        { id: 'u7', name: 'Julia Santos', avatarUrl: 'https://randomuser.me/api/portraits/women/65.jpg', lastLoginDaysAgo: 12 },
-        { id: 'u8', name: 'Rafael Dias', avatarUrl: 'https://randomuser.me/api/portraits/men/45.jpg', lastLoginDaysAgo: 10 }
-    ]
-  }
+    lessonPerformance: {
+        'csharp-backend-essential': [
+            { lessonId: 'lesson_csharp_hello', title: 'Hello World e Variáveis', studentsCompleted: 115 },
+            { lessonId: 'lesson_csharp_condicionais', title: 'Tomando Decisões (If/Else)', studentsCompleted: 98 }, // Queda
+            { lessonId: 'lesson_csharp_classes', title: 'Classes e Objetos: A Fábrica de Pizzas', studentsCompleted: 70 }, // Grande Queda (Bottleneck)
+            { lessonId: 'lesson_csharp_api_concept', title: 'O que é uma API?', studentsCompleted: 65 },
+        ]
+    },
+    studentRetention: {
+        average: 78.5,
+        trend: 4.2,
+        dailyData: [65, 68, 72, 75, 78, 82, 80, 85, 88, 86, 89, 92, 90, 88, 85, 82, 80, 78, 75, 78, 80, 82, 85, 88, 90, 92, 95, 93, 94, 95]
+    },
+    studentEngagement: {
+        topStudents: [
+            { id: 'u1', name: 'Ana Souza', avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg', xp: 2450 },
+            { id: 'u2', name: 'Carlos Oliveira', avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg', xp: 2100 },
+            { id: 'u3', name: 'Beatriz Lima', avatarUrl: 'https://randomuser.me/api/portraits/women/68.jpg', xp: 1950 },
+            { id: 'u4', name: 'João Pedro', avatarUrl: 'https://randomuser.me/api/portraits/men/85.jpg', xp: 1800 },
+            { id: 'u5', name: 'Fernanda Costa', avatarUrl: 'https://randomuser.me/api/portraits/women/22.jpg', xp: 1750 }
+        ],
+        atRiskStudents: [
+            { id: 'u6', name: 'Marcos Silva', avatarUrl: 'https://randomuser.me/api/portraits/men/12.jpg', lastLoginDaysAgo: 15 },
+            { id: 'u7', name: 'Julia Santos', avatarUrl: 'https://randomuser.me/api/portraits/women/65.jpg', lastLoginDaysAgo: 12 },
+            { id: 'u8', name: 'Rafael Dias', avatarUrl: 'https://randomuser.me/api/portraits/men/45.jpg', lastLoginDaysAgo: 10 }
+        ]
+    }
 };
 
 export const MOCK_FINANCIAL_STATEMENTS: FinancialStatement[] = [
@@ -413,10 +413,10 @@ export const MOCK_ANNUAL_REPORTS: AnnualReport[] = [
             { label: 'Parcerias Ativas', value: '12', color: 'text-cyan-400' }
         ],
         coordinationLetter: {
-            text: "2025 marca um novo capítulo na história do FuturoOn. Alcançamos a marca de 580 alunos atendidos, com uma taxa de empregabilidade de 82% - resultado que nos enche de orgulho e responsabilidade. Nossa plataforma digital foi completamente renovada, incorporando IA para personalizar a jornada de aprendizado de cada estudante. Expandimos para três novas comunidades e lançamos o programa 'Mulheres que Codam', que já representa 48% dos nossos alunos. Mas o que mais me emociona são as histórias: mães que voltaram a estudar, jovens que conseguiram o primeiro emprego, famílias transformadas pela tecnologia. Cada linha de código escrita aqui carrega esperança e possibilidade. Agradeço profundamente a cada parceiro, doador, voluntário e aluno que faz parte dessa transformação. Juntos, estamos provando que o futuro se constrói com educação, tecnologia e muita determinação.",
+            text: "2025 marca um capítulo decisivo para o Futuroon. Foi um ano desafiador, principalmente devido à superação necessária para a mudança para nossa nova sede, um ato de determinação que prova que a periferia pode protagonizar a transformação digital. Nossa credibilidade foi validada por uma grande conquista global em 2025: fomos selecionados no edital Hostinger, recebendo R$15.000 em financiamento. Este apoio fortalece nossa missão de capacitar jovens e crianças para o futuro da tecnologia. Expandimos o nosso impacto com oficinas e workshops de carreira, celebrando as histórias de transformação de mães e jovens que encontraram na tecnologia um novo futuro. Agradecemos a cada parceiro, doador e aluno. Juntos, estamos construindo o futuro, com a certeza de que vamos lutar para que grandes marcas estejam conosco em 2025.",
             authorName: "Thaís Santana",
             authorRole: "Fundadora e Diretora Executiva",
-            authorAvatarUrl: "https://randomuser.me/api/portraits/women/68.jpg"
+            authorAvatarUrl: "https://media.licdn.com/dms/image/v2/D4D03AQERbQ7RnKzlEA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1691721804193?e=1766016000&v=beta&t=XjCc9TPv6f5vlG3m80nxefDLn-88HhoiRx1EMYXbUlI"
         },
         testimonials: [
             {
