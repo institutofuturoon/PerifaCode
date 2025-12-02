@@ -7,6 +7,14 @@ import Badge from '../components/Badge';
 import FAQ from '../components/FAQ';
 import { useOngData } from '../hooks/useOngData';
 import thaisPhoto from '../assets/images/volutarios/thais.jpg';
+import gallery1 from '../assets/images/dia-a-dia/1.jpg';
+import gallery2 from '../assets/images/dia-a-dia/2.jpg';
+import gallery3 from '../assets/images/dia-a-dia/3.jpg';
+import gallery4 from '../assets/images/dia-a-dia/4.jpg';
+import gallery5 from '../assets/images/dia-a-dia/5.jpg';
+import gallery6 from '../assets/images/dia-a-dia/6.jpg';
+import gallery7 from '../assets/images/dia-a-dia/7.jpg';
+import gallery8 from '../assets/images/dia-a-dia/8.jpg';
 
 // Componente de Estatística Animada - MELHORADO!
 const AnimatedImpactCard: React.FC<{
@@ -774,22 +782,19 @@ const AboutUsView: React.FC = () => {
                     Nosso Dia a Dia
                 </SectionTitle>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                        <div key={item} className="relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 border border-white/10 group hover:border-[#8a4add]/30 transition-all duration-300 hover:scale-105">
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="text-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white/30 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <p className="text-xs text-gray-400 mt-2">Foto {item}</p>
-                                </div>
-                            </div>
+                    {[gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7, gallery8].map((image, index) => (
+                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 border border-white/10 group hover:border-[#8a4add]/30 transition-all duration-300 hover:scale-105">
+                            <img
+                                src={image}
+                                alt={`Dia a dia no Instituto FuturoOn ${index + 1}`}
+                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                            />
                         </div>
                     ))}
                 </div>
                 <div className="text-center mt-8">
                     <p className="text-gray-400 text-sm">
-                        📸 Galeria em construção - Em breve, fotos reais das nossas atividades e eventos
+                        📸 Registros reais das nossas atividades e eventos
                     </p>
                 </div>
             </Section>
