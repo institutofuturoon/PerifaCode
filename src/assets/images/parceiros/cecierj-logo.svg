@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" fill="none">
+  <!-- Background -->
+  <rect width="200" height="80" fill="transparent"/>
+  
+  <!-- Academic cap -->
+  <g transform="translate(60, 15)">
+    <!-- Cap top -->
+    <polygon points="40,0 80,15 40,30 0,15" fill="#f27983"/>
+    <polygon points="40,30 80,15 80,20 40,35" fill="#f27983" opacity="0.7"/>
+    <polygon points="0,15 40,30 40,35 0,20" fill="#f27983" opacity="0.8"/>
+    
+    <!-- Tassel -->
+    <circle cx="40" cy="0" r="3" fill="#fbbf24"/>
+    <line x1="40" y1="3" x2="40" y2="10" stroke="#fbbf24" stroke-width="1"/>
+    <circle cx="40" cy="10" r="2" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Book/Knowledge symbol -->
+  <g transform="translate(85, 50)">
+    <rect x="0" y="0" width="30" height="20" rx="2" fill="#8a4add"/>
+    <rect x="3" y="3" width="24" height="14" fill="#c4b5fd" opacity="0.3"/>
+    <line x1="15" y1="3" x2="15" y2="17" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="100" y="75" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">CECIERJ</text>
+</svg>

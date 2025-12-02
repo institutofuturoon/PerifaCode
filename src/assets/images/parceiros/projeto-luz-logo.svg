@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" fill="none">
+  <!-- Background -->
+  <rect width="200" height="80" fill="transparent"/>
+  
+  <!-- Light rays -->
+  <g opacity="0.8">
+    <path d="M100 20 L105 35 L100 35 Z" fill="#8a4add"/>
+    <path d="M100 20 L110 37 L105 40 Z" fill="#8a4add" opacity="0.8"/>
+    <path d="M100 20 L95 35 L100 35 Z" fill="#c4b5fd"/>
+    <path d="M100 20 L90 37 L95 40 Z" fill="#c4b5fd" opacity="0.8"/>
+    <path d="M100 20 L115 40 L110 43 Z" fill="#8a4add" opacity="0.6"/>
+    <path d="M100 20 L85 40 L90 43 Z" fill="#c4b5fd" opacity="0.6"/>
+  </g>
+  
+  <!-- Sun/Light bulb center -->
+  <circle cx="100" cy="20" r="8" fill="#fbbf24"/>
+  <circle cx="100" cy="20" r="6" fill="#ffffff"/>
+  
+  <!-- Community hands -->
+  <g transform="translate(70, 45)">
+    <path d="M10 15 Q10 10 15 10 Q20 10 20 15 L20 25 L10 25 Z" fill="#8a4add"/>
+    <path d="M25 15 Q25 10 30 10 Q35 10 35 15 L35 25 L25 25 Z" fill="#c4b5fd"/>
+    <path d="M40 15 Q40 10 45 10 Q50 10 50 15 L50 25 L40 25 Z" fill="#8a4add"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="100" y="65" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">PROJETO LUZ</text>
+</svg>

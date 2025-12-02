@@ -205,7 +205,7 @@
       "description": "Parceria para educação em blockchain, Web3 e novas economias para comunidades vulneráveis.",
       "partnershipStart": "2024",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/fbbf24/000000?text=Nebula+Web3",
+      "logo": "/src/assets/images/parceiros/nebula-web3-logo.png",
       "stats": {
         "courses": "Web3"
       }
@@ -235,7 +235,7 @@
       "description": "Apoio e parceria para utilização do espaço físico.",
       "partnershipStart": "2021",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/8a4add/ffffff?text=Projeto+Luz",
+      "logo": "/src/assets/images/parceiros/projeto-luz-logo.svg",
       "stats": {
         "support": "Espaço físico"
       }
@@ -250,7 +250,7 @@
       "description": "Apoio institucional público para o projeto.",
       "partnershipStart": "2022",
       "status": "ativo",
-      "logo": "https://via.placeholder.com/200x80/f27983/ffffff?text=Cecierj",
+      "logo": "/src/assets/images/parceiros/cecierj-logo.svg",
       "stats": {
         "support": "Institucional"
       }
