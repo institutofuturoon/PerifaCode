@@ -72,18 +72,21 @@ const ImpactCard: React.FC<{ icon: React.ReactNode, stat: string; title: string;
     );
 };
 
+import senacLogo from '../assets/images/parceiros/senac-rj-logo-branco.webp';
+import senaiLogo from '../assets/images/parceiros/senai-logo.png';
+
 const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUrl }) => {
-    // Check if it's a placeholder URL - if so, skip loading and show fallback immediately
+    // Check if it's a placeholder URL
     const isPlaceholder = logoUrl.includes('via.placeholder.com');
-    
+
     // Extract color from placeholder URL or use default
     const getColorFromUrl = (url: string) => {
         const match = url.match(/\/([0-9a-fA-F]{6})\//);
         return match ? `#${match[1]}` : '#8a4add';
     };
-    
+
     const bgColor = getColorFromUrl(logoUrl);
-    
+
     return (
         <div className="relative flex-shrink-0 w-40 h-24 md:w-64 md:h-36 flex items-center justify-center p-3 md:p-4 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 group transition-all duration-500 transform hover:scale-110 hover:border-[#8a4add]/40 overflow-hidden">
             {/* Efeito de brilho no hover */}
@@ -92,18 +95,26 @@ const PartnerLogo: React.FC<{ name: string; logoUrl: string }> = ({ name, logoUr
             {/* Glow effect */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-[#8a4add]/10 via-transparent to-[#f27983]/10 blur-xl"></div>
 
-            {/* Fallback for placeholder URLs - no image loading attempt */}
-            <div 
-                className="relative z-10 w-full h-full flex items-center justify-center rounded-lg transition-all duration-500 group-hover:scale-105"
-                style={{ backgroundColor: `${bgColor}20` }}
-            >
-                <span 
-                    className="text-sm md:text-base font-bold text-center px-2 transition-all duration-500 opacity-70 group-hover:opacity-100"
-                    style={{ color: bgColor }}
+            {/* Render Image or Fallback */}
+            {!isPlaceholder ? (
+                <img
+                    src={logoUrl}
+                    alt={name}
+                    className="relative z-10 w-full h-full object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300"
+                />
+            ) : (
+                <div
+                    className="relative z-10 w-full h-full flex items-center justify-center rounded-lg transition-all duration-500 group-hover:scale-105"
+                    style={{ backgroundColor: `${bgColor}20` }}
                 >
-                    {name}
-                </span>
-            </div>
+                    <span
+                        className="text-sm md:text-base font-bold text-center px-2 transition-all duration-500 opacity-70 group-hover:opacity-100"
+                        style={{ color: bgColor }}
+                    >
+                        {name}
+                    </span>
+                </div>
+            )}
         </div>
     );
 };
@@ -635,11 +646,14 @@ const Home: React.FC = () => {
 
                     {/* Carrossel de logos - Dados do JSON */}
                     <div className="relative mb-16">
-                        <PartnerCarousel partners={partners.length > 0 ? partners : ongPartners.map(p => ({
+                        <PartnerCarousel partners={(partners.length > 0 ? partners : ongPartners.map(p => ({
                             id: p.id,
                             name: p.name,
                             logoUrl: p.logo
-                        } as Partner))} />
+                        } as Partner))).map(p => ({
+                            ...p,
+                            logoUrl: p.name === 'SENAC' ? senacLogo : (p.name === 'SENAI' ? senaiLogo : p.logoUrl)
+                        }))} />
                     </div>
 
                     {/* CTA melhorado */}

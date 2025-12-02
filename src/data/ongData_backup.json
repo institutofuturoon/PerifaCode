@@ -1,0 +1,192 @@
+{
+    "_comment": "📋 BACKUP - Partners section to restore",
+    "partners": [
+        {
+            "id": "partner-001",
+            "name": "Hostinger",
+            "type": "Empresa",
+            "sector": "Tecnologia",
+            "size": "Grande",
+            "website": "https://hostinger.com.br",
+            "description": "Primeiro edital conquistado. Investimento de R$15.000 + R$1.500 em serviços para impulsionar o projeto.",
+            "partnershipStart": "2024-09",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/8a4add/ffffff?text=Hostinger",
+            "stats": {
+                "funding": "R$ 15.000",
+                "services": "R$ 1.500"
+            }
+        },
+        {
+            "id": "partner-002",
+            "name": "UFF - Universidade Federal Fluminense",
+            "type": "Instituição",
+            "sector": "Educação",
+            "size": "Grande",
+            "website": "https://uff.br",
+            "description": "Parceria com IN Junior para curso de Programação com certificação pela universidade federal.",
+            "partnershipStart": "2022",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/4ade80/ffffff?text=UFF",
+            "stats": {
+                "certifiedStudents": 10,
+                "courses": 1
+            }
+        },
+        {
+            "id": "partner-003",
+            "name": "Way2",
+            "type": "Empresa",
+            "sector": "Tecnologia",
+            "size": "Grande",
+            "website": "https://way2.com.br",
+            "description": "Empresa de software que apoiou o projeto com doação de 7 computadores no primeiro ano.",
+            "partnershipStart": "2021",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/f27983/ffffff?text=Way2",
+            "stats": {
+                "computersdonated": 7
+            }
+        },
+        {
+            "id": "partner-004",
+            "name": "SENAC",
+            "type": "Instituição",
+            "sector": "Educação",
+            "size": "Grande",
+            "website": "https://senac.br",
+            "description": "Parceria para oferecer serviços gratuitos à comunidade em eventos (corte de cabelo, massagem, barbearia).",
+            "partnershipStart": "2024",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/c4b5fd/000000?text=SENAC",
+            "stats": {
+                "services": "Múltiplos"
+            }
+        },
+        {
+            "id": "partner-009",
+            "name": "SENAI",
+            "type": "Instituição",
+            "sector": "Educação",
+            "size": "Grande",
+            "website": "https://www.portaldaindustria.com.br/senai/",
+            "description": "Parceria estratégica para formação técnica e profissionalizante.",
+            "partnershipStart": "2024",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/ef4444/ffffff?text=SENAI",
+            "stats": {
+                "courses": "Técnicos"
+            }
+        },
+        {
+            "id": "partner-005",
+            "name": "Nebula Web3",
+            "type": "ONG",
+            "sector": "Tecnologia",
+            "size": "PME",
+            "website": "https://nebulaweb3.xyz",
+            "description": "Parceria para educação em blockchain, Web3 e novas economias para comunidades vulneráveis.",
+            "partnershipStart": "2024",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/fbbf24/000000?text=Nebula+Web3",
+            "stats": {
+                "courses": "Web3"
+            }
+        },
+        {
+            "id": "partner-006",
+            "name": "Craque do Amanhã",
+            "type": "ONG",
+            "sector": "Esporte e Educação",
+            "size": "PME",
+            "website": "",
+            "description": "Parceria para capacitação profissional de informática básica e programação para jovens e mães da comunidade.",
+            "partnershipStart": "2024",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/4ade80/ffffff?text=Craque+do+Amanhã",
+            "stats": {
+                "students": "Múltiplos"
+            }
+        },
+        {
+            "id": "partner-007",
+            "name": "Projeto Luz",
+            "type": "Instituto",
+            "sector": "Social",
+            "size": "PME",
+            "website": "",
+            "description": "Apoio e parceria para utilização do espaço físico.",
+            "partnershipStart": "2021",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/8a4add/ffffff?text=Projeto+Luz",
+            "stats": {
+                "support": "Espaço físico"
+            }
+        },
+        {
+            "id": "partner-008",
+            "name": "Fundação Cecierj",
+            "type": "Instituição",
+            "sector": "Educação",
+            "size": "Grande",
+            "website": "https://cecierj.edu.br",
+            "description": "Apoio institucional público para o projeto.",
+            "partnershipStart": "2022",
+            "status": "ativo",
+            "logo": "https://via.placeholder.com/200x80/f27983/ffffff?text=Cecierj",
+            "stats": {
+                "support": "Institucional"
+            }
+        }
+    ],
+    "successCases": [
+        {
+            "id": "case-001",
+            "title": "Transformação Digital na Tech Solutions",
+            "partner": "Tech Solutions",
+            "companySize": "Tecnologia • 200+ funcionários",
+            "stats": [
+                {
+                    "label": "Jovens Contratados",
+                    "value": "8"
+                },
+                {
+                    "label": "Retenção",
+                    "value": "90%"
+                },
+                {
+                    "label": "Tempo Médio",
+                    "value": "4 meses"
+                }
+            ],
+            "testimonial": "Os jovens do FuturoOn chegam com uma energia e dedicação impressionantes. Já contratamos 8 e todos se destacaram nas suas equipes.",
+            "authorName": "Carlos Silva",
+            "authorRole": "CTO, Tech Solutions",
+            "featured": true
+        },
+        {
+            "id": "case-002",
+            "title": "Cultura de Diversidade na Digital Ventures",
+            "partner": "Digital Ventures",
+            "companySize": "Startup • 50+ funcionários",
+            "stats": [
+                {
+                    "label": "Jovens Contratados",
+                    "value": "5"
+                },
+                {
+                    "label": "Retenção",
+                    "value": "100%"
+                },
+                {
+                    "label": "Tempo Médio",
+                    "value": "3 meses"
+                }
+            ],
+            "testimonial": "Encontramos talentos que realmente querem aprender e crescer. A parceria com o FuturoOn transformou nossa estratégia de contratação.",
+            "authorName": "Ana Costa",
+            "authorRole": "CEO, Digital Ventures",
+            "featured": true
+        }
+    ]
+}

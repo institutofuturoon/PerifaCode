@@ -181,6 +181,21 @@
       }
     },
     {
+      "id": "partner-009",
+      "name": "SENAI",
+      "type": "Instituição",
+      "sector": "Educação",
+      "size": "Grande",
+      "website": "https://www.portaldaindustria.com.br/senai/",
+      "description": "Parceria estratégica para formação técnica e profissionalizante.",
+      "partnershipStart": "2024",
+      "status": "ativo",
+      "logo": "https://via.placeholder.com/200x80/ef4444/ffffff?text=SENAI",
+      "stats": {
+        "courses": "Técnicos"
+      }
+    },
+    {
       "id": "partner-005",
       "name": "Nebula Web3",
       "type": "ONG",
