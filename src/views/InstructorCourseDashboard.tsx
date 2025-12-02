@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import { User, Course, Lesson } from '../types';
 import ProgressBar from '../components/ProgressBar';
-import { MOCK_ANALYTICS_DATA_V2 } from '../constants';
 
 const StatCard: React.FC<{ icon: React.ReactNode; title: string; value: string; }> = ({ icon, title, value }) => (
     <div className="bg-black/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10 flex items-start gap-4">
@@ -112,15 +111,10 @@ const InstructorCourseDashboard: React.FC = () => {
 
     const monitoringCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
 
-    const courseAnalytics = useMemo(() => MOCK_ANALYTICS_DATA_V2.coursePerformance.find(p => p.courseId === monitoringCourse?.id), [monitoringCourse]);
-    const lessonPerformanceData = useMemo(() => monitoringCourse ? MOCK_ANALYTICS_DATA_V2.lessonPerformance[monitoringCourse.id as keyof typeof MOCK_ANALYTICS_DATA_V2.lessonPerformance] || [] : [], [monitoringCourse]);
-    const atRiskStudentsData = useMemo(() => {
-        const atRiskIds = MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.map(s => s.id);
-        return users.filter(u => atRiskIds.includes(u.id)).map(user => {
-            const riskInfo = MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.find(s => s.id === user.id);
-            return { ...user, riskReason: `Inativo há ${riskInfo?.lastLoginDaysAgo} dias` };
-        });
-    }, [users]);
+    // Real analytics will be calculated from actual user data
+    const courseAnalytics = useMemo(() => null, []);
+    const lessonPerformanceData = useMemo(() => [], []);
+    const atRiskStudentsData = useMemo(() => [], []);
 
     const courseLessons = useMemo(() => monitoringCourse?.modules.flatMap(m => m.lessons) || [], [monitoringCourse]);
     const courseLessonIds = useMemo(() => courseLessons.map(l => l.id), [courseLessons]);

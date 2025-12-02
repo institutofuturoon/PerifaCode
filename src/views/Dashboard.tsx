@@ -3,7 +3,6 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Achievement, Course, Lesson, MentorSession, User, Track, FinancialStatement, AnnualReport, Project, SystemSettings } from '../types';
 import ProgressBar from '../components/ProgressBar';
-import { MOCK_ACHIEVEMENTS, MOCK_ANALYTICS_DATA_V2 } from '../constants';
 import { useAppContext } from '../App';
 import CourseCard from '../components/CourseCard';
 import DashboardSidebar from '../components/DashboardSidebar';
@@ -178,7 +177,9 @@ const SystemSettingsPanel: React.FC = () => {
         { id: 'events', label: 'Eventos' },
         { id: 'mentorSessions', label: 'Agendamentos' },
         { id: 'partners', label: 'Parceiros' },
-        { id: 'marketingPosts', label: 'Marketing' }
+        { id: 'marketingPosts', label: 'Marketing' },
+        { id: 'financialStatements', label: 'Relatórios Financeiros' },
+        { id: 'annualReports', label: 'Relatórios de Impacto' }
     ];
 
     const [selectedCollections, setSelectedCollections] = useState<string[]>(availableCollections.map(c => c.id));
@@ -845,7 +846,7 @@ const TransparencyPanel: React.FC = () => {
                     </div>
 
                     <button 
-                        onClick={() => navigate('/admin/transparency-editor')}
+                        onClick={() => navigate('/admin/editor-transparencia')}
                         className="bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-[#8a4add]/20 transition-all"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -877,7 +878,7 @@ const TransparencyPanel: React.FC = () => {
                 </button>
 
                 <button
-                    onClick={() => navigate('/admin/transparency-editor/financial/new')}
+                    onClick={() => navigate('/admin/editor-transparencia/financial/new')}
                     className="block bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-green-500/30 rounded-xl p-4 transition-all group text-left"
                 >
                     <div className="flex items-center gap-3">
@@ -894,7 +895,7 @@ const TransparencyPanel: React.FC = () => {
                 </button>
 
                 <button
-                    onClick={() => navigate('/admin/transparency-editor/report/new')}
+                    onClick={() => navigate('/admin/editor-transparencia/report/new')}
                     className="block bg-white/[0.02] hover:bg-white/[0.05] border border-white/10 hover:border-purple-500/30 rounded-xl p-4 transition-all group text-left"
                 >
                     <div className="flex items-center gap-3">
@@ -966,7 +967,7 @@ const TransparencyPanel: React.FC = () => {
                                             </div>
                                             <div className="flex gap-1">
                                                 <button 
-                                                    onClick={() => navigate(`/admin/transparency-editor/financial/${fs.id}`)}
+                                                    onClick={() => navigate(`/admin/editor-transparencia/financial/${fs.id}`)}
                                                     className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
                                                     title="Editar"
                                                 >
@@ -1016,7 +1017,7 @@ const TransparencyPanel: React.FC = () => {
                                 </div>
                                 <p className="text-sm text-gray-500 mb-4">Nenhum relatório de impacto cadastrado</p>
                                 <button
-                                    onClick={() => navigate('/admin/transparency-editor/report/new')}
+                                    onClick={() => navigate('/admin/editor-transparencia/report/new')}
                                     className="text-xs text-[#c4b5fd] hover:text-white font-semibold"
                                 >
                                     + Criar primeiro relatório
@@ -1049,7 +1050,7 @@ const TransparencyPanel: React.FC = () => {
                                             </div>
                                             <div className="flex gap-1">
                                                 <button 
-                                                    onClick={() => navigate(`/admin/transparency-editor/report/${ar.id}`)}
+                                                    onClick={() => navigate(`/admin/editor-transparencia/report/${ar.id}`)}
                                                     className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all"
                                                     title="Editar"
                                                 >
@@ -1924,7 +1925,8 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
         return communityPosts.filter(p => p.type === 'question' && !p.isSolved).slice(0, 3);
     }, [communityPosts]);
 
-    const atRiskStudents = useMemo(() => MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.slice(0, 4), []);
+    // Removed mock data - at risk students should come from real analytics
+    const atRiskStudents = useMemo(() => [], []);
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -2404,19 +2406,12 @@ const Dashboard: React.FC = () => {
                     <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
                         <h3 className="text-lg font-bold text-white mb-4">⚠️ Atenção (Evasão)</h3>
                         <p className="text-xs text-gray-400 mb-4">Alunos sem acesso há mais de 10 dias.</p>
-                        <ul className="space-y-3">
-                            {MOCK_ANALYTICS_DATA_V2.studentEngagement.atRiskStudents.slice(0, 3).map(student => (
-                                <li key={student.id} className="flex items-center gap-3 group cursor-pointer" onClick={() => navigate(`/admin/user-editor/${student.id}`)}>
-                                    <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full opacity-60 group-hover:opacity-100 transition-opacity" />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-white truncate group-hover:text-[#c4b5fd]">{student.name}</p>
-                                        <p className="text-xs text-red-400">{student.lastLoginDaysAgo} dias off</p>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
+                        <div className="text-center py-8">
+                            <p className="text-sm text-gray-500">Sistema de análise de risco em desenvolvimento.</p>
+                            <p className="text-xs text-gray-600 mt-2">Em breve: detecção automática de alunos inativos.</p>
+                        </div>
                         <button onClick={() => navigate('/analytics')} className="w-full mt-6 py-2 text-xs font-bold text-center text-gray-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                            Ver Lista Completa
+                            Ver Análises
                         </button>
                     </div>
                 </div>

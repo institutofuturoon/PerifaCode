@@ -162,35 +162,45 @@ const TransparencyEditor: React.FC = () => {
 
     // --- Handlers ---
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
         // Validação
         if (selectedType === 'financial') {
             if (!financialData.year || financialData.year < 2000) {
-                alert('⚠️ Por favor, informe um ano válido.');
+                showToast('⚠️ Por favor, informe um ano válido.');
                 return;
             }
             if (!financialData.totalRevenue || !financialData.totalExpenses) {
-                alert('⚠️ Por favor, preencha receita e despesa total.');
+                showToast('⚠️ Por favor, preencha receita e despesa total.');
                 return;
             }
-            handleSaveFinancialStatement(financialData);
-            alert('✅ Relatório financeiro salvo com sucesso!');
+            
+            // Salvar no Firebase
+            await handleSaveFinancialStatement(financialData);
+            
+            // Aguardar um pouco para garantir que salvou
+            setTimeout(() => {
+                navigate('/admin');
+            }, 500);
         } else {
             if (!reportData.year || reportData.year < 2000) {
-                alert('⚠️ Por favor, informe um ano válido.');
+                showToast('⚠️ Por favor, informe um ano válido.');
                 return;
             }
             if (!reportData.coordinationLetter.text || reportData.coordinationLetter.text.length < 50) {
-                alert('⚠️ A carta da coordenação deve ter pelo menos 50 caracteres.');
+                showToast('⚠️ A carta da coordenação deve ter pelo menos 50 caracteres.');
                 return;
             }
-            handleSaveAnnualReport(reportData);
-            alert('✅ Relatório de impacto salvo com sucesso!');
+            
+            // Salvar no Firebase
+            await handleSaveAnnualReport(reportData);
+            
+            // Aguardar um pouco para garantir que salvou
+            setTimeout(() => {
+                navigate('/admin');
+            }, 500);
         }
-        
-        navigate('/admin');
     };
 
     const pageTitle = isNew 
