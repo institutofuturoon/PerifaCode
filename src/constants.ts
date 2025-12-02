@@ -405,36 +405,34 @@ export const MOCK_ANNUAL_REPORTS: AnnualReport[] = [
         id: 'rep_2025',
         year: 2025,
         stats: [
-            { label: 'Alunos Atendidos', value: '580', color: 'text-purple-400' },
-            { label: 'Taxa de Empregabilidade', value: '82%', color: 'text-green-400' },
-            { label: 'Mulheres na Tech', value: '48%', color: 'text-pink-400' },
-            { label: 'Horas de Mentoria', value: '2.500h', color: 'text-blue-400' },
-            { label: 'Projetos Desenvolvidos', value: '156', color: 'text-amber-400' },
-            { label: 'Parcerias Ativas', value: '12', color: 'text-cyan-400' }
+            { label: 'Alunos Atendidos', value: '300+', color: 'text-purple-400' },
+            { label: 'Parcerias Ativas', value: '12', color: 'text-cyan-400' },
+            { label: 'Anos de Atuação', value: '4', color: 'text-green-400' },
+            { label: 'Formações Realizadas', value: '300+', color: 'text-amber-400' }
         ],
         coordinationLetter: {
-            text: "2025 marca um capítulo decisivo para o Futuroon. Foi um ano desafiador, principalmente devido à superação necessária para a mudança para nossa nova sede, um ato de determinação que prova que a periferia pode protagonizar a transformação digital. Nossa credibilidade foi validada por uma grande conquista global em 2025: fomos selecionados no edital Hostinger, recebendo R$15.000 em financiamento. Este apoio fortalece nossa missão de capacitar jovens e crianças para o futuro da tecnologia. Expandimos o nosso impacto com oficinas e workshops de carreira, celebrando as histórias de transformação de mães e jovens que encontraram na tecnologia um novo futuro. Agradecemos a cada parceiro, doador e aluno. Juntos, estamos construindo o futuro, com a certeza de que vamos lutar para que grandes marcas estejam conosco em 2025.",
+            text: "2025 marca um capítulo decisivo para o Futuroon. Foi um ano desafiador, principalmente devido à superação necessária para a mudança para nossa nova sede na Rua Silva Jardim, 689 - Neves, um ato de determinação que prova que a periferia pode protagonizar a transformação digital.\n\nNossa credibilidade foi validada por uma grande conquista global: fomos selecionados no edital Hostinger, recebendo R$15.000 em financiamento. Este apoio fortalece nossa missão de capacitar crianças, jovens e mães solo para o futuro do trabalho em tecnologia.\n\nExpandimos nosso impacto com oficinas de programação, criação de jogos, robótica, letramento digital, inglês e empreendedorismo - tudo de forma gratuita. Celebramos as histórias de transformação de mães e jovens que encontraram na tecnologia um novo futuro.\n\nJá são mais de 300 formações realizadas e 4 anos de atuação contínua no Complexo da Coruja. Agradecemos a cada parceiro, doador, voluntário e aluno. Juntos, estamos construindo o futuro, com a certeza de que 2025 será o ano de alargar as estacas.",
             authorName: "Thaís Santana",
             authorRole: "Fundadora e Diretora Executiva",
             authorAvatarUrl: "https://media.licdn.com/dms/image/v2/D4D03AQERbQ7RnKzlEA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1691721804193?e=1766016000&v=beta&t=XjCc9TPv6f5vlG3m80nxefDLn-88HhoiRx1EMYXbUlI"
         },
         testimonials: [
             {
-                name: "Mariana Silva",
-                quote: "Eu era manicure e mãe solo. Hoje sou desenvolvedora frontend em uma startup. O FuturoOn não só me ensinou a programar, me deu uma nova identidade profissional. Minha filha agora me vê como exemplo.",
-                role: "Desenvolvedora Frontend Jr.",
-                avatarUrl: "https://randomuser.me/api/portraits/women/32.jpg"
+                name: "Kauan Santana",
+                quote: "Antes eu só pensava em jogar futebol. Depois do Futuroon, descobri que também posso criar jogos e trabalhar com tecnologia. Já desenvolvemos um jogo de corrida com energia solar que foi premiado!",
+                role: "Aluno - Desenvolvedor de Games",
+                avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg"
             },
             {
-                name: "Rafael Santos",
-                quote: "Cresci no Complexo da Coruja sem perspectiva. Hoje trabalho remoto para uma empresa dos EUA ganhando em dólar. A educação de qualidade mudou completamente minha trajetória.",
-                role: "Desenvolvedor Backend Pleno",
+                name: "Gabriel Luíz Oliveira",
+                quote: "Eu já tinha vontade de fazer algum curso de informática, mas não sabia que gostava tanto disso. No começo foi difícil, mas depois de ir conhecendo na prática foi ficando fácil. Agora tenho novas metas para o futuro.",
+                role: "Aluno - Programação",
                 avatarUrl: "https://randomuser.me/api/portraits/men/67.jpg"
             },
             {
-                name: "Camila Rodrigues",
-                quote: "O programa Mulheres que Codam me mostrou que eu posso ser quem eu quiser. Hoje estou no meu primeiro estágio e já contribuindo com projetos reais. É surreal!",
-                role: "Estagiária de Desenvolvimento",
+                name: "Ana Carolina Cardoso",
+                quote: "Foi estranho porque era a primeira vez que vi muita coisa. Agora eu já me adaptei. Eu não sabia mexer em nada, agora tô sabendo pelo menos o básico. O Futuroon virou uma segunda casa pra mim.",
+                role: "Aluna - Informática Básica",
                 avatarUrl: "https://randomuser.me/api/portraits/women/55.jpg"
             }
         ]
