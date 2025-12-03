@@ -111,20 +111,81 @@ const InstructorCourseDashboard: React.FC = () => {
 
     const monitoringCourse = useMemo(() => courses.find(c => c.id === courseId), [courses, courseId]);
 
-    // Real analytics will be calculated from actual user data
-    const courseAnalytics = useMemo(() => null, []);
-    const lessonPerformanceData = useMemo(() => [], []);
-    const atRiskStudentsData = useMemo(() => [], []);
-
     const courseLessons = useMemo(() => monitoringCourse?.modules.flatMap(m => m.lessons) || [], [monitoringCourse]);
     const courseLessonIds = useMemo(() => courseLessons.map(l => l.id), [courseLessons]);
 
     const enrolledStudents = useMemo(() =>
         users.filter(user =>
             user.role === 'student' &&
-            (user.completedLessonIds.some(id => courseLessonIds.includes(id)) || courseAnalytics?.enrolled) // Fallback for mock data
-        ), [users, courseLessonIds, courseAnalytics]
+            user.completedLessonIds.some(id => courseLessonIds.includes(id))
+        ), [users, courseLessonIds]
     );
+
+    // Calculate course analytics
+    const courseAnalytics = useMemo(() => {
+        if (!monitoringCourse) return null;
+        
+        const students = users.filter(u => u.role === 'student');
+        
+        // Alunos matriculados
+        const enrolled = enrolledStudents.length;
+        
+        // Taxa de conclusão
+        let totalPossible = enrolled * courseLessonIds.length;
+        let totalCompleted = 0;
+        
+        enrolledStudents.forEach(student => {
+            const completed = student.completedLessonIds.filter(id => courseLessonIds.includes(id)).length;
+            totalCompleted += completed;
+        });
+        
+        const completionRate = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
+        
+        return {
+            courseId: monitoringCourse.id,
+            enrolled,
+            completionRate,
+            avgTime: 0, // Implementar tracking de tempo
+            satisfaction: 4.5, // Implementar sistema de avaliação
+            dropOffRate: 0 // Calcular baseado em lessons
+        };
+    }, [monitoringCourse, courseLessons, courseLessonIds, users, enrolledStudents]);
+
+    // Calculate lesson performance
+    const lessonPerformanceData = useMemo(() => {
+        if (!monitoringCourse) return [];
+        
+        return courseLessons.map(lesson => {
+            const studentsCompleted = enrolledStudents.filter(s => 
+                s.completedLessonIds.includes(lesson.id)
+            ).length;
+            
+            return {
+                lessonId: lesson.id,
+                title: lesson.title,
+                studentsCompleted
+            };
+        });
+    }, [monitoringCourse, courseLessons, enrolledStudents]);
+
+    // Calculate at-risk students for this course
+    const atRiskStudentsData = useMemo(() => {
+        const now = new Date();
+        const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+        
+        return enrolledStudents.filter(student => {
+            if (!student.lastLogin) return false;
+            const lastLogin = new Date(student.lastLogin);
+            return lastLogin < tenDaysAgo;
+        }).map(student => {
+            const lastLogin = new Date(student.lastLogin);
+            const daysAgo = Math.floor((now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24));
+            return {
+                ...student,
+                riskReason: `Inativo há ${daysAgo} dias`
+            };
+        });
+    }, [enrolledStudents]);
 
     const filteredStudents = useMemo(() => enrolledStudents.filter(student =>
         student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

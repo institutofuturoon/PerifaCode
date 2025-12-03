@@ -27,7 +27,7 @@ const LessonItem: React.FC<{ lesson: Lesson, index: number, courseId: string }> 
 
     return (
         <button 
-            onClick={() => navigate(`/course/${courseId}/lesson/${lesson.id}`)}
+            onClick={() => navigate(`/curso/${courseId}/aula/${lesson.id}`)}
             className="w-full flex justify-between items-center py-3 px-4 text-left hover:bg-white/10 rounded-lg transition-colors group border border-transparent hover:border-white/5"
         >
             <div className="flex items-center gap-3">
@@ -98,7 +98,7 @@ const CourseDetail: React.FC = () => {
         if (user && isOnlineAndOpen) {
             const firstLesson = course.modules?.[0]?.lessons?.[0];
             if (firstLesson) {
-                navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
+                navigate(`/curso/${course.id}/aula/${firstLesson.id}`);
             } else {
                 showToast("⚠️ Este curso ainda não tem aulas cadastradas.");
             }

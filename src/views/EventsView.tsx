@@ -198,14 +198,16 @@ const MentorCard: React.FC<{
 
 const EventsView: React.FC = () => {
   const navigate = useNavigate();
-  const { instructors, mentors, user, events } = useAppContext();
+  const { user, events, users } = useAppContext();
   const { statistics } = useOngData();
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'workshop' | 'mentoria' | 'hackathon' | 'palestra'>('all');
   const [timeFilter, setTimeFilter] = useState<'upcoming' | 'past' | 'all'>('upcoming');
   const [selectedMentor, setSelectedMentor] = useState<User | null>(null);
 
-  // Combinar instrutores e mentores
-  const allMentors = [...instructors, ...mentors];
+  // Filtrar apenas usuários que são mentores voluntários
+  const allMentors = useMemo(() => {
+    return users.filter(u => u.isMentor === true && u.accountStatus === 'active');
+  }, [users]);
 
   // Converter eventType para category
   const mapEventTypeToCategory = (eventType: string): 'workshop' | 'mentoria' | 'hackathon' | 'palestra' => {

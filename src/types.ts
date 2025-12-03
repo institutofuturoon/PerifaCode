@@ -33,6 +33,8 @@ export interface User {
   achievements: string[];
   streak: number;
   lastCompletionDate: string; // YYYY-MM-DD
+  lastLogin?: string; // ISO date string of last login
+  createdAt?: string; // ISO date string of account creation
   mustChangePassword?: boolean;
   hasCompletedOnboardingTour?: boolean;
   accountStatus?: 'active' | 'inactive';

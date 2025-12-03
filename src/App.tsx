@@ -12,7 +12,6 @@ import ProfileModal from './components/ProfileModal';
 import OnboardingTour from './components/OnboardingTour';
 import BottleneckAnalysisModal from './components/BottleneckAnalysisModal';
 import InscriptionFormModal from './components/InscriptionFormModal';
-import { MOCK_COURSES, MOCK_PROJECTS, ARTICLES, MOCK_COMMUNITY_POSTS, MOCK_EVENTS, MOCK_SUPPORTERS, MOCK_FINANCIAL_STATEMENTS, MOCK_ANNUAL_REPORTS } from './constants';
 import WhatsAppButton from './components/WhatsAppButton';
 import ReadingProgressBar from './components/ReadingProgressBar';
 import ScrollToTop from './components/ScrollToTop';
@@ -171,90 +170,33 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
     const fetchAndPopulateCollection = async (collectionName: string, setData: React.Dispatch<React.SetStateAction<any[]>>) => {
         try {
-            // Try to fetch from Firestore
+            // Fetch from Firestore
             const collRef = collection(db, collectionName);
             const snapshot = await getDocs(collRef);
             let dataFromDb = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 
-            // Fallback/Merge logic for demo data
-            if (collectionName === 'courses') {
-                const mockCourseIds = new Set(MOCK_COURSES.map(c => c.id));
-                const additionalDbCourses = dataFromDb.filter(dbCourse => !mockCourseIds.has((dbCourse as Course).id));
-                dataFromDb = [...MOCK_COURSES, ...additionalDbCourses];
-            }
-
+            // Special processing for specific collections
             if (collectionName === 'articles') {
+                // Calculate reading time for articles
                 dataFromDb = dataFromDb.map(article => ({
                     ...article,
                     readingTime: calculateReadingTime((article as Article).content || '')
                 }));
-                const mockArticleIds = new Set(ARTICLES.map(a => a.id));
-                const additionalDbArticles = dataFromDb.filter(dbArticle => !mockArticleIds.has((dbArticle as Article).id));
-                dataFromDb = [...ARTICLES, ...additionalDbArticles];
             }
 
             if (collectionName === 'projects') {
-                const mockProjectIds = new Set(MOCK_PROJECTS.map(c => c.id));
-                const additionalDbProjects = dataFromDb.filter(dbProject => !mockProjectIds.has((dbProject as Project).id));
-                dataFromDb = [...MOCK_PROJECTS, ...additionalDbProjects];
-                dataFromDb = dataFromDb.map(p => ({ ...p, status: (p as Project).status || 'approved' }));
-            }
-
-            if (collectionName === 'communityPosts') {
-                const mockPostIds = new Set(MOCK_COMMUNITY_POSTS.map(p => p.id));
-                const additionalDbPosts = dataFromDb.filter(dbPost => !mockPostIds.has((dbPost as CommunityPost).id));
-                dataFromDb = [...MOCK_COMMUNITY_POSTS, ...additionalDbPosts];
-            }
-
-            if (collectionName === 'events') {
-                const mockEventIds = new Set(MOCK_EVENTS.map(e => e.id));
-                const additionalDbEvents = dataFromDb.filter(dbEvent => !mockEventIds.has((dbEvent as Event).id));
-                dataFromDb = [...MOCK_EVENTS, ...additionalDbEvents];
-            }
-
-            if (collectionName === 'supporters') {
-                const mockIds = new Set(MOCK_SUPPORTERS.map(s => s.id));
-                const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as Supporter).id));
-                dataFromDb = [...MOCK_SUPPORTERS, ...additional];
-            }
-
-            if (collectionName === 'financialStatements') {
-                const mockIds = new Set(MOCK_FINANCIAL_STATEMENTS.map(s => s.id));
-                const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as FinancialStatement).id));
-                dataFromDb = [...MOCK_FINANCIAL_STATEMENTS, ...additional];
-            }
-
-            if (collectionName === 'annualReports') {
-                const mockIds = new Set(MOCK_ANNUAL_REPORTS.map(s => s.id));
-                const additional = dataFromDb.filter(dbItem => !mockIds.has((dbItem as AnnualReport).id));
-                dataFromDb = [...MOCK_ANNUAL_REPORTS, ...additional];
+                // Ensure all projects have a status
+                dataFromDb = dataFromDb.map(p => ({ 
+                    ...p, 
+                    status: (p as Project).status || 'approved' 
+                }));
             }
 
             setData(dataFromDb);
         } catch (error) {
             console.error(`Erro ao buscar a coleção '${collectionName}':`, error);
-
-            // Use mock data on error
-            if (collectionName === 'courses') {
-                setData(MOCK_COURSES);
-            } else if (collectionName === 'articles') {
-                setData(ARTICLES.map(article => ({ ...article, readingTime: calculateReadingTime(article.content) })));
-            } else if (collectionName === 'projects') {
-                setData(MOCK_PROJECTS.map(p => ({ ...p, status: 'approved' })));
-            } else if (collectionName === 'communityPosts') {
-                setData(MOCK_COMMUNITY_POSTS);
-            } else if (collectionName === 'events') {
-                setData(MOCK_EVENTS);
-            } else if (collectionName === 'supporters') {
-                setData(MOCK_SUPPORTERS);
-            } else if (collectionName === 'financialStatements') {
-                setData(MOCK_FINANCIAL_STATEMENTS);
-            } else if (collectionName === 'annualReports') {
-                setData(MOCK_ANNUAL_REPORTS);
-            }
-            else {
-                setData([]);
-            }
+            // On error, set empty array instead of mock data
+            setData([]);
         }
     };
 

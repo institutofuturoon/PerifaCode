@@ -52,24 +52,146 @@ type SortKey = 'title' | 'enrolled' | 'completionRate' | 'avgTime' | 'satisfacti
 type SortDirection = 'ascending' | 'descending';
 
 const Analytics: React.FC = () => {
-    const { courses } = useAppContext();
+    const { courses, users } = useAppContext();
     const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection } | null>({ key: 'enrolled', direction: 'descending' });
     const [selectedCourseForFunnel, setSelectedCourseForFunnel] = useState<Course | null>(courses[0] || null);
 
+    // Calculate general analytics metrics
+    const analyticsData = useMemo(() => {
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        const students = users.filter(u => u.role === 'student');
+        
+        // Total de alunos
+        const totalStudents = students.length;
+        
+        // Novos alunos (últimos 30 dias)
+        const newStudents = students.filter(s => {
+            if (!s.createdAt) return false;
+            const createdDate = new Date(s.createdAt);
+            return createdDate >= thirtyDaysAgo;
+        }).length;
+        
+        // Taxa de conclusão média
+        let totalLessons = 0;
+        let totalCompleted = 0;
+        
+        courses.forEach(course => {
+            const courseLessonIds = course.modules.flatMap(m => m.lessons.map(l => l.id));
+            totalLessons += courseLessonIds.length * students.length;
+            
+            students.forEach(student => {
+                const completed = student.completedLessonIds.filter(id => courseLessonIds.includes(id)).length;
+                totalCompleted += completed;
+            });
+        });
+        
+        const avgCompletionRate = totalLessons > 0 ? Math.round((totalCompleted / totalLessons) * 100) : 0;
+        
+        // Engajamento semanal (alunos ativos nos últimos 7 dias)
+        const activeStudents = students.filter(s => {
+            if (!s.lastLogin) return false;
+            const lastLogin = new Date(s.lastLogin);
+            return lastLogin >= sevenDaysAgo;
+        }).length;
+        
+        const weeklyEngagement = totalStudents > 0 ? Math.round((activeStudents / totalStudents) * 100) : 0;
+        
+        return {
+            totalStudents,
+            newStudentsLast30d: newStudents,
+            avgCompletionRate,
+            weeklyEngagement
+        };
+    }, [users, courses]);
+
     const courseData = useMemo(() => {
+        const students = users.filter(u => u.role === 'student');
+        
         return courses.map(course => {
-            // Real analytics will be calculated from actual user data
+            const courseLessonIds = course.modules.flatMap(m => m.lessons.map(l => l.id));
+            
+            // Alunos matriculados (que completaram pelo menos 1 aula)
+            const enrolled = students.filter(s => 
+                s.completedLessonIds.some(id => courseLessonIds.includes(id))
+            ).length;
+            
+            // Taxa de conclusão
+            let totalPossible = enrolled * courseLessonIds.length;
+            let totalCompleted = 0;
+            
+            students.forEach(student => {
+                const completed = student.completedLessonIds.filter(id => courseLessonIds.includes(id)).length;
+                totalCompleted += completed;
+            });
+            
+            const completionRate = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0;
+            
+            // Satisfação (média de avaliações - placeholder até implementar sistema de avaliação)
+            const satisfaction = 4.5;
+            
+            // Taxa de evasão (alunos que começaram mas não completaram)
+            const started = enrolled;
+            const completed = students.filter(s => {
+                const studentCompleted = s.completedLessonIds.filter(id => courseLessonIds.includes(id)).length;
+                return studentCompleted === courseLessonIds.length;
+            }).length;
+            
+            const dropOffRate = started > 0 ? Math.round(((started - completed) / started) * 100) : 0;
+            
             return {
                 ...course,
-                enrolled: 0,
-                completionRate: 0,
-                avgTime: 0,
-                satisfaction: 0,
-                dropOffRate: 0,
+                enrolled,
+                completionRate,
+                avgTime: 0, // Implementar quando tiver tracking de tempo
+                satisfaction,
+                dropOffRate
             };
         });
-    }, [courses]);
+    }, [courses, users]);
     
+    // Calculate student engagement (top students and at-risk students)
+    const studentEngagement = useMemo(() => {
+        const students = users.filter(u => u.role === 'student');
+        const now = new Date();
+        const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+        
+        // Top alunos por XP
+        const topStudents = students
+            .sort((a, b) => (b.xp || 0) - (a.xp || 0))
+            .slice(0, 5)
+            .map(s => ({
+                id: s.id,
+                name: s.name,
+                avatarUrl: s.avatarUrl,
+                xp: s.xp || 0
+            }));
+        
+        // Alunos em risco
+        const atRiskStudents = students
+            .filter(s => {
+                if (!s.lastLogin) return false;
+                const lastLogin = new Date(s.lastLogin);
+                return lastLogin < tenDaysAgo;
+            })
+            .map(s => {
+                const lastLogin = new Date(s.lastLogin);
+                const daysAgo = Math.floor((now.getTime() - lastLogin.getTime()) / (1000 * 60 * 60 * 24));
+                return {
+                    id: s.id,
+                    name: s.name,
+                    avatarUrl: s.avatarUrl,
+                    lastLoginDaysAgo: daysAgo
+                };
+            })
+            .sort((a, b) => b.lastLoginDaysAgo - a.lastLoginDaysAgo)
+            .slice(0, 5);
+        
+        return { topStudents, atRiskStudents };
+    }, [users]);
+
     const sortedCourses = useMemo(() => {
         let sortableItems = [...courseData];
         if (sortConfig !== null) {
@@ -107,10 +229,10 @@ const Analytics: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <StatCard title="Total de Alunos" value="--" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} />
-        <StatCard title="Novos Alunos (30d)" value="--" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
-        <StatCard title="Taxa de Conclusão Média" value="--" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
-        <StatCard title="Engajamento Semanal" value="--" icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>} />
+        <StatCard title="Total de Alunos" value={analyticsData.totalStudents.toLocaleString('pt-BR')} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>} />
+        <StatCard title="Novos Alunos (30d)" value={`+${analyticsData.newStudentsLast30d}`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>} />
+        <StatCard title="Taxa de Conclusão Média" value={`${analyticsData.avgCompletionRate}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
+        <StatCard title="Engajamento Semanal" value={`${analyticsData.weeklyEngagement}%`} icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>} />
       </div>
 
        <div className="grid lg:grid-cols-5 gap-8 mb-12">
@@ -171,15 +293,48 @@ const Analytics: React.FC = () => {
             <div className="lg:col-span-1 space-y-8 flex flex-col">
                 <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-white/10 flex-1">
                     <h3 className="text-xl font-bold text-white mb-4">🏆 Top Alunos (Mais XP)</h3>
-                    <div className="flex items-center justify-center h-32">
-                        <p className="text-sm text-gray-500">Ranking em desenvolvimento</p>
-                    </div>
+                    {studentEngagement.topStudents.length > 0 ? (
+                        <ul className="space-y-3">
+                            {studentEngagement.topStudents.map(student => (
+                                <li key={student.id} className="flex items-center justify-between bg-black/20 p-3 rounded-md hover:bg-black/30 transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full border border-white/10" />
+                                        <span className="text-sm font-medium text-white">{student.name}</span>
+                                    </div>
+                                    <span className="text-sm font-bold text-blue-300">{student.xp.toLocaleString('pt-BR')} XP</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <div className="flex items-center justify-center h-32">
+                            <p className="text-sm text-gray-500">Nenhum aluno cadastrado ainda.</p>
+                        </div>
+                    )}
                 </div>
                 <div className="bg-white/5 backdrop-blur-sm p-6 rounded-lg border border-white/10 flex-1">
                     <h3 className="text-xl font-bold text-white mb-4">🚨 Alunos em Risco (Inativos)</h3>
-                    <div className="flex items-center justify-center h-32">
-                        <p className="text-sm text-gray-500">Detecção de risco em desenvolvimento</p>
-                    </div>
+                    {studentEngagement.atRiskStudents.length > 0 ? (
+                        <ul className="space-y-3">
+                            {studentEngagement.atRiskStudents.map(student => (
+                                <li key={student.id} className="flex items-center justify-between bg-black/20 p-3 rounded-md hover:bg-black/30 transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full opacity-60 border border-white/10" />
+                                        <span className="text-sm font-medium text-gray-300">{student.name}</span>
+                                    </div>
+                                    <span className="text-sm text-red-400">Visto há {student.lastLoginDaysAgo} dias</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <div className="flex items-center justify-center h-32">
+                            <div className="text-center">
+                                <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span className="text-2xl">🎉</span>
+                                </div>
+                                <p className="text-sm text-gray-400">Todos os alunos estão ativos!</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -67,7 +67,7 @@ const Courses: React.FC = () => {
   const handleCourseSelect = (course: Course) => {
     // FLUXO INSTITUCIONAL: Sempre redireciona para a Landing Page (Página de Venda/Explicação)
     // O aluno só entra no Workspace (Sala de Aula) através da Landing Page.
-    navigate(`/course-landing/${course.slug || course.id}`);
+    navigate(`/curso-info/${course.slug || course.id}`);
   };
 
   const getCourseProgress = (course: Course) => {

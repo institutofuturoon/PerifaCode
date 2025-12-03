@@ -308,7 +308,7 @@ const Profile: React.FC = () => {
                                             <p className="text-xs text-gray-500">{noteItem.courseTitle}</p>
                                         </div>
                                         <button 
-                                            onClick={() => navigate(`/course/${noteItem.courseId}/lesson/${noteItem.lessonId}`)}
+                                            onClick={() => navigate(`/curso/${noteItem.courseId}/aula/${noteItem.lessonId}`)}
                                             className="text-xs bg-white/5 hover:bg-white/10 text-gray-300 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
                                         >
                                             Ir para Aula <span>→</span>

@@ -1081,9 +1081,15 @@ const TransparencyPanel: React.FC = () => {
 };
 
 const TeamManagementPanel: React.FC = () => {
-    const { users, handleSaveTeamOrder, handleDeleteUser, user } = useAppContext();
+    const { users, handleSaveTeamOrder, handleSaveUser, showToast } = useAppContext();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+
+    const toggleMentorStatus = async (member: User) => {
+        const updatedMember = { ...member, isMentor: !member.isMentor };
+        await handleSaveUser(updatedMember);
+        showToast(updatedMember.isMentor ? '✅ Mentor habilitado!' : '🚫 Mentor desabilitado!');
+    };
 
     // Filter team members (admin/instructor)
     const teamMembers = useMemo(() => 
@@ -1109,19 +1115,108 @@ const TeamManagementPanel: React.FC = () => {
         handleSaveTeamOrder(newOrder);
     };
 
+    // Estatísticas
+    const stats = useMemo(() => {
+        const active = teamMembers.filter(m => m.accountStatus === 'active').length;
+        const inactive = teamMembers.filter(m => m.accountStatus === 'inactive').length;
+        const mentors = teamMembers.filter(m => m.isMentor && m.accountStatus === 'active').length;
+        const admins = teamMembers.filter(m => m.role === 'admin').length;
+        const instructors = teamMembers.filter(m => m.role === 'instructor').length;
+        const showOnTeam = teamMembers.filter(m => m.showOnTeamPage).length;
+        
+        return { active, inactive, mentors, admins, instructors, showOnTeam };
+    }, [teamMembers]);
+
     return (
         <div className="space-y-6 animate-fade-in">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-xl font-bold text-white">Gestão da Equipe</h2>
-                    <p className="text-xs text-gray-400 mt-1">Total: {teamMembers.length} membros (Instrutores e Admins)</p>
+                    <h2 className="text-2xl font-bold text-white">Equipe & Voluntários</h2>
+                    <p className="text-sm text-gray-400 mt-1">Gerencie membros, mentores e visibilidade da equipe</p>
                 </div>
                 <button 
-                    onClick={() => navigate('/admin/teammember-editor/new')}
-                    className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-primary/20"
+                    onClick={() => navigate('/admin/editor-equipe/novo')}
+                    className="bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#8a4add]/20"
                 >
-                    <span>+</span> Novo Membro
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Novo Membro
                 </button>
+            </div>
+
+            {/* Estatísticas */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-xl p-4 hover:border-white/20 transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p className="text-2xl font-black text-white">{teamMembers.length}</p>
+                    <p className="text-xs text-gray-400 mt-1">Total</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-xl p-4 hover:border-green-500/30 transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p className="text-2xl font-black text-green-400">{stats.active}</p>
+                    <p className="text-xs text-gray-400 mt-1">Ativos</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 rounded-xl p-4 hover:border-red-500/30 transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p className="text-2xl font-black text-red-400">{stats.inactive}</p>
+                    <p className="text-xs text-gray-400 mt-1">Inativos</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-xl p-4 hover:border-purple-500/30 transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p className="text-2xl font-black text-purple-400">{stats.admins}</p>
+                    <p className="text-xs text-gray-400 mt-1">Admins</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-xl p-4 hover:border-blue-500/30 transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p className="text-2xl font-black text-blue-400">{stats.instructors}</p>
+                    <p className="text-xs text-gray-400 mt-1">Instrutores</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 border border-[#8a4add]/20 rounded-xl p-4 hover:border-[#8a4add]/30 transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-8 rounded-lg bg-[#8a4add]/20 flex items-center justify-center">
+                            <span className="text-sm">💡</span>
+                        </div>
+                    </div>
+                    <p className="text-2xl font-black text-[#c4b5fd]">{stats.mentors}</p>
+                    <p className="text-xs text-gray-400 mt-1">Mentores</p>
+                </div>
             </div>
 
             {/* Search Bar */}
@@ -1136,14 +1231,31 @@ const TeamManagementPanel: React.FC = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
 
+            {/* Info Box */}
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div className="flex-1">
+                        <p className="text-sm text-blue-300 font-semibold mb-1">Dicas de Gestão</p>
+                        <ul className="text-xs text-blue-200/80 space-y-1">
+                            <li>• Use as setas para ordenar como os membros aparecem na página "Equipe"</li>
+                            <li>• Toggle "Status" para ativar/desativar acesso ao sistema</li>
+                            <li>• Toggle "Mentor" para exibir na página de Eventos para agendamentos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             {/* Table */}
-            <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+            <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
-                        <TableHeader cols={['Ordem', 'Membro', 'Função', 'Status', 'Ações']} />
+                        <TableHeader cols={['Ordem', 'Membro', 'Cargo/Função', 'Mentor', 'Visível', 'Ações']} />
                         <tbody className="divide-y divide-white/5">
                             {filteredTeam.length === 0 ? (
-                                <tr><td colSpan={5} className="text-center py-8 text-gray-500 text-sm">Nenhum membro encontrado.</td></tr>
+                                <tr><td colSpan={6} className="text-center py-8 text-gray-500 text-sm">Nenhum membro encontrado.</td></tr>
                             ) : (
                                 filteredTeam.map((member, index) => (
                                     <tr key={member.id} className="hover:bg-white/5 transition-colors group">
@@ -1153,33 +1265,66 @@ const TeamManagementPanel: React.FC = () => {
                                                 <button onClick={() => moveMember(index, 'down')} className={`text-gray-500 hover:text-white text-xs ${index === filteredTeam.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}`} disabled={index === filteredTeam.length - 1}>▼</button>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <img src={member.avatarUrl} className="h-8 w-8 rounded-full border border-white/10 object-cover" alt={member.name} />
-                                                <div>
-                                                    <div className="text-sm font-medium text-white">{member.name}</div>
-                                                    <div className="text-xs text-gray-500">{member.email}</div>
+                                                <div className="relative">
+                                                    <img src={member.avatarUrl} className="h-10 w-10 rounded-full border-2 border-white/10 object-cover" alt={member.name} />
+                                                    {member.accountStatus === 'active' && (
+                                                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-[#09090B]"></div>
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <div className="text-sm font-semibold text-white truncate">{member.name}</div>
+                                                    <div className="text-xs text-gray-500 truncate">{member.email}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex flex-col">
-                                                <span className={`px-2 py-0.5 inline-flex w-fit text-[10px] font-bold uppercase tracking-wider rounded border ${member.role === 'admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
-                                                    {member.role === 'admin' ? 'Admin' : 'Instrutor'}
-                                                </span>
-                                                {member.title && <span className="text-[10px] text-gray-500 mt-1">{member.title}</span>}
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`px-2 py-1 inline-flex w-fit text-[10px] font-bold uppercase tracking-wider rounded-lg ${member.role === 'admin' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'}`}>
+                                                        {member.role === 'admin' ? '👑 Admin' : '📚 Instrutor'}
+                                                    </span>
+                                                    {member.accountStatus === 'inactive' && (
+                                                        <span className="px-2 py-1 text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg">
+                                                            🚫 Inativo
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {member.title && (
+                                                    <span className="text-xs text-gray-400 font-medium">{member.title}</span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded border ${member.accountStatus === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
-                                                {member.accountStatus === 'active' ? 'Ativo' : 'Inativo'}
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => toggleMentorStatus(member)}
+                                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:ring-offset-2 focus:ring-offset-[#09090B] ${member.isMentor ? 'bg-[#8a4add]' : 'bg-gray-600'}`}
+                                                    title={member.isMentor ? 'Desabilitar como mentor' : 'Habilitar como mentor'}
+                                                >
+                                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${member.isMentor ? 'translate-x-6' : 'translate-x-1'}`} />
+                                                </button>
+                                                {member.isMentor && (
+                                                    <span className="text-xs text-[#c4b5fd] font-semibold">💡</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-2">
+                                                {member.showOnTeamPage ? (
+                                                    <span className="px-2 py-1 text-[10px] font-bold bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg">
+                                                        👁️ Sim
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2 py-1 text-[10px] font-bold bg-gray-500/20 text-gray-400 border border-gray-500/30 rounded-lg">
+                                                        🚫 Não
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
-                                            <button onClick={() => navigate(`/admin/teammember-editor/${member.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
-                                            {user?.role === 'admin' && member.id !== user.id && (
-                                                <button onClick={() => handleDeleteUser(member.id)} className="text-red-500 hover:text-red-400 transition-colors">Desativar</button>
-                                            )}
+                                            <button onClick={() => navigate(`/admin/editor-equipe/${member.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
                                         </td>
                                     </tr>
                                 ))
@@ -1188,6 +1333,182 @@ const TeamManagementPanel: React.FC = () => {
                     </table>
                 </div>
             </div>
+        </div>
+    );
+};
+
+const VolunteersPanel: React.FC = () => {
+    const { users, handleSaveUser, showToast } = useAppContext();
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // Filtrar todos os usuários que podem ser mentores (instrutores e admins)
+    const potentialMentors = useMemo(() => 
+        users.filter(u => (u.role === 'admin' || u.role === 'instructor') && u.accountStatus === 'active')
+             .sort((a, b) => {
+                 // Mentores ativos primeiro
+                 if (a.isMentor && !b.isMentor) return -1;
+                 if (!a.isMentor && b.isMentor) return 1;
+                 return a.name.localeCompare(b.name);
+             })
+    , [users]);
+
+    const filteredMentors = useMemo(() => potentialMentors.filter(u => 
+        u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [potentialMentors, searchTerm]);
+
+    const activeMentors = filteredMentors.filter(u => u.isMentor);
+    const inactiveMentors = filteredMentors.filter(u => !u.isMentor);
+
+    const toggleMentorStatus = async (member: User) => {
+        const updatedMember = { ...member, isMentor: !member.isMentor };
+        await handleSaveUser(updatedMember);
+        showToast(updatedMember.isMentor ? '✅ Voluntário habilitado como mentor!' : '🚫 Voluntário desabilitado como mentor!');
+    };
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 className="text-xl font-bold text-white">Gestão de Voluntários & Mentores</h2>
+                    <p className="text-xs text-gray-400 mt-1">
+                        {activeMentors.length} mentores ativos • {inactiveMentors.length} inativos • {potentialMentors.length} total
+                    </p>
+                </div>
+            </div>
+
+            {/* Info Box */}
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <p className="text-sm text-blue-300 font-semibold mb-1">Sobre Mentores Voluntários</p>
+                        <p className="text-xs text-blue-200/80">
+                            Mentores habilitados aparecem na página de Eventos e podem receber agendamentos de mentorias 1:1 dos alunos.
+                            Use o toggle para habilitar/desabilitar rapidamente.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative">
+                <input 
+                    type="search" 
+                    placeholder="Buscar por nome, email ou cargo..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-primary focus:outline-none text-sm text-white transition-colors"
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+
+            {/* Mentores Ativos */}
+            {activeMentors.length > 0 && (
+                <div className="bg-white/[0.02] rounded-xl border border-green-500/20 overflow-hidden">
+                    <div className="bg-green-500/10 px-6 py-3 border-b border-green-500/20">
+                        <h3 className="text-sm font-bold text-green-400">✅ Mentores Ativos ({activeMentors.length})</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full">
+                            <TableHeader cols={['Mentor', 'Cargo', 'Contato', 'Status', 'Ações']} />
+                            <tbody className="divide-y divide-white/5">
+                                {activeMentors.map((mentor) => (
+                                    <tr key={mentor.id} className="hover:bg-white/5 transition-colors group">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-3">
+                                                <div className="relative">
+                                                    <img src={mentor.avatarUrl} className="h-10 w-10 rounded-full border-2 border-green-500/30 object-cover" alt={mentor.name} />
+                                                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-[#09090B]"></div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-medium text-white">{mentor.name}</div>
+                                                    <div className="text-xs text-gray-500">{mentor.role === 'admin' ? 'Admin' : 'Instrutor'}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-300">{mentor.title || 'Não informado'}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-xs text-gray-400">{mentor.email}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <button
+                                                onClick={() => toggleMentorStatus(mentor)}
+                                                className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:ring-offset-2 focus:ring-offset-[#09090B] bg-[#8a4add]"
+                                                title="Desabilitar como mentor"
+                                            >
+                                                <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
+                                            <button onClick={() => navigate(`/admin/editor-equipe/${mentor.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar Perfil</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Mentores Inativos */}
+            {inactiveMentors.length > 0 && (
+                <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+                    <div className="bg-white/5 px-6 py-3 border-b border-white/5">
+                        <h3 className="text-sm font-bold text-gray-400">⏸️ Mentores Inativos ({inactiveMentors.length})</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full">
+                            <TableHeader cols={['Membro', 'Cargo', 'Contato', 'Status', 'Ações']} />
+                            <tbody className="divide-y divide-white/5">
+                                {inactiveMentors.map((member) => (
+                                    <tr key={member.id} className="hover:bg-white/5 transition-colors group opacity-60">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-3">
+                                                <img src={member.avatarUrl} className="h-10 w-10 rounded-full border border-white/10 object-cover" alt={member.name} />
+                                                <div>
+                                                    <div className="text-sm font-medium text-white">{member.name}</div>
+                                                    <div className="text-xs text-gray-500">{member.role === 'admin' ? 'Admin' : 'Instrutor'}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-gray-400">{member.title || 'Não informado'}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-xs text-gray-500">{member.email}</div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <button
+                                                onClick={() => toggleMentorStatus(member)}
+                                                className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:ring-offset-2 focus:ring-offset-[#09090B] bg-gray-600"
+                                                title="Habilitar como mentor"
+                                            >
+                                                <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1" />
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
+                                            <button onClick={() => navigate(`/admin/editor-equipe/${member.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar Perfil</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {filteredMentors.length === 0 && (
+                <div className="text-center py-12 text-gray-400">
+                    <p>Nenhum membro encontrado.</p>
+                </div>
+            )}
         </div>
     );
 };
@@ -1211,7 +1532,7 @@ const BlogManagementPanel: React.FC = () => {
                     <p className="text-xs text-gray-400 mt-1">Total: {articles.length} artigos</p>
                 </div>
                 <button 
-                    onClick={() => navigate('/admin/article-editor/new')}
+                    onClick={() => navigate('/admin/editor-artigo/new')}
                     className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-primary/20"
                 >
                     <span>+</span> Novo Artigo
@@ -1274,7 +1595,7 @@ const BlogManagementPanel: React.FC = () => {
                                             >
                                                 {article.status === 'published' ? 'Despublicar' : 'Publicar'}
                                             </button>
-                                            <button onClick={() => navigate(`/admin/article-editor/${article.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                                            <button onClick={() => navigate(`/admin/editor-artigo/${article.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
                                             <button onClick={() => handleDeleteArticle(article.id)} className="text-red-500 hover:text-red-400 transition-colors">Excluir</button>
                                         </td>
                                     </tr>
@@ -1376,7 +1697,7 @@ const StudentsPanel: React.FC = () => {
                     <p className="text-xs text-gray-400 mt-1">Total: {students.length} alunos cadastrados</p>
                 </div>
                 <button 
-                    onClick={() => navigate('/admin/user-editor/new')}
+                    onClick={() => navigate('/admin/editor-usuario/novo')}
                     className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors shadow-lg shadow-primary/20"
                 >
                     <span>+</span> Matricular Aluno
@@ -1420,7 +1741,7 @@ const StudentsPanel: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-primary font-bold">{student.xp.toLocaleString('pt-BR')} XP</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
-                                            <button onClick={() => navigate(`/admin/user-editor/${student.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                                            <button onClick={() => navigate(`/admin/editor-usuario/${student.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
                                             {user?.role === 'admin' && (
                                                 <button onClick={() => handleDeleteUser(student.id)} className="text-red-500 hover:text-red-400 transition-colors">Desativar</button>
                                             )}
@@ -1474,7 +1795,7 @@ const ExploreCoursesPanel: React.FC = () => {
     const handleCourseClick = (course: Course) => {
         const firstLesson = course.modules?.[0]?.lessons?.[0];
         if (firstLesson) {
-            navigate(`/course/${course.id}/lesson/${firstLesson.id}`);
+            navigate(`/curso/${course.id}/aula/${firstLesson.id}`);
         } else {
             showToast("⚠️ Este curso ainda não tem aulas disponíveis.");
         }
@@ -1749,10 +2070,10 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
             const firstUnfinished = allLessons.find(l => !user.completedLessonIds.includes(l.id));
             
             if (firstUnfinished) {
-                navigate(`/course/${course.id}/lesson/${firstUnfinished.id}`);
+                navigate(`/curso/${course.id}/aula/${firstUnfinished.id}`);
             } else {
                 // Course finished? Go to detail
-                navigate(`/course/${course.id}`);
+                navigate(`/curso/${course.id}`);
             }
         } else {
             // No active course, go to catalog
@@ -1925,8 +2246,29 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
         return communityPosts.filter(p => p.type === 'question' && !p.isSolved).slice(0, 3);
     }, [communityPosts]);
 
-    // Removed mock data - at risk students should come from real analytics
-    const atRiskStudents = useMemo(() => [], []);
+    // Calculate at-risk students (inactive for more than 10 days)
+    const atRiskStudents = useMemo(() => {
+        const now = new Date();
+        const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+        
+        return users
+            .filter(u => u.role === 'student')
+            .filter(u => {
+                if (!u.lastLogin) return false;
+                const lastLoginDate = new Date(u.lastLogin);
+                return lastLoginDate < tenDaysAgo;
+            })
+            .map(u => {
+                const lastLoginDate = new Date(u.lastLogin);
+                const daysAgo = Math.floor((now.getTime() - lastLoginDate.getTime()) / (1000 * 60 * 60 * 24));
+                return {
+                    ...u,
+                    lastLoginDaysAgo: daysAgo
+                };
+            })
+            .sort((a, b) => b.lastLoginDaysAgo - a.lastLoginDaysAgo)
+            .slice(0, 4);
+    }, [users]);
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -1974,24 +2316,36 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                             <h3 className="text-lg font-bold text-white flex items-center gap-2">
                                 <span className="bg-red-500/10 text-red-400 p-1 rounded">🚨</span> Alunos em Risco
                             </h3>
-                            <button onClick={() => navigate('/students')} className="text-xs text-[#c4b5fd] hover:underline">Ver todos</button>
+                            {atRiskStudents.length > 0 && (
+                                <button onClick={() => navigate('/students')} className="text-xs text-[#c4b5fd] hover:underline">Ver todos</button>
+                            )}
                         </div>
-                        <div className="space-y-3">
-                            {atRiskStudents.map(student => (
-                                <div key={student.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5">
-                                    <div className="flex items-center gap-3">
-                                        <img src={student.avatarUrl} className="h-10 w-10 rounded-full border border-white/10" alt={student.name} />
-                                        <div>
-                                            <p className="text-sm font-bold text-white">{student.name}</p>
-                                            <p className="text-xs text-red-400">Ausente há {student.lastLoginDaysAgo} dias</p>
+                        {atRiskStudents.length > 0 ? (
+                            <div className="space-y-3">
+                                {atRiskStudents.map(student => (
+                                    <div key={student.id} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5 hover:border-white/20 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <img src={student.avatarUrl} className="h-10 w-10 rounded-full border border-white/10" alt={student.name} />
+                                            <div>
+                                                <p className="text-sm font-bold text-white">{student.name}</p>
+                                                <p className="text-xs text-red-400">Ausente há {student.lastLoginDaysAgo} dias</p>
+                                            </div>
                                         </div>
+                                        <button className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors">
+                                            Contatar
+                                        </button>
                                     </div>
-                                    <button className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors">
-                                        Contatar
-                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <span className="text-3xl">🎉</span>
                                 </div>
-                            ))}
-                        </div>
+                                <p className="text-sm font-medium text-white">Nenhum aluno em risco!</p>
+                                <p className="text-xs text-gray-500 mt-1">Todos os seus alunos estão ativos e engajados.</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* Recent Forum Questions */}
@@ -2034,7 +2388,7 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                                 <div 
                                     key={course.id} 
                                     className="group bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 rounded-xl p-3 transition-all duration-300 cursor-pointer flex gap-4 items-center"
-                                    onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)}
+                                    onClick={() => navigate(`/admin/painel-instrutor/${course.id}`)}
                                 >
                                     {/* Thumbnail */}
                                     <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 relative">
@@ -2097,7 +2451,7 @@ const TeacherOverview: React.FC<{ user: User }> = ({ user }) => {
                             <button onClick={() => navigate('/myAgenda')} className="w-full text-left p-2 text-sm text-white hover:bg-white/5 rounded transition-colors flex items-center gap-2">
                                 📅 Gerenciar Agenda
                             </button>
-                            <button onClick={() => navigate('/admin/course-editor/new')} className="w-full text-left p-2 text-sm text-white hover:bg-white/5 rounded transition-colors flex items-center gap-2">
+                            <button onClick={() => navigate('/admin/editor-curso')} className="w-full text-left p-2 text-sm text-white hover:bg-white/5 rounded transition-colors flex items-center gap-2">
                                 ➕ Criar Novo Conteúdo
                             </button>
                         </div>
@@ -2177,7 +2531,7 @@ const Dashboard: React.FC = () => {
         events: 'Eventos',
         moderation: 'Moderação',
         students: 'Base de Alunos',
-        teamMembers: 'Equipe',
+        teamMembers: 'Equipe & Voluntários',
         transparency: 'Transparência',
         forum: 'Fórum de Dúvidas',
         marketing: 'Marketing Studio',
@@ -2185,8 +2539,8 @@ const Dashboard: React.FC = () => {
     };
 
     // Handlers
-    const handleCreateCourse = () => navigate('/admin/course-editor/new');
-    const handleEditCourse = (id: string) => navigate(`/admin/course-editor/${id}`);
+    const handleCreateCourse = () => navigate('/admin/editor-curso');
+    const handleEditCourse = (id: string) => navigate(`/admin/editor-curso/${id}`);
     
     const handleDuplicateCourse = (originalCourse: Course) => {
         if (!window.confirm(`Deseja criar uma cópia de "${originalCourse.title}"?`)) return;
@@ -2240,6 +2594,27 @@ const Dashboard: React.FC = () => {
         // Dynamic Health Score Calculation
         const growthScore = Math.min(100, (newStudents / totalStudents) * 500); 
         const healthScore = Math.round((completionRate * 0.4) + (retentionRate * 0.4) + (growthScore * 0.2));
+
+        // Calculate at-risk students (inactive for more than 10 days)
+        const now = new Date();
+        const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+        
+        const atRiskStudents = users
+            .filter(u => u.role === 'student')
+            .filter(u => {
+                if (!u.lastLogin) return false;
+                const lastLoginDate = new Date(u.lastLogin);
+                return lastLoginDate < tenDaysAgo;
+            })
+            .map(u => {
+                const lastLoginDate = new Date(u.lastLogin);
+                const daysAgo = Math.floor((now.getTime() - lastLoginDate.getTime()) / (1000 * 60 * 60 * 24));
+                return {
+                    ...u,
+                    lastLoginDaysAgo: daysAgo
+                };
+            })
+            .sort((a, b) => b.lastLoginDaysAgo - a.lastLoginDaysAgo);
 
         return (
             <div className="space-y-8 animate-fade-in">
@@ -2406,12 +2781,32 @@ const Dashboard: React.FC = () => {
                     <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
                         <h3 className="text-lg font-bold text-white mb-4">⚠️ Atenção (Evasão)</h3>
                         <p className="text-xs text-gray-400 mb-4">Alunos sem acesso há mais de 10 dias.</p>
-                        <div className="text-center py-8">
-                            <p className="text-sm text-gray-500">Sistema de análise de risco em desenvolvimento.</p>
-                            <p className="text-xs text-gray-600 mt-2">Em breve: detecção automática de alunos inativos.</p>
-                        </div>
+                        {atRiskStudents.length > 0 ? (
+                            <ul className="space-y-3">
+                                {atRiskStudents.slice(0, 3).map(student => (
+                                    <li key={student.id} className="flex items-center gap-3 group cursor-pointer hover:bg-white/5 p-2 rounded-lg transition-colors" onClick={() => navigate(`/admin/editor-usuario/${student.id}`)}>
+                                        <img src={student.avatarUrl} alt={student.name} className="h-8 w-8 rounded-full opacity-60 group-hover:opacity-100 transition-opacity border border-white/10" />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-white truncate group-hover:text-[#c4b5fd] transition-colors">{student.name}</p>
+                                            <p className="text-xs text-red-400">{student.lastLoginDaysAgo} dias off</p>
+                                        </div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <div className="text-center py-8">
+                                <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <span className="text-2xl">🎉</span>
+                                </div>
+                                <p className="text-sm text-gray-400">Nenhum aluno em risco!</p>
+                                <p className="text-xs text-gray-600 mt-1">Todos os alunos estão ativos.</p>
+                            </div>
+                        )}
                         <button onClick={() => navigate('/analytics')} className="w-full mt-6 py-2 text-xs font-bold text-center text-gray-400 hover:text-white bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                            Ver Análises
+                            {atRiskStudents.length > 0 ? 'Ver Lista Completa' : 'Ver Análises'}
                         </button>
                     </div>
                 </div>
@@ -2419,53 +2814,212 @@ const Dashboard: React.FC = () => {
         );
     }
 
-    const renderCoursesManagement = () => (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-white">Gerenciar Cursos</h2>
-                <button onClick={handleCreateCourse} className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
-                    <span>+</span> Novo Curso
-                </button>
-            </div>
+    const renderCoursesManagement = () => {
+        // Estatísticas de cursos (calculadas diretamente, sem useMemo para evitar violação das regras de Hooks)
+        const totalLessons = coursesForUser.reduce((acc, c) => acc + c.modules.reduce((sum, m) => sum + m.lessons.length, 0), 0);
+        const totalModules = coursesForUser.reduce((acc, c) => acc + c.modules.length, 0);
+        const byTrack = coursesForUser.reduce((acc, c) => {
+            acc[c.track] = (acc[c.track] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+        const courseStats = { totalLessons, totalModules, byTrack };
+
+        return (
+            <div className="space-y-6 animate-fade-in">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 className="text-2xl font-bold text-white">Gerenciar Cursos</h2>
+                        <p className="text-sm text-gray-400 mt-1">Crie, edite e organize seus cursos</p>
+                    </div>
+                    <button 
+                        onClick={handleCreateCourse} 
+                        className="bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#8a4add]/20"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Novo Curso
+                    </button>
+                </div>
+
+                {/* Estatísticas */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/10 rounded-xl p-4 hover:border-white/20 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-2xl font-black text-white">{coursesForUser.length}</p>
+                        <p className="text-xs text-gray-400 mt-1">Cursos</p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-xl p-4 hover:border-purple-500/30 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-2xl font-black text-purple-400">{courseStats.totalModules}</p>
+                        <p className="text-xs text-gray-400 mt-1">Módulos</p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-xl p-4 hover:border-green-500/30 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-2xl font-black text-green-400">{courseStats.totalLessons}</p>
+                        <p className="text-xs text-gray-400 mt-1">Aulas</p>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-[#8a4add]/10 to-[#f27983]/10 border border-[#8a4add]/20 rounded-xl p-4 hover:border-[#8a4add]/30 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg bg-[#8a4add]/20 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-[#c4b5fd]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="text-2xl font-black text-[#c4b5fd]">{Object.keys(byTrack).length}</p>
+                        <p className="text-xs text-gray-400 mt-1">Trilhas</p>
+                    </div>
+                </div>
             
-            <div className="bg-white/[0.02] rounded-xl border border-white/10 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full">
-                        <TableHeader cols={['Curso', 'Trilha', 'Aulas', 'Ações']} />
+                <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden shadow-xl">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full">
+                            <TableHeader cols={['Curso', 'Trilha', 'Nível', 'Conteúdo', 'Ações']} />
                         <tbody className="divide-y divide-white/5">
                             {coursesForUser.length === 0 ? (
-                                <tr><td colSpan={4} className="text-center py-8 text-gray-500 text-sm">Nenhum curso encontrado.</td></tr>
+                                <tr><td colSpan={5} className="text-center py-12 text-gray-500">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+                                            <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold mb-1">Nenhum curso cadastrado</p>
+                                            <p className="text-xs text-gray-600">Clique em "Novo Curso" para começar</p>
+                                        </div>
+                                    </div>
+                                </td></tr>
                             ) : (
-                                coursesForUser.map((course) => (
-                                    <tr key={course.id} className="hover:bg-white/5 transition-colors group">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-8 w-8 rounded bg-gray-800 overflow-hidden flex-shrink-0">
-                                                    <img src={course.imageUrl} className="w-full h-full object-cover opacity-70" alt="" />
+                                coursesForUser.map((course) => {
+                                    const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+                                    const totalModules = course.modules.length;
+                                    
+                                    return (
+                                        <tr key={course.id} className="hover:bg-white/5 transition-colors group">
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="relative">
+                                                        <div className="h-12 w-12 rounded-lg overflow-hidden flex-shrink-0 border-2 border-white/10 group-hover:border-[#8a4add]/30 transition-colors">
+                                                            <img src={course.imageUrl} className="w-full h-full object-cover" alt={course.title} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <div className="text-sm font-semibold text-white truncate max-w-[250px] group-hover:text-[#c4b5fd] transition-colors">
+                                                            {course.title}
+                                                        </div>
+                                                        <div className="text-xs text-gray-500 mt-0.5">
+                                                            ID: {course.id.substring(0, 8)}...
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div className="text-sm font-medium text-white truncate max-w-[200px]">{course.title}</div>
-                                                    <div className="text-[10px] text-gray-500">{course.skillLevel}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className="px-2 py-1 inline-flex text-[10px] font-bold uppercase tracking-wider rounded-lg bg-[#8a4add]/20 text-[#c4b5fd] border border-[#8a4add]/30">
+                                                    {course.track}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-2 py-1 inline-flex text-[10px] font-bold uppercase tracking-wider rounded-lg ${
+                                                    course.skillLevel === 'Iniciante' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
+                                                    course.skillLevel === 'Intermediário' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
+                                                    'bg-red-500/20 text-red-300 border border-red-500/30'
+                                                }`}>
+                                                    {course.skillLevel}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-3 text-xs text-gray-400">
+                                                    <div className="flex items-center gap-1">
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                        </svg>
+                                                        <span className="font-semibold">{totalModules}</span>
+                                                    </div>
+                                                    <span className="text-gray-600">•</span>
+                                                    <div className="flex items-center gap-1">
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        <span className="font-semibold">{totalLessons}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap"><span className="px-2 py-0.5 inline-flex text-[10px] font-bold uppercase tracking-wider rounded border bg-primary/10 text-primary border-primary/20">{course.track}</span></td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">{course.modules.reduce((acc, m) => acc + m.lessons.length, 0)}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-4">
-                                            <button onClick={() => navigate(`/admin/instructor-dashboard/${course.id}`)} className="text-gray-400 hover:text-white transition-colors" title="Ver Painel da Turma">Painel</button>
-                                            <button onClick={() => handleDuplicateCourse(course)} className="text-purple-400 hover:text-purple-300 transition-colors" title="Duplicar Curso">Duplicar</button>
-                                            <button onClick={() => handleEditCourse(course.id)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
-                                            <button onClick={() => handleDeleteCourse(course.id)} className="text-red-500 hover:text-red-400 transition-colors">Excluir</button>
-                                        </td>
-                                    </tr>
-                                ))
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button 
+                                                        onClick={() => navigate(`/admin/painel-instrutor/${course.id}`)} 
+                                                        className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all" 
+                                                        title="Painel da Turma"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDuplicateCourse(course)} 
+                                                        className="p-2 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 rounded-lg transition-all" 
+                                                        title="Duplicar"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleEditCourse(course.id)} 
+                                                        className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all" 
+                                                        title="Editar"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDeleteCourse(course.id)} 
+                                                        className="p-2 text-red-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all" 
+                                                        title="Excluir"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             )}
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-    );
+        );
+    };
 
     const renderStudentCourses = () => {
         if (!user) return null;
@@ -2483,7 +3037,7 @@ const Dashboard: React.FC = () => {
                 ) : (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {myCourses.map(course => (
-                            <CourseCard key={course.id} course={course} onCourseSelect={(c) => navigate(`/course/${c.id}/lesson/${c.modules[0].lessons[0].id}`)} progress={35} isEnrolled={true} />
+                            <CourseCard key={course.id} course={course} onCourseSelect={(c) => navigate(`/curso/${c.id}/aula/${c.modules[0].lessons[0].id}`)} progress={35} isEnrolled={true} />
                         ))}
                     </div>
                 )}

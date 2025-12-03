@@ -71,7 +71,7 @@ const ArticleView: React.FC = () => {
   };
 
   const handleEditArticle = () => {
-      navigate(`/admin/article-editor/${article.id}`);
+      navigate(`/admin/editor-artigo/${article.id}`);
   };
 
   const handleClap = () => {

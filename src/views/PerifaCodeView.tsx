@@ -22,9 +22,9 @@ const PerifaCodeView: React.FC = () => {
 
   const handleCourseSelect = (course: Course) => {
     if (course.heroContent) {
-        navigate(`/course-landing/${course.id}`);
+        navigate(`/curso-info/${course.id}`);
     } else {
-        navigate(`/course/${course.id}`);
+        navigate(`/curso/${course.id}`);
     }
   };
 

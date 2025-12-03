@@ -86,7 +86,7 @@ const LessonSidebar: React.FC<{
                                         <button
                                             key={lesson.id}
                                             onClick={() => {
-                                                navigate(`/course/${course.id}/lesson/${lesson.id}`);
+                                                navigate(`/curso/${course.id}/aula/${lesson.id}`);
                                                 if (window.innerWidth < 1024) setIsOpen(false);
                                             }}
                                             className={`w-full flex items-start gap-4 py-3 px-6 text-left transition-all duration-200 border-l-2 group relative overflow-hidden ${
@@ -518,7 +518,7 @@ const LessonView: React.FC = () => {
   
   const navigateToLesson = (lesson: {id: string} | null) => {
       if(lesson) {
-          navigate(`/course/${currentCourse.id}/lesson/${lesson.id}`);
+          navigate(`/curso/${currentCourse.id}/aula/${lesson.id}`);
       }
   }
 

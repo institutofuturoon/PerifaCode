@@ -129,7 +129,7 @@ const CourseLandingPage: React.FC = () => {
                  return;
              }
              // Se logado e perfil completo -> Entra no Workspace (Sistema de Aulas)
-             navigate(`/course/${currentCourse.id}`);
+             navigate(`/curso/${currentCourse.id}`);
         } else {
             // Se deslogado -> Vai para Login/Registro (fluxo de onboarding)
             navigate('/cadastro');

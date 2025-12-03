@@ -3,7 +3,6 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ArticleCard from '../components/ArticleCard';
 import { useAppContext } from '../App';
-import { useOngData } from '../hooks/useOngData';
 import { Article } from '../types';
 import { GoogleGenAI, Type } from "@google/genai";
 import SEO from '../components/SEO';
@@ -132,7 +131,6 @@ interface BlogProps {
 
 const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
   const { articles, loadData } = useAppContext();
-  const { statistics } = useOngData();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
@@ -229,7 +227,7 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                         {/* Stats */}
                         <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 px-4">
                             <div className="text-center">
-                                <p className="text-2xl md:text-3xl font-black text-white mb-1">{statistics?.publishedArticles || publishedArticles.length}</p>
+                                <p className="text-2xl md:text-3xl font-black text-white mb-1">{publishedArticles.length}</p>
                                 <p className="text-xs md:text-sm text-gray-400">Artigos</p>
                             </div>
                             <div className="w-px h-10 md:h-12 bg-white/10"></div>
@@ -373,10 +371,10 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
                         </div>
                     </SidebarWidget>
 
-                    {/* AI Suggestions */}
-                    <SidebarWidget title="Sugestões da IA" icon="✨">
+                    {/* AI Suggestions - TEMPORARIAMENTE DESABILITADO (quota API excedida) */}
+                    {/* <SidebarWidget title="Sugestões da IA" icon="✨">
                         <AISuggestions navigateToArticle={handleArticleSelect} />
-                    </SidebarWidget>
+                    </SidebarWidget> */}
 
                     {/* Popular Articles */}
                     <SidebarWidget title="Mais Populares" icon="🔥">
