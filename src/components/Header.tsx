@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Logo } from '../assets/Logo';
 import { useAppContext } from '../App';
 import { DevMenu } from './DevMenu';
+import NotificationCenter from './NotificationCenter';
 
 const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode; active?: boolean }> = ({ onClick, children, active }) => (
   <button
@@ -86,7 +87,7 @@ const MobileSubLink: React.FC<{ onClick: () => void; children: React.ReactNode; 
 );
 
 const Header: React.FC = () => {
-  const { user } = useAppContext();
+  const { user, notifications, handleMarkNotificationAsRead, handleMarkAllNotificationsAsRead, handleDeleteNotification } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -183,6 +184,14 @@ const Header: React.FC = () => {
                 </div>
               </button>
 
+              {user && (
+                <NotificationCenter
+                  notifications={notifications.filter(n => n.userId === user.id)}
+                  onMarkAsRead={handleMarkNotificationAsRead}
+                  onMarkAllAsRead={handleMarkAllNotificationsAsRead}
+                  onDelete={handleDeleteNotification}
+                />
+              )}
               {user ? (
                 <button
                   onClick={() => navigate('/painel')}

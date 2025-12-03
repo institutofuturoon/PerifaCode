@@ -18,8 +18,36 @@ const InfoCard: React.FC<{ icon: React.ReactNode, label: string, value: string }
     </div>
 );
 
-const LessonItem: React.FC<{ lesson: Lesson, index: number, courseId: string }> = ({ lesson, index, courseId }) => {
+// --- Helper: Check if lesson is locked ---
+const isLessonLocked = (lesson: Lesson, completedLessonIds: string[], unlockedLessonIds: string[] = []): boolean => {
+    // Se foi desbloqueada manualmente, não está bloqueada
+    if (unlockedLessonIds.includes(lesson.id)) return false;
+    // Se não tem pré-requisitos, não está bloqueada
+    if (!lesson.prerequisites || lesson.prerequisites.length === 0) return false;
+    // Verifica se todos os pré-requisitos foram completados
+    return !lesson.prerequisites.every(prereqId => completedLessonIds.includes(prereqId));
+};
+
+// --- Helper: Get prerequisite progress ---
+const getPrerequisiteProgress = (lesson: Lesson, completedLessonIds: string[]): { completed: number; total: number } => {
+    if (!lesson.prerequisites || lesson.prerequisites.length === 0) {
+        return { completed: 0, total: 0 };
+    }
+    const completed = lesson.prerequisites.filter(prereqId => completedLessonIds.includes(prereqId)).length;
+    return { completed, total: lesson.prerequisites.length };
+};
+
+const LessonItem: React.FC<{ lesson: Lesson, index: number, courseId: string, completedLessonIds: string[], unlockedLessonIds: string[] }> = ({ lesson, index, courseId, completedLessonIds, unlockedLessonIds }) => {
     const navigate = useNavigate();
+    const isLocked = isLessonLocked(lesson, completedLessonIds, unlockedLessonIds);
+    const isCompleted = completedLessonIds.includes(lesson.id);
+    const isManuallyUnlocked = unlockedLessonIds.includes(lesson.id);
+    const prereqProgress = getPrerequisiteProgress(lesson, completedLessonIds);
+    
+    const tooltipText = isLocked 
+        ? `Pré-requisitos: ${prereqProgress.completed}/${prereqProgress.total} completos`
+        : undefined;
+    
     const icons = {
         video: <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
         text: <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
@@ -27,19 +55,49 @@ const LessonItem: React.FC<{ lesson: Lesson, index: number, courseId: string }> 
 
     return (
         <button 
-            onClick={() => navigate(`/curso/${courseId}/aula/${lesson.id}`)}
-            className="w-full flex justify-between items-center py-3 px-4 text-left hover:bg-white/10 rounded-lg transition-colors group border border-transparent hover:border-white/5"
+            onClick={() => !isLocked && navigate(`/curso/${courseId}/aula/${lesson.id}`)}
+            disabled={isLocked}
+            title={tooltipText}
+            className={`w-full flex justify-between items-center py-3 px-4 text-left rounded-lg transition-colors group border ${
+                isLocked 
+                ? 'opacity-50 cursor-not-allowed border-transparent' 
+                : 'hover:bg-white/10 border-transparent hover:border-white/5'
+            }`}
         >
             <div className="flex items-center gap-3">
-                <span className={`text-[#c4b5fd] ${lesson.type === 'video' ? 'opacity-100' : 'opacity-70'}`}>{icons[lesson.type]}</span>
-                <span className="font-medium text-gray-300 text-sm group-hover:text-white transition-colors">{`${index + 1}. ${lesson.title}`}</span>
+                {isLocked ? (
+                    <span className="text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+                    </span>
+                ) : isCompleted ? (
+                    <span className="text-green-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                    </span>
+                ) : (
+                    <span className={`text-[#c4b5fd] ${lesson.type === 'video' ? 'opacity-100' : 'opacity-70'}`}>{icons[lesson.type]}</span>
+                )}
+                <span className={`font-medium text-sm transition-colors ${isLocked ? 'text-gray-600' : 'text-gray-300 group-hover:text-white'}`}>
+                    {`${index + 1}. ${lesson.title}`}
+                </span>
             </div>
-            <span className="text-[10px] font-mono text-gray-500">{lesson.duration}</span>
+            <div className="flex items-center gap-2">
+                {isLocked && prereqProgress.total > 0 && (
+                    <span className="text-[10px] text-yellow-600/80 font-bold px-2 py-0.5 bg-yellow-500/10 rounded border border-yellow-600/20">
+                        {prereqProgress.completed}/{prereqProgress.total}
+                    </span>
+                )}
+                {isManuallyUnlocked && !isCompleted && (
+                    <span className="text-[10px] text-blue-400/80" title="Desbloqueada manualmente">
+                        🔓
+                    </span>
+                )}
+                <span className="text-[10px] font-mono text-gray-500">{lesson.duration}</span>
+            </div>
         </button>
     );
 };
 
-const ModuleAccordion: React.FC<{ module: Module, index: number, courseId: string }> = ({ module, index, courseId }) => {
+const ModuleAccordion: React.FC<{ module: Module, index: number, courseId: string, completedLessonIds: string[], unlockedLessonIds: string[] }> = ({ module, index, courseId, completedLessonIds, unlockedLessonIds }) => {
     const [isOpen, setIsOpen] = useState(index === 0);
 
     return (
@@ -58,7 +116,14 @@ const ModuleAccordion: React.FC<{ module: Module, index: number, courseId: strin
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="p-2 space-y-1">
                     {module.lessons.map((lesson, i) => (
-                        <LessonItem key={lesson.id} lesson={lesson} index={i} courseId={courseId} />
+                        <LessonItem 
+                            key={lesson.id} 
+                            lesson={lesson} 
+                            index={i} 
+                            courseId={courseId} 
+                            completedLessonIds={completedLessonIds}
+                            unlockedLessonIds={unlockedLessonIds}
+                        />
                     ))}
                 </div>
             </div>
@@ -161,7 +226,14 @@ const CourseDetail: React.FC = () => {
                                 </div>
                                 <div className="space-y-3">
                                     {course.modules.map((module, i) => (
-                                        <ModuleAccordion key={module.id} module={module} index={i} courseId={course.id} />
+                                        <ModuleAccordion 
+                                            key={module.id} 
+                                            module={module} 
+                                            index={i} 
+                                            courseId={course.id} 
+                                            completedLessonIds={user?.completedLessonIds || []}
+                                            unlockedLessonIds={user?.unlockedLessonIds || []}
+                                        />
                                     ))}
                                 </div>
                             </div>

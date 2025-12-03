@@ -29,6 +29,7 @@ export interface User {
   showOnTeamPage?: boolean;
   displayOrder?: number;
   completedLessonIds: string[];
+  unlockedLessonIds?: string[]; // Aulas desbloqueadas manualmente por admin
   xp: number;
   achievements: string[];
   streak: number;
@@ -117,6 +118,7 @@ export interface Lesson {
   complementaryMaterial?: string;
   summary?: string;
   exerciseId?: string;
+  prerequisites?: string[]; // IDs das aulas que devem ser completadas antes
 }
 
 export interface Module {
@@ -333,9 +335,16 @@ export interface CommunityPost {
 
 export interface Notification {
     id: string;
-    text: string;
+    userId: string;
+    type: 'course' | 'lesson' | 'event' | 'achievement' | 'system';
+    title: string;
+    message: string;
     createdAt: string;
     isRead: boolean;
+    actionUrl?: string;
+    actionLabel?: string;
+    icon?: string;
+    relatedId?: string; // ID do curso, aula, evento, etc.
 }
 
 export interface Achievement {
@@ -521,6 +530,7 @@ export interface AppContextType {
   financialStatements: FinancialStatement[];
   annualReports: AnnualReport[];
   marketingPosts: MarketingPost[];
+  notifications: Notification[];
   
   // --- System Settings ---
   settings: SystemSettings;
@@ -568,6 +578,8 @@ export interface AppContextType {
   handleSaveUser: (userToSave: User) => void;
   handleUpdateUserProfile: (userToUpdate: User) => Promise<void>;
   handleDeleteUser: (userId: string) => Promise<void>;
+  handleUnlockLesson: (studentId: string, lessonId: string) => Promise<void>;
+  handleLockLesson: (studentId: string, lessonId: string) => Promise<void>;
   handleSaveProject: (projectToSave: Project) => void;
   handleApproveProject: (projectId: string) => void;
   handleRejectProject: (projectId: string) => void;
@@ -595,4 +607,10 @@ export interface AppContextType {
   // Marketing Actions
   handleSaveMarketingPost: (post: MarketingPost) => Promise<void>;
   handleDeleteMarketingPost: (postId: string) => Promise<void>;
+  
+  // Notification Actions
+  handleMarkNotificationAsRead: (notificationId: string) => Promise<void>;
+  handleMarkAllNotificationsAsRead: () => Promise<void>;
+  handleDeleteNotification: (notificationId: string) => Promise<void>;
+  handleCreateNotification: (notification: Omit<Notification, 'id' | 'createdAt'>) => Promise<void>;
 }

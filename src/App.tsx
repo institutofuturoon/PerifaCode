@@ -5,7 +5,7 @@ import { auth, db } from './services/firebaseConfig';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
-import { User, Course, Lesson, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost, SystemSettings } from './types';
+import { User, Course, Lesson, Article, Project, ProjectComment, AppContextType, Partner, Event, MentorSession, CourseProgress, CommunityPost, CommunityReply, Track, FinancialStatement, AnnualReport, Supporter, MarketingPost, SystemSettings, Notification } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ProfileModal from './components/ProfileModal';
@@ -157,6 +157,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [financialStatements, setFinancialStatements] = useState<FinancialStatement[]>([]);
     const [annualReports, setAnnualReports] = useState<AnnualReport[]>([]);
     const [marketingPosts, setMarketingPosts] = useState<MarketingPost[]>([]);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
     const [selectedProfile, setSelectedProfile] = useState<User | null>(null);
@@ -401,6 +402,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             });
 
             await batch.commit();
+            
+            // Notify students about new course
+            if (isNew && courseToSave.enrollmentStatus === 'open') {
+                notifyNewCourse(courseToSave);
+            }
 
         } catch (error) {
             console.error("Erro ao salvar curso e aulas:", error);
@@ -529,6 +535,52 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handleUnlockLesson = async (studentId: string, lessonId: string) => {
+        try {
+            const student = users.find(u => u.id === studentId);
+            if (!student) return;
+
+            const unlockedLessonIds = student.unlockedLessonIds || [];
+            if (unlockedLessonIds.includes(lessonId)) return; // Já desbloqueada
+
+            const updatedUnlockedIds = [...unlockedLessonIds, lessonId];
+            const updatedStudent = { ...student, unlockedLessonIds: updatedUnlockedIds };
+
+            setUsers(prev => prev.map(u => u.id === studentId ? updatedStudent : u));
+            if (user && user.id === studentId) {
+                setUser(updatedStudent);
+            }
+
+            await updateDoc(doc(db, "users", studentId), { unlockedLessonIds: updatedUnlockedIds });
+            showToast("🔓 Aula desbloqueada com sucesso!");
+        } catch (error) {
+            console.error("Erro ao desbloquear aula:", error);
+            showToast("❌ Erro ao desbloquear aula.");
+        }
+    };
+
+    const handleLockLesson = async (studentId: string, lessonId: string) => {
+        try {
+            const student = users.find(u => u.id === studentId);
+            if (!student) return;
+
+            const unlockedLessonIds = student.unlockedLessonIds || [];
+            const updatedUnlockedIds = unlockedLessonIds.filter(id => id !== lessonId);
+            const updatedStudent = { ...student, unlockedLessonIds: updatedUnlockedIds };
+
+            setUsers(prev => prev.map(u => u.id === studentId ? updatedStudent : u));
+            if (user && user.id === studentId) {
+                setUser(updatedStudent);
+            }
+
+            await updateDoc(doc(db, "users", studentId), { unlockedLessonIds: updatedUnlockedIds });
+            showToast("🔒 Aula bloqueada novamente.");
+        } catch (error) {
+            console.error("Erro ao bloquear aula:", error);
+            showToast("❌ Erro ao bloquear aula.");
+        }
+    };
+
     const handleSaveProject = async (projectToSave: Project) => {
         const isNew = !projects.some(p => p.id === projectToSave.id);
         setProjects(prev => isNew ? [...prev, projectToSave] : prev.map(p => p.id === projectToSave.id ? projectToSave : p));
@@ -602,6 +654,11 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         showToast("✅ Evento salvo!");
         try {
             await setDoc(doc(db, "events", eventToSave.id), eventToSave);
+            
+            // Notify students about new event
+            if (isNew) {
+                notifyNewEvent(eventToSave);
+            }
         } catch (error) {
             console.error("Erro ao salvar evento:", error);
         }
@@ -879,6 +936,141 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    // --- Notification Management ---
+    
+    const handleMarkNotificationAsRead = async (notificationId: string) => {
+        setNotifications(prev => prev.map(n => 
+            n.id === notificationId ? { ...n, isRead: true } : n
+        ));
+        
+        try {
+            await updateDoc(doc(db, "notifications", notificationId), { isRead: true });
+        } catch (error) {
+            console.error("Erro ao marcar notificação como lida:", error);
+        }
+    };
+
+    const handleMarkAllNotificationsAsRead = async () => {
+        if (!user) return;
+        
+        const userNotifications = notifications.filter(n => n.userId === user.id && !n.isRead);
+        setNotifications(prev => prev.map(n => 
+            n.userId === user.id ? { ...n, isRead: true } : n
+        ));
+        
+        try {
+            const batch = writeBatch(db);
+            userNotifications.forEach(n => {
+                batch.update(doc(db, "notifications", n.id), { isRead: true });
+            });
+            await batch.commit();
+            showToast("✅ Todas as notificações marcadas como lidas");
+        } catch (error) {
+            console.error("Erro ao marcar todas como lidas:", error);
+        }
+    };
+
+    const handleDeleteNotification = async (notificationId: string) => {
+        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+        
+        try {
+            await deleteDoc(doc(db, "notifications", notificationId));
+        } catch (error) {
+            console.error("Erro ao excluir notificação:", error);
+        }
+    };
+
+    const handleCreateNotification = async (notification: Omit<Notification, 'id' | 'createdAt'>) => {
+        const newNotification: Notification = {
+            ...notification,
+            id: `notif_${Date.now()}`,
+            createdAt: new Date().toISOString()
+        };
+        
+        setNotifications(prev => [newNotification, ...prev]);
+        
+        try {
+            await setDoc(doc(db, "notifications", newNotification.id), newNotification);
+        } catch (error) {
+            console.error("Erro ao criar notificação:", error);
+        }
+    };
+
+    // Helper: Notify all students about new course
+    const notifyNewCourse = async (course: Course) => {
+        const students = users.filter(u => u.role === 'student' && u.notificationPreferences?.newCoursesAndClasses !== false);
+        
+        for (const student of students) {
+            await handleCreateNotification({
+                userId: student.id,
+                type: 'course',
+                title: 'Novo Curso Disponível! 🎉',
+                message: `O curso "${course.title}" acabou de ser lançado. Confira agora!`,
+                actionUrl: `/curso/${course.id}`,
+                actionLabel: 'Ver Curso',
+                icon: '📚',
+                relatedId: course.id,
+                isRead: false
+            });
+        }
+    };
+
+    // Helper: Notify students about new lesson in enrolled courses
+    const notifyNewLesson = async (courseId: string, lessonTitle: string) => {
+        const course = courses.find(c => c.id === courseId);
+        if (!course) return;
+        
+        // In a real app, you'd track enrolled students
+        const students = users.filter(u => u.role === 'student' && u.notificationPreferences?.newCoursesAndClasses !== false);
+        
+        for (const student of students) {
+            await handleCreateNotification({
+                userId: student.id,
+                type: 'lesson',
+                title: 'Nova Aula Adicionada! 📖',
+                message: `Uma nova aula "${lessonTitle}" foi adicionada ao curso "${course.title}".`,
+                actionUrl: `/curso/${courseId}`,
+                actionLabel: 'Ver Aula',
+                icon: '📖',
+                relatedId: courseId,
+                isRead: false
+            });
+        }
+    };
+
+    // Helper: Notify about new event
+    const notifyNewEvent = async (event: Event) => {
+        const students = users.filter(u => u.role === 'student' && u.notificationPreferences?.communityEvents !== false);
+        
+        for (const student of students) {
+            await handleCreateNotification({
+                userId: student.id,
+                type: 'event',
+                title: 'Novo Evento! 📅',
+                message: `${event.title} - ${event.date} às ${event.time}`,
+                actionUrl: `/evento/${event.id}`,
+                actionLabel: 'Ver Detalhes',
+                icon: '📅',
+                relatedId: event.id,
+                isRead: false
+            });
+        }
+    };
+
+    // Helper: Notify about achievement
+    const notifyAchievement = async (userId: string, achievementTitle: string, achievementDescription: string) => {
+        await handleCreateNotification({
+            userId,
+            type: 'achievement',
+            title: `Conquista Desbloqueada! 🏆`,
+            message: `Parabéns! Você conquistou: ${achievementTitle}`,
+            actionUrl: '/painel',
+            actionLabel: 'Ver Conquistas',
+            icon: '🏆',
+            isRead: false
+        });
+    };
+
     const handleCompleteOnboarding = async () => {
         if (user) {
             const updatedUser = { ...user, hasCompletedOnboardingTour: true };
@@ -975,7 +1167,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
     const value = useMemo(() => ({
-        user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
+        user, users, courses, articles, team: users.filter(u => u.showOnTeamPage), projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, notifications, toast,
         courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
         instructors, mentors, loading, setUser,
         settings, updateSettings, // New settings context
@@ -984,13 +1176,14 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
         completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
         handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
-        handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
+        handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleUnlockLesson, handleLockLesson, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
         handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
         handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
         handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport,
-        handleSaveMarketingPost, handleDeleteMarketingPost
+        handleSaveMarketingPost, handleDeleteMarketingPost,
+        handleMarkNotificationAsRead, handleMarkAllNotificationsAsRead, handleDeleteNotification, handleCreateNotification
     }), [
-        user, users, courses, articles, projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, toast,
+        user, users, courses, articles, projects, communityPosts, partners, supporters, events, mentorSessions, tracks, financialStatements, annualReports, marketingPosts, notifications, toast,
         courseProgress, isProfileModalOpen, selectedProfile, isBottleneckModalOpen, selectedBottleneck, isInscriptionModalOpen, selectedCourseForInscription,
         instructors, mentors, loading, loadData, settings // Add settings dependency
     ]);

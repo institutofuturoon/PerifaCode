@@ -10,14 +10,34 @@ import { useAppContext } from '../App';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import LoadingState from '../components/LoadingState';
 
+// --- Helper: Check if lesson is locked ---
+const isLessonLocked = (lesson: Lesson, completedLessonIds: string[], unlockedLessonIds: string[] = []): boolean => {
+    // Se foi desbloqueada manualmente, não está bloqueada
+    if (unlockedLessonIds.includes(lesson.id)) return false;
+    // Se não tem pré-requisitos, não está bloqueada
+    if (!lesson.prerequisites || lesson.prerequisites.length === 0) return false;
+    // Verifica se todos os pré-requisitos foram completados
+    return !lesson.prerequisites.every(prereqId => completedLessonIds.includes(prereqId));
+};
+
+// --- Helper: Get prerequisite progress ---
+const getPrerequisiteProgress = (lesson: Lesson, completedLessonIds: string[]): { completed: number; total: number } => {
+    if (!lesson.prerequisites || lesson.prerequisites.length === 0) {
+        return { completed: 0, total: 0 };
+    }
+    const completed = lesson.prerequisites.filter(prereqId => completedLessonIds.includes(prereqId)).length;
+    return { completed, total: lesson.prerequisites.length };
+};
+
 // --- Sidebar Component ---
 const LessonSidebar: React.FC<{
     course: Course;
     currentLessonId: string;
     completedLessonIds: string[];
+    unlockedLessonIds: string[];
     isOpen: boolean;
     setIsOpen: (v: boolean) => void;
-}> = ({ course, currentLessonId, completedLessonIds, isOpen, setIsOpen }) => {
+}> = ({ course, currentLessonId, completedLessonIds, unlockedLessonIds, isOpen, setIsOpen }) => {
     const navigate = useNavigate();
 
     // Calculate progress for the sidebar header
@@ -82,23 +102,40 @@ const LessonSidebar: React.FC<{
                                 {module.lessons.map((lesson, lIndex) => {
                                     const isActive = lesson.id === currentLessonId;
                                     const isCompleted = completedLessonIds.includes(lesson.id);
+                                    const isManuallyUnlocked = unlockedLessonIds.includes(lesson.id);
+                                    const isLocked = isLessonLocked(lesson, completedLessonIds, unlockedLessonIds);
+                                    const prereqProgress = getPrerequisiteProgress(lesson, completedLessonIds);
+                                    
+                                    const tooltipText = isLocked 
+                                        ? `Pré-requisitos: ${prereqProgress.completed}/${prereqProgress.total} completos`
+                                        : undefined;
                                     
                                     return (
                                         <button
                                             key={lesson.id}
                                             onClick={() => {
-                                                navigate(`/curso/${course.id}/aula/${lesson.id}`);
-                                                if (window.innerWidth < 1024) setIsOpen(false);
+                                                if (!isLocked) {
+                                                    navigate(`/curso/${course.id}/aula/${lesson.id}`);
+                                                    if (window.innerWidth < 1024) setIsOpen(false);
+                                                }
                                             }}
+                                            disabled={isLocked}
+                                            title={tooltipText}
                                             className={`w-full flex items-start gap-4 py-3 px-6 text-left transition-all duration-200 border-l-2 group relative overflow-hidden ${
                                                 isActive 
                                                 ? 'bg-gradient-to-r from-[#8a4add]/10 to-transparent border-[#8a4add]' 
+                                                : isLocked
+                                                ? 'border-transparent opacity-50 cursor-not-allowed'
                                                 : 'border-transparent hover:bg-white/[0.02]'
                                             }`}
                                         >
                                             {/* Status Icon */}
                                             <div className="mt-0.5 flex-shrink-0 z-10">
-                                                {isActive ? (
+                                                {isLocked ? (
+                                                    <div className="w-4 h-4 rounded-full bg-gray-700/50 border border-gray-600/50 flex items-center justify-center text-gray-500">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+                                                    </div>
+                                                ) : isActive ? (
                                                     <div className="w-4 h-4 rounded-full border-2 border-[#c4b5fd] flex items-center justify-center">
                                                         <div className="w-1.5 h-1.5 rounded-full bg-[#c4b5fd] animate-pulse"></div>
                                                     </div>
@@ -112,7 +149,7 @@ const LessonSidebar: React.FC<{
                                             </div>
 
                                             <div className="flex-1 z-10">
-                                                <p className={`text-sm font-medium leading-snug transition-colors ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'}`}>
+                                                <p className={`text-sm font-medium leading-snug transition-colors ${isActive ? 'text-white' : isLocked ? 'text-gray-600' : 'text-gray-400 group-hover:text-gray-200'}`}>
                                                     {lesson.title}
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-1.5">
@@ -124,6 +161,16 @@ const LessonSidebar: React.FC<{
                                                         )}
                                                         {lesson.duration}
                                                     </span>
+                                                    {isLocked && prereqProgress.total > 0 && (
+                                                        <span className="text-[10px] text-yellow-600/80 font-bold">
+                                                            {prereqProgress.completed}/{prereqProgress.total}
+                                                        </span>
+                                                    )}
+                                                    {isManuallyUnlocked && !isCompleted && (
+                                                        <span className="text-[10px] text-blue-400/80 font-bold" title="Desbloqueada manualmente">
+                                                            🔓
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                         </button>
@@ -470,6 +517,9 @@ const LessonView: React.FC = () => {
 
   const exercise = EXERCISES.find(ex => ex.id === currentLesson?.exerciseId);
   const isCompleted = user?.completedLessonIds.includes(currentLesson?.id || '') || false;
+  
+  // Check if current lesson is locked (must be before early returns)
+  const currentLessonIsLocked = currentLesson ? isLessonLocked(currentLesson, user?.completedLessonIds || [], user?.unlockedLessonIds || []) : false;
 
   useEffect(() => {
     if (user && currentLesson && user.notes && user.notes[currentLesson.id]) {
@@ -481,6 +531,31 @@ const LessonView: React.FC = () => {
 
   if (!currentCourse || !currentLesson) {
     return <div className="text-center py-20">Aula não encontrada.</div>;
+  }
+
+  // Redirect if lesson is locked
+  if (currentLessonIsLocked && !isLoadingContent) {
+    return (
+      <div className="bg-[#09090B] min-h-screen flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-[#121212] border border-white/10 rounded-2xl p-8 text-center">
+          <div className="w-16 h-16 bg-gray-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Aula Bloqueada</h2>
+          <p className="text-gray-400 mb-6">
+            Você precisa completar as aulas anteriores antes de acessar esta aula.
+          </p>
+          <button 
+            onClick={() => navigate(`/curso/${currentCourse.id}`)}
+            className="bg-[#8a4add] hover:bg-[#7c3aed] text-white font-bold py-3 px-6 rounded-xl transition-colors"
+          >
+            Voltar ao Curso
+          </button>
+        </div>
+      </div>
+    );
   }
 
   const handleCompleteLesson = async () => {
@@ -538,6 +613,7 @@ const LessonView: React.FC = () => {
             course={currentCourse} 
             currentLessonId={currentLesson.id} 
             completedLessonIds={user?.completedLessonIds || []}
+            unlockedLessonIds={user?.unlockedLessonIds || []}
             isOpen={isSidebarOpen}
             setIsOpen={setIsSidebarOpen}
         />

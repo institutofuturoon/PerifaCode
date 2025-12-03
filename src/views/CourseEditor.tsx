@@ -7,6 +7,10 @@ import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
 import Uploader from '../components/Uploader';
 import EditorHeader from '../components/EditorHeader';
+import LessonPreview from '../components/LessonPreview';
+import LessonTemplateModal from '../components/LessonTemplateModal';
+import { exportCourseToJSON, importCourseFromJSON, duplicateModule, duplicateLesson, validateCourse } from '../utils/courseImportExport';
+import { getLessonTemplate } from '../data/lessonTemplates';
 
 // --- Types & Helpers ---
 
@@ -124,6 +128,8 @@ const CourseEditor: React.FC = () => {
   
   const [aiLoading, setAiLoading] = useState<string | null>(null);
   const [editingLesson, setEditingLesson] = useState<{mIndex: number, lIndex: number} | null>(null);
+  const [previewLesson, setPreviewLesson] = useState<{mIndex: number, lIndex: number} | null>(null);
+  const [showTemplateModal, setShowTemplateModal] = useState<{mIndex: number} | null>(null);
   
   // -- Effects --
 
@@ -241,6 +247,62 @@ const CourseEditor: React.FC = () => {
       });
   };
 
+  const handleDuplicateModule = (mIndex: number) => {
+      const duplicated = duplicateModule(course.modules[mIndex]);
+      setCourse(prev => {
+          const newModules = [...prev.modules];
+          newModules.splice(mIndex + 1, 0, duplicated);
+          return { ...prev, modules: newModules };
+      });
+      showToast("📋 Módulo duplicado!");
+  };
+
+  const handleDuplicateLesson = (mIndex: number, lIndex: number) => {
+      const duplicated = duplicateLesson(course.modules[mIndex].lessons[lIndex]);
+      setCourse(prev => {
+          const newModules = [...prev.modules];
+          newModules[mIndex].lessons.splice(lIndex + 1, 0, duplicated);
+          return { ...prev, modules: newModules };
+      });
+      showToast("📋 Aula duplicada!");
+  };
+
+  const handleExportCourse = () => {
+      exportCourseToJSON(course);
+      showToast("📥 Curso exportado!");
+  };
+
+  const handleImportCourse = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      try {
+          const imported = await importCourseFromJSON(file);
+          setCourse(imported);
+          showToast("📤 Curso importado com sucesso!");
+      } catch (error) {
+          showToast(`❌ ${error instanceof Error ? error.message : 'Erro ao importar'}`);
+      }
+      e.target.value = ''; // Reset input
+  };
+
+  const handleAddLessonFromTemplate = (mIndex: number, templateId: string) => {
+      const template = getLessonTemplate(templateId);
+      if (!template) return;
+      
+      const newLesson: Lesson = {
+          ...template,
+          id: `les_${Date.now()}`
+      };
+      
+      setCourse(prev => {
+          const newModules = [...prev.modules];
+          newModules[mIndex].lessons = [...newModules[mIndex].lessons, newLesson];
+          return { ...prev, modules: newModules };
+      });
+      showToast("✨ Aula criada a partir do template!");
+  };
+
   const moveItem = (type: 'module' | 'lesson', mIndex: number, lIndex: number | null, direction: 'up' | 'down') => {
       setCourse(prev => {
           const newModules = [...prev.modules];
@@ -284,6 +346,26 @@ const CourseEditor: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#09090B]">
+      {/* Preview Modal */}
+      {previewLesson && (
+        <LessonPreview
+          lesson={course.modules[previewLesson.mIndex].lessons[previewLesson.lIndex]}
+          onClose={() => setPreviewLesson(null)}
+        />
+      )}
+
+      {/* Template Modal */}
+      {showTemplateModal && (
+        <LessonTemplateModal
+          isOpen={true}
+          onClose={() => setShowTemplateModal(null)}
+          onSelect={(templateId) => {
+            handleAddLessonFromTemplate(showTemplateModal.mIndex, templateId);
+            setShowTemplateModal(null);
+          }}
+        />
+      )}
+
       <EditorHeader
         title={courseId === 'new' ? 'Criar Novo Curso' : 'Editar Curso'}
         subtitle={
@@ -383,7 +465,14 @@ const CourseEditor: React.FC = () => {
                               <h2 className="text-lg font-bold text-white">Estrutura do Curso</h2>
                               <p className="text-xs text-gray-400">Organize o conteúdo em módulos e aulas.</p>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
+                              <button onClick={handleExportCourse} className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 px-3 py-2 rounded-lg text-xs font-bold transition-colors border border-blue-500/30">
+                                  📥 Exportar JSON
+                              </button>
+                              <label className="bg-green-500/20 hover:bg-green-500/30 text-green-400 px-3 py-2 rounded-lg text-xs font-bold transition-colors border border-green-500/30 cursor-pointer">
+                                  📤 Importar JSON
+                                  <input type="file" accept=".json" onChange={handleImportCourse} className="hidden" />
+                              </label>
                               <AiButton 
                                   label="Gerar Estrutura" 
                                   isLoading={aiLoading === 'structure'} 
@@ -435,8 +524,8 @@ const CourseEditor: React.FC = () => {
                               <div key={module.id} className="bg-[#121212] border border-white/10 rounded-xl overflow-hidden">
                                   <div className="p-4 bg-white/5 flex items-center gap-4">
                                       <div className="flex flex-col gap-1">
-                                          <button onClick={() => moveItem('module', mIndex, null, 'up')} className="text-gray-500 hover:text-white text-xs">▲</button>
-                                          <button onClick={() => moveItem('module', mIndex, null, 'down')} className="text-gray-500 hover:text-white text-xs">▼</button>
+                                          <button onClick={() => moveItem('module', mIndex, null, 'up')} className="text-gray-500 hover:text-white text-xs" title="Mover para cima">▲</button>
+                                          <button onClick={() => moveItem('module', mIndex, null, 'down')} className="text-gray-500 hover:text-white text-xs" title="Mover para baixo">▼</button>
                                       </div>
                                       <div className="flex-1">
                                           <input 
@@ -446,7 +535,8 @@ const CourseEditor: React.FC = () => {
                                               placeholder="Nome do Módulo" 
                                           />
                                       </div>
-                                      <button onClick={() => deleteModule(mIndex)} className="text-red-400 hover:bg-red-500/20 p-2 rounded transition-colors">🗑️</button>
+                                      <button onClick={() => handleDuplicateModule(mIndex)} className="text-blue-400 hover:bg-blue-500/20 p-2 rounded transition-colors" title="Duplicar módulo">📋</button>
+                                      <button onClick={() => deleteModule(mIndex)} className="text-red-400 hover:bg-red-500/20 p-2 rounded transition-colors" title="Excluir módulo">🗑️</button>
                                   </div>
                                   <div className="p-2 space-y-2 bg-black/20">
                                       {module.lessons.map((lesson, lIndex) => (
@@ -457,14 +547,19 @@ const CourseEditor: React.FC = () => {
                                                   <p className="text-xs text-gray-500">{lesson.type} • {lesson.duration}</p>
                                               </div>
                                               <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                  <button onClick={() => moveItem('lesson', mIndex, lIndex, 'up')} className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded">▲</button>
-                                                  <button onClick={() => moveItem('lesson', mIndex, lIndex, 'down')} className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded">▼</button>
+                                                  <button onClick={() => moveItem('lesson', mIndex, lIndex, 'up')} className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded" title="Mover para cima">▲</button>
+                                                  <button onClick={() => moveItem('lesson', mIndex, lIndex, 'down')} className="p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded" title="Mover para baixo">▼</button>
+                                                  <button onClick={() => setPreviewLesson({mIndex, lIndex})} className="px-3 py-1.5 bg-green-500/20 text-green-400 text-xs font-bold rounded hover:bg-green-500/30" title="Preview">👁️</button>
+                                                  <button onClick={() => handleDuplicateLesson(mIndex, lIndex)} className="px-3 py-1.5 bg-blue-500/20 text-blue-400 text-xs font-bold rounded hover:bg-blue-500/30" title="Duplicar">📋</button>
                                                   <button onClick={() => setEditingLesson({mIndex, lIndex})} className="px-3 py-1.5 bg-[#8a4add]/20 text-[#c4b5fd] text-xs font-bold rounded hover:bg-[#8a4add]/30">Editar</button>
-                                                  <button onClick={() => deleteLesson(mIndex, lIndex)} className="p-1.5 text-red-400 hover:text-red-300 hover:bg-white/10 rounded">✕</button>
+                                                  <button onClick={() => deleteLesson(mIndex, lIndex)} className="p-1.5 text-red-400 hover:text-red-300 hover:bg-white/10 rounded" title="Excluir">✕</button>
                                               </div>
                                           </div>
                                       ))}
-                                      <button onClick={() => addLesson(mIndex)} className="w-full py-2 text-xs font-bold text-gray-500 hover:text-[#c4b5fd] hover:bg-white/5 rounded-lg transition-colors border border-dashed border-white/10">+ Adicionar Aula</button>
+                                      <div className="flex gap-2">
+                                          <button onClick={() => addLesson(mIndex)} className="flex-1 py-2 text-xs font-bold text-gray-500 hover:text-[#c4b5fd] hover:bg-white/5 rounded-lg transition-colors border border-dashed border-white/10">+ Aula em Branco</button>
+                                          <button onClick={() => setShowTemplateModal({mIndex})} className="px-4 py-2 text-xs font-bold text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 rounded-lg transition-colors border border-dashed border-purple-500/30">✨ Usar Template</button>
+                                      </div>
                                   </div>
                               </div>
                           ))}

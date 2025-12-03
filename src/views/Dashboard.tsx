@@ -10,6 +10,7 @@ import ForumView from './ForumView';
 import MarketingGeneratorView from './MarketingGeneratorView';
 import Blog from './Blog';
 import LoadingState from '../components/LoadingState';
+import UnlockLessonModal from '../components/UnlockLessonModal';
 import { collection, getDocs, writeBatch, doc, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 
@@ -1679,9 +1680,11 @@ const ModerationPanel: React.FC = () => {
 };
 
 const StudentsPanel: React.FC = () => {
-    const { users, handleDeleteUser, user } = useAppContext();
+    const { users, handleDeleteUser, user, courses, handleUnlockLesson, handleLockLesson } = useAppContext();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+    const [unlockModalOpen, setUnlockModalOpen] = useState(false);
+    const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
 
     const students = useMemo(() => users.filter(u => u.role === 'student'), [users]);
     
@@ -1717,6 +1720,21 @@ const StudentsPanel: React.FC = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
 
+            {/* Unlock Modal */}
+            {selectedStudent && (
+                <UnlockLessonModal
+                    isOpen={unlockModalOpen}
+                    onClose={() => {
+                        setUnlockModalOpen(false);
+                        setSelectedStudent(null);
+                    }}
+                    student={selectedStudent}
+                    courses={courses}
+                    onUnlock={handleUnlockLesson}
+                    onLock={handleLockLesson}
+                />
+            )}
+
             {/* Table */}
             <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -1743,6 +1761,16 @@ const StudentsPanel: React.FC = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-primary font-bold">{student.xp.toLocaleString('pt-BR')} XP</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
                                             <button onClick={() => navigate(`/admin/editor-usuario/${student.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                                            <button 
+                                                onClick={() => {
+                                                    setSelectedStudent(student);
+                                                    setUnlockModalOpen(true);
+                                                }} 
+                                                className="text-purple-400 hover:text-purple-300 transition-colors"
+                                                title="Gerenciar acesso às aulas"
+                                            >
+                                                🔓 Acesso
+                                            </button>
                                             {user?.role === 'admin' && (
                                                 <button onClick={() => handleDeleteUser(student.id)} className="text-red-500 hover:text-red-400 transition-colors">Desativar</button>
                                             )}
