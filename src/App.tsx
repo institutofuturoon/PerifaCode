@@ -1268,6 +1268,8 @@ const AppContent: React.FC = () => {
                         <Route path="/admin/editor-usuario/:userId" element={<StudentEditor />} />
                         <Route path="/admin/editor-equipe/novo" element={<TeamMemberEditor />} />
                         <Route path="/admin/editor-equipe/:userId" element={<TeamMemberEditor />} />
+                        <Route path="/admin/editor-evento/new" element={<EventEditor />} />
+                        <Route path="/admin/editor-evento/:eventId" element={<EventEditor />} />
                         <Route path="/admin/painel-instrutor/:courseId" element={<InstructorCourseDashboard />} />
                         <Route path="/admin/editor-transparencia" element={<TransparencyEditor />} />
                         <Route path="/admin/editor-transparencia/:type/:id" element={<TransparencyEditor />} />

@@ -227,7 +227,7 @@ const PartnerCarousel: React.FC<{ partners: Partner[] }> = ({ partners }) => {
 
 
 const Home: React.FC = () => {
-    const { partners, team, loadData } = useAppContext();
+    const { partners, team, events, loadData } = useAppContext();
     const navigate = useNavigate();
     const [teamPreview, setTeamPreview] = useState<User[]>([]);
     const [hasShuffled, setHasShuffled] = useState(false); // A TRAVA: Garante que só roda 1 vez
@@ -238,7 +238,7 @@ const Home: React.FC = () => {
     const testimonials = useFeaturedTestimonials();
 
     useEffect(() => {
-        loadData(['partners', 'users']); // Users needed for team preview
+        loadData(['partners', 'users', 'events']); // Users needed for team preview, events for upcoming events
     }, [loadData]);
 
     // Randomize team on mount AND ensure it stops
@@ -458,6 +458,131 @@ const Home: React.FC = () => {
                             </svg>
                         </button>
                     </div>
+                </div>
+            </section>
+
+            {/* Próximos Eventos Section */}
+            <section className="py-16 md:py-24 relative z-10 overflow-hidden border-t border-white/5">
+                {/* Background effects */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#8a4add]/5 to-transparent"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#f27983]/10 rounded-full blur-[150px]"></div>
+
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    {/* Header */}
+                    <div className="text-center mb-12 md:mb-16">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-red-500/20 to-purple-500/20 border border-red-500/30 mb-6">
+                            <span className="text-sm font-bold text-red-300">🔴 Ao Vivo</span>
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-black text-white mb-4">
+                            Próximos Eventos
+                        </h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
+                            Lives, workshops e palestras com especialistas da comunidade tech
+                        </p>
+                    </div>
+
+                    {/* Events Grid */}
+                    {events.length === 0 ? (
+                        <div className="text-center py-12 bg-white/5 border border-white/10 rounded-2xl">
+                            <div className="text-6xl mb-4">📅</div>
+                            <p className="text-gray-400 mb-2">Nenhum evento agendado no momento</p>
+                            <p className="text-sm text-gray-500">Fique ligado! Novos eventos em breve.</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                {events.slice(0, 3).map((event) => {
+                                    const host = team.find(t => t.id === event.hostId);
+                                    const eventTypeColors = {
+                                        'Live': 'from-red-500/20 to-red-600/20 border-red-500/30 text-red-300',
+                                        'Workshop': 'from-blue-500/20 to-blue-600/20 border-blue-500/30 text-blue-300',
+                                        'Palestra': 'from-purple-500/20 to-purple-600/20 border-purple-500/30 text-purple-300'
+                                    };
+
+                                    return (
+                                        <div 
+                                            key={event.id}
+                                            className="group bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 overflow-hidden hover:border-[#8a4add]/40 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#8a4add]/20"
+                                        >
+                                            {/* Image */}
+                                            <div className="relative h-48 overflow-hidden">
+                                                <img 
+                                                    src={event.imageUrl} 
+                                                    alt={event.title}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                                                
+                                                {/* Event Type Badge */}
+                                                <div className="absolute top-3 left-3">
+                                                    <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border backdrop-blur-sm bg-gradient-to-r ${eventTypeColors[event.eventType]}`}>
+                                                        {event.eventType}
+                                                    </span>
+                                                </div>
+
+                                                {/* Date Badge */}
+                                                <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20">
+                                                    <p className="text-xs font-bold text-white">{event.date}</p>
+                                                    <p className="text-xs text-gray-400">{event.time}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Content */}
+                                            <div className="p-5">
+                                                <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-[#c4b5fd] transition-colors">
+                                                    {event.title}
+                                                </h3>
+                                                <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+                                                    {event.description}
+                                                </p>
+
+                                                {/* Host */}
+                                                {host && (
+                                                    <div className="flex items-center gap-2 mb-4 pb-4 border-b border-white/10">
+                                                        <img 
+                                                            src={host.avatarUrl} 
+                                                            alt={host.name}
+                                                            className="w-8 h-8 rounded-full border border-white/20"
+                                                        />
+                                                        <div>
+                                                            <p className="text-xs font-bold text-white">{host.name}</p>
+                                                            <p className="text-xs text-gray-500">{host.title || 'Instrutor'}</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* CTA */}
+                                                <button
+                                                    onClick={() => navigate(`/eventos/${event.id}`)}
+                                                    className="w-full bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white px-4 py-2.5 rounded-lg text-sm font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 group/btn"
+                                                >
+                                                    Ver Detalhes
+                                                    <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Ver Todos CTA */}
+                            {events.length > 3 && (
+                                <div className="text-center">
+                                    <button
+                                        onClick={() => navigate('/eventos')}
+                                        className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-white/10 hover:border-[#8a4add]/40 transition-all backdrop-blur-sm group"
+                                    >
+                                        Ver Todos os Eventos ({events.length})
+                                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
                 </div>
             </section>
 

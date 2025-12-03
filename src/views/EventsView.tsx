@@ -200,8 +200,6 @@ const EventsView: React.FC = () => {
   const navigate = useNavigate();
   const { user, events, users } = useAppContext();
   const { statistics } = useOngData();
-  const [categoryFilter, setCategoryFilter] = useState<'all' | 'workshop' | 'mentoria' | 'hackathon' | 'palestra'>('all');
-  const [timeFilter, setTimeFilter] = useState<'upcoming' | 'past' | 'all'>('upcoming');
   const [selectedMentor, setSelectedMentor] = useState<User | null>(null);
 
   // Filtrar apenas usuários que são mentores voluntários
@@ -219,37 +217,6 @@ const EventsView: React.FC = () => {
     };
     return mapping[eventType] || 'workshop';
   };
-
-  // Separar eventos por data
-  const { upcomingEvents, pastEvents } = useMemo(() => {
-    const now = new Date();
-    const upcoming = events.filter(e => {
-      try {
-        return new Date(e.date) >= now;
-      } catch {
-        return true; // Se não conseguir parsear, considera como futuro
-      }
-    });
-    const past = events.filter(e => {
-      try {
-        return new Date(e.date) < now;
-      } catch {
-        return false;
-      }
-    });
-    return { upcomingEvents: upcoming, pastEvents: past };
-  }, [events]);
-
-  // Filtrar eventos
-  const displayEvents = useMemo(() => {
-    let eventsToShow = timeFilter === 'upcoming' ? upcomingEvents : timeFilter === 'past' ? pastEvents : events;
-
-    if (categoryFilter !== 'all') {
-      eventsToShow = eventsToShow.filter(e => mapEventTypeToCategory(e.eventType) === categoryFilter);
-    }
-
-    return eventsToShow;
-  }, [events, upcomingEvents, pastEvents, categoryFilter, timeFilter]);
 
   return (
     <div className="bg-[#09090B] min-h-screen">
@@ -275,24 +242,6 @@ const EventsView: React.FC = () => {
             Participe de workshops práticos, mentorias personalizadas, hackathons desafiadores e palestras inspiradoras.
             Aprenda com quem já está no mercado e acelere sua carreira em tech.
           </p>
-
-          {/* Stats */}
-          {statistics && (
-            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-8 mb-10 px-4">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-                <svg className="w-5 h-5 text-[#8a4add]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="text-sm md:text-base font-bold text-white">{statistics.eventsHeld}+ Eventos Realizados</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-                <svg className="w-5 h-5 text-[#f27983]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm md:text-base font-bold text-white">{statistics.mentorshipHours}+ Horas de Mentoria</span>
-              </div>
-            </div>
-          )}
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
@@ -415,105 +364,20 @@ const EventsView: React.FC = () => {
         </div>
       </section>
 
-      {/* Filtros */}
-      <section id="events" className="py-6 md:py-8 bg-black/20 border-y border-white/5 sticky top-0 z-30 backdrop-blur-xl">
-        <div className="container mx-auto px-4">
-          {/* Filtros de Tempo */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
-            <button
-              onClick={() => setTimeFilter('upcoming')}
-              className={`px-4 md:px-6 py-2 rounded-full font-bold text-xs md:text-sm transition-all duration-300 ${timeFilter === 'upcoming'
-                ? 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-lg shadow-[#8a4add]/30'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              📅 Próximos ({upcomingEvents.length})
-            </button>
-            <button
-              onClick={() => setTimeFilter('past')}
-              className={`px-4 md:px-6 py-2 rounded-full font-bold text-xs md:text-sm transition-all duration-300 ${timeFilter === 'past'
-                ? 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-lg shadow-[#8a4add]/30'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              📚 Passados ({pastEvents.length})
-            </button>
-            <button
-              onClick={() => setTimeFilter('all')}
-              className={`px-4 md:px-6 py-2 rounded-full font-bold text-xs md:text-sm transition-all duration-300 ${timeFilter === 'all'
-                ? 'bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white shadow-lg shadow-[#8a4add]/30'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              🗂️ Todos ({events.length})
-            </button>
-          </div>
-
-          {/* Filtros de Categoria */}
-          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-            <button
-              onClick={() => setCategoryFilter('all')}
-              className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full font-bold text-xs transition-all duration-300 ${categoryFilter === 'all'
-                ? 'bg-white/20 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              Todas
-            </button>
-            <button
-              onClick={() => setCategoryFilter('workshop')}
-              className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full font-bold text-xs transition-all duration-300 ${categoryFilter === 'workshop'
-                ? 'bg-white/20 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              🛠️ Workshops
-            </button>
-            <button
-              onClick={() => setCategoryFilter('mentoria')}
-              className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full font-bold text-xs transition-all duration-300 ${categoryFilter === 'mentoria'
-                ? 'bg-white/20 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              💡 Mentorias
-            </button>
-            <button
-              onClick={() => setCategoryFilter('hackathon')}
-              className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full font-bold text-xs transition-all duration-300 ${categoryFilter === 'hackathon'
-                ? 'bg-white/20 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              🏆 Hackathons
-            </button>
-            <button
-              onClick={() => setCategoryFilter('palestra')}
-              className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full font-bold text-xs transition-all duration-300 ${categoryFilter === 'palestra'
-                ? 'bg-white/20 text-white'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-            >
-              🎤 Palestras
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* Grid de Eventos */}
-      <section className="py-16 md:py-24 container mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="events" className="py-16 md:py-24 container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-white mb-3 md:mb-4">
-            {timeFilter === 'upcoming' ? 'Próximos Eventos' : timeFilter === 'past' ? 'Eventos Passados' : 'Todos os Eventos'}
+            Todos os Eventos
           </h2>
           <p className="text-sm md:text-base text-gray-400">
-            {timeFilter === 'upcoming' ? 'Inscreva-se agora e garanta sua vaga!' : timeFilter === 'past' ? 'Veja o que já aconteceu' : 'Explore nossa programação completa'}
+            Explore nossa programação completa de eventos
           </p>
         </div>
 
-        {displayEvents.length > 0 ? (
+        {events.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {displayEvents.map((event, index) => {
+            {events.map((event, index) => {
               const eventDate = event.date.includes('-')
                 ? new Date(event.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
                 : event.date;
@@ -529,7 +393,7 @@ const EventsView: React.FC = () => {
                   category={mapEventTypeToCategory(event.eventType)}
                   spots={undefined}
                   image={event.imageUrl}
-                  isUpcoming={timeFilter !== 'past'}
+                  isUpcoming={true}
                 />
               );
             })}

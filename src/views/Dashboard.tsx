@@ -777,6 +777,210 @@ const SystemSettingsPanel: React.FC = () => {
     );
 };
 
+const EventsPanel: React.FC = () => {
+    const { events, handleDeleteEvent, instructors, showToast } = useAppContext();
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterType, setFilterType] = useState<'all' | 'Live' | 'Workshop' | 'Palestra'>('all');
+
+    const filteredEvents = useMemo(() => {
+        return events.filter(event => {
+            const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                event.description.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesType = filterType === 'all' || event.eventType === filterType;
+            return matchesSearch && matchesType;
+        });
+    }, [events, searchTerm, filterType]);
+
+    const getEventTypeColor = (type: Event['eventType']) => {
+        switch (type) {
+            case 'Live': return 'bg-red-500/10 text-red-400 border-red-500/20';
+            case 'Workshop': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+            case 'Palestra': return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+            default: return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+        }
+    };
+
+    const formatDate = (dateStr: string) => {
+        try {
+            const [month, day] = dateStr.split(' ');
+            return `${day}/${month}`;
+        } catch {
+            return dateStr;
+        }
+    };
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-white">Gerenciar Eventos</h2>
+                    <p className="text-sm text-gray-400 mt-1">Lives, workshops e palestras da comunidade</p>
+                </div>
+                <button 
+                    onClick={() => navigate('/admin/editor-evento/new')}
+                    className="bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#8a4add]/20"
+                >
+                    <span>+</span> Criar Evento
+                </button>
+            </div>
+
+            {/* Filters */}
+            <div className="flex flex-col md:flex-row gap-4">
+                {/* Search */}
+                <div className="flex-1 relative">
+                    <input 
+                        type="search" 
+                        placeholder="Buscar eventos..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white transition-colors"
+                    />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+
+                {/* Type Filter */}
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setFilterType('all')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                            filterType === 'all' ? 'bg-[#8a4add] text-white' : 'bg-white/5 text-gray-400 hover:text-white'
+                        }`}
+                    >
+                        Todos
+                    </button>
+                    <button
+                        onClick={() => setFilterType('Live')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                            filterType === 'Live' ? 'bg-red-500 text-white' : 'bg-white/5 text-gray-400 hover:text-white'
+                        }`}
+                    >
+                        Lives
+                    </button>
+                    <button
+                        onClick={() => setFilterType('Workshop')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                            filterType === 'Workshop' ? 'bg-blue-500 text-white' : 'bg-white/5 text-gray-400 hover:text-white'
+                        }`}
+                    >
+                        Workshops
+                    </button>
+                    <button
+                        onClick={() => setFilterType('Palestra')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                            filterType === 'Palestra' ? 'bg-purple-500 text-white' : 'bg-white/5 text-gray-400 hover:text-white'
+                        }`}
+                    >
+                        Palestras
+                    </button>
+                </div>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <p className="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Total</p>
+                    <p className="text-2xl font-bold text-white">{events.length}</p>
+                </div>
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                    <p className="text-xs text-red-400 uppercase tracking-wider font-bold mb-1">Lives</p>
+                    <p className="text-2xl font-bold text-red-400">{events.filter(e => e.eventType === 'Live').length}</p>
+                </div>
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                    <p className="text-xs text-blue-400 uppercase tracking-wider font-bold mb-1">Workshops</p>
+                    <p className="text-2xl font-bold text-blue-400">{events.filter(e => e.eventType === 'Workshop').length}</p>
+                </div>
+                <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
+                    <p className="text-xs text-purple-400 uppercase tracking-wider font-bold mb-1">Palestras</p>
+                    <p className="text-2xl font-bold text-purple-400">{events.filter(e => e.eventType === 'Palestra').length}</p>
+                </div>
+            </div>
+
+            {/* Events Grid */}
+            {filteredEvents.length === 0 ? (
+                <div className="text-center py-20 bg-white/5 border border-white/10 rounded-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-gray-400 mb-4">Nenhum evento encontrado</p>
+                    <button 
+                        onClick={() => navigate('/admin/editor-evento/new')}
+                        className="bg-[#8a4add] text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-[#7c3aed] transition-colors"
+                    >
+                        Criar Primeiro Evento
+                    </button>
+                </div>
+            ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredEvents.map(event => {
+                        const host = instructors.find(i => i.id === event.hostId);
+                        
+                        return (
+                            <div key={event.id} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all group">
+                                {/* Image */}
+                                <div className="relative h-48 overflow-hidden">
+                                    <img 
+                                        src={event.imageUrl} 
+                                        alt={event.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <div className="absolute top-3 left-3">
+                                        <span className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${getEventTypeColor(event.eventType)}`}>
+                                            {event.eventType}
+                                        </span>
+                                    </div>
+                                    <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-sm px-3 py-2 rounded-lg">
+                                        <p className="text-xs font-bold text-white">{formatDate(event.date)}</p>
+                                        <p className="text-xs text-gray-400">{event.time}</p>
+                                    </div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-4">
+                                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">{event.title}</h3>
+                                    <p className="text-sm text-gray-400 mb-4 line-clamp-2">{event.description}</p>
+
+                                    {/* Host */}
+                                    {host && (
+                                        <div className="flex items-center gap-2 mb-4 pb-4 border-b border-white/10">
+                                            <img src={host.avatarUrl} alt={host.name} className="w-8 h-8 rounded-full border border-white/20" />
+                                            <div>
+                                                <p className="text-xs font-bold text-white">{host.name}</p>
+                                                <p className="text-xs text-gray-500">{host.title || 'Instrutor'}</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Actions */}
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => navigate(`/admin/editor-evento/${event.id}`)}
+                                            className="flex-1 bg-[#8a4add]/20 text-[#c4b5fd] px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#8a4add]/30 transition-colors"
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                if (window.confirm(`Excluir evento "${event.title}"?`)) {
+                                                    handleDeleteEvent(event.id);
+                                                }
+                                            }}
+                                            className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg text-sm font-bold hover:bg-red-500/30 transition-colors"
+                                        >
+                                            Excluir
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const TransparencyPanel: React.FC = () => {
     const { financialStatements, annualReports, handleDeleteFinancialStatement, handleDeleteAnnualReport, showToast } = useAppContext();
     const navigate = useNavigate();
@@ -3138,9 +3342,10 @@ const Dashboard: React.FC = () => {
                         {activeTab === 'moderation' && <ModerationPanel />}
                         {activeTab === 'transparency' && <TransparencyPanel />}
                         {activeTab === 'system-settings' && <SystemSettingsPanel />}
+                        {activeTab === 'events' && <EventsPanel />}
                         
                         {/* Fallback for other tabs */}
-                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation', 'transparency', 'system-settings'].includes(activeTab) && (
+                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation', 'transparency', 'system-settings', 'events'].includes(activeTab) && (
                             <div className="text-center py-20 text-gray-500">Funcionalidade em desenvolvimento: {tabTitles[activeTab]}</div>
                         )}
                     </div>
