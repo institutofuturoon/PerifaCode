@@ -68,8 +68,14 @@ const TransparencyEditor = lazy(() => import('./views/TransparencyEditor'));
 const LoadingFallback = () => (
     <div className="flex items-center justify-center min-h-screen bg-[#09090B]">
         <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#8a4add] mb-4"></div>
-            <p className="text-gray-400 text-sm">Carregando...</p>
+            <div className="relative">
+                <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-[#8a4add] border-t-transparent mb-4"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-full animate-pulse"></div>
+                </div>
+            </div>
+            <p className="text-white font-semibold text-lg mb-2">FuturoOn</p>
+            <p className="text-gray-400 text-sm">Carregando plataforma...</p>
         </div>
     </div>
 );

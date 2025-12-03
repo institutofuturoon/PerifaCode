@@ -5,13 +5,14 @@ import { useAppContext } from '../App';
 interface UploaderProps {
   pathnamePrefix: string;
   onUploadComplete: (url: string) => void;
-  children: (triggerUpload: () => void, isUploading: boolean) => React.ReactNode;
+  children: (triggerUpload: () => void, isUploading: boolean, uploadProgress: number) => React.ReactNode;
 }
 
 const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, children }) => {
   const { showToast } = useAppContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const triggerUpload = () => {
     if (isUploading) return;
@@ -33,18 +34,39 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
     }
 
     setIsUploading(true);
+    setUploadProgress(0);
+    
     try {
+      // Simular progresso de upload para melhor UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 100);
+
       // SOLUÇÃO TEMPORÁRIA: Converter para Data URL (base64)
       // Para produção, configure um backend/API para upload seguro
       const reader = new FileReader();
       
       const dataUrl = await new Promise<string>((resolve, reject) => {
         reader.onloadend = () => {
+          clearInterval(progressInterval);
+          setUploadProgress(100);
           resolve(reader.result as string);
         };
-        reader.onerror = reject;
+        reader.onerror = (error) => {
+          clearInterval(progressInterval);
+          reject(error);
+        };
         reader.readAsDataURL(file);
       });
+
+      // Pequeno delay para mostrar 100%
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       // Retornar a Data URL como se fosse uma URL de upload
       onUploadComplete(dataUrl);
@@ -55,6 +77,7 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
       showToast(`❌ Erro ao carregar a imagem: ${err.message}`);
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -71,7 +94,7 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
         accept="image/png, image/jpeg, image/gif, image/webp"
         disabled={isUploading}
       />
-      {children(triggerUpload, isUploading)}
+      {children(triggerUpload, isUploading, uploadProgress)}
     </>
   );
 };

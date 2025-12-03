@@ -8,6 +8,7 @@ import CodePlayground from '../components/CodePlayground';
 import { GoogleGenAI } from "@google/genai";
 import { useAppContext } from '../App';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import LoadingState from '../components/LoadingState';
 
 // --- Sidebar Component ---
 const LessonSidebar: React.FC<{
@@ -436,6 +437,9 @@ const LessonView: React.FC = () => {
   const [note, setNote] = useState('');
   const [forumPosts, setForumPosts] = useState<ForumPost[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isCompletingLesson, setIsCompletingLesson] = useState(false);
+  const [isSavingNote, setIsSavingNote] = useState(false);
+  const [noteSaved, setNoteSaved] = useState(false);
 
   // Check screen size on mount
   useEffect(() => {
@@ -479,8 +483,13 @@ const LessonView: React.FC = () => {
     return <div className="text-center py-20">Aula não encontrada.</div>;
   }
 
-  const handleCompleteLesson = () => {
-    completeLesson(currentLesson.id);
+  const handleCompleteLesson = async () => {
+    setIsCompletingLesson(true);
+    try {
+      await completeLesson(currentLesson.id);
+    } finally {
+      setTimeout(() => setIsCompletingLesson(false), 500); // Pequeno delay para feedback visual
+    }
   };
 
   const handlePostToForum = (text: string) => {
@@ -558,9 +567,14 @@ const LessonView: React.FC = () => {
                     <button 
                         onClick={handleCompleteLesson}
                         className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${isCompleted ? 'bg-green-500/20 text-green-400 cursor-default' : 'bg-[#8a4add] text-white hover:bg-[#7c3aed] shadow-lg shadow-[#8a4add]/20'}`}
-                        disabled={isCompleted}
+                        disabled={isCompleted || isCompletingLesson}
                     >
-                        {isCompleted ? (
+                        {isCompletingLesson ? (
+                            <>
+                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                                Salvando...
+                            </>
+                        ) : isCompleted ? (
                             <>✓ Concluída</>
                         ) : (
                             <>Concluir Aula</>
@@ -579,12 +593,7 @@ const LessonView: React.FC = () => {
                         {activeTab === 'content' && (
                             <div className="animate-fade-in">
                                 {isLoadingContent ? (
-                                    <div className="flex flex-col space-y-4 animate-pulse">
-                                        <div className="h-64 bg-white/5 rounded-xl"></div>
-                                        <div className="h-4 bg-white/5 rounded w-3/4"></div>
-                                        <div className="h-4 bg-white/5 rounded w-1/2"></div>
-                                        <div className="h-4 bg-white/5 rounded w-full"></div>
-                                    </div>
+                                    <LoadingState type="skeleton" />
                                 ) : (
                                     <>
                                         {/* Video Placeholder if type is video */}
@@ -625,13 +634,37 @@ const LessonView: React.FC = () => {
 
                         {activeTab === 'notes' && (
                              <div className="animate-fade-in h-full">
-                                <label className="block text-sm font-bold text-gray-400 mb-4">Suas anotações pessoais</label>
+                                <div className="flex items-center justify-between mb-4">
+                                    <label className="block text-sm font-bold text-gray-400">Suas anotações pessoais</label>
+                                    <div className="flex items-center gap-2">
+                                        {isSavingNote && (
+                                            <LoadingState type="dots" message="Salvando" />
+                                        )}
+                                        {noteSaved && !isSavingNote && (
+                                            <div className="flex items-center gap-1 text-green-400 text-xs animate-fade-in">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Salvo
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                                 <textarea
                                     value={note}
-                                    onChange={e => setNote(e.target.value)}
-                                    onBlur={() => handleSaveNote(currentLesson.id, note)}
+                                    onChange={(e) => {
+                                        setNote(e.target.value);
+                                        setNoteSaved(false);
+                                    }}
+                                    onBlur={async () => {
+                                        setIsSavingNote(true);
+                                        await handleSaveNote(currentLesson.id, note);
+                                        setIsSavingNote(false);
+                                        setNoteSaved(true);
+                                        setTimeout(() => setNoteSaved(false), 3000);
+                                    }}
                                     className="w-full h-[60vh] p-6 bg-[#121212] rounded-xl border border-white/10 focus:ring-2 focus:ring-[#8a4add] focus:outline-none transition-colors text-white leading-relaxed resize-none"
-                                    placeholder="Escreva aqui seus insights... (Salvo automaticamente)"
+                                    placeholder="Escreva aqui seus insights... (Salvo automaticamente ao sair do campo)"
                                 />
                             </div>
                         )}
