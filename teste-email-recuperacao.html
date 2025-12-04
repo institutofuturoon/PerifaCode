@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Email de Recuperação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #8a4add;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #8a4add;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #7a3acc;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            margin-top: 20px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Teste de Email de Recuperação</h1>
+        <p>Este teste verifica se o Firebase está configurado corretamente.</p>
+        
+        <div>
+            <label for="email">Email para testar:</label>
+            <input type="email" id="email" placeholder="seu@email.com" required>
+        </div>
+        
+        <button onclick="testarEmail()" id="btnTestar">Testar Envio de Email</button>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="info">
+            <strong>ℹ️ Informações:</strong>
+            <ul>
+                <li>Use um email que já está cadastrado no Firebase</li>
+                <li>Verifique o console do navegador (F12) para mais detalhes</li>
+                <li>O email pode demorar até 10 minutos para chegar</li>
+            </ul>
+        </div>
+        
+        <div id="config" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCfmYEpGNC1gTDtm-7X0OIWP3W3eQGXXYQ",
+            authDomain: "perifacode-fc132.firebaseapp.com",
+            projectId: "perifacode-fc132",
+            storageBucket: "perifacode-fc132.appspot.com",
+            messagingSenderId: "864131556184",
+            appId: "1:864131556184:web:3fad411905a7d6d9307b2d"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Mostrar configuração
+        document.getElementById('config').innerHTML = `
+            <strong>📋 Configuração Atual:</strong>
+            <pre>Project ID: ${firebaseConfig.projectId}
+Auth Domain: ${firebaseConfig.authDomain}</pre>
+        `;
+
+        console.log('✅ Firebase inicializado:', app.name);
+        console.log('📧 Auth configurado:', auth.app.options.projectId);
+
+        // Função de teste
+        window.testarEmail = async function() {
+            const email = document.getElementById('email').value;
+            const resultDiv = document.getElementById('result');
+            const btnTestar = document.getElementById('btnTestar');
+            
+            if (!email) {
+                alert('Digite um email!');
+                return;
+            }
+
+            // Validar email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '❌ Email inválido!';
+                return;
+            }
+
+            btnTestar.disabled = true;
+            btnTestar.textContent = 'Enviando...';
+            resultDiv.style.display = 'none';
+
+            console.log('🔄 Tentando enviar email para:', email);
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                
+                console.log('✅ Email enviado com sucesso!');
+                
+                resultDiv.className = 'result success';
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <strong>✅ Sucesso!</strong><br>
+                    Email de recuperação enviado para: <strong>${email}</strong><br><br>
+                    <strong>Próximos passos:</strong><br>
+                    1. Verifique sua caixa de entrada<br>
+                    2. Verifique a pasta de spam<br>
+                    3. Aguarde até 10 minutos<br>
+                    4. Procure por email de: noreply@perifacode-fc132.firebaseapp.com
+                `;
+            } catch (error) {
+                console.error('❌ Erro ao enviar email:', error);
+                console.error('Código:', error.code);
+                console.error('Mensagem:', error.message);
+                
+                let mensagem = '';
+                
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        mensagem = `
+                            <strong>❌ Usuário não encontrado!</strong><br><br>
+                            O email <strong>${email}</strong> não está cadastrado no Firebase.<br><br>
+                            <strong>Soluções:</strong><br>
+                            1. Verifique se digitou o email corretamente<br>
+                            2. Cadastre-se primeiro em /cadastro<br>
+                            3. Ou peça para um admin criar sua conta
+                        `;
+                        break;
+                    case 'auth/invalid-email':
+                        mensagem = `
+                            <strong>❌ Email inválido!</strong><br><br>
+                            O formato do email está incorreto.
+                        `;
+                        break;
+                    case 'auth/too-many-requests':
+                        mensagem = `
+                            <strong>⚠️ Muitas tentativas!</strong><br><br>
+                            Aguarde 15-30 minutos e tente novamente.
+                        `;
+                        break;
+                    case 'auth/unauthorized-domain':
+                        mensagem = `
+                            <strong>❌ Domínio não autorizado!</strong><br><br>
+                            Configure o domínio no Firebase Console:<br>
+                            Authentication → Settings → Authorized domains
+                        `;
+                        break;
+                    default:
+                        mensagem = `
+                            <strong>❌ Erro desconhecido!</strong><br><br>
+                            Código: ${error.code}<br>
+                            Mensagem: ${error.message}<br><br>
+                            Verifique o console (F12) para mais detalhes.
+                        `;
+                }
+                
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = mensagem;
+            } finally {
+                btnTestar.disabled = false;
+                btnTestar.textContent = 'Testar Envio de Email';
+            }
+        };
+    </script>
+</body>
+</html>
