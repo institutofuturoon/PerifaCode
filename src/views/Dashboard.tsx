@@ -1287,7 +1287,7 @@ const TransparencyPanel: React.FC = () => {
 };
 
 const TeamManagementPanel: React.FC = () => {
-    const { users, handleSaveTeamOrder, handleSaveUser, handleDeleteUser, showToast, user } = useAppContext();
+    const { users, handleSaveTeamOrder, handleSaveUser, handleDeleteUser, handlePermanentDeleteUser, showToast, user } = useAppContext();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -1534,14 +1534,23 @@ const TeamManagementPanel: React.FC = () => {
                                             {user?.role === 'admin' && member.accountStatus === 'active' && (
                                                 <button 
                                                     onClick={() => handleDeleteUser(member.id)} 
-                                                    className="text-red-500 hover:text-red-400 transition-colors"
-                                                    title="Desativar membro"
+                                                    className="text-orange-500 hover:text-orange-400 transition-colors"
+                                                    title="Desativar membro (reversível)"
                                                 >
                                                     Desativar
                                                 </button>
                                             )}
                                             {user?.role === 'admin' && member.accountStatus === 'inactive' && (
-                                                <span className="text-gray-500 text-xs italic">Inativo</span>
+                                                <>
+                                                    <span className="text-gray-500 text-xs italic">Inativo</span>
+                                                    <button 
+                                                        onClick={() => handlePermanentDeleteUser(member.id, member.name)} 
+                                                        className="text-red-600 hover:text-red-500 transition-colors font-bold"
+                                                        title="⚠️ DELETAR PERMANENTEMENTE (irreversível)"
+                                                    >
+                                                        🗑️ Deletar
+                                                    </button>
+                                                </>
                                             )}
                                         </td>
                                     </tr>

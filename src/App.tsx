@@ -536,6 +536,36 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handlePermanentDeleteUser = async (userId: string, userName: string) => {
+        const confirmMessage = `⚠️ ATENÇÃO: Esta ação é IRREVERSÍVEL!\n\nVocê está prestes a DELETAR PERMANENTEMENTE:\n• ${userName}\n• Todos os dados serão perdidos\n• Não poderá ser desfeito\n\nDigite "DELETAR" para confirmar:`;
+        
+        const confirmation = window.prompt(confirmMessage);
+        
+        if (confirmation !== 'DELETAR') {
+            if (confirmation !== null) {
+                showToast("❌ Operação cancelada. Digite exatamente 'DELETAR' para confirmar.");
+            }
+            return;
+        }
+
+        try {
+            // 1. Deletar do Firestore
+            await deleteDoc(doc(db, "users", userId));
+            
+            // 2. Remover do estado local
+            setUsers(prev => prev.filter(u => u.id !== userId));
+            
+            // Nota: Deletar do Firebase Auth requer Firebase Admin SDK (backend)
+            // Por segurança, isso deve ser feito via Cloud Function
+            
+            showToast("🗑️ Usuário deletado permanentemente do Firestore.");
+            showToast("⚠️ Lembre-se de deletar também do Firebase Auth Console.");
+        } catch (error) {
+            console.error("Erro ao deletar usuário:", error);
+            showToast("❌ Erro ao deletar usuário.");
+        }
+    };
+
     const handleUnlockLesson = async (studentId: string, lessonId: string) => {
         try {
             const student = users.find(u => u.id === studentId);
@@ -1177,7 +1207,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         handleLogout, openProfileModal, closeProfileModal, openBottleneckModal, closeBottleneckModal, openInscriptionModal, closeInscriptionModal,
         completeLesson, handleCompleteOnboarding, handleSaveNote, showToast,
         handleSaveCourse, handleDeleteCourse, handleSaveArticle, handleDeleteArticle, handleToggleArticleStatus, handleAddArticleClap,
-        handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handleUnlockLesson, handleLockLesson, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
+        handleSaveUser, handleUpdateUserProfile, handleDeleteUser, handlePermanentDeleteUser, handleUnlockLesson, handleLockLesson, handleSaveProject, handleApproveProject, handleRejectProject, handleAddClap, handleAddComment,
         handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
         handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
         handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport,
