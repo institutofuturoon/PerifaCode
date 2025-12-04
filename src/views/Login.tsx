@@ -257,7 +257,7 @@ const Login: React.FC = () => {
                       <div className="flex items-center justify-end">
                           <button 
                             type="button"
-                            onClick={toggleMode} 
+                            onClick={() => navigate('/esqueci-senha')} 
                             className="text-xs font-semibold text-gray-400 hover:text-[#c4b5fd] transition-colors"
                           >
                             Esqueceu a senha?

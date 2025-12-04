@@ -24,6 +24,7 @@ const ConnectView = lazy(() => import('./views/ConnectView'));
 const Blog = lazy(() => import('./views/Blog'));
 const Login = lazy(() => import('./views/Login'));
 const Register = lazy(() => import('./views/Register'));
+const ForgotPassword = lazy(() => import('./views/ForgotPassword'));
 const CompleteProfile = lazy(() => import('./views/CompleteProfile'));
 const Profile = lazy(() => import('./views/Profile'));
 const CourseDetail = lazy(() => import('./views/CourseDetail'));
@@ -1256,6 +1257,7 @@ const AppContent: React.FC = () => {
                         <Route path="/artigo/:articleId" element={<ArticleView />} />
                         <Route path="/entrar" element={<Login />} />
                         <Route path="/cadastro" element={<Register />} />
+                        <Route path="/esqueci-senha" element={<ForgotPassword />} />
                         <Route path="/completar-perfil" element={<CompleteProfile />} />
                         <Route path="/perfil" element={<Profile />} />
                         <Route path="/alterar-senha" element={<ChangePassword />} />
