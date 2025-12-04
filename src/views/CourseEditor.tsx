@@ -87,7 +87,7 @@ const AiButton: React.FC<{ onClick: () => void; isLoading: boolean; label?: stri
 // --- Main Component ---
 
 const CourseEditor: React.FC = () => {
-  const { user, instructors, courses, tracks, handleSaveCourse, showToast } = useAppContext();
+  const { user, instructors, courses, tracks, handleSaveCourse, showToast, loadData } = useAppContext();
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
 
@@ -191,10 +191,12 @@ const CourseEditor: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    handleSaveCourse(course);
+    await handleSaveCourse(course);
     localStorage.removeItem(DRAFT_KEY);
+    // Recarregar os cursos para garantir que apareçam no site
+    await loadData(['courses']);
     navigate('/admin');
   };
 
