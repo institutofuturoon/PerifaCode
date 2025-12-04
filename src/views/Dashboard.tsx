@@ -1521,23 +1521,27 @@ const TeamManagementPanel: React.FC = () => {
                                                 >
                                                     Editar
                                                 </button>
-                                                {user?.role === 'admin' && member.accountStatus === 'active' && (
-                                                    <button 
-                                                        onClick={() => handleDeleteUser(member.id)} 
-                                                        className="text-orange-500 hover:text-orange-400 transition-colors"
-                                                        title="Desativar membro (reversível)"
-                                                    >
-                                                        Desativar
-                                                    </button>
-                                                )}
-                                                {user?.role === 'admin' && member.accountStatus === 'inactive' && (
-                                                    <button 
-                                                        onClick={() => handlePermanentDeleteUser(member.id, member.name)} 
-                                                        className="text-red-600 hover:text-red-500 transition-colors font-bold"
-                                                        title="⚠️ DELETAR PERMANENTEMENTE (irreversível)"
-                                                    >
-                                                        🗑️ Deletar
-                                                    </button>
+                                                {user?.role === 'admin' && (
+                                                    <>
+                                                        {(member.accountStatus === 'active' || !member.accountStatus) && (
+                                                            <button 
+                                                                onClick={() => handleDeleteUser(member.id)} 
+                                                                className="text-orange-500 hover:text-orange-400 transition-colors"
+                                                                title="Desativar membro (reversível)"
+                                                            >
+                                                                Desativar
+                                                            </button>
+                                                        )}
+                                                        {member.accountStatus === 'inactive' && (
+                                                            <button 
+                                                                onClick={() => handlePermanentDeleteUser(member.id, member.name)} 
+                                                                className="text-red-600 hover:text-red-500 transition-colors font-bold"
+                                                                title="⚠️ DELETAR PERMANENTEMENTE (irreversível)"
+                                                            >
+                                                                🗑️ Deletar
+                                                            </button>
+                                                        )}
+                                                    </>
                                                 )}
                                             </div>
                                         </td>
