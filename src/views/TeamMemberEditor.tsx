@@ -5,13 +5,33 @@ import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
 import EditorHeader from '../components/EditorHeader';
 import AdminPasswordReset from '../components/AdminPasswordReset';
+// @ts-ignore
+import { initializeApp, getApps, deleteApp } from 'firebase/app';
+import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '../services/firebaseConfig';
 
 const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+
+// Configuração do Firebase para criação de usuários
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
+};
 
 const TeamMemberEditor: React.FC = () => {
   const { users, handleSaveUser, showToast } = useAppContext();
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+  const isCreating = userId === 'new';
+
+  // Estado para senha temporária (apenas na criação)
+  const [tempPassword, setTempPassword] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const initialMember = useMemo(() => {
     if (userId && userId !== 'new') {
