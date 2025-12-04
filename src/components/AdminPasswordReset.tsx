@@ -55,6 +55,7 @@ const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({ userEmail, user
     <>
       {/* Botão para abrir modal */}
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
         className="flex items-center gap-2 px-4 py-2 bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 rounded-lg hover:bg-yellow-500/20 transition-all text-sm font-semibold"
         title="Enviar email de redefinição de senha"
@@ -78,6 +79,7 @@ const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({ userEmail, user
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsOpen(false)}
                 className="text-gray-400 hover:text-white transition-colors"
               >
@@ -140,12 +142,14 @@ const AdminPasswordReset: React.FC<AdminPasswordResetProps> = ({ userEmail, user
             {!success && (
               <div className="flex gap-3">
                 <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
                   className="flex-1 px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl hover:bg-white/10 transition-all font-semibold"
                 >
                   Cancelar
                 </button>
                 <button
+                  type="button"
                   onClick={handleResetPassword}
                   disabled={loading}
                   className="flex-1 px-4 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl hover:opacity-90 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
