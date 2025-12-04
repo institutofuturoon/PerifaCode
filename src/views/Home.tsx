@@ -340,6 +340,75 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
+            {/* Banner de Conquista - Hostinger Start */}
+            <section className="py-8 md:py-12 relative z-10 overflow-hidden border-y border-white/5">
+                {/* Background effects */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#8a4add]/10 via-[#f27983]/10 to-[#8a4add]/10"></div>
+                <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+                
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="max-w-4xl mx-auto">
+                        {/* Badge de conquista */}
+                        <div className="flex items-center justify-center mb-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30">
+                                <span className="text-2xl">🏆</span>
+                                <span className="text-sm font-bold text-yellow-300 uppercase tracking-wider">Conquista Recente</span>
+                            </div>
+                        </div>
+
+                        {/* Logo Hostinger */}
+                        <div className="flex justify-center mb-6">
+                            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 hover:border-[#8a4add]/30 transition-all duration-300">
+                                <img 
+                                    src="data:image/webp;base64,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" 
+                                    alt="Hostinger" 
+                                    className="h-12 md:h-16 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Título principal */}
+                        <h2 className="text-2xl md:text-4xl font-black text-white text-center mb-3 leading-tight">
+                            Vencemos o <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">Hostinger Start</span>
+                        </h2>
+
+                        {/* Descrição */}
+                        <p className="text-base md:text-lg text-gray-300 text-center max-w-2xl mx-auto leading-relaxed">
+                            Fomos reconhecidos por <span className="text-white font-bold">impulsionar sonhos de negócio online</span> e transformar vidas através da tecnologia. Esta conquista é de toda a nossa comunidade!
+                        </p>
+
+                        {/* Detalhes da conquista */}
+                        <div className="mt-6 flex flex-wrap items-center justify-center gap-4 md:gap-8">
+                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                                <span className="font-semibold text-white">Prêmio Hostinger 2025</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <svg className="w-5 h-5 text-[#8a4add]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span>Impacto Social Reconhecido</span>
+                            </div>
+                        </div>
+
+                        {/* CTA opcional */}
+                        <div className="mt-6 text-center">
+                            <button
+                                onClick={() => navigate('/sobre')}
+                                className="inline-flex items-center gap-2 text-sm font-semibold text-[#c4b5fd] hover:text-white transition-colors"
+                            >
+                                Conheça Nossa História
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Quem Somos Section - Ajustado Padding */}
             <section className="py-16 md:py-24 relative z-10 border-b border-white/5 bg-black/20">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">

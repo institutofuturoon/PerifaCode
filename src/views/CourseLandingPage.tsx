@@ -77,9 +77,31 @@ const RealModuleList: React.FC<{ modules: Module[] }> = ({ modules }) => (
 
 // --- Main Component ---
 const CourseLandingPage: React.FC = () => {
-    const { courses, instructors, openInscriptionModal, openProfileModal, user, showToast } = useAppContext();
+    const { courses, instructors, openInscriptionModal, openProfileModal, user, showToast, loadData } = useAppContext();
     const { courseId } = useParams<{ courseId: string }>();
     const navigate = useNavigate();
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Load courses on mount to ensure fresh data
+    useEffect(() => {
+        const loadCourseData = async () => {
+            try {
+                await loadData(['courses', 'users']);
+                setIsLoading(false);
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados:', error);
+                setIsLoading(false);
+            }
+        };
+        
+        // Only load if we don't have courses yet
+        if (courses.length === 0) {
+            loadCourseData();
+        } else {
+            setIsLoading(false);
+        }
+    }, []); // Empty dependency array - only run once on mount
 
     // Find course by ID or Slug
     const currentCourse = courses.find(c => c.id === courseId || c.slug === courseId);
@@ -155,11 +177,30 @@ const CourseLandingPage: React.FC = () => {
         return <svg {...iconProps}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
     };
 
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-[#09090B] text-white">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#8a4add] border-t-transparent mb-4"></div>
+                <h2 className="text-xl font-bold mb-2">Carregando curso...</h2>
+                <p className="text-gray-400 text-sm">Aguarde um momento</p>
+            </div>
+        );
+    }
+
+    // Course not found
     if (!currentCourse) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-[#09090B] text-white">
-                <h2 className="text-2xl font-bold mb-4">Curso não encontrado 😕</h2>
-                <button onClick={() => navigate('/cursos')} className="text-[#c4b5fd] hover:underline">Voltar para o catálogo</button>
+                <div className="text-6xl mb-4">😕</div>
+                <h2 className="text-2xl font-bold mb-2">Curso não encontrado</h2>
+                <p className="text-gray-400 mb-6">O curso que você está procurando não existe ou foi removido.</p>
+                <button 
+                    onClick={() => navigate('/cursos')} 
+                    className="bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-all"
+                >
+                    Voltar para o catálogo
+                </button>
             </div>
         );
     }

@@ -142,7 +142,7 @@ const Blog: React.FC<BlogProps> = ({ embedded = false }) => {
   }, [loadData]);
 
   const handleArticleSelect = (article: Article) => {
-    navigate(`/article/${article.slug || article.id}`);
+    navigate(`/artigo/${article.slug || article.id}`);
   };
 
   const publishedArticles = useMemo(() => 
