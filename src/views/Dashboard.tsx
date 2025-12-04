@@ -1447,8 +1447,9 @@ const TeamManagementPanel: React.FC = () => {
                         <p className="text-sm text-blue-300 font-semibold mb-1">Dicas de Gestão</p>
                         <ul className="text-xs text-blue-200/80 space-y-1">
                             <li>• Use as setas para ordenar como os membros aparecem na página "Equipe"</li>
-                            <li>• Toggle "Status" para ativar/desativar acesso ao sistema</li>
-                            <li>• Toggle "Mentor" para exibir na página de Eventos para agendamentos</li>
+                            <li>• Clique em "Editar" para alterar informações, mentor e visibilidade</li>
+                            <li>• "Desativar" remove acesso temporariamente (reversível)</li>
+                            <li>• "Deletar" remove permanentemente (irreversível)</li>
                         </ul>
                     </div>
                 </div>
@@ -1458,10 +1459,10 @@ const TeamManagementPanel: React.FC = () => {
             <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                     <table className="min-w-full">
-                        <TableHeader cols={['Ordem', 'Membro', 'Cargo/Função', 'Mentor', 'Visível', 'Ações']} />
+                        <TableHeader cols={['Ordem', 'Membro', 'Cargo/Função', 'Ações']} />
                         <tbody className="divide-y divide-white/5">
                             {filteredTeam.length === 0 ? (
-                                <tr><td colSpan={6} className="text-center py-8 text-gray-500 text-sm">Nenhum membro encontrado.</td></tr>
+                                <tr><td colSpan={4} className="text-center py-8 text-gray-500 text-sm">Nenhum membro encontrado.</td></tr>
                             ) : (
                                 filteredTeam.map((member, index) => (
                                     <tr key={member.id} className="hover:bg-white/5 transition-colors group">
@@ -1496,53 +1497,40 @@ const TeamManagementPanel: React.FC = () => {
                                                             🚫 Inativo
                                                         </span>
                                                     )}
+                                                    {member.isMentor && (
+                                                        <span className="px-2 py-1 text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg">
+                                                            💡 Mentor
+                                                        </span>
+                                                    )}
+                                                    {member.showOnTeamPage && (
+                                                        <span className="px-2 py-1 text-[10px] font-bold bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg">
+                                                            👁️ Visível
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 {member.title && (
                                                     <span className="text-xs text-gray-400 font-medium">{member.title}</span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => toggleMentorStatus(member)}
-                                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#8a4add] focus:ring-offset-2 focus:ring-offset-[#09090B] ${member.isMentor ? 'bg-[#8a4add]' : 'bg-gray-600'}`}
-                                                    title={member.isMentor ? 'Desabilitar como mentor' : 'Habilitar como mentor'}
-                                                >
-                                                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${member.isMentor ? 'translate-x-6' : 'translate-x-1'}`} />
-                                                </button>
-                                                {member.isMentor && (
-                                                    <span className="text-xs text-[#c4b5fd] font-semibold">💡</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                {member.showOnTeamPage ? (
-                                                    <span className="px-2 py-1 text-[10px] font-bold bg-green-500/20 text-green-300 border border-green-500/30 rounded-lg">
-                                                        👁️ Sim
-                                                    </span>
-                                                ) : (
-                                                    <span className="px-2 py-1 text-[10px] font-bold bg-gray-500/20 text-gray-400 border border-gray-500/30 rounded-lg">
-                                                        🚫 Não
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
-                                            <button onClick={() => navigate(`/admin/editor-equipe/${member.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
-                                            {user?.role === 'admin' && member.accountStatus === 'active' && (
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium">
+                                            <div className="flex items-center justify-end gap-3">
                                                 <button 
-                                                    onClick={() => handleDeleteUser(member.id)} 
-                                                    className="text-orange-500 hover:text-orange-400 transition-colors"
-                                                    title="Desativar membro (reversível)"
+                                                    onClick={() => navigate(`/admin/editor-equipe/${member.id}`)} 
+                                                    className="text-blue-400 hover:text-blue-300 transition-colors"
                                                 >
-                                                    Desativar
+                                                    Editar
                                                 </button>
-                                            )}
-                                            {user?.role === 'admin' && member.accountStatus === 'inactive' && (
-                                                <>
-                                                    <span className="text-gray-500 text-xs italic">Inativo</span>
+                                                {user?.role === 'admin' && member.accountStatus === 'active' && (
+                                                    <button 
+                                                        onClick={() => handleDeleteUser(member.id)} 
+                                                        className="text-orange-500 hover:text-orange-400 transition-colors"
+                                                        title="Desativar membro (reversível)"
+                                                    >
+                                                        Desativar
+                                                    </button>
+                                                )}
+                                                {user?.role === 'admin' && member.accountStatus === 'inactive' && (
                                                     <button 
                                                         onClick={() => handlePermanentDeleteUser(member.id, member.name)} 
                                                         className="text-red-600 hover:text-red-500 transition-colors font-bold"
@@ -1550,8 +1538,8 @@ const TeamManagementPanel: React.FC = () => {
                                                     >
                                                         🗑️ Deletar
                                                     </button>
-                                                </>
-                                            )}
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
