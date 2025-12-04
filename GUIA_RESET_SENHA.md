@@ -14,7 +14,14 @@
 2. **Link na Página de Login**
    - Botão "Esqueceu a senha?" redireciona para `/esqueci-senha`
 
-3. **Funcionalidade Completa**
+3. **Reset de Senha por Admins** ⭐ NOVO
+   - Componente `AdminPasswordReset` reutilizável
+   - Integrado no **StudentEditor** (edição de alunos)
+   - Integrado no **TeamMemberEditor** (edição de equipe/voluntários)
+   - Modal com confirmação e feedback
+   - Envio de email direto para o usuário
+
+4. **Funcionalidade Completa**
    - Envio de email de recuperação via Firebase Auth
    - Tratamento de erros (usuário não encontrado, email inválido, etc.)
    - Limite de tentativas (proteção contra spam)
@@ -22,6 +29,42 @@
 ---
 
 ## 🎯 Como Funciona
+
+### Para Admins (Reset de Senha de Usuários)
+
+**Onde encontrar:**
+- **Alunos:** `/admin/editor-usuario/:userId`
+- **Equipe/Voluntários:** `/admin/editor-equipe/:userId`
+
+**Passo a passo:**
+
+1. **Acessar o editor do usuário**
+   - Dashboard → Usuários → Editar usuário
+   - Ou Dashboard → Equipe → Editar membro
+
+2. **Localizar a seção de Reset**
+   - Abaixo do campo de email
+   - Card amarelo com ícone de chave
+
+3. **Clicar em "Resetar Senha"**
+   - Modal de confirmação abre
+   - Mostra informações do usuário
+
+4. **Confirmar envio**
+   - Clicar em "Enviar Email"
+   - Aguardar confirmação
+
+5. **Usuário recebe o email**
+   - Email chega em até 5 minutos
+   - Usuário clica no link e define nova senha
+
+**Quando usar:**
+- Usuário esqueceu a senha e não consegue recuperar
+- Usuário não tem acesso ao email cadastrado (atualizar email primeiro)
+- Primeira configuração de conta para novos membros
+- Suspeita de comprometimento de conta
+
+---
 
 ### Para o Usuário
 
@@ -311,6 +354,7 @@ Se precisar resetar senha de um usuário manualmente:
 
 ## ✅ Checklist de Implementação
 
+### Para Usuários
 - [x] Componente ForgotPassword criado
 - [x] Rota `/esqueci-senha` adicionada
 - [x] Link na página de login
@@ -319,6 +363,17 @@ Se precisar resetar senha de um usuário manualmente:
 - [x] Mensagens de sucesso
 - [x] Design responsivo
 - [x] SEO configurado
+
+### Para Admins
+- [x] Componente AdminPasswordReset criado
+- [x] Integrado no StudentEditor
+- [x] Integrado no TeamMemberEditor
+- [x] Modal com confirmação
+- [x] Feedback visual completo
+- [x] Tratamento de erros
+- [x] Toast de sucesso
+
+### Geral
 - [x] Testes realizados
 - [x] Documentação criada
 

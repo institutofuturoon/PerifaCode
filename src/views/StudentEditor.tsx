@@ -5,6 +5,7 @@ import { User } from '../types';
 import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
 import EditorHeader from '../components/EditorHeader';
+import AdminPasswordReset from '../components/AdminPasswordReset';
 // @ts-ignore
 import { initializeApp, getApps, deleteApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
@@ -267,7 +268,25 @@ const StudentEditor: React.FC = () => {
             <div><label htmlFor="name" className={labelClasses}>Nome Completo</label><input id="name" name="name" value={formData.name || ''} onChange={handleChange} required className={inputClasses} /></div>
 
             {!isCreating && (
-              <div><label htmlFor="email" className={labelClasses}>Email</label><input id="email" name="email" type="email" value={formData.email || ''} onChange={handleChange} required className={inputClasses} disabled /></div>
+              <>
+                <div>
+                  <label htmlFor="email" className={labelClasses}>Email</label>
+                  <input id="email" name="email" type="email" value={formData.email || ''} onChange={handleChange} required className={inputClasses} disabled />
+                </div>
+                
+                {/* Botão de Reset de Senha */}
+                <div className="flex items-center justify-between p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-xl">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Redefinir Senha</p>
+                    <p className="text-xs text-gray-400 mt-1">Enviar email de recuperação para o usuário</p>
+                  </div>
+                  <AdminPasswordReset 
+                    userEmail={formData.email || ''} 
+                    userName={formData.name || 'Usuário'}
+                    onSuccess={() => showToast('✅ Email de recuperação enviado!')}
+                  />
+                </div>
+              </>
             )}
 
             <div><label htmlFor="bio" className={labelClasses}>Bio</label><textarea id="bio" name="bio" value={formData.bio || ''} onChange={handleChange} className={inputClasses} rows={3} /></div>

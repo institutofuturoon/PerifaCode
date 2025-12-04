@@ -4,6 +4,7 @@ import { User } from '../types';
 import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
 import EditorHeader from '../components/EditorHeader';
+import AdminPasswordReset from '../components/AdminPasswordReset';
 
 const DEFAULT_BANNER_URL = 'https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?q=80&w=2070&auto=format&fit=crop&ixlib-rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
@@ -156,6 +157,21 @@ const TeamMemberEditor: React.FC = () => {
                         <input id="title" name="title" value={member.title || ''} onChange={handleChange} placeholder="Ex: Desenvolvedor Frontend" className={inputClasses} />
                     </div>
                 </div>
+
+                {/* Botão de Reset de Senha - Apenas para membros existentes */}
+                {userId && userId !== 'new' && member.email && (
+                    <div className="flex items-center justify-between p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-xl">
+                        <div>
+                            <p className="text-sm font-semibold text-white">Redefinir Senha</p>
+                            <p className="text-xs text-gray-400 mt-1">Enviar email de recuperação para este membro</p>
+                        </div>
+                        <AdminPasswordReset 
+                            userEmail={member.email} 
+                            userName={member.name}
+                            onSuccess={() => showToast('✅ Email de recuperação enviado!')}
+                        />
+                    </div>
+                )}
                 <div>
                     <label htmlFor="avatarUrl" className={labelClasses}>URL do Avatar (ou faça upload acima)</label>
                     <input id="avatarUrl" name="avatarUrl" key={member.avatarUrl} value={member.avatarUrl} onChange={handleChange} required className={inputClasses} />
