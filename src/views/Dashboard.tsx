@@ -1287,7 +1287,7 @@ const TransparencyPanel: React.FC = () => {
 };
 
 const TeamManagementPanel: React.FC = () => {
-    const { users, handleSaveTeamOrder, handleSaveUser, showToast } = useAppContext();
+    const { users, handleSaveTeamOrder, handleSaveUser, handleDeleteUser, showToast, user } = useAppContext();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -1531,6 +1531,18 @@ const TeamManagementPanel: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
                                             <button onClick={() => navigate(`/admin/editor-equipe/${member.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                                            {user?.role === 'admin' && member.accountStatus === 'active' && (
+                                                <button 
+                                                    onClick={() => handleDeleteUser(member.id)} 
+                                                    className="text-red-500 hover:text-red-400 transition-colors"
+                                                    title="Desativar membro"
+                                                >
+                                                    Desativar
+                                                </button>
+                                            )}
+                                            {user?.role === 'admin' && member.accountStatus === 'inactive' && (
+                                                <span className="text-gray-500 text-xs italic">Inativo</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
