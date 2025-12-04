@@ -22,7 +22,16 @@ const ArticleView: React.FC = () => {
   const [shareButtonText, setShareButtonText] = useState('Compartilhar');
 
 
-  const article = useMemo(() => articles.find(a => a.slug === articleId || a.id === articleId), [articles, articleId]);
+  const article = useMemo(() => {
+    console.log('🔍 Procurando artigo:', articleId);
+    console.log('📚 Total de artigos:', articles.length);
+    console.log('📋 Artigos disponíveis:', articles.map(a => ({ id: a.id, slug: a.slug, title: a.title })));
+    
+    const found = articles.find(a => a.slug === articleId || a.id === articleId);
+    console.log('✅ Artigo encontrado:', found ? found.title : 'Nenhum');
+    
+    return found;
+  }, [articles, articleId]);
   
   const author = useMemo(() => {
     if (!article) return null;
@@ -31,7 +40,32 @@ const ArticleView: React.FC = () => {
 
 
   if (!article) {
-    return <div className="text-center py-20">Artigo não encontrado.</div>;
+    return (
+      <div className="min-h-screen bg-[#09090B] flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center">
+          <div className="mb-6">
+            <span className="text-6xl">📝</span>
+          </div>
+          <h1 className="text-3xl font-black text-white mb-4">Artigo não encontrado</h1>
+          <p className="text-gray-400 mb-8">
+            O artigo que você está procurando não existe ou foi removido.
+          </p>
+          <button
+            onClick={() => navigate('/blog')}
+            className="px-6 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8a4add]/30 transition-all"
+          >
+            Voltar para o Blog
+          </button>
+          {/* Debug info */}
+          <div className="mt-8 p-4 bg-white/5 rounded-lg text-left text-xs text-gray-500">
+            <p>Debug Info:</p>
+            <p>Article ID: {articleId}</p>
+            <p>Total Articles: {articles.length}</p>
+            <p>Published: {articles.filter(a => a.status === 'published').length}</p>
+          </div>
+        </div>
+      </div>
+    );
   }
   
   const relatedArticles = useMemo(() => {
@@ -131,16 +165,25 @@ const ArticleView: React.FC = () => {
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            {/* Category */}
             <span className={`font-semibold ${getCategoryColor(article.category)}`}>{article.category}</span>
+            
+            {/* Title */}
             <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white mt-2">{article.title}</h1>
-            <p className="mt-4 text-lg text-gray-300">{article.subtitle}</p>
+            
+            {/* Subtitle */}
+            {article.subtitle && (
+              <p className="mt-4 text-lg text-gray-300">{article.subtitle}</p>
+            )}
+            
+            {/* Meta Info */}
             <div className="flex items-center justify-center gap-3 mt-6">
               <img src={article.authorAvatarUrl} alt={article.author} className="h-12 w-12 rounded-full border-2 border-[#8a4add]/50" />
               <div>
                 <p className="font-semibold text-white">{article.author}</p>
                 <p className="text-sm text-gray-400">
-                    {article.date}
-                    {article.readingTime && article.readingTime > 0 && ` • ${article.readingTime} min de leitura`}
+                  {article.date}
+                  {article.readingTime && article.readingTime > 0 && ` • ${article.readingTime} min de leitura`}
                 </p>
               </div>
             </div>
@@ -149,53 +192,91 @@ const ArticleView: React.FC = () => {
       </section>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="max-w-7xl mx-auto relative z-10">
-          {/* Article Content */}
-          <div className="bg-[#121212] p-8 sm:p-16 rounded-lg border border-white/10 shadow-2xl -mt-16 relative z-20">
-            {user && (user.role === 'admin' || (user.role === 'instructor' && user.name === article.author)) && (
-              <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/10">
-                  <p className="text-sm font-semibold text-yellow-400 flex-grow">Opções de Administrador:</p>
-                  <button onClick={handleEditArticle} className="font-semibold py-2 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors text-sm">
-                    Editar
-                  </button>
-                  <button onClick={handleDelete} className="font-semibold py-2 px-4 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors text-sm">
-                    Excluir
-                  </button>
+        <div className="max-w-4xl mx-auto">
+          {/* Main Content */}
+          <div>
+              {/* Admin Options */}
+              {user && (user.role === 'admin' || (user.role === 'instructor' && user.name === article.author)) && (
+                <div className="mb-6 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold text-yellow-400 flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      Opções de Administrador
+                    </p>
+                    <div className="flex gap-2">
+                      <button onClick={handleEditArticle} className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white font-semibold text-sm transition-colors">
+                        ✏️ Editar
+                      </button>
+                      <button onClick={handleDelete} className="px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 font-semibold text-sm transition-colors">
+                        🗑️ Excluir
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Article Content */}
+              <article className="prose prose-invert prose-lg max-w-none">
+                <MarkdownRenderer content={article.content} />
+              </article>
+
+              {/* Actions Bar */}
+              <div className="mt-12 pt-8 border-t border-white/10 flex items-center justify-between">
+                <button 
+                  onClick={() => navigate('/blog')} 
+                  className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#8a4add]/40 text-white font-semibold transition-all"
+                >
+                  <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  Voltar para o Blog
+                </button>
+
+                <button 
+                  onClick={handleShare}
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#8a4add]/40 transition-all"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
+                  <span className="font-semibold text-white">{shareButtonText}</span>
+                </button>
               </div>
-            )}
-            <div className="prose prose-invert max-w-none text-gray-300 leading-relaxed">
-              <MarkdownRenderer content={article.content} />
             </div>
-          </div>
-          
-          {/* Engagement Bar */}
-          <div className="mt-8 border-t border-white/10 pt-6 flex items-center justify-between">
-            <button onClick={() => navigate('/blog')} className="text-[#c4b5fd] font-semibold hover:text-white transition-colors group">
-              <span className="inline-block transform group-hover:-translate-x-1 transition-transform">&larr;</span> Voltar para o blog
-            </button>
-            <div className="flex items-center gap-4">
-              <button onClick={handleClap} className={`group flex items-center gap-2 font-semibold py-2 px-4 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors ${isClapping ? 'animate-pulse' : ''}`}>
-                  <span className={`text-xl transform transition-transform ${isClapping ? 'scale-125' : 'group-hover:scale-110'}`}>👏</span>
-                  <span>{article.claps || 0}</span>
-              </button>
-               <button onClick={handleShare} className="group flex items-center gap-2 font-semibold py-2 px-4 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg>
-                  <span>{shareButtonText}</span>
-              </button>
-            </div>
-          </div>
 
           {/* Related Articles */}
           {relatedArticles.length > 0 && (
             <section className="mt-16">
-              <SectionTitle>Leia a Seguir</SectionTitle>
-              <div className="grid md:grid-cols-2 gap-8">
+              <h2 className="text-2xl font-black text-white mb-6">Continue Lendo</h2>
+              <div className="grid md:grid-cols-2 gap-6">
                 {relatedArticles.map(related => (
-                  <ArticleCard key={related.id} article={related} onArticleSelect={(a) => navigate(`/article/${a.slug || a.id}`)} layout="horizontal" />
+                  <ArticleCard 
+                    key={related.id} 
+                    article={related} 
+                    onArticleSelect={(a) => navigate(`/artigo/${a.slug || a.id}`)} 
+                    layout="horizontal" 
+                  />
                 ))}
               </div>
             </section>
           )}
+
+          {/* CTA Section */}
+          <section className="mt-16">
+            <div className="text-center p-8 rounded-xl bg-white/5 border border-white/10">
+              <p className="text-gray-400 mb-4">
+                Gostou do conteúdo? Explore nossos cursos gratuitos
+              </p>
+              <button 
+                onClick={() => navigate('/cursos')}
+                className="px-6 py-3 bg-gradient-to-r from-[#8a4add] to-[#f27983] text-white font-semibold rounded-lg hover:opacity-90 transition-all"
+              >
+                Ver Cursos
+              </button>
+            </div>
+          </section>
 
         </div>
       </div>

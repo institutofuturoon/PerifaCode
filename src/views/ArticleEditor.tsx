@@ -6,6 +6,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { useAppContext } from '../App';
 import RichContentEditor from '../components/RichContentEditor';
 import EditorHeader from '../components/EditorHeader';
+import BlogAIStudio from '../components/BlogAIStudio';
 
 const stringToSlug = (str: string) => {
   return str
@@ -44,7 +45,7 @@ const ArticleEditor: React.FC = () => {
   });
 
   const [isGeneratingTitles, setIsGeneratingTitles] = useState(false);
-  const [isImprovingText, setIsImprovingText] = useState(false);
+  const [showAIStudio, setShowAIStudio] = useState(false);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   
   if (!initialArticle) {
@@ -126,46 +127,9 @@ const ArticleEditor: React.FC = () => {
       }
   };
 
-  const handleImproveText = async () => {
-      if (!article.content?.trim()) {
-          alert("Não há conteúdo para ser melhorado.");
-          return;
-      }
-      setIsImprovingText(true);
-      try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-          const prompt = `Você é um especialista em UX Writing e Design Instrucional para a FuturoOn, uma plataforma de educação digital para jovens da periferia. Sua missão é reescrever o texto a seguir, tornando-o mais claro, acessível e motivador.
-
-OBJETIVO DA REESCRITA:
-1.  **Clareza e Simplicidade:** Use uma linguagem direta e evite jargões técnicos complexos. Se um termo técnico for essencial, explique-o de forma simples.
-2.  **Tom de Voz:** Mantenha um tom inspirador, encorajador e próximo da realidade do público. Use uma voz ativa e positiva.
-3.  **Engajamento:** Melhore a fluidez e o ritmo do texto para prender a atenção do leitor.
-4.  **Correção:** Corrija todos os erros de ortografia e gramática.
-5.  **Preservação:** Mantenha a intenção original do autor e a formatação Markdown (títulos, listas, shortcodes como [CODE] e [ALERT]).
-
-REGRAS DE SAÍDA:
-- Retorne APENAS o conteúdo do artigo reescrito.
-- Não adicione introduções, conclusões ou comentários sobre o que você mudou.
-- Mantenha a formatação Markdown e os shortcodes intactos.
-
-CONTEÚDO ORIGINAL PARA REESCRITA:
----
-${article.content}
----`;
-          
-          const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
-          });
-
-          setArticle(prev => ({ ...prev, content: response.text }));
-
-      } catch (error) {
-          console.error("Erro ao melhorar texto com IA:", error);
-          alert("Não foi possível melhorar o texto. Tente novamente.");
-      } finally {
-          setIsImprovingText(false);
-      }
+  // Handler para aplicar conteúdo melhorado do AI Studio
+  const handleApplyImprovedContent = (improvedContent: string) => {
+    setArticle(prev => ({ ...prev, content: improvedContent }));
   };
 
   const inputClasses = "w-full p-3 bg-white/5 rounded-md border border-white/10 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-colors sm:text-sm text-white";
@@ -267,7 +231,7 @@ ${article.content}
              <div>
                 <div className="flex justify-between items-center mb-2">
                     <label className={labelClasses}>Conteúdo do Artigo (Markdown)</label>
-                    <AiButton onClick={handleImproveText} isLoading={isImprovingText}>Melhorar Escrita</AiButton>
+                    <AiButton onClick={() => setShowAIStudio(true)} isLoading={false}>AI Studio</AiButton>
                 </div>
                 <RichContentEditor
                     value={article.content}
@@ -281,6 +245,15 @@ ${article.content}
         </div>
       </form>
       </div>
+
+      {/* AI Studio Modal */}
+      {showAIStudio && (
+        <BlogAIStudio
+          content={article.content}
+          onApply={handleApplyImprovedContent}
+          onClose={() => setShowAIStudio(false)}
+        />
+      )}
     </div>
   );
 };

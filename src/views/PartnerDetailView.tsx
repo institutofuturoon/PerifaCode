@@ -4,10 +4,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../App';
 import senacLogo from '../assets/images/parceiros/senac-rj-logo-branco.webp';
 import senaiLogo from '../assets/images/parceiros/senai.png';
-import hostingerLogo from '../assets/images/parceiros/hostinger-seeklogo.svg';
 import inJuniorLogo from '../assets/images/parceiros/in_junior_logo.jpg';
 import way2Logo from '../assets/images/parceiros/wai2-logo.webp';
 import craqueDoAmanhaLogo from '../assets/images/parceiros/batata-crac-logo.jpg';
+
+// Hostinger logo em base64
+const hostingerLogo = "data:image/webp;base64,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";
 
 const StatBox: React.FC<{ label: string; value: string; icon: string }> = ({ label, value, icon }) => (
     <div className="bg-[#121214] border border-white/10 p-6 rounded-2xl flex flex-col items-start hover:border-[#8a4add]/40 transition-colors group relative overflow-hidden">
@@ -50,11 +52,14 @@ const PartnerDetailView: React.FC = () => {
     if (!partner) {
         return (
             <div className="min-h-screen bg-[#09090B] flex flex-col items-center justify-center">
-                <h2 className="text-2xl font-bold text-white mb-4">Dados confidencias não encontrados.</h2>
-                <button onClick={() => navigate('/apoiadores')} className="text-[#c4b5fd] hover:underline">Retornar à Base</button>
+                <h2 className="text-2xl font-bold text-white mb-4">Parceiro não encontrado.</h2>
+                <button onClick={() => navigate('/apoiadores')} className="text-[#c4b5fd] hover:underline">Retornar aos Apoiadores</button>
             </div>
         );
     }
+
+    // Conteúdo especial para Hostinger
+    const isHostinger = partner.name === 'Hostinger';
 
     return (
         <div className="min-h-screen bg-[#09090B] text-white font-sans selection:bg-[#8a4add] selection:text-white">
@@ -86,6 +91,81 @@ const PartnerDetailView: React.FC = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Seção Especial de Agradecimento - Hostinger */}
+                {isHostinger && (
+                    <div className="mb-16 relative overflow-hidden">
+                        {/* Background effects */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-yellow-500/10 rounded-3xl"></div>
+                        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+                        
+                        <div className="relative z-10 bg-gradient-to-br from-white/5 to-white/[0.02] border-2 border-yellow-500/30 rounded-3xl p-8 md:p-12">
+                            {/* Badge de Prêmio */}
+                            <div className="flex justify-center mb-6">
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40">
+                                    <span className="text-3xl">🏆</span>
+                                    <span className="text-sm font-bold text-yellow-300 uppercase tracking-wider">Prêmio Hostinger Start 2025</span>
+                                </div>
+                            </div>
+
+                            {/* Título de Agradecimento */}
+                            <h2 className="text-3xl md:text-5xl font-black text-center text-white mb-6 leading-tight">
+                                Obrigado por Acreditar no Nosso Sonho! 💜
+                            </h2>
+
+                            {/* Mensagem de Agradecimento */}
+                            <div className="max-w-3xl mx-auto space-y-6 text-center">
+                                <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+                                    A <strong className="text-white">Hostinger</strong> não é apenas um parceiro, é um <strong className="text-yellow-400">catalisador de transformação</strong>. Ao nos reconhecer com o <strong className="text-yellow-400">Prêmio Hostinger Start 2025</strong>, vocês validaram nossa missão de impulsionar sonhos de negócio online e transformar vidas através da tecnologia.
+                                </p>
+
+                                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-l-4 border-yellow-500 rounded-r-2xl p-6 text-left">
+                                    <p className="text-white font-semibold italic text-base md:text-lg">
+                                        "Este prêmio representa muito mais que um reconhecimento. É a prova de que quando acreditamos no potencial da juventude periférica e oferecemos as ferramentas certas, não há limites para o que podemos alcançar juntos."
+                                    </p>
+                                    <p className="text-gray-400 text-sm mt-3">— Equipe Instituto FuturoOn</p>
+                                </div>
+
+                                <p className="text-base md:text-lg text-gray-300">
+                                    Graças ao apoio da Hostinger, conseguimos <strong className="text-white">hospedar nossa plataforma</strong>, <strong className="text-white">capacitar jovens em desenvolvimento web</strong> e <strong className="text-white">criar oportunidades reais</strong> para quem mais precisa.
+                                </p>
+                            </div>
+
+                            {/* Estatísticas do Impacto Hostinger */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 max-w-4xl mx-auto">
+                                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p className="text-3xl font-black text-yellow-400 mb-1">R$ 16.5k</p>
+                                    <p className="text-xs text-gray-400 uppercase tracking-wider">Investimento Total</p>
+                                </div>
+                                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p className="text-3xl font-black text-yellow-400 mb-1">100%</p>
+                                    <p className="text-xs text-gray-400 uppercase tracking-wider">Uptime Garantido</p>
+                                </div>
+                                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p className="text-3xl font-black text-yellow-400 mb-1">50+</p>
+                                    <p className="text-xs text-gray-400 uppercase tracking-wider">Alunos Beneficiados</p>
+                                </div>
+                                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                                    <p className="text-3xl font-black text-yellow-400 mb-1">24/7</p>
+                                    <p className="text-xs text-gray-400 uppercase tracking-wider">Plataforma Online</p>
+                                </div>
+                            </div>
+
+                            {/* CTA para o artigo */}
+                            <div className="mt-10 text-center">
+                                <button
+                                    onClick={() => navigate('/artigo/hostinger-start-impulsionando-seu-sonho-de-negocio-online')}
+                                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold rounded-xl hover:shadow-2xl hover:shadow-yellow-500/30 transition-all duration-300 hover:scale-105"
+                                >
+                                    <span>Leia a História Completa do Prêmio</span>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid lg:grid-cols-3 gap-12">
 

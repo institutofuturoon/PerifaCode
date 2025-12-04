@@ -107,9 +107,8 @@ service cloud.firestore {
     // COLEÇÃO: articles (Blog)
     // ==========================================
     match /articles/{articleId} {
-      // Todos podem ler artigos publicados
-      // Admins podem ler rascunhos
-      allow read: if resource.data.status == 'published' || isAdmin();
+      // Todos podem ler todos os artigos (sem restrição de status)
+      allow read: if true;
       
       // Apenas admins podem criar/editar/deletar artigos
       allow write: if isAdmin();

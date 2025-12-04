@@ -260,6 +260,7 @@ const PartnershipsUnifiedView: React.FC = () => {
                                         sector={partner.sector}
                                         logo={partner.logo}
                                         size="large"
+                                        onClick={() => navigate(`/apoiador/${partner.id}`)}
                                     />
                                 ))}
                             </div>
@@ -276,6 +277,7 @@ const PartnershipsUnifiedView: React.FC = () => {
                                         sector={partner.sector}
                                         logo={partner.logo}
                                         size="medium"
+                                        onClick={() => navigate(`/apoiador/${partner.id}`)}
                                     />
                                 ))}
                             </div>
@@ -296,6 +298,7 @@ const PartnershipsUnifiedView: React.FC = () => {
                                             sector={partner.sector}
                                             logo={partner.logo}
                                             size="small"
+                                            onClick={() => navigate(`/apoiador/${partner.id}`)}
                                         />
                                     ))}
 
