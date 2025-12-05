@@ -315,17 +315,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     }
                 }
             } else {
-                // CHECK FOR LOCAL STORAGE MOCK USER (Fallback for unauthorized-domain error)
-                const storedMock = localStorage.getItem('futuro_mock_user');
-                if (storedMock) {
-                    try {
-                        setUser(JSON.parse(storedMock));
-                    } catch (e) {
-                        setUser(null);
-                    }
-                } else {
-                    setUser(null);
-                }
+                setUser(null);
             }
             setLoading(false);
         });
@@ -334,7 +324,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 
     const handleLogout = () => {
-        localStorage.removeItem('futuro_mock_user'); // Clear mock user
         signOut(auth).then(() => {
             setUser(null);
         });
@@ -350,9 +339,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const updatedUser = { ...user, completedLessonIds: updatedCompletedIds, xp: newXp };
         setUser(updatedUser);
         showToast(`✨ Aula concluída! +${lesson?.xp || 0} XP`);
-
-        // Skip Firestore write if mock user
-        if (user.id === 'mock-google-user') return;
 
         try {
             await updateDoc(doc(db, "users", user.id), {
@@ -370,8 +356,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         const updatedUser = { ...user, notes: updatedNotes };
         setUser(updatedUser);
         showToast("📝 Anotação salva!");
-
-        if (user.id === 'mock-google-user') return;
 
         try {
             await updateDoc(doc(db, "users", user.id), { notes: updatedNotes });
@@ -535,8 +519,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             setUser(userToUpdate);
         }
         setUsers(prev => prev.map(u => u.id === userToUpdate.id ? userToUpdate : u));
-
-        if (userToUpdate.id === 'mock-google-user') return;
 
         try {
             await setDoc(doc(db, "users", userToUpdate.id), userToUpdate);
@@ -1129,7 +1111,6 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         if (user) {
             const updatedUser = { ...user, hasCompletedOnboardingTour: true };
             setUser(updatedUser);
-            if (user.id === 'mock-google-user') return;
             try {
                 await updateDoc(doc(db, "users", user.id), { hasCompletedOnboardingTour: true });
             } catch (error) {

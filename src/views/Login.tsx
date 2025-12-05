@@ -70,45 +70,17 @@ const Login: React.FC = () => {
     } catch (error: any) {
         console.error("Google Login Error:", error);
         
-        // --- FALLBACK PARA ERRO DE DOMÍNIO (Modo Demo) ---
-        if (error.code === 'auth/unauthorized-domain' || error.code === 'auth/operation-not-allowed' || error.code === 'auth/internal-error') {
-            const mockUser: User = {
-                id: 'mock-google-user',
-                name: 'Visitante Google (Demo)',
-                email: 'visitante@demo.com',
-                avatarUrl: 'https://ui-avatars.com/api/?name=Google+Demo&background=random',
-                bio: 'Conta de demonstração (Bypass de configuração)',
-                role: 'student',
-                profileStatus: 'complete',
-                completedLessonIds: [], 
-                xp: 0, 
-                achievements: [], 
-                streak: 0, 
-                lastCompletionDate: '',
-                hasCompletedOnboardingTour: false,
-                accountStatus: 'active',
-                notificationPreferences: {
-                    newCoursesAndClasses: true,
-                    communityEvents: true,
-                    platformUpdates: true
-                }
-            };
-            
-            // Salva no localStorage para persistência no App.tsx
-            localStorage.setItem('futuro_mock_user', JSON.stringify(mockUser));
-            
-            // Atualiza estado global imediatamente
-            setUser(mockUser);
-            
-            showToast('⚠️ Modo Demo: Login simulado ativado (Configuração de domínio)');
-            navigate('/painel');
-            return;
-        }
-
         if (error.code === 'auth/popup-closed-by-user') {
             return; // Usuário fechou a janela, não é um erro crítico
         }
-        setError('Erro ao conectar com Google. Tente novamente.');
+        
+        if (error.code === 'auth/unauthorized-domain') {
+            setError('Domínio não autorizado. Configure o domínio no Firebase Console.');
+        } else if (error.code === 'auth/operation-not-allowed') {
+            setError('Login com Google não está habilitado. Entre em contato com o suporte.');
+        } else {
+            setError('Erro ao conectar com Google. Tente novamente.');
+        }
     } finally {
         setLoading(false);
     }
