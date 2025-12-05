@@ -4,6 +4,15 @@ import SEO from '../components/SEO';
 import Badge from '../components/Badge';
 import FAQ from '../components/FAQ';
 import { useOngData } from '../hooks/useOngData';
+import { useAppContext } from '../App';
+
+// Função para formatar valor em reais
+const formatCurrency = (value: number): string => {
+  return value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  });
+};
 
 // Componente de Card de Parceiro
 const PartnerCard: React.FC<{
@@ -151,6 +160,7 @@ const TestimonialCard: React.FC<{
 const PartnershipsUnifiedView: React.FC = () => {
     const navigate = useNavigate();
     const { partners, statistics, contact, testimonials, faq } = useOngData();
+    const { supporters } = useAppContext();
 
     // Filtrar parceiros ativos
     const activePartners = partners?.filter(p => p.status === 'ativo') || [];
@@ -317,6 +327,185 @@ const PartnershipsUnifiedView: React.FC = () => {
                         )}
                     </div>
                 </section>
+
+                {/* Apoiadores Section */}
+                {supporters && supporters.length > 0 && (
+                    <section className="py-16 md:py-24 bg-gradient-to-b from-black/20 to-black/40 relative overflow-hidden">
+                        {/* Background decorations */}
+                        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+                        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+                        
+                        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                            <div className="text-center mb-12 md:mb-16">
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
+                                    <span className="text-2xl">💜</span>
+                                    <span className="text-sm font-bold text-purple-300 uppercase tracking-wider">Apoiadores</span>
+                                </div>
+                                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">
+                                    Quem Faz a Diferença
+                                </h2>
+                                <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+                                    Pessoas e organizações que acreditam no nosso propósito e contribuem para transformar vidas através da tecnologia
+                                </p>
+                            </div>
+
+                            {/* Featured Supporters */}
+                            {supporters.filter(s => s.featured).length > 0 && (
+                                <div className="mb-16">
+                                    <div className="flex items-center justify-center gap-3 mb-8">
+                                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
+                                        <span className="text-purple-400 text-sm uppercase tracking-widest font-bold flex items-center gap-2">
+                                            <span className="text-xl">⭐</span>
+                                            Apoiadores em Destaque
+                                        </span>
+                                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
+                                    </div>
+                                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                                        {supporters.filter(s => s.featured).map(supporter => (
+                                            <div
+                                                key={supporter.id}
+                                                onClick={() => navigate(`/apoio/${supporter.id}`)}
+                                                className="group relative bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-pink-500/10 rounded-3xl border-2 border-purple-500/30 p-8 hover:border-purple-500/60 transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-purple-500/30 cursor-pointer overflow-hidden"
+                                            >
+                                                {/* Animated gradient background */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-purple-500/10 group-hover:via-purple-500/5 group-hover:to-pink-500/10 rounded-3xl transition-all duration-500"></div>
+                                                
+                                                {/* Shine effect */}
+                                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                                    <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000"></div>
+                                                </div>
+                                                
+                                                <div className="relative z-10">
+                                                    {supporter.logoUrl && (
+                                                        <div className="mb-6 flex justify-center">
+                                                            <div className="w-24 h-24 bg-white rounded-2xl p-3 shadow-xl group-hover:scale-110 transition-transform duration-300 overflow-hidden flex items-center justify-center">
+                                                                <img 
+                                                                    src={supporter.logoUrl} 
+                                                                    alt={supporter.name} 
+                                                                    className="max-w-full max-h-full object-contain"
+                                                                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%' }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <div className="text-center mb-4">
+                                                        <h3 className="text-2xl font-black text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300 transition-all duration-300">
+                                                            {supporter.name}
+                                                        </h3>
+                                                        <span className="inline-block px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-500/30">
+                                                            {supporter.category}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 mb-6 text-center">
+                                                        {supporter.description}
+                                                    </p>
+                                                    
+                                                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-purple-400 text-lg">🎁</span>
+                                                            <span className="text-gray-400 text-sm">
+                                                                {supporter.contributions?.length || 0} apoios
+                                                            </span>
+                                                        </div>
+                                                        {supporter.totalDonated > 0 && (
+                                                            <span className="text-green-400 font-black text-sm">
+                                                                {formatCurrency(supporter.totalDonated)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Regular Supporters Grid */}
+                            {supporters.filter(s => !s.featured).length > 0 && (
+                                <div>
+                                    <div className="flex items-center justify-center gap-3 mb-8">
+                                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/20 to-transparent"></div>
+                                        <span className="text-gray-500 text-sm uppercase tracking-widest font-bold">
+                                            Todos os Apoiadores
+                                        </span>
+                                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/20 to-transparent"></div>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
+                                        {supporters.filter(s => !s.featured).map(supporter => (
+                                            <div
+                                                key={supporter.id}
+                                                onClick={() => navigate(`/apoio/${supporter.id}`)}
+                                                className="group bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 p-4 hover:bg-white/10 hover:border-purple-500/30 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center aspect-square"
+                                            >
+                                                {supporter.logoUrl ? (
+                                                    <div className="w-full h-16 mb-3 flex items-center justify-center overflow-hidden">
+                                                        <img 
+                                                            src={supporter.logoUrl} 
+                                                            alt={supporter.name} 
+                                                            className="max-w-full max-h-full object-contain"
+                                                            style={{ width: 'auto', height: 'auto' }}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mb-3 border border-purple-500/30">
+                                                        <span className="text-2xl">💜</span>
+                                                    </div>
+                                                )}
+                                                <p className="text-xs font-bold text-white text-center line-clamp-2 group-hover:text-purple-300 transition-colors mb-1">
+                                                    {supporter.name}
+                                                </p>
+                                                <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                                                    {supporter.category}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* CTA para ser apoiador */}
+                            <div className="mt-16">
+                                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-500/20 via-purple-500/10 to-pink-500/20 border-2 border-purple-500/30 p-12 md:p-16">
+                                    {/* Background effects */}
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-[100px]"></div>
+                                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/20 rounded-full blur-[100px]"></div>
+                                    
+                                    <div className="relative z-10 text-center max-w-3xl mx-auto">
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/20 border border-purple-500/30 mb-6">
+                                            <span className="text-2xl">✨</span>
+                                            <span className="text-sm font-bold text-purple-300 uppercase tracking-wider">Faça Parte</span>
+                                        </div>
+                                        
+                                        <h3 className="text-3xl md:text-4xl font-black text-white mb-4">
+                                            Quer fazer parte dessa história?
+                                        </h3>
+                                        <p className="text-gray-300 text-lg mb-8 leading-relaxed">
+                                            Cada apoio, seja grande ou pequeno, faz toda a diferença na vida de jovens que sonham com um futuro melhor através da tecnologia.
+                                        </p>
+                                        
+                                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                                            <button
+                                                onClick={() => navigate('/doar')}
+                                                className="group px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-purple-500/40 transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                                            >
+                                                <span className="text-xl group-hover:scale-125 transition-transform">💜</span>
+                                                Apoiar o Instituto FuturoOn
+                                            </button>
+                                            <button
+                                                onClick={() => navigate('/contato')}
+                                                className="px-8 py-4 bg-white/5 border-2 border-white/10 text-white font-bold rounded-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                                            >
+                                                Falar Conosco
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                )}
 
                 {/* Por que Parceria? Section */}
                 <section className="py-16 md:py-24 bg-black/20">

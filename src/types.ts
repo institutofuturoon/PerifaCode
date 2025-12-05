@@ -96,14 +96,31 @@ export interface User {
   };
 }
 
+export interface SupporterContribution {
+    id: string;
+    type: string; // Ex: "Doação de Alimentos", "Doação Financeira"
+    description: string;
+    value?: number; // Valor em R$ (opcional)
+    date: string; // YYYY-MM-DD
+}
+
 export interface Supporter {
     id: string;
     name: string;
-    role?: string; // Ex: "Engenheiro de Software", "Empresário"
-    tier: 'visionary' | 'builder' | 'ally';
-    avatarUrl?: string;
-    message?: string; // Mensagem curta de apoio
+    description: string; // Mensagem de agradecimento
+    category: 'Doador Individual' | 'Empresa' | 'Instituição' | 'Voluntário';
+    logoUrl?: string;
+    websiteUrl?: string;
     since: string; // Ano de início do apoio
+    featured?: boolean; // Destacar na página
+    contributions: SupporterContribution[];
+    totalDonated: number; // Soma de todas as contribuições com valor
+    
+    // Campos antigos mantidos para compatibilidade
+    role?: string;
+    tier?: 'visionary' | 'builder' | 'ally';
+    avatarUrl?: string;
+    message?: string;
 }
 
 export interface Lesson {
@@ -603,6 +620,8 @@ export interface AppContextType {
   handleDeleteFinancialStatement: (id: string) => Promise<void>;
   handleSaveAnnualReport: (report: AnnualReport) => Promise<void>;
   handleDeleteAnnualReport: (id: string) => Promise<void>;
+  handleSaveSupporter: (supporter: Supporter) => Promise<void>;
+  handleDeleteSupporter: (id: string) => Promise<void>;
   
   // Marketing Actions
   handleSaveMarketingPost: (post: MarketingPost) => Promise<void>;

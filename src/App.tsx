@@ -64,6 +64,8 @@ const ForumPostDetailView = lazy(() => import('./views/ForumPostDetailView'));
 const ForumPostEditor = lazy(() => import('./views/ForumPostEditor'));
 const ApiTest = lazy(() => import('./views/ApiTest'));
 const TransparencyEditor = lazy(() => import('./views/TransparencyEditor'));
+const SupporterEditor = lazy(() => import('./views/SupporterEditor'));
+const SupporterDetailView = lazy(() => import('./views/SupporterDetailView'));
 
 // Loading component
 const LoadingFallback = () => (
@@ -945,6 +947,30 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
     };
 
+    const handleSaveSupporter = async (supporter: Supporter) => {
+        const isNew = !supporters.some(s => s.id === supporter.id);
+        setSupporters(prev => isNew ? [supporter, ...prev] : prev.map(s => s.id === supporter.id ? supporter : s));
+        showToast("✅ Apoiador salvo com sucesso!");
+        try {
+            await setDoc(doc(db, "supporters", supporter.id), supporter);
+        } catch (error) {
+            console.error("Erro ao salvar apoiador:", error);
+            showToast("❌ Erro ao salvar no banco de dados.");
+        }
+    };
+
+    const handleDeleteSupporter = async (id: string) => {
+        if (window.confirm("Tem certeza que deseja excluir este apoiador?")) {
+            setSupporters(prev => prev.filter(s => s.id !== id));
+            showToast("🗑️ Apoiador excluído.");
+            try {
+                await deleteDoc(doc(db, "supporters", id));
+            } catch (error) {
+                console.error("Erro ao excluir apoiador:", error);
+            }
+        }
+    };
+
     const handleSaveMarketingPost = async (post: MarketingPost) => {
         const isNew = !marketingPosts.some(p => p.id === post.id);
         setMarketingPosts(prev => isNew ? [post, ...prev] : prev.map(p => p.id === post.id ? post : p));
@@ -1215,6 +1241,7 @@ const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         handleSaveEvent, handleDeleteEvent, handleSaveTeamOrder, handleSaveCommunityPost, handleDeleteCommunityPost, handleAddCommunityPostClap, handleAddCommunityReply,
         handleAddSessionSlot, handleRemoveSessionSlot, handleBookSession, handleCancelSession, handleCreateTrack, handleUpdateTrack, handleDeleteTrack,
         handleSaveFinancialStatement, handleDeleteFinancialStatement, handleSaveAnnualReport, handleDeleteAnnualReport,
+        handleSaveSupporter, handleDeleteSupporter,
         handleSaveMarketingPost, handleDeleteMarketingPost,
         handleMarkNotificationAsRead, handleMarkAllNotificationsAsRead, handleDeleteNotification, handleCreateNotification
     }), [
@@ -1314,6 +1341,8 @@ const AppContent: React.FC = () => {
                         <Route path="/admin/painel-instrutor/:courseId" element={<InstructorCourseDashboard />} />
                         <Route path="/admin/editor-transparencia" element={<TransparencyEditor />} />
                         <Route path="/admin/editor-transparencia/:type/:id" element={<TransparencyEditor />} />
+                        <Route path="/admin/editor-apoiador/new" element={<SupporterEditor />} />
+                        <Route path="/admin/editor-apoiador/:supporterId" element={<SupporterEditor />} />
                         <Route path="/analise" element={<Analytics />} />
                         <Route path="/gemini-api-dashboard" element={<GeminiApiDashboard />} />
                         <Route path="/comunidade" element={<CommunityView />} />
@@ -1326,6 +1355,7 @@ const AppContent: React.FC = () => {
                         <Route path="/parcerias" element={<PartnershipsUnifiedView />} />
                         <Route path="/apoiadores" element={<PartnershipsUnifiedView />} />
                         <Route path="/apoiador/:partnerId" element={<PartnerDetailView />} />
+                        <Route path="/apoio/:supporterId" element={<SupporterDetailView />} />
                         <Route path="/eventos" element={<EventsView />} />
                         <Route path="/evento/novo" element={<EventEditor />} />
                         <Route path="/evento/editar/:eventId" element={<EventEditor />} />

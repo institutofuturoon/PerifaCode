@@ -1896,6 +1896,144 @@ const ModerationPanel: React.FC = () => {
     );
 };
 
+const SupportersPanel: React.FC = () => {
+    const { supporters, handleDeleteSupporter } = useAppContext();
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredSupporters = useMemo(() => {
+        return supporters.filter(s =>
+            s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            s.category.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [supporters, searchTerm]);
+
+    const getCategoryColor = (category: string) => {
+        switch (category) {
+            case 'Empresa': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+            case 'Instituição': return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+            case 'Voluntário': return 'bg-green-500/10 text-green-400 border-green-500/20';
+            default: return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+        }
+    };
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-white">Gerenciar Apoiadores</h2>
+                    <p className="text-sm text-gray-400 mt-1">Registre e agradeça quem apoia nossa missão</p>
+                </div>
+                <button
+                    onClick={() => navigate('/admin/editor-apoiador/new')}
+                    className="bg-gradient-to-r from-[#8a4add] to-[#f27983] hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#8a4add]/20"
+                >
+                    <span>+</span> Novo Apoiador
+                </button>
+            </div>
+
+            {/* Search */}
+            <div className="relative">
+                <input
+                    type="search"
+                    placeholder="Buscar apoiadores..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:ring-1 focus:ring-[#8a4add] focus:outline-none text-sm text-white transition-colors"
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                    <p className="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Total</p>
+                    <p className="text-2xl font-bold text-white">{supporters.length}</p>
+                </div>
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                    <p className="text-xs text-blue-400 uppercase tracking-wider font-bold mb-1">Empresas</p>
+                    <p className="text-2xl font-bold text-blue-400">{supporters.filter(s => s.category === 'Empresa').length}</p>
+                </div>
+                <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
+                    <p className="text-xs text-green-400 uppercase tracking-wider font-bold mb-1">Voluntários</p>
+                    <p className="text-2xl font-bold text-green-400">{supporters.filter(s => s.category === 'Voluntário').length}</p>
+                </div>
+                <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
+                    <p className="text-xs text-purple-400 uppercase tracking-wider font-bold mb-1">Total Doado</p>
+                    <p className="text-2xl font-bold text-purple-400">
+                        R$ {supporters.reduce((sum, s) => sum + (s.totalDonated || 0), 0).toFixed(2)}
+                    </p>
+                </div>
+            </div>
+
+            {/* Table */}
+            <div className="bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full">
+                        <TableHeader cols={['Apoiador', 'Categoria', 'Apoios', 'Total Doado', 'Ações']} />
+                        <tbody className="divide-y divide-white/5">
+                            {filteredSupporters.length === 0 ? (
+                                <tr><td colSpan={5} className="text-center py-8 text-gray-500 text-sm">Nenhum apoiador encontrado.</td></tr>
+                            ) : (
+                                filteredSupporters.map((supporter) => (
+                                    <tr key={supporter.id} className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                {supporter.logoUrl && (
+                                                    <div className="w-10 h-10 bg-white rounded-lg p-1 flex items-center justify-center">
+                                                        <img src={supporter.logoUrl} alt={supporter.name} className="max-w-full max-h-full object-contain" />
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <div className="text-sm font-medium text-white">{supporter.name}</div>
+                                                    <div className="text-xs text-gray-500">Desde {supporter.since}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2 py-1 text-xs font-bold rounded-full border ${getCategoryColor(supporter.category)}`}>
+                                                {supporter.category}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                            {supporter.contributions?.length || 0} apoios
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-400">
+                                            R$ {(supporter.totalDonated || 0).toFixed(2)}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
+                                            <button
+                                                onClick={() => navigate(`/apoio/${supporter.id}`)}
+                                                className="text-purple-400 hover:text-purple-300 transition-colors"
+                                                title="Ver página de agradecimento"
+                                            >
+                                                Ver Página
+                                            </button>
+                                            <button
+                                                onClick={() => navigate(`/admin/editor-apoiador/${supporter.id}`)}
+                                                className="text-blue-400 hover:text-blue-300 transition-colors"
+                                            >
+                                                Editar
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteSupporter(supporter.id)}
+                                                className="text-red-500 hover:text-red-400 transition-colors"
+                                            >
+                                                Excluir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const StudentsPanel: React.FC = () => {
     const { users, handleDeleteUser, handlePermanentDeleteUser, user, courses, handleUnlockLesson, handleLockLesson } = useAppContext();
     const navigate = useNavigate();
@@ -2818,6 +2956,7 @@ const Dashboard: React.FC = () => {
         students: 'Base de Alunos',
         teamMembers: 'Equipe & Voluntários',
         transparency: 'Transparência',
+        supporters: 'Apoiadores',
         forum: 'Fórum de Dúvidas',
         marketing: 'Marketing Studio',
         'system-settings': 'Configurações do Sistema'
@@ -3375,11 +3514,12 @@ const Dashboard: React.FC = () => {
                         {activeTab === 'teamMembers' && <TeamManagementPanel />}
                         {activeTab === 'moderation' && <ModerationPanel />}
                         {activeTab === 'transparency' && <TransparencyPanel />}
+                        {activeTab === 'supporters' && <SupportersPanel />}
                         {activeTab === 'system-settings' && <SystemSettingsPanel />}
                         {activeTab === 'events' && <EventsPanel />}
                         
                         {/* Fallback for other tabs */}
-                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation', 'transparency', 'system-settings', 'events'].includes(activeTab) && (
+                        {!['overview', 'courses', 'myCourses', 'explore', 'forum', 'marketing', 'blog', 'blog-feed', 'myAgenda', 'tracks', 'students', 'teamMembers', 'moderation', 'transparency', 'supporters', 'system-settings', 'events'].includes(activeTab) && (
                             <div className="text-center py-20 text-gray-500">Funcionalidade em desenvolvimento: {tabTitles[activeTab]}</div>
                         )}
                     </div>
