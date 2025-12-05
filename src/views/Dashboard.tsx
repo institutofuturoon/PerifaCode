@@ -1897,7 +1897,7 @@ const ModerationPanel: React.FC = () => {
 };
 
 const StudentsPanel: React.FC = () => {
-    const { users, handleDeleteUser, user, courses, handleUnlockLesson, handleLockLesson } = useAppContext();
+    const { users, handleDeleteUser, handlePermanentDeleteUser, user, courses, handleUnlockLesson, handleLockLesson } = useAppContext();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [unlockModalOpen, setUnlockModalOpen] = useState(false);
@@ -1976,21 +1976,42 @@ const StudentsPanel: React.FC = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-primary font-bold">{student.xp.toLocaleString('pt-BR')} XP</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium space-x-3">
-                                            <button onClick={() => navigate(`/admin/editor-usuario/${student.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
-                                            <button 
-                                                onClick={() => {
-                                                    setSelectedStudent(student);
-                                                    setUnlockModalOpen(true);
-                                                }} 
-                                                className="text-purple-400 hover:text-purple-300 transition-colors"
-                                                title="Gerenciar acesso às aulas"
-                                            >
-                                                🔓 Acesso
-                                            </button>
-                                            {user?.role === 'admin' && (
-                                                <button onClick={() => handleDeleteUser(student.id)} className="text-red-500 hover:text-red-400 transition-colors">Desativar</button>
-                                            )}
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium">
+                                            <div className="flex items-center justify-end gap-3">
+                                                <button onClick={() => navigate(`/admin/editor-usuario/${student.id}`)} className="text-blue-400 hover:text-blue-300 transition-colors">Editar</button>
+                                                <button 
+                                                    onClick={() => {
+                                                        setSelectedStudent(student);
+                                                        setUnlockModalOpen(true);
+                                                    }} 
+                                                    className="text-purple-400 hover:text-purple-300 transition-colors"
+                                                    title="Gerenciar acesso às aulas"
+                                                >
+                                                    🔓 Acesso
+                                                </button>
+                                                {user?.role === 'admin' && (
+                                                    <>
+                                                        {(student.accountStatus === 'active' || !student.accountStatus) && (
+                                                            <button 
+                                                                onClick={() => handleDeleteUser(student.id)} 
+                                                                className="text-orange-500 hover:text-orange-400 transition-colors"
+                                                                title="Desativar aluno (reversível)"
+                                                            >
+                                                                Desativar
+                                                            </button>
+                                                        )}
+                                                        {student.accountStatus === 'inactive' && (
+                                                            <button 
+                                                                onClick={() => handlePermanentDeleteUser(student.id, student.name)} 
+                                                                className="text-red-600 hover:text-red-500 transition-colors font-bold"
+                                                                title="⚠️ DELETAR PERMANENTEMENTE (irreversível)"
+                                                            >
+                                                                🗑️ Deletar
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
