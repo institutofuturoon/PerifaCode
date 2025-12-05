@@ -1252,9 +1252,14 @@ const AppContent: React.FC = () => {
                 return;
             }
 
-            // Force profile completion ONLY if attempting to access Workspace routes
+            // Force profile completion ONLY for STUDENTS attempting to access Workspace routes
+            // Instructors and admins skip this step
             // This allows "Window Shopping" in the catalog but protects the educational content.
-            if (!user.mustChangePassword && user.profileStatus === 'incomplete' && location.pathname !== '/completar-perfil' && isWorkspaceRoute) {
+            if (!user.mustChangePassword && 
+                user.role === 'student' && 
+                user.profileStatus === 'incomplete' && 
+                location.pathname !== '/completar-perfil' && 
+                isWorkspaceRoute) {
                 showToast("📝 Complete seu perfil para acessar o painel.");
                 navigate('/completar-perfil', { replace: true });
                 return;
