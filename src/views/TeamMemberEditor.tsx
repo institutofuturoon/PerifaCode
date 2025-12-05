@@ -5,6 +5,7 @@ import { useAppContext } from '../App';
 import Uploader from '../components/Uploader';
 import EditorHeader from '../components/EditorHeader';
 import AdminPasswordReset from '../components/AdminPasswordReset';
+import { emailService } from '../services/emailService';
 // @ts-ignore
 import { initializeApp, getApps, deleteApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
@@ -143,7 +144,30 @@ const TeamMemberEditor: React.FC = () => {
       // Deletar app secundário
       await deleteApp(secondaryApp);
 
-      showToast('✅ Membro criado com sucesso! Credenciais enviadas.');
+      // Enviar email de boas-vindas com credenciais
+      showToast('📧 Enviando email com credenciais...');
+      const emailSent = await emailService.sendWelcomeEmail({
+        name: member.name,
+        email: member.email,
+        tempPassword: tempPassword,
+        role: member.role,
+      });
+
+      if (emailSent) {
+        showToast('✅ Membro criado e email enviado com sucesso!');
+      } else {
+        showToast('⚠️ Membro criado, mas falha ao enviar email. Envie as credenciais manualmente.');
+      }
+
+      // TODO: Enviar alerta para admins (opcional)
+      // await emailService.sendAdminAlert({
+      //   adminEmail: 'admin@futuroon.org',
+      //   memberName: member.name,
+      //   memberEmail: member.email,
+      //   memberRole: member.role,
+      //   action: 'created',
+      // });
+
       navigate('/admin');
     } catch (error: any) {
       console.error('Erro ao criar membro:', error);
