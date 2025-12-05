@@ -13,7 +13,7 @@
  */
 
 const admin = require('firebase-admin');
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 
 // Inicializar Firebase Admin
 admin.initializeApp({
