@@ -7,8 +7,17 @@ Scripts para gerenciar e consultar dados do Firestore via linha de comando.
 ### 1. `buscar-firestore.js` - Busca Rápida
 Comandos diretos para buscar dados específicos.
 
-### 2. `query-firestore.js` - Queries Interativas (NOVO!)
+### 2. `query-firestore.js` - Queries Interativas
 Interface interativa com queries tipo SQL.
+
+### 3. `desativar-todos-alunos.js` - Desativar Alunos (NOVO!)
+Desativa todos os alunos de uma vez (soft delete, reversível).
+
+### 4. `reativar-todos-alunos.js` - Reativar Alunos (NOVO!)
+Reativa todos os alunos desativados.
+
+### 5. `deletar-todos-alunos.js` - Deletar Alunos (CUIDADO!)
+Deleta permanentemente todos os alunos (irreversível).
 
 ---
 
@@ -172,11 +181,69 @@ Maria Santos         | maria@gmail.com      | active               | 850
 
 ---
 
+## 🗑️ Gerenciamento em Lote de Alunos (NOVO!)
+
+### Desativar Todos os Alunos (Seguro)
+
+```bash
+node scripts/desativar-todos-alunos.js
+```
+
+**O que faz:**
+- ✅ Desativa todos os alunos (accountStatus = 'inactive')
+- ✅ Dados preservados
+- ✅ Reversível
+- ✅ Seguro para testes
+
+**Quando usar:**
+- Limpar dados de teste
+- Resetar plataforma
+- Preparar para novo semestre
+
+---
+
+### Reativar Todos os Alunos
+
+```bash
+node scripts/reativar-todos-alunos.js
+```
+
+**O que faz:**
+- ♻️ Reativa todos os alunos inativos
+- ✅ Restaura acesso
+
+---
+
+### Deletar Todos os Alunos (CUIDADO!)
+
+```bash
+node scripts/deletar-todos-alunos.js
+```
+
+**⚠️ ATENÇÃO: IRREVERSÍVEL!**
+
+**O que faz:**
+- 🗑️ Deleta do Firestore
+- 🗑️ Deleta do Firebase Auth
+- ❌ Perde todos os dados
+- ❌ NÃO pode ser desfeito
+
+**Confirmação dupla:**
+1. Digite "sim"
+2. Digite "DELETAR TUDO"
+
+**Quando usar:**
+- Apenas para limpar dados de teste
+- NUNCA em produção com dados reais
+
+---
+
 ## 🚀 Próximos Scripts
 
 - [x] Queries interativas tipo SQL
-- [ ] Reativar usuários em lote
+- [x] Desativar usuários em lote
+- [x] Reativar usuários em lote
+- [x] Deletar usuários em lote
 - [ ] Exportar dados para CSV
 - [ ] Backup de coleções
 - [ ] Migração de dados
-- [ ] Limpeza de dados antigos
