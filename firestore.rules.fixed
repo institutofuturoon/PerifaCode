@@ -1,0 +1,213 @@
+rules_version = '2';
+
+/**
+ * Firestore Security Rules - PerifaCode (FuturoOn)
+ * VERSÃO CORRIGIDA - Resolve erro "Missing permissions"
+ * 
+ * Para fazer deploy:
+ * 1. Renomeie este arquivo para firestore.rules
+ * 2. Execute: firebase deploy --only firestore:rules
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // FUNÇÕES AUXILIARES
+    // ==========================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+    
+    function isInstructor() {
+      return isAuthenticated() && getUserRole() == 'instructor';
+    }
+    
+    function isAdminOrInstructor() {
+      return isAuthenticated() && getUserRole() in ['admin', 'instructor'];
+    }
+    
+    // ==========================================
+    // COLEÇÃO: users
+    // ==========================================
+    match /users/{userId} {
+      // Leitura pública (necessário para exibir perfis)
+      allow read: if true;
+      
+      // Criar durante registro
+      allow create: if isAuthenticated();
+      
+      // Atualizar próprio perfil ou admin pode atualizar qualquer um
+      allow update: if isOwner(userId) || isAdmin();
+      
+      // Apenas admins podem deletar
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: courses
+    // ==========================================
+    match /courses/{courseId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins e instrutores podem criar/editar
+      allow write: if isAdminOrInstructor();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: articles
+    // ==========================================
+    match /articles/{articleId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins podem escrever
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: projects
+    // ==========================================
+    match /projects/{projectId} {
+      // ✅ CORRIGIDO: Leitura pública para todos os projetos
+      // Isso resolve o erro "Missing permissions" ao carregar coleção vazia
+      allow read: if true;
+      
+      // Usuários autenticados podem criar
+      allow create: if isAuthenticated() && 
+                       request.resource.data.authorId == request.auth.uid;
+      
+      // Autores e admins podem editar
+      allow update: if isAuthenticated() && 
+                       (resource.data.authorId == request.auth.uid || isAdmin());
+      
+      // Apenas admins podem deletar
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: communityPosts
+    // ==========================================
+    match /communityPosts/{postId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Usuários autenticados podem criar
+      allow create: if isAuthenticated() && 
+                       request.resource.data.authorId == request.auth.uid;
+      
+      // Autores e admins podem editar/deletar
+      allow update, delete: if isAuthenticated() && 
+                               (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+    
+    // ==========================================
+    // COLEÇÃO: events
+    // ==========================================
+    match /events/{eventId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins e instrutores podem escrever
+      allow write: if isAdminOrInstructor();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: partners
+    // ==========================================
+    match /partners/{partnerId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins podem escrever
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: supporters
+    // ==========================================
+    match /supporters/{supporterId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins podem escrever
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: tracks
+    // ==========================================
+    match /tracks/{trackId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins podem escrever
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: financialStatements
+    // ==========================================
+    match /financialStatements/{statementId} {
+      // Leitura pública (transparência)
+      allow read: if true;
+      
+      // Apenas admins podem escrever
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: annualReports
+    // ==========================================
+    match /annualReports/{reportId} {
+      // Leitura pública (transparência)
+      allow read: if true;
+      
+      // Apenas admins podem escrever
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: marketingPosts
+    // ==========================================
+    match /marketingPosts/{postId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins podem escrever
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // COLEÇÃO: mentorSessions
+    // ==========================================
+    match /mentorSessions/{sessionId} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Usuários autenticados podem criar/editar (para booking)
+      allow write: if isAuthenticated();
+    }
+    
+    // ==========================================
+    // REGRA PADRÃO: Negar tudo não especificado
+    // ==========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
