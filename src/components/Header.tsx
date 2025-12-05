@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Logo } from '../assets/Logo';
 import { useAppContext } from '../App';
-import { DevMenu } from './DevMenu';
 import NotificationCenter from './NotificationCenter';
 
 const NavLink: React.FC<{ onClick: () => void; children: React.ReactNode; active?: boolean }> = ({ onClick, children, active }) => (
@@ -171,9 +170,6 @@ const Header: React.FC = () => {
 
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center gap-3 xl:gap-4">
-              {/* DEV MENU */}
-              <DevMenu />
-
               <button
                 onClick={() => handleNav('/doar')}
                 className="relative group"
@@ -220,7 +216,6 @@ const Header: React.FC = () => {
 
             {/* Mobile Hamburger Button */}
             <div className="lg:hidden z-50 flex items-center gap-2">
-              <DevMenu />
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 text-gray-300 hover:text-white focus:outline-none transition-colors"
