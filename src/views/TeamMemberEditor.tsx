@@ -27,7 +27,7 @@ const TeamMemberEditor: React.FC = () => {
   const { users, handleSaveUser, showToast } = useAppContext();
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
-  const isCreating = userId === 'new';
+  const isCreating = userId === 'novo' || userId === 'new' || !userId;
 
   // Estado para senha temporária (apenas na criação)
   const [tempPassword, setTempPassword] = useState('');
@@ -133,8 +133,6 @@ const TeamMemberEditor: React.FC = () => {
         profileStatus: 'complete',
         hasCompletedOnboardingTour: false
       };
-
-      console.log('Criando membro com role:', memberData.role);
 
       // Salvar no Firestore
       await setDoc(doc(db, 'users', newUser.uid), memberData);
@@ -276,77 +274,79 @@ const TeamMemberEditor: React.FC = () => {
             <div className="p-8 pt-16 space-y-6">
                 <h3 className="text-lg font-bold text-white border-b border-white/10 pb-2 text-center">Informações Principais</h3>
                 
-                {/* Campos de Credenciais - Apenas na Criação */}
-                {isCreating && (
-                  <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-lg">
-                    <h4 className="text-yellow-400 font-bold text-sm mb-3 flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                      </svg>
-                      Credenciais de Acesso
-                    </h4>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="email-create" className={labelClasses}>Email de Login *</label>
-                        <input 
-                          id="email-create"
-                          name="email" 
-                          type="email" 
-                          value={member.email || ''} 
-                          onChange={handleChange} 
-                          required 
-                          className={inputClasses} 
-                          placeholder="email@exemplo.com"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="temp-password" className={labelClasses}>Senha Temporária *</label>
-                        <input 
-                          id="temp-password"
-                          type="password" 
-                          value={tempPassword} 
-                          onChange={(e) => setTempPassword(e.target.value)} 
-                          required 
-                          className={inputClasses} 
-                          placeholder="Mínimo 6 caracteres"
-                          minLength={6}
-                        />
-                        <p className="text-xs text-yellow-400 mt-1">
-                          ⚠️ O membro será forçado a trocar no primeiro login
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div>
                     <label htmlFor="name" className={labelClasses}>Nome Completo</label>
                     <input id="name" name="name" value={member.name} onChange={handleChange} required className={inputClasses} />
                 </div>
 
-                {/* Campo de Role - Apenas na Criação */}
-                {isCreating && (
-                  <div>
-                    <label htmlFor="role" className={labelClasses}>Tipo de Usuário *</label>
-                    <select 
-                      id="role"
-                      name="role" 
-                      value={member.role} 
-                      onChange={handleChange} 
-                      required 
-                      className={inputClasses}
-                    >
-                      <option value="instructor">Instrutor/Voluntário</option>
-                      <option value="student">Aluno</option>
-                      <option value="admin">Administrador</option>
-                    </select>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Define as permissões e acesso do usuário na plataforma
-                    </p>
-                  </div>
-                )}
-                
-                {!isCreating && (
+                {/* Campos de Credenciais - APENAS na Criação */}
+                {isCreating ? (
+                  <>
+                    <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-lg">
+                      <h4 className="text-yellow-400 font-bold text-sm mb-3 flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                        </svg>
+                        Credenciais de Acesso
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="email-create" className={labelClasses}>Email de Login *</label>
+                          <input 
+                            id="email-create"
+                            name="email" 
+                            type="email" 
+                            value={member.email || ''} 
+                            onChange={handleChange} 
+                            required 
+                            className={inputClasses} 
+                            placeholder="email@exemplo.com"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="temp-password" className={labelClasses}>Senha Temporária *</label>
+                          <input 
+                            id="temp-password"
+                            type="password" 
+                            value={tempPassword} 
+                            onChange={(e) => setTempPassword(e.target.value)} 
+                            required 
+                            className={inputClasses} 
+                            placeholder="Mínimo 6 caracteres"
+                            minLength={6}
+                          />
+                          <p className="text-xs text-yellow-400 mt-1">
+                            ⚠️ O membro será forçado a trocar no primeiro login
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="role" className={labelClasses}>Tipo de Usuário *</label>
+                      <select 
+                        id="role"
+                        name="role" 
+                        value={member.role} 
+                        onChange={handleChange} 
+                        required 
+                        className={inputClasses}
+                      >
+                        <option value="instructor">Instrutor/Voluntário</option>
+                        <option value="student">Aluno</option>
+                        <option value="admin">Administrador</option>
+                      </select>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Define as permissões e acesso do usuário na plataforma
+                      </p>
+                    </div>
+
+                    <div>
+                        <label htmlFor="title" className={labelClasses}>Título Profissional</label>
+                        <input id="title" name="title" value={member.title || ''} onChange={handleChange} placeholder="Ex: Desenvolvedor Frontend" className={inputClasses} />
+                    </div>
+                  </>
+                ) : (
                   <>
                     <div className="grid md:grid-cols-2 gap-6">
                         <div>
@@ -377,13 +377,6 @@ const TeamMemberEditor: React.FC = () => {
                       </p>
                     </div>
                   </>
-                )}
-                
-                {isCreating && (
-                  <div>
-                      <label htmlFor="title" className={labelClasses}>Título Profissional</label>
-                      <input id="title" name="title" value={member.title || ''} onChange={handleChange} placeholder="Ex: Desenvolvedor Frontend" className={inputClasses} />
-                  </div>
                 )}
 
                 {/* Botão de Reset de Senha - Apenas para membros existentes */}
