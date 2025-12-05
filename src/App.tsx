@@ -69,14 +69,37 @@ const TransparencyEditor = lazy(() => import('./views/TransparencyEditor'));
 const LoadingFallback = () => (
     <div className="flex items-center justify-center min-h-screen bg-[#09090B]">
         <div className="text-center">
-            <div className="relative">
-                <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-[#8a4add] border-t-transparent mb-4"></div>
+            {/* Opção 1: Spinner com logo animado (atual melhorado) */}
+            <div className="relative mb-6">
+                {/* Anel externo girando */}
+                <div className="inline-block animate-spin rounded-full h-20 w-20 border-4 border-transparent bg-gradient-to-r from-[#8a4add] via-[#f27983] to-[#8a4add] bg-clip-border" style={{ 
+                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                    WebkitMaskComposite: 'xor',
+                    maskComposite: 'exclude',
+                    padding: '4px'
+                }}></div>
+                
+                {/* Logo/ícone central */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-8 h-8 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-full animate-pulse"></div>
+                    <div className="relative">
+                        {/* Círculo pulsante */}
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#8a4add] to-[#f27983] rounded-full animate-pulse"></div>
+                        {/* Brilho */}
+                        <div className="absolute inset-0 w-10 h-10 bg-white/20 rounded-full animate-ping"></div>
+                    </div>
                 </div>
             </div>
-            <p className="text-white font-semibold text-lg mb-2">FuturoOn</p>
-            <p className="text-gray-400 text-sm">Carregando plataforma...</p>
+
+            {/* Texto */}
+            <p className="text-white font-bold text-2xl mb-2 bg-gradient-to-r from-[#8a4add] to-[#f27983] bg-clip-text text-transparent">
+                FuturoOn
+            </p>
+            <p className="text-gray-400 text-sm animate-pulse">Carregando plataforma...</p>
+            
+            {/* Barra de progresso animada */}
+            <div className="mt-4 w-48 h-1 bg-white/10 rounded-full overflow-hidden mx-auto">
+                <div className="h-full bg-gradient-to-r from-[#8a4add] to-[#f27983] animate-[loading_1.5s_ease-in-out_infinite]"></div>
+            </div>
         </div>
     </div>
 );
