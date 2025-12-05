@@ -1,6 +1,8 @@
 
 import React, { useState, useRef } from 'react';
 import { useAppContext } from '../App';
+// @ts-ignore
+import { upload } from '@vercel/blob/client';
 
 interface UploaderProps {
   pathnamePrefix: string;
@@ -28,6 +30,7 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
       showToast('❌ Por favor, selecione um arquivo de imagem válido.');
       return;
     }
+    
     if (file.size > 4 * 1024 * 1024) { // 4MB limit
       showToast('❌ O arquivo é muito grande. O limite é de 4MB.');
       return;
@@ -37,7 +40,12 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
     setUploadProgress(0);
     
     try {
-      // Simular progresso de upload para melhor UX
+      // Criar nome único para o arquivo
+      const timestamp = Date.now();
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const fileName = `${pathnamePrefix}/${timestamp}_${sanitizedName}`;
+
+      // Simular progresso para melhor UX
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -46,41 +54,41 @@ const Uploader: React.FC<UploaderProps> = ({ pathnamePrefix, onUploadComplete, c
           }
           return prev + 10;
         });
-      }, 100);
+      }, 200);
 
-      // SOLUÇÃO TEMPORÁRIA: Converter para Data URL (base64)
-      // Para produção, configure um backend/API para upload seguro
-      const reader = new FileReader();
-      
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        reader.onloadend = () => {
-          clearInterval(progressInterval);
-          setUploadProgress(100);
-          resolve(reader.result as string);
-        };
-        reader.onerror = (error) => {
-          clearInterval(progressInterval);
-          reject(error);
-        };
-        reader.readAsDataURL(file);
-      });
+      try {
+        // Tentar upload para Vercel Blob
+        const blob = await upload(fileName, file, {
+          access: 'public',
+          handleUploadUrl: '/api/upload',
+        });
 
-      // Pequeno delay para mostrar 100%
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Retornar a Data URL como se fosse uma URL de upload
-      onUploadComplete(dataUrl);
-      showToast('✅ Imagem carregada com sucesso!');
+        clearInterval(progressInterval);
+        setUploadProgress(100);
+        
+        await new Promise(resolve => setTimeout(resolve, 300));
+        onUploadComplete(blob.url);
+        showToast('✅ Imagem carregada com sucesso!');
+        
+      } catch (uploadError: any) {
+        clearInterval(progressInterval);
+        
+        // Se falhar, mostrar mensagem amigável
+        console.warn('Upload para Vercel Blob falhou, use URLs em desenvolvimento:', uploadError);
+        showToast('⚠️ Upload indisponível em desenvolvimento. Cole uma URL de imagem nos campos abaixo.');
+        
+        // Limpar o input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
 
     } catch (err: any) {
       console.error(`Erro detalhado no upload:`, err);
-      showToast(`❌ Erro ao carregar a imagem: ${err.message}`);
+      showToast(`❌ Erro ao processar imagem`);
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
     }
   };
 

@@ -127,11 +127,14 @@ const TeamMemberEditor: React.FC = () => {
       const memberData: User = {
         ...member,
         id: newUser.uid,
+        role: member.role || 'instructor', // Garantir que role seja definido
         mustChangePassword: true,
         accountStatus: 'active',
         profileStatus: 'complete',
         hasCompletedOnboardingTour: false
       };
+
+      console.log('Criando membro com role:', memberData.role);
 
       // Salvar no Firestore
       await setDoc(doc(db, 'users', newUser.uid), memberData);
@@ -164,7 +167,21 @@ const TeamMemberEditor: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSaveUser(member);
+    
+    // Limpar campos muito grandes (base64) e usar padrão
+    const cleanedMember = { ...member };
+    
+    if (cleanedMember.bannerUrl && cleanedMember.bannerUrl.length > 2000) {
+      showToast("⚠️ Banner em base64 detectado. Usando URL padrão.");
+      cleanedMember.bannerUrl = DEFAULT_BANNER_URL;
+    }
+    
+    if (cleanedMember.avatarUrl && cleanedMember.avatarUrl.length > 2000) {
+      showToast("⚠️ Avatar em base64 detectado. Usando URL padrão.");
+      cleanedMember.avatarUrl = `https://picsum.photos/seed/${cleanedMember.id}/200`;
+    }
+    
+    handleSaveUser(cleanedMember);
     navigate('/admin');
   };
 
@@ -232,7 +249,7 @@ const TeamMemberEditor: React.FC = () => {
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 top-40 -translate-y-1/2">
                     <div className="relative group w-24 h-24">
-                        <img key={member.avatarUrl} className="h-24 w-24 rounded-full border-4 border-[#18181B] object-cover" src={member.avatarUrl} alt={member.name} />
+                        <img className="h-24 w-24 rounded-full border-4 border-[#18181B] object-cover" src={member.avatarUrl} alt={member.name} />
                         <Uploader
                           pathnamePrefix={`avatars/${member.id}`}
                           onUploadComplete={handleAvatarUploadComplete}
@@ -306,18 +323,60 @@ const TeamMemberEditor: React.FC = () => {
                     <label htmlFor="name" className={labelClasses}>Nome Completo</label>
                     <input id="name" name="name" value={member.name} onChange={handleChange} required className={inputClasses} />
                 </div>
+
+                {/* Campo de Role - Apenas na Criação */}
+                {isCreating && (
+                  <div>
+                    <label htmlFor="role" className={labelClasses}>Tipo de Usuário *</label>
+                    <select 
+                      id="role"
+                      name="role" 
+                      value={member.role} 
+                      onChange={handleChange} 
+                      required 
+                      className={inputClasses}
+                    >
+                      <option value="instructor">Instrutor/Voluntário</option>
+                      <option value="student">Aluno</option>
+                      <option value="admin">Administrador</option>
+                    </select>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Define as permissões e acesso do usuário na plataforma
+                    </p>
+                  </div>
+                )}
                 
                 {!isCreating && (
-                  <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                          <label htmlFor="email" className={labelClasses}>Email</label>
-                          <input id="email" name="email" type="email" value={member.email} onChange={handleChange} required className={inputClasses} disabled />
-                      </div>
-                      <div>
-                          <label htmlFor="title" className={labelClasses}>Título Profissional</label>
-                          <input id="title" name="title" value={member.title || ''} onChange={handleChange} placeholder="Ex: Desenvolvedor Frontend" className={inputClasses} />
-                      </div>
-                  </div>
+                  <>
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label htmlFor="email" className={labelClasses}>Email</label>
+                            <input id="email" name="email" type="email" value={member.email} onChange={handleChange} required className={inputClasses} />
+                        </div>
+                        <div>
+                            <label htmlFor="title" className={labelClasses}>Título Profissional</label>
+                            <input id="title" name="title" value={member.title || ''} onChange={handleChange} placeholder="Ex: Desenvolvedor Frontend" className={inputClasses} />
+                        </div>
+                    </div>
+                    <div>
+                      <label htmlFor="role" className={labelClasses}>Tipo de Usuário</label>
+                      <select 
+                        id="role"
+                        name="role" 
+                        value={member.role} 
+                        onChange={handleChange} 
+                        required 
+                        className={inputClasses}
+                      >
+                        <option value="instructor">Instrutor/Voluntário</option>
+                        <option value="student">Aluno</option>
+                        <option value="admin">Administrador</option>
+                      </select>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Define as permissões e acesso do usuário na plataforma
+                      </p>
+                    </div>
+                  </>
                 )}
                 
                 {isCreating && (
@@ -342,8 +401,30 @@ const TeamMemberEditor: React.FC = () => {
                     </div>
                 )}
                 <div>
+                    <label htmlFor="bannerUrl" className={labelClasses}>URL do Banner (ou faça upload acima)</label>
+                    <input 
+                      id="bannerUrl" 
+                      name="bannerUrl" 
+                      value={member.bannerUrl || ''} 
+                      onChange={handleChange} 
+                      className={inputClasses}
+                      placeholder="https://exemplo.com/banner.jpg"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Imagem de fundo do perfil (opcional)
+                    </p>
+                </div>
+                <div>
                     <label htmlFor="avatarUrl" className={labelClasses}>URL do Avatar (ou faça upload acima)</label>
-                    <input id="avatarUrl" name="avatarUrl" key={member.avatarUrl} value={member.avatarUrl} onChange={handleChange} required className={inputClasses} />
+                    <input 
+                      id="avatarUrl" 
+                      name="avatarUrl" 
+                      value={member.avatarUrl} 
+                      onChange={handleChange} 
+                      required 
+                      className={inputClasses}
+                      placeholder="https://exemplo.com/avatar.jpg"
+                    />
                 </div>
                 <div>
                     <label htmlFor="bio" className={labelClasses}>Bio</label>

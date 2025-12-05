@@ -64,7 +64,8 @@ service cloud.firestore {
       allow read: if true;
       
       // Usuários podem criar seu próprio perfil durante o registro
-      allow create: if isOwner(userId);
+      // Admins podem criar perfis para outros usuários
+      allow create: if isAuthenticated();
       
       // Usuários podem atualizar apenas seu próprio perfil
       // Admins podem atualizar qualquer perfil

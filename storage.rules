@@ -1,0 +1,104 @@
+rules_version = '2';
+
+/**
+ * Firebase Storage Security Rules - FuturoOn
+ * 
+ * Para fazer deploy:
+ * firebase deploy --only storage
+ */
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Função auxiliar para verificar autenticação
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Função auxiliar para verificar se é admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Função auxiliar para verificar tamanho do arquivo (max 5MB)
+    function isValidSize() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+    
+    // Função auxiliar para verificar tipo de arquivo (apenas imagens)
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+    
+    // ==========================================
+    // AVATARES DE USUÁRIOS
+    // ==========================================
+    match /avatars/{userId}/{fileName} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Usuários podem fazer upload de seus próprios avatares
+      // Admins podem fazer upload de qualquer avatar
+      allow write: if isAuthenticated() && 
+                      isImage() && 
+                      isValidSize() &&
+                      (request.auth.uid == userId || isAdmin());
+    }
+    
+    // ==========================================
+    // BANNERS DE USUÁRIOS
+    // ==========================================
+    match /banners/{userId}/{fileName} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Usuários podem fazer upload de seus próprios banners
+      // Admins podem fazer upload de qualquer banner
+      allow write: if isAuthenticated() && 
+                      isImage() && 
+                      isValidSize() &&
+                      (request.auth.uid == userId || isAdmin());
+    }
+    
+    // ==========================================
+    // IMAGENS DE CURSOS
+    // ==========================================
+    match /courses/{courseId}/{fileName} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins e instrutores podem fazer upload
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // IMAGENS DE ARTIGOS (BLOG)
+    // ==========================================
+    match /articles/{articleId}/{fileName} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Apenas admins podem fazer upload
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // IMAGENS DE PROJETOS
+    // ==========================================
+    match /projects/{projectId}/{fileName} {
+      // Leitura pública
+      allow read: if true;
+      
+      // Usuários autenticados podem fazer upload para seus projetos
+      allow write: if isAuthenticated() && isImage() && isValidSize();
+    }
+    
+    // ==========================================
+    // REGRA PADRÃO: Negar tudo não especificado
+    // ==========================================
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
