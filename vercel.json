@@ -4,6 +4,19 @@
   "installCommand": "npm install",
   "framework": "vite",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "institutofuturoon.org"
+        }
+      ],
+      "destination": "https://www.institutofuturoon.org/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

@@ -96,7 +96,8 @@ const BlogAIStudio: React.FC<BlogAIStudioProps> = ({ content, onApply, onClose }
 
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+      const model = ai.models.get('gemini-1.5-flash');
 
       const toneInstructions = {
         professional: 'Use um tom profissional, formal e corporativo. Evite gírias e mantenha linguagem técnica quando apropriado.',
@@ -201,8 +202,7 @@ ${templateInstructions[template]}
 ${content}
 ---`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+      const response = await model.generateContent({
         contents: prompt,
       });
 

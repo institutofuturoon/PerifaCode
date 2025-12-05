@@ -84,7 +84,9 @@ const ArticleEditor: React.FC = () => {
       }
       setIsGeneratingTitles(true);
       try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+          const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+          const model = ai.models.get("gemini-1.5-flash");
+          
           const prompt = `Você é um copywriter especialista para o blog da FuturoOn, focado em jovens da periferia que estão entrando no mercado de tecnologia.
           Baseado no conteúdo do artigo abaixo, gere um título principal e um subtítulo que sejam modernos, chamativos e otimizados para SEO.
           O tom deve ser inspirador e acessível.
@@ -95,8 +97,7 @@ const ArticleEditor: React.FC = () => {
           ${article.content}
           ---`;
 
-          const response = await ai.models.generateContent({
-              model: "gemini-2.5-flash",
+          const response = await model.generateContent({
               contents: prompt,
               config: {
                 responseMimeType: "application/json",
